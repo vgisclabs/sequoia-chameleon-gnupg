@@ -4,10 +4,20 @@ use anyhow::Context;
 mod argparse;
 
 fn real_main() -> anyhow::Result<()> {
-    for rarg in argparse::Source::Args(std::env::args()).parse() {
-        let (cmd, value) =
+    use argparse::CmdOrOpt;
+
+    // First pass: handle --help and other implicit commands.
+    for rarg in argparse::Source::parse_command_line() {
+        let (cmd, _value) =
             rarg.context("Error parsing command-line arguments")?;
-        eprintln!("{:?}: {:?}", cmd, value);
+        match cmd {
+            CmdOrOpt::aHelp => return Ok(argparse::help()),
+            CmdOrOpt::aVersion => return Ok(argparse::version()),
+            CmdOrOpt::aWarranty => return Ok(argparse::warranty()),
+            CmdOrOpt::aDumpOptions => return Ok(argparse::dump_options()),
+            CmdOrOpt::aDumpOpttbl => return Ok(argparse::dump_options_table()),
+            _ => (),
+        }
     }
     Ok(())
 }
