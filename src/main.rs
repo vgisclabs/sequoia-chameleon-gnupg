@@ -2,8 +2,10 @@ use std::{
     path::PathBuf,
 };
 
-use anyhow::Context;
+use anyhow::{Context, Result};
 
+#[macro_use]
+mod macros;
 #[allow(dead_code)]
 mod argparse;
 use argparse::{Opt, flags::*};
@@ -893,6 +895,48 @@ impl Default for Config {
     }
 }
 
+impl Config {
+    /// Checks whether the permissions on the state directory are
+    /// sane.
+    fn check_homedir_permissions(&self) -> Result<()> {
+        if ! self.homedir.exists() {
+            // Not yet created.
+            return Ok(());
+        }
+
+        platform! {
+            unix => {
+                use std::os::unix::fs::MetadataExt;
+
+                // The homedir must be x00, a directory, and owned by
+                // the user.
+                let m = std::fs::metadata(&self.homedir)?;
+
+                if ! m.is_dir() {
+                    eprintln!("WARNING: homedir {:?} is not a directory",
+                              self.homedir);
+                }
+
+                if m.uid() != unsafe { libc::getuid() } {
+                    eprintln!("WARNING: unsafe ownership on homedir {:?}",
+                              self.homedir);
+                }
+
+                if m.mode() & (libc::S_IRWXG | libc::S_IRWXO) > 0 {
+                    eprintln!("WARNING: unsafe permissions on homedir {:?}",
+                              self.homedir);
+                }
+            },
+
+            windows => {
+                // XXX: What can we check?
+            },
+        }
+
+        Ok(())
+    }
+}
+
 fn real_main() -> anyhow::Result<()> {
     let parser = argparse::Parser::new("gpg", &OPTIONS);
     for rarg in parser.parse_command_line() {
@@ -922,6 +966,8 @@ fn real_main() -> anyhow::Result<()> {
             _ => (),
         }
     }
+
+    opt.check_homedir_permissions()?;
 
     Ok(())
 }
