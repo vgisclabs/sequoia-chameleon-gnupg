@@ -1,3 +1,7 @@
+use std::{
+    path::PathBuf,
+};
+
 use anyhow::Context;
 
 #[allow(dead_code)]
@@ -869,6 +873,26 @@ const OPTIONS: &[Opt<CmdOrOpt>] = &[
     Opt { short_opt: oNoop, long_opt: "no-disable-mdc", flags: TYPE_NONE, description: "@", },
 ];
 
+struct Config {
+    homedir: PathBuf,
+    no_homedir_creation: bool,
+    no_perm_warn: bool,
+}
+
+impl Default for Config {
+    fn default() -> Self {
+        Config {
+            homedir: std::env::var_os("GNUPGHOME")
+                .map(Into::into)
+                .unwrap_or_else(|| dirs::home_dir()
+                                .expect("cannot get user's home directory")
+                                .join(".gnupg")),
+            no_homedir_creation: false,
+            no_perm_warn: false,
+        }
+    }
+}
+
 fn real_main() -> anyhow::Result<()> {
     let parser = argparse::Parser::new("gpg", &OPTIONS);
     for rarg in parser.parse_command_line() {
@@ -883,6 +907,22 @@ fn real_main() -> anyhow::Result<()> {
             _ => (),
         }
     }
+
+    let mut opt = Config::default();
+
+    // Second pass: check special options.
+    for rarg in parser.parse_command_line() {
+        let (cmd, value) =
+            rarg.context("Error parsing command-line arguments")?;
+        match cmd {
+            CmdOrOpt::oNoOptions => opt.no_homedir_creation = true,
+            CmdOrOpt::oHomedir =>
+                opt.homedir = value.as_str().unwrap().into(),
+            CmdOrOpt::oNoPermissionWarn => opt.no_perm_warn = true,
+            _ => (),
+        }
+    }
+
     Ok(())
 }
 
