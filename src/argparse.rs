@@ -56,13 +56,15 @@ impl Value {
 
 /// Arguments can be read from the command line or a file.
 pub struct Parser<T: Copy + PartialEq + Eq + Into<isize> + 'static> {
+    name: &'static str,
     options: &'static [Opt<T>],
 }
 
 impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
     /// Creates a new parser for the given options.
-    pub fn new(options: &'static [Opt<T>]) -> Parser<T> {
+    pub fn new(name: &'static str, options: &'static [Opt<T>]) -> Parser<T> {
         Parser {
+            name,
             options,
         }
     }
@@ -134,6 +136,115 @@ impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
             current: None,
             current_short: None,
             cmdline,
+        }
+    }
+
+    /// Displays version information.
+    pub fn version(&self) {
+        println!("{} (GnuPG-compatible Sequoia Chameleon) {}",
+                 self.name, env!("CARGO_PKG_VERSION"));
+        println!("sequoia-openpgp {}", sequoia_openpgp::VERSION);
+        println!("Copyright (C) 2021 p≡p foundation");
+        println!("License GNU GPL-3.0-or-later \
+                  <https://gnu.org/licenses/gpl.html>");
+        println!("This is free software: \
+                  you are free to change and redistribute it.");
+        println!("There is NO WARRANTY, \
+                  to the extent permitted by law.");
+    }
+
+    /// Displays help.
+    pub fn help(&self) {
+        self.version();
+        println!();
+        println!("Syntax: {} [options] [files]", self.name);
+        println!("There is no default operation");
+        println!();
+
+        for o in self.options {
+            if o.description == "@" {
+                // Hidden from the help.
+                continue;
+            }
+
+            if o.description.starts_with("@") {
+                // Caption.
+                println!("{}", &o.description[1..]);
+            } else {
+                let (meta, description) =
+                    if o.description.starts_with("|") {
+                        let mut f = o.description.split('|');
+                        f.next();
+                        (Some(f.next().unwrap()), f.next().unwrap())
+                    } else {
+                        (None, o.description)
+                    };
+
+                if o.long_opt.is_empty() {
+                    let short_opt = if let Some(m) = meta {
+                        format!("{} {}", o.short_opt.into() as u8 as char, m)
+                    } else {
+                        format!("{}", o.short_opt.into() as u8 as char)
+                    };
+
+                    println!(" -{:<26} {}",
+                             short_opt,
+                             description);
+                } else {
+                    let long_opt = if let Some(m) = meta {
+                        format!("{} {}", o.long_opt, m)
+                    } else {
+                        o.long_opt.to_string()
+                    };
+
+                    if o.short_opt.into() <= 0x7f {
+                        println!(" -{}, --{:<21} {}",
+                                 o.short_opt.into() as u8 as char,
+                                 long_opt,
+                                 description);
+                    } else {
+                        println!("     --{:<21} {}",
+                                 long_opt,
+                                 description);
+                    }
+                }
+            }
+        }
+
+        println!("Please report bugs to \
+                  <https://gitlab.com/sequoia-pgp/sequoia-chameleon-gnupg>");
+    }
+
+    /// Displays a message about warranty, or the lack there of.
+    pub fn warranty(&self) {
+        println!("\
+            This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.");
+    }
+
+    /// Displays all options.
+    pub fn dump_options(&self) {
+        for o in self.options {
+            if ! o.long_opt.is_empty() {
+                println!("--{}", o.long_opt);
+            }
+        }
+    }
+
+    /// Displays all options in tabular form.
+    pub fn dump_options_table(&self) {
+        for o in self.options {
+            if ! o.long_opt.is_empty() {
+                println!("{}:{}:{}:{}:",
+                         o.long_opt, o.short_opt.into(), o.flags, o.description);
+            }
         }
     }
 }

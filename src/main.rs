@@ -870,11 +870,18 @@ const OPTIONS: &[Opt<CmdOrOpt>] = &[
 ];
 
 fn real_main() -> anyhow::Result<()> {
-    let parser = argparse::Parser::new(&OPTIONS);
+    let parser = argparse::Parser::new("gpg", &OPTIONS);
     for rarg in parser.parse_command_line() {
-        let (cmd, value) =
+        let (cmd, _value) =
             rarg.context("Error parsing command-line arguments")?;
-        eprintln!("{:?}: {:?}", cmd, value);
+        match cmd {
+            CmdOrOpt::aHelp => return Ok(parser.help()),
+            CmdOrOpt::aVersion => return Ok(parser.version()),
+            CmdOrOpt::aWarranty => return Ok(parser.warranty()),
+            CmdOrOpt::aDumpOptions => return Ok(parser.dump_options()),
+            CmdOrOpt::aDumpOpttbl => return Ok(parser.dump_options_table()),
+            _ => (),
+        }
     }
     Ok(())
 }
