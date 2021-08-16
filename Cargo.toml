@@ -8,6 +8,7 @@ edition = "2018"
 
 [dependencies]
 anyhow = "1"
+chrono = "0.4"
 dirs = "3"
 libc = "0.2"
 sequoia-openpgp = "1.3"
