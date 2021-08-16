@@ -10,6 +10,7 @@ mod macros;
 mod argparse;
 
 struct Config {
+    default_keyring: bool,
     homedir: PathBuf,
     no_homedir_creation: bool,
     no_perm_warn: bool,
@@ -18,6 +19,7 @@ struct Config {
 impl Default for Config {
     fn default() -> Self {
         Config {
+            default_keyring: true,
             homedir: std::env::var_os("GNUPGHOME")
                 .map(Into::into)
                 .unwrap_or_else(|| dirs::home_dir()
@@ -71,6 +73,36 @@ impl Config {
     }
 }
 
+fn set_cmd(cmd: &mut Option<argparse::CmdOrOpt>, new_cmd: argparse::CmdOrOpt)
+           -> anyhow::Result<()> {
+    use argparse::CmdOrOpt::*;
+    dbg!((&cmd, new_cmd));
+    match cmd.as_ref().clone() {
+        None => *cmd = Some(new_cmd),
+        Some(c) if *c == new_cmd => (),
+
+        Some(aSign) if new_cmd == aEncr => *cmd = Some(aSignEncr),
+        Some(aEncr) if new_cmd == aSign => *cmd = Some(aSignEncr),
+
+        Some(aSign) if new_cmd == aSym => *cmd = Some(aSignSym),
+        Some(aSym) if new_cmd == aSign => *cmd = Some(aSignSym),
+
+        Some(aSym) if new_cmd == aEncr => *cmd = Some(aEncrSym),
+        Some(aEncr) if new_cmd == aSym => *cmd = Some(aEncrSym),
+
+        Some(aSignEncr) if new_cmd == aSym => *cmd = Some(aSignEncrSym),
+        Some(aSignSym) if new_cmd == aEncr => *cmd = Some(aSignEncrSym),
+        Some(aEncrSym) if new_cmd == aSign => *cmd = Some(aSignEncrSym),
+
+        Some(aSign) if new_cmd == aClearsign => *cmd = Some(aClearsign),
+        Some(aClearsign) if new_cmd == aSign => *cmd = Some(aClearsign),
+
+        _ => return Err(anyhow::anyhow!("Conflicting commands {:?} and {:?}",
+                                        cmd.unwrap(), new_cmd)),
+    }
+    Ok(())
+}
+
 fn real_main() -> anyhow::Result<()> {
     use argparse::CmdOrOpt;
 
@@ -89,6 +121,9 @@ fn real_main() -> anyhow::Result<()> {
     }
 
     let mut opt = Config::default();
+    let mut command = None;
+    let mut greeting = false;
+    let mut no_greeting = false;
 
     // Second pass: check special options.
     for rarg in argparse::Source::parse_command_line() {
@@ -104,6 +139,103 @@ fn real_main() -> anyhow::Result<()> {
     }
 
     opt.check_homedir_permissions()?;
+
+    // Third pass: parse config file(s) and the command line again.
+    for rarg in
+        argparse::Source::try_parse_file(config.homedir.join("gpg.conf"))?
+        .chain(argparse::Source::parse_command_line())
+    {
+        let (cmd, value) =
+            rarg.context("Error parsing command-line arguments")?;
+        eprintln!("{:?} {:?}", cmd, value);
+
+        use CmdOrOpt::*;
+        match cmd {
+	    aListConfig
+	        | aListGcryptConfig
+                | aGPGConfList
+                | aGPGConfTest =>
+            {
+                set_cmd(&mut command, cmd)?;
+                config.default_keyring = false;
+            },
+
+	    aCheckKeys
+	        | aListPackets
+	        | aImport
+	        | aFastImport
+	        | aSendKeys
+	        | aRecvKeys
+	        | aSearchKeys
+	        | aRefreshKeys
+	        | aFetchKeys
+	        | aExport
+                | aCardStatus
+                | aCardEdit
+                | aChangePIN
+	        | aListKeys
+	        | aLocateKeys
+	        | aLocateExtKeys
+	        | aListSigs
+	        | aExportSecret
+	        | aExportSecretSub
+	        | aExportSshKey
+	        | aSym
+	        | aClearsign
+	        | aGenRevoke
+	        | aDesigRevoke
+	        | aPrimegen
+	        | aGenRandom
+	        | aPrintMD
+	        | aPrintMDs
+	        | aListTrustDB
+	        | aCheckTrustDB
+	        | aUpdateTrustDB
+	        | aFixTrustDB
+	        | aListTrustPath
+	        | aDeArmor
+	        | aEnArmor
+	        | aSign
+	        | aQuickSignKey
+	        | aQuickLSignKey
+	        | aQuickRevSig
+	        | aSignKey
+	        | aLSignKey
+	        | aStore
+	        | aQuickKeygen
+	        | aQuickAddUid
+	        | aQuickAddKey
+	        | aQuickRevUid
+	        | aQuickSetExpire
+	        | aQuickSetPrimaryUid
+	        | aExportOwnerTrust
+	        | aImportOwnerTrust
+                | aRebuildKeydbCaches =>
+            {
+                set_cmd(&mut command, cmd)?;
+            },
+
+	    aKeygen
+	        | aFullKeygen
+	        | aEditKey
+	        | aDeleteSecretKeys
+	        | aDeleteSecretAndPublicKeys
+	        | aDeleteKeys
+                | aPasswd =>
+            {
+                set_cmd(&mut command, cmd)?;
+                greeting = true;
+            },
+
+            _ => (),
+        }
+    }
+
+    if greeting && ! no_greeting {
+        eprintln!("Greetings from the people of earth!");
+    }
+
+    dbg!(command);
 
     Ok(())
 }
