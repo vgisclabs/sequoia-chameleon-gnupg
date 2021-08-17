@@ -573,7 +573,7 @@ const OPTIONS: &[Opt] = &[
 
     Opt { short_opt: oOutput, long_opt: "output", flags: TYPE_STRING, description: "|FILE|write output to FILE", },
     Opt { short_opt: oMaxOutput, long_opt: "max-output", flags: (TYPE_ULONG | OPT_PREFIX), description: "@", },
-    Opt { short_opt: oInputSizeHint, long_opt: "input-size-hint", flags: TYPE_STRING, description: "@", },
+    Opt { short_opt: oInputSizeHint, long_opt: "input-size-hint", flags: TYPE_ULONG, description: "@", },
 
     Opt { short_opt: oVerbose, long_opt: "verbose", flags: TYPE_NONE, description: "verbose", },
     Opt { short_opt: oQuiet, long_opt: "quiet", flags: TYPE_NONE, description: "@", },
