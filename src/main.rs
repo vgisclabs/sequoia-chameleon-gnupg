@@ -25,10 +25,10 @@ struct Config {
     // Configuration.
     answer_no: bool,
     answer_yes: bool,
+    armor: bool,
     ask_cert_expire: bool,
     ask_cert_level: bool,
     ask_sig_expire: bool,
-    armor: bool,
     batch: bool,
     cert_policy_url: Vec<URL>,
     check_sigs: bool,
@@ -44,9 +44,11 @@ struct Config {
     def_secret_key: Vec<String>,
     def_sig_expire: Option<time::Duration>,
     default_keyring: bool,
+    dotlock_disable: bool,
     dry_run: bool,
     emit_version: usize,
     encrypt_to_default_key: usize,
+    escape_from: bool,
     expert: bool,
     fingerprint: usize,
     flags: Flags,
@@ -55,8 +57,11 @@ struct Config {
     import_options: u32,
     input_size_hint: Option<u64>,
     interactive: bool,
+    keyserver: KeyserverURL,
+    keyserver_options: KeyserverOptions,
     list_options: u32,
     list_sigs: bool,
+    lock_once: bool,
     marginals_needed: i64,
     max_cert_depth: i64,
     max_output: Option<u64>,
@@ -66,12 +71,14 @@ struct Config {
     no_encrypt_to: bool,
     no_homedir_creation: bool,
     no_perm_warn: bool,
+    not_dash_escaped: bool,
     outfile: Option<String>,
     passphrase: Option<String>,
     passphrase_repeat: i64,
     photo_viewer: Option<PathBuf>,
     pinentry_mode: PinentryMode,
     quiet: bool,
+    request_origin: RequestOrigin,
     rfc2440_text: bool,
     s2k_count: Option<i64>,
     s2k_mode: i64,
@@ -101,9 +108,10 @@ struct Config {
     with_wkd_hash: bool,
 
     // Streams.
-    status_fd: Box<dyn io::Write>,
     attribute_fd: Box<dyn io::Write>,
+    command_fd: Box<dyn io::Read>,
     logger_fd: Box<dyn io::Write>,
+    status_fd: Box<dyn io::Write>,
 }
 
 impl Default for Config {
@@ -131,9 +139,11 @@ impl Default for Config {
             def_secret_key: Default::default(),
             def_sig_expire: None,
             default_keyring: true,
+            dotlock_disable: false,
             dry_run: false,
             emit_version: 0,
             encrypt_to_default_key: 0, // XXX
+            escape_from: false,
             expert: false,
             fingerprint: 0,
             flags: Default::default(),
@@ -146,8 +156,11 @@ impl Default for Config {
             import_options: Default::default(),
             input_size_hint: None,
             interactive: false,
+            keyserver: Default::default(),
+            keyserver_options: Default::default(),
             list_options: Default::default(),
             list_sigs: false,
+            lock_once: false,
             marginals_needed: 0, // XXX
             max_cert_depth: 0, // XXX
             max_output: None,
@@ -157,12 +170,14 @@ impl Default for Config {
             no_encrypt_to: false,
             no_homedir_creation: false,
             no_perm_warn: false,
+            not_dash_escaped: false,
             outfile: None,
             passphrase: None,
             passphrase_repeat: 0, // XXX
             photo_viewer: None,
             pinentry_mode: Default::default(),
             quiet: false,
+            request_origin: Default::default(),
             rfc2440_text: false,
             s2k_count: None,
             s2k_mode: 3,
@@ -192,9 +207,10 @@ impl Default for Config {
             with_wkd_hash: false,
 
             // Streams.
-            status_fd: Box::new(io::sink()),
             attribute_fd: Box::new(io::sink()),
+            command_fd: Box::new(io::empty()),
             logger_fd: Box::new(io::sink()),
+            status_fd: Box::new(io::sink()),
         }
     }
 }
@@ -392,6 +408,55 @@ impl URL {
     }
 }
 
+#[derive(Clone)]
+struct KeyserverURL {
+    url: String,
+}
+
+impl Default for KeyserverURL {
+    fn default() -> Self {
+        "hkps://keys.openpgp.org".parse().unwrap()
+    }
+}
+
+impl std::str::FromStr for KeyserverURL {
+    type Err = anyhow::Error;
+
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        Ok(Self {
+            url: s.into(), // XXX: parsing
+        })
+    }
+}
+
+#[derive(Clone, Default)]
+struct KeyserverOptions {
+}
+
+impl std::str::FromStr for KeyserverOptions {
+    type Err = anyhow::Error;
+
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        Ok(Self {
+            // XXX
+        })
+    }
+}
+
+#[derive(Clone, Default)]
+struct RequestOrigin {
+}
+
+impl std::str::FromStr for RequestOrigin {
+    type Err = anyhow::Error;
+
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        Ok(Self {
+            // XXX
+        })
+    }
+}
+
 fn set_cmd(cmd: &mut Option<argparse::CmdOrOpt>, new_cmd: argparse::CmdOrOpt)
            -> anyhow::Result<()> {
     use argparse::CmdOrOpt::*;
@@ -482,12 +547,32 @@ struct Sender {
     config: bool,
 }
 
-fn parse_digest(_s: &str) -> Result<HashAlgorithm> {
-    unimplemented!("match gcry_md_map_name, [Hh]n notation")
+fn parse_digest(s: &str) -> Result<HashAlgorithm> {
+    let sl = s.to_lowercase();
+    if sl.starts_with('h') {
+        if let Ok(a) = sl[1..].parse::<u8>() {
+            return Ok(a.into());
+        }
+    }
+
+    match sl.as_str() {
+        "md5" => Ok(HashAlgorithm::MD5),
+        "sha1" => Ok(HashAlgorithm::SHA1),
+        "ripemd160" => Ok(HashAlgorithm::RipeMD),
+        "sha256" => Ok(HashAlgorithm::SHA256),
+        "sha384" => Ok(HashAlgorithm::SHA384),
+        "sha512" => Ok(HashAlgorithm::SHA512),
+        "sha224" => Ok(HashAlgorithm::SHA224),
+        _ => Err(anyhow::anyhow!("Unknown hash algorithm {:?}", s)),
+    }
 }
 
 fn parse_cipher(_s: &str) -> Result<SymmetricAlgorithm> {
     unimplemented!("match gcry_cipher_map_name, [Ss]n notation")
+}
+
+fn parse_compressor(_s: &str) -> Result<CompressionAlgorithm> {
+    unimplemented!("match string_to_compress_algo, [Zz]n notation")
 }
 
 fn parse_expiration(_s: &str) -> Result<time::Duration> {
@@ -534,6 +619,10 @@ fn real_main() -> anyhow::Result<()> {
     let mut local_user: Vec<Sender> = Vec::new();
     let mut any_explicit_recipient = false;
     let mut pwfd: Option<Box<dyn io::Read>> = None;
+    let mut def_digest: HashAlgorithm = Default::default();
+    let mut def_cipher: SymmetricAlgorithm = Default::default();
+    let mut compress_algo: CompressionAlgorithm = Default::default();
+    let mut cert_digest: HashAlgorithm = Default::default();
 
     // Second pass: check special options.
     for rarg in argparse::Source::parse_command_line() {
@@ -1235,6 +1324,61 @@ fn real_main() -> anyhow::Result<()> {
 
             oPinentryMode => {
 	        opt.pinentry_mode = value.as_str().unwrap().parse()?;
+	    },
+
+            oRequestOrigin => {
+	        opt.request_origin = value.as_str().unwrap().parse()?;
+	    },
+
+	    oCommandFD => {
+                opt.command_fd = source_from_fd(value.as_int().unwrap())?;
+            },
+	    oCommandFile => {
+                opt.command_fd = Box::new(fs::File::open(value.as_str().unwrap())?);
+            },
+	    oCipherAlgo => {
+                def_cipher = parse_cipher(value.as_str().unwrap())?;
+            },
+	    oDigestAlgo => {
+                def_digest = parse_digest(value.as_str().unwrap())?;
+            },
+	    oCompressAlgo => {
+		compress_algo = parse_compressor(value.as_str().unwrap())?;
+	    },
+	    oCertDigestAlgo => {
+                cert_digest = parse_digest(value.as_str().unwrap())?;
+            },
+
+	    oNoSecmemWarn => (),
+	    oRequireSecmem => (),
+	    oNoRequireSecmem => (),
+	    oNoPermissionWarn => {
+                opt.no_perm_warn = true;
+            },
+            oDisplayCharset => (),
+	    oNotDashEscaped => {
+                opt.not_dash_escaped = true;
+            },
+	    oEscapeFrom => {
+                opt.escape_from = true;
+            },
+	    oNoEscapeFrom => {
+                opt.escape_from = false;
+            },
+	    oLockOnce => {
+                opt.lock_once = true;
+            },
+	    oLockNever => {
+                opt.dotlock_disable = true;
+            },
+	    oLockMultiple => {
+	        opt.lock_once = false;
+            },
+	    oKeyServer => {
+                opt.keyserver = value.as_str().unwrap().parse()?;
+	    },
+	    oKeyServerOptions => {
+                opt.keyserver_options = value.as_str().unwrap().parse()?;
 	    },
 
             _ => (),
