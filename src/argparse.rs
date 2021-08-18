@@ -1009,7 +1009,7 @@ impl Source {
                             .map(|l| -> Box<dyn Iterator<Item = String>> {
                                 Box::new(l.splitn(2, |c: char| c.is_ascii_whitespace())
                                          .map(|w| if w.starts_with('"') && w.ends_with('"') {
-                                             w[1..w.len()-2].into()
+                                             w[1..w.len()-1].into()
                                          } else {
                                              w.into()
                                          })
