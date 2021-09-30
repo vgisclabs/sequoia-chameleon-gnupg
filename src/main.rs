@@ -443,17 +443,29 @@ impl std::str::FromStr for KeyserverOptions {
     }
 }
 
-#[derive(Clone, Default)]
-struct RequestOrigin {
+#[derive(Clone)]
+enum RequestOrigin {
+    Local,
+    Remote,
+    Browser,
+}
+
+impl Default for RequestOrigin {
+    fn default() -> Self {
+        RequestOrigin::Local
+    }
 }
 
 impl std::str::FromStr for RequestOrigin {
     type Err = anyhow::Error;
 
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
-        Ok(Self {
-            // XXX
-        })
+        match s.to_lowercase().as_str() {
+            "none" | "local" => Ok(RequestOrigin::Local),
+            "remote" => Ok(RequestOrigin::Remote),
+            "browser" => Ok(RequestOrigin::Browser),
+            _ => Err(anyhow::anyhow!("Invalid request origin {:?}", s)),
+        }
     }
 }
 
