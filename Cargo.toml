@@ -17,3 +17,7 @@ thiserror = "1"
 [[bin]]
 name = "sequoia-chameleon-gpg"
 path = "src/gpg.rs"
+
+[[bin]]
+name = "sequoia-chameleon-gpgv"
+path = "src/gpgv.rs"
