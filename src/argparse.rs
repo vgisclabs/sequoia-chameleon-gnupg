@@ -7,6 +7,7 @@ use std::{
 
 pub mod flags;
 use flags::*;
+pub mod utils;
 
 /// A command or option with long option, flags, and description.
 pub struct Opt<T> {

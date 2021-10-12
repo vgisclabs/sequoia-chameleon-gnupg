@@ -13,3 +13,7 @@ dirs = "3"
 libc = "0.2"
 sequoia-openpgp = "1.3"
 thiserror = "1"
+
+[[bin]]
+name = "sequoia-chameleon-gpg"
+path = "src/gpg.rs"
