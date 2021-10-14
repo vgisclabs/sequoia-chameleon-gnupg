@@ -1429,7 +1429,7 @@ fn real_main() -> anyhow::Result<()> {
         "gpg",
         "There is no default operation",
         &OPTIONS);
-    for rarg in parser.parse_command_line() {
+    for rarg in parser.parse_command_line().quietly() {
         let arg =
             rarg.context("Error parsing command-line arguments")?;
         match arg {
@@ -1472,7 +1472,7 @@ fn real_main() -> anyhow::Result<()> {
     let mut cert_digest: HashAlgorithm = Default::default();
 
     // Second pass: check special options.
-    for rarg in parser.parse_command_line() {
+    for rarg in parser.parse_command_line().quietly() {
         let argument =
             rarg.context("Error parsing command-line arguments")?;
         match argument {

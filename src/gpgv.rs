@@ -161,7 +161,7 @@ fn real_main() -> anyhow::Result<()> {
         "gpgv",
         "Check signatures against known trusted keys",
         &OPTIONS);
-    for rarg in parser.parse_command_line() {
+    for rarg in parser.parse_command_line().quietly() {
         let arg =
             rarg.context("Error parsing command-line arguments")?;
         match arg {

@@ -80,8 +80,7 @@ impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
     }
 
     /// Parses the command-line arguments.
-    pub fn parse_command_line(&self)
-                              -> impl Iterator<Item = Result<Argument<T>>>
+    pub fn parse_command_line(&self) -> Iter<T>
     {
         let mut args = std::env::args();
         args.next(); // swallow argv[0]
@@ -139,7 +138,7 @@ impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
     fn parse(&self,
              cmdline: bool,
              args: Box<dyn Iterator<Item = Box<dyn Iterator<Item = String>>>>)
-             -> impl Iterator<Item = Result<Argument<T>>>
+             -> Iter<T>
     {
         Iter {
             options: self.options,
@@ -148,6 +147,7 @@ impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
             current_short: None,
             cmdline,
             seen_positional: false,
+            quiet: false,
         }
     }
 
@@ -264,16 +264,26 @@ GNU General Public License for more details.");
     }
 }
 
-struct Iter<T: Copy + PartialEq + Eq + Into<isize> + 'static> {
+/// Iterator over the command line arguments.
+pub struct Iter<T: Copy + PartialEq + Eq + Into<isize> + 'static> {
     options: &'static [Opt<T>],
     line: Box<dyn Iterator<Item = Box<dyn Iterator<Item = String>>>>,
     current: Option<Box<dyn Iterator<Item = String>>>,
     current_short: Option<String>,
     cmdline: bool,
     seen_positional: bool,
+
+    // Whether to emit warnings on stderr.
+    quiet: bool,
 }
 
 impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Iter<T> {
+    /// Don't emit warnings on stderr.
+    pub fn quietly(mut self) -> Self {
+        self.quiet = true;
+        self
+    }
+
     fn maybe_get_value(&mut self, opt: &Opt<T>) -> Result<Argument<T>> {
         let typ = flags_type(opt.flags);
         if typ == TYPE_NONE {
@@ -355,7 +365,7 @@ impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Iterator for Iter<T> {
             assert!(self.cmdline);
             if let Some(c) = self.current.as_mut() {
                 if let Some(arg) = c.next() {
-                    if arg != "-" && arg.starts_with('-') {
+                    if arg != "-" && arg.starts_with('-') && ! self.quiet {
                         eprintln!("gpg: Note: {:?} is not considered an option",
                                   arg);
                     }
