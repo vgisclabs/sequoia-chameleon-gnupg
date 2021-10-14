@@ -18,6 +18,7 @@ mod macros;
 #[allow(dead_code)]
 mod argparse;
 use argparse::{Opt, flags::*};
+mod keydb;
 
 /// Commands and options.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -242,6 +243,17 @@ fn real_main() -> anyhow::Result<()> {
                 | aDumpOpttbl => unreachable!("handled above"),
             o300 | o301 => unreachable!("not a real option"),
         }
+    }
+
+    let mut keydb = keydb::KeyDB::for_gpgv();
+
+    // Get the default one if no keyring has been specified.
+    if keyrings.is_empty() {
+        keydb.add_resource(&opt.homedir, "trustedkeys.kbx", true, true)?;
+    }
+
+    for path in keyrings {
+        keydb.add_resource(&opt.homedir, path, true, false)?;
     }
 
 
