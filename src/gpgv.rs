@@ -17,7 +17,7 @@ use openpgp::{
 mod macros;
 #[allow(dead_code)]
 mod argparse;
-use argparse::{Opt, flags::*};
+use argparse::{Argument, Opt, flags::*};
 mod keydb;
 
 /// Commands and options.
@@ -162,86 +162,96 @@ fn real_main() -> anyhow::Result<()> {
         "Check signatures against known trusted keys",
         &OPTIONS);
     for rarg in parser.parse_command_line() {
-        let (cmd, _value) =
+        let arg =
             rarg.context("Error parsing command-line arguments")?;
-        match cmd {
-            CmdOrOpt::aHelp => return Ok(parser.help()),
-            CmdOrOpt::aVersion => return Ok(parser.version()),
-            CmdOrOpt::aWarranty => return Ok(parser.warranty()),
-            CmdOrOpt::aDumpOptions => return Ok(parser.dump_options()),
-            CmdOrOpt::aDumpOpttbl => return Ok(parser.dump_options_table()),
+        match arg {
+            Argument::Option(aHelp, _) =>
+                return Ok(parser.help()),
+            Argument::Option(aVersion, _) =>
+                return Ok(parser.version()),
+            Argument::Option(aWarranty, _) =>
+                return Ok(parser.warranty()),
+            Argument::Option(aDumpOptions, _) =>
+                return Ok(parser.dump_options()),
+            Argument::Option(aDumpOpttbl, _) =>
+                return Ok(parser.dump_options_table()),
             _ => (),
         }
     }
 
     let mut opt = Config::default();
+    let mut args = Vec::new();
     let mut keyrings = Vec::<String>::new();
 
     // Parse the command line again.
     for rarg in parser.parse_command_line()
     {
-        let (cmd, value) =
+        let argument =
             rarg.context("Error parsing command-line arguments")?;
 
-        use CmdOrOpt::*;
-        match cmd {
-	    oQuiet => {
+        match argument {
+	    Argument::Option(oQuiet, _) => {
                 opt.quiet = true;
             },
 
-	    oVerbose => {
+	    Argument::Option(oVerbose, _) => {
 	        opt.verbose += 1;
                 opt.list_sigs = true;
 	    },
 
-	    oDebug => {
+	    Argument::Option(oDebug, _) => {
                 // XXX:
                 //parse_debug_flag (value.as_str().unwrap(), &opt.debug, debug_flags))?;
             },
 
-	    oKeyring => {
+	    Argument::Option(oKeyring, value) => {
                 keyrings.push(value.as_str().unwrap().into());
             },
 
-	    oOutput => {
+	    Argument::Option(oOutput, value) => {
                 opt.outfile = Some(value.as_str().unwrap().into());
             },
 
-	    oStatusFD => {
+	    Argument::Option(oStatusFD, value) => {
                 opt.status_fd = sink_from_fd(value.as_int().unwrap())?;
             },
 
-	    oLoggerFD => {
+	    Argument::Option(oLoggerFD, value) => {
                 opt.logger_fd = sink_from_fd(value.as_int().unwrap())?;
             },
-            oLoggerFile => {
+            Argument::Option(oLoggerFile, value) => {
                 opt.logger_fd =
                     Box::new(fs::File::create(value.as_str().unwrap())?);
             },
 
-            oHomedir => {
+            Argument::Option(oHomedir, value) => {
                 opt.homedir = value.as_str().unwrap().into();
             },
 
-	    oWeakDigest => {
+	    Argument::Option(oWeakDigest, value) => {
                 opt.weak_digest.insert(
                     argparse::utils::parse_digest(value.as_str().unwrap())?);
             },
 
-            oIgnoreTimeConflict => {
+            Argument::Option(oIgnoreTimeConflict, _) => {
                 opt.ignore_time_conflict = true;
             },
 
-            oEnableSpecialFilenames => {
+            Argument::Option(oEnableSpecialFilenames, _) => {
                 opt.enable_special_filenames = true;
             },
 
-            aHelp
-                | aVersion
-                | aWarranty
-                | aDumpOptions
-                | aDumpOpttbl => unreachable!("handled above"),
-            o300 | o301 => unreachable!("not a real option"),
+            Argument::Option(aHelp, _)
+                | Argument::Option(aVersion, _)
+                | Argument::Option(aWarranty, _)
+                | Argument::Option(aDumpOptions, _)
+                | Argument::Option(aDumpOpttbl, _) =>
+                unreachable!("handled above"),
+            Argument::Option(o300, _)
+                | Argument::Option(o301, _)
+                => unreachable!("not a real option"),
+
+            Argument::Positional(a) => args.push(a),
         }
     }
 

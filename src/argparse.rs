@@ -17,6 +17,11 @@ pub struct Opt<T> {
     pub description: &'static str,
 }
 
+pub enum Argument<T> {
+    Option(T, Value),
+    Positional(String),
+}
+
 /// Some arguments take a value.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Value {
@@ -75,7 +80,8 @@ impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
     }
 
     /// Parses the command-line arguments.
-    pub fn parse_command_line(&self) -> impl Iterator<Item = Result<(T, Value)>>
+    pub fn parse_command_line(&self)
+                              -> impl Iterator<Item = Result<Argument<T>>>
     {
         let mut args = std::env::args();
         args.next(); // swallow argv[0]
@@ -91,7 +97,7 @@ impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
     ///
     /// If the file does not exist, an empty iterator is returned.
     pub fn try_parse_file<P>(&self, path: P)
-                             -> io::Result<Box<dyn Iterator<Item = Result<(T, Value)>>>>
+                             -> io::Result<Box<dyn Iterator<Item = Result<Argument<T>>>>>
     where
         P: AsRef<Path>,
     {
@@ -133,7 +139,7 @@ impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
     fn parse(&self,
              cmdline: bool,
              args: Box<dyn Iterator<Item = Box<dyn Iterator<Item = String>>>>)
-             -> impl Iterator<Item = Result<(T, Value)>>
+             -> impl Iterator<Item = Result<Argument<T>>>
     {
         Iter {
             options: self.options,
@@ -141,6 +147,7 @@ impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
             current: None,
             current_short: None,
             cmdline,
+            seen_positional: false,
         }
     }
 
@@ -263,13 +270,14 @@ struct Iter<T: Copy + PartialEq + Eq + Into<isize> + 'static> {
     current: Option<Box<dyn Iterator<Item = String>>>,
     current_short: Option<String>,
     cmdline: bool,
+    seen_positional: bool,
 }
 
 impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Iter<T> {
-    fn maybe_get_value(&mut self, opt: &Opt<T>) -> Result<(T, Value)> {
+    fn maybe_get_value(&mut self, opt: &Opt<T>) -> Result<Argument<T>> {
         let typ = flags_type(opt.flags);
         if typ == TYPE_NONE {
-            return Ok((opt.short_opt, Value::None));
+            return Ok(Argument::Option(opt.short_opt, Value::None));
         }
 
         let value = match self.current_short.take()
@@ -277,7 +285,7 @@ impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Iter<T> {
         {
             Some(v) => v,
             None if opt.flags & OPT_OPTIONAL > 0 =>
-                return Ok((opt.short_opt, Value::None)),
+                return Ok(Argument::Option(opt.short_opt, Value::None)),
             None =>
                 return Err(Error::Missing(opt.long_opt.into())),
         };
@@ -294,25 +302,26 @@ impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Iter<T> {
         match typ {
             TYPE_NONE => unreachable!("handled above"),
             TYPE_INT | TYPE_LONG => match i64::from_str_radix(value, radix) {
-                Ok(v) => Ok((opt.short_opt, Value::Int(v))),
+                Ok(v) => Ok(Argument::Option(opt.short_opt, Value::Int(v))),
                 Err(_) => Err(Error::BadValue(opt.long_opt.into(),
                                               "integer",
                                               value.into())),
             },
             TYPE_ULONG => match u64::from_str_radix(value, radix) {
-                Ok(v) => Ok((opt.short_opt, Value::UInt(v))),
+                Ok(v) => Ok(Argument::Option(opt.short_opt, Value::UInt(v))),
                 Err(_) => Err(Error::BadValue(opt.long_opt.into(),
                                               "unsigned integer",
                                               value.into())),
             },
-            TYPE_STRING => Ok((opt.short_opt, Value::String(value.into()))),
+            TYPE_STRING =>
+                Ok(Argument::Option(opt.short_opt, Value::String(value.into()))),
             n => unreachable!("bad type {}", n),
         }
     }
 }
 
 impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Iterator for Iter<T> {
-    type Item = Result<(T, Value)>;
+    type Item = Result<Argument<T>>;
 
     fn next(&mut self) -> Option<Self::Item> {
         // Handle leftover short options.
@@ -340,6 +349,27 @@ impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Iterator for Iter<T> {
             return Some(self.maybe_get_value(m));
         }
 
+        // Once we saw a positional argument, all remaining arguments
+        // are positional.
+        if self.seen_positional {
+            assert!(self.cmdline);
+            if let Some(c) = self.current.as_mut() {
+                if let Some(arg) = c.next() {
+                    if arg != "-" && arg.starts_with('-') {
+                        eprintln!("gpg: Note: {:?} is not considered an option",
+                                  arg);
+                    }
+                    return Some(Ok(Argument::Positional(arg)));
+                } else {
+                    // We're done.
+                    return None;
+                }
+            } else {
+                // We're done.
+                return None;
+            }
+        }
+
         if self.current.is_none() {
             self.current = self.line.next();
         }
@@ -363,7 +393,9 @@ impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Iterator for Iter<T> {
 
         let (long, a) = if self.cmdline {
             if ! arg.starts_with("-") {
-                return Some(Err(Error::Malformed(arg.into())));
+                // A positional argument.
+                self.seen_positional = true;
+                return Some(Ok(Argument::Positional(arg.into())));
             }
 
             if arg.starts_with("--") {

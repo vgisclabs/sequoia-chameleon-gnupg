@@ -17,7 +17,7 @@ use openpgp::{
 mod macros;
 #[allow(dead_code)]
 mod argparse;
-use argparse::{Opt, flags::*};
+use argparse::{Argument, Opt, flags::*};
 #[allow(dead_code)]
 mod flags;
 use flags::*;
@@ -1430,14 +1430,19 @@ fn real_main() -> anyhow::Result<()> {
         "There is no default operation",
         &OPTIONS);
     for rarg in parser.parse_command_line() {
-        let (cmd, _value) =
+        let arg =
             rarg.context("Error parsing command-line arguments")?;
-        match cmd {
-            CmdOrOpt::aHelp => return Ok(parser.help()),
-            CmdOrOpt::aVersion => return Ok(parser.version()),
-            CmdOrOpt::aWarranty => return Ok(parser.warranty()),
-            CmdOrOpt::aDumpOptions => return Ok(parser.dump_options()),
-            CmdOrOpt::aDumpOpttbl => return Ok(parser.dump_options_table()),
+        match arg {
+            Argument::Option(aHelp, _) =>
+                return Ok(parser.help()),
+            Argument::Option(aVersion, _) =>
+                return Ok(parser.version()),
+            Argument::Option(aWarranty, _) =>
+                return Ok(parser.warranty()),
+            Argument::Option(aDumpOptions, _) =>
+                return Ok(parser.dump_options()),
+            Argument::Option(aDumpOpttbl, _) =>
+                return Ok(parser.dump_options_table()),
             _ => (),
         }
     }
@@ -1468,13 +1473,13 @@ fn real_main() -> anyhow::Result<()> {
 
     // Second pass: check special options.
     for rarg in parser.parse_command_line() {
-        let (cmd, value) =
+        let argument =
             rarg.context("Error parsing command-line arguments")?;
-        match cmd {
-            CmdOrOpt::oNoOptions => opt.no_homedir_creation = true,
-            CmdOrOpt::oHomedir =>
+        match argument {
+            Argument::Option(oNoOptions, _) => opt.no_homedir_creation = true,
+            Argument::Option(oHomedir, value) =>
                 opt.homedir = value.as_str().unwrap().into(),
-            CmdOrOpt::oNoPermissionWarn => opt.no_perm_warn = true,
+            Argument::Option(oNoPermissionWarn, _) => opt.no_perm_warn = true,
             _ => (),
         }
     }
@@ -1489,8 +1494,13 @@ fn real_main() -> anyhow::Result<()> {
         .chain(parser.parse_command_line()
                .map(|rarg| (None, rarg)))
     {
-        let (cmd, value) =
+        let argument =
             rarg.context("Error parsing command-line arguments")?;
+
+        let (cmd, value) = match argument {
+            Argument::Option(cmd, value) => (cmd, value),
+            Argument::Positional(arg) => unimplemented!(),
+        };
         eprintln!("{:?} {:?}", cmd, value);
 
         use CmdOrOpt::*;
