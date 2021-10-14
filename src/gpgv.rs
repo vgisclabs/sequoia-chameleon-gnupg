@@ -27,6 +27,7 @@ pub enum CmdOrOpt {
     oVerbose      = 'v' as isize,
     oOutput       = 'o' as isize,
     o300 = 300,
+    o301,
     oKeyring,
     oIgnoreTimeConflict,
     oStatusFD,
@@ -74,6 +75,8 @@ const OPTIONS: &[Opt<CmdOrOpt>] = &[
     Opt { short_opt: aWarranty, long_opt: "warranty", flags: (TYPE_NONE | OPT_COMMAND), description: "@", },
     Opt { short_opt: aDumpOptions, long_opt: "dump-options", flags: (TYPE_NONE | OPT_COMMAND), description: "@", },
     Opt { short_opt: aDumpOpttbl, long_opt: "dump-option-table", flags: (TYPE_NONE | OPT_COMMAND), description: "@", },
+
+    Opt { short_opt: o301, long_opt: "", flags: 0, description: "@\n", },
 ];
 
 struct Config {
@@ -237,7 +240,7 @@ fn real_main() -> anyhow::Result<()> {
                 | aWarranty
                 | aDumpOptions
                 | aDumpOpttbl => unreachable!("handled above"),
-            o300 => unreachable!("not a real option"),
+            o300 | o301 => unreachable!("not a real option"),
         }
     }
 

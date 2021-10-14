@@ -172,7 +172,10 @@ impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
                 continue;
             }
 
-            if o.description.starts_with("@") {
+            if o.description == "@\n" {
+                // Empty line.
+                println!();
+            } else if o.description.starts_with("@") {
                 // Caption.
                 println!("{}", &o.description[1..]);
             } else {
