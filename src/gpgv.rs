@@ -153,7 +153,10 @@ fn source_from_fd(fd: i64) -> Result<Box<dyn io::Read>> {
 }
 
 fn real_main() -> anyhow::Result<()> {
-    let parser = argparse::Parser::new("gpgv", &OPTIONS);
+    let parser = argparse::Parser::new(
+        "gpgv",
+        "Check signatures against known trusted keys",
+        &OPTIONS);
     for rarg in parser.parse_command_line() {
         let (cmd, _value) =
             rarg.context("Error parsing command-line arguments")?;

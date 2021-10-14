@@ -1425,7 +1425,10 @@ struct Sender {
 }
 
 fn real_main() -> anyhow::Result<()> {
-    let parser = argparse::Parser::new("gpg", &OPTIONS);
+    let parser = argparse::Parser::new(
+        "gpg",
+        "There is no default operation",
+        &OPTIONS);
     for rarg in parser.parse_command_line() {
         let (cmd, _value) =
             rarg.context("Error parsing command-line arguments")?;

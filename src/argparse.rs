@@ -58,14 +58,18 @@ impl Value {
 /// Arguments can be read from the command line or a file.
 pub struct Parser<T: Copy + PartialEq + Eq + Into<isize> + 'static> {
     name: &'static str,
+    synopsis: &'static str,
     options: &'static [Opt<T>],
 }
 
 impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
     /// Creates a new parser for the given options.
-    pub fn new(name: &'static str, options: &'static [Opt<T>]) -> Parser<T> {
+    pub fn new(name: &'static str,
+               synopsis: &'static str,
+               options: &'static [Opt<T>]) -> Parser<T> {
         Parser {
             name,
+            synopsis,
             options,
         }
     }
@@ -159,7 +163,7 @@ impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
         self.version();
         println!();
         println!("Syntax: {} [options] [files]", self.name);
-        println!("There is no default operation");
+        println!("{}", self.synopsis);
         println!();
 
         for o in self.options {
