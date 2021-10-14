@@ -17,6 +17,7 @@ pub struct Opt<T> {
     pub description: &'static str,
 }
 
+#[derive(Debug, PartialEq, Eq)]
 pub enum Argument<T> {
     Option(T, Value),
     Positional(String),
@@ -89,6 +90,19 @@ impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
             true,
             Box::new(std::iter::once(
                 Box::new(args.map(|arg| arg.to_string()))
+                    as Box<dyn Iterator<Item = _>>)))
+    }
+
+    /// Parses the given arguments.
+    #[cfg(test)]
+    pub fn parse_args(&self,
+                      args: impl IntoIterator<Item = &'static str> + 'static)
+                      -> Iter<T>
+    {
+        self.parse(
+            true,
+            Box::new(std::iter::once(
+                Box::new(args.into_iter().map(|arg| arg.to_string()))
                     as Box<dyn Iterator<Item = _>>)))
     }
 
@@ -523,3 +537,145 @@ pub enum Error {
 
 /// Result specialization.
 pub type Result<T> = std::result::Result<T, Error>;
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn basics() -> Result<()> {
+        #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+        #[allow(non_camel_case_types)]
+        pub enum CmdOrOpt {
+            oQuiet        = 'q' as isize,
+            oOutput       = 'o' as isize,
+            o300 = 300,
+            o301,
+            oStatusFD,
+        }
+
+        impl From<CmdOrOpt> for isize {
+            fn from(c: CmdOrOpt) -> isize {
+                c as isize
+            }
+        }
+
+        use CmdOrOpt::*;
+        const OPTIONS: &[Opt<CmdOrOpt>] = &[
+            Opt { short_opt: o300, long_opt: "", flags: 0, description: "@\nOptions:\n", },
+            Opt { short_opt: oQuiet, long_opt: "quiet", flags: TYPE_NONE, description: "be somewhat more quiet", },
+            Opt { short_opt: oOutput, long_opt: "output", flags: TYPE_STRING, description: "|FILE|write output to FILE", },
+            Opt { short_opt: oStatusFD, long_opt: "status-fd", flags: TYPE_INT, description: "|FD|write status info to this FD", },
+            Opt { short_opt: o301, long_opt: "", flags: 0, description: "@\n", },
+        ];
+
+        let parser = Parser::new("foo", "does foo", &OPTIONS);
+
+        let mut i = parser.parse_args(vec!["-q"]);
+        assert_eq!(i.next().unwrap().unwrap(),
+                   Argument::Option(oQuiet, Value::None));
+        assert!(i.next().is_none());
+
+        let mut i = parser.parse_args(vec!["--quiet"]);
+        assert_eq!(i.next().unwrap().unwrap(),
+                   Argument::Option(oQuiet, Value::None));
+        assert!(i.next().is_none());
+
+        let mut i = parser.parse_args(vec!["-q", "-q"]);
+        assert_eq!(i.next().unwrap().unwrap(),
+                   Argument::Option(oQuiet, Value::None));
+        assert_eq!(i.next().unwrap().unwrap(),
+                   Argument::Option(oQuiet, Value::None));
+        assert!(i.next().is_none());
+
+        let mut i = parser.parse_args(vec!["-o"]);
+        assert!(i.next().unwrap().is_err());
+        assert!(i.next().is_none());
+
+        let mut i = parser.parse_args(vec!["--output"]);
+        assert!(i.next().unwrap().is_err());
+        assert!(i.next().is_none());
+
+        let mut i = parser.parse_args(vec!["-o", "foo"]);
+        assert_eq!(i.next().unwrap().unwrap(),
+                   Argument::Option(oOutput, Value::String("foo".into())));
+        assert!(i.next().is_none());
+
+        let mut i = parser.parse_args(vec!["-ofoo"]);
+        assert_eq!(i.next().unwrap().unwrap(),
+                   Argument::Option(oOutput, Value::String("foo".into())));
+        assert!(i.next().is_none());
+
+        let mut i = parser.parse_args(vec!["--output", "foo"]);
+        assert_eq!(i.next().unwrap().unwrap(),
+                   Argument::Option(oOutput, Value::String("foo".into())));
+        assert!(i.next().is_none());
+
+        let mut i = parser.parse_args(vec!["-qo", "foo"]);
+        assert_eq!(i.next().unwrap().unwrap(),
+                   Argument::Option(oQuiet, Value::None));
+        assert_eq!(i.next().unwrap().unwrap(),
+                   Argument::Option(oOutput, Value::String("foo".into())));
+        assert!(i.next().is_none());
+
+        let mut i = parser.parse_args(vec!["-qofoo"]);
+        assert_eq!(i.next().unwrap().unwrap(),
+                   Argument::Option(oQuiet, Value::None));
+        assert_eq!(i.next().unwrap().unwrap(),
+                   Argument::Option(oOutput, Value::String("foo".into())));
+        assert!(i.next().is_none());
+
+        let mut i = parser.parse_args(vec!["--status-fd"]);
+        assert!(i.next().unwrap().is_err());
+        assert!(i.next().is_none());
+
+        let mut i = parser.parse_args(vec!["--status-fd", "drei"]);
+        assert!(i.next().unwrap().is_err());
+        assert!(i.next().is_none());
+
+        let mut i = parser.parse_args(vec!["--status-fd", "3"]);
+        assert_eq!(i.next().unwrap().unwrap(),
+                   Argument::Option(oStatusFD, Value::Int(3)));
+        assert!(i.next().is_none());
+
+        let mut i = parser.parse_args(vec!["--status-fd=3"]);
+        assert_eq!(i.next().unwrap().unwrap(),
+                   Argument::Option(oStatusFD, Value::Int(3)));
+        assert!(i.next().is_none());
+
+        let mut i = parser.parse_args(vec!["foo"]);
+        assert_eq!(i.next().unwrap().unwrap(),
+                   Argument::Positional("foo".into()));
+        assert!(i.next().is_none());
+
+        let mut i = parser.parse_args(vec!["--quiet", "foo"]);
+        assert_eq!(i.next().unwrap().unwrap(),
+                   Argument::Option(oQuiet, Value::None));
+        assert_eq!(i.next().unwrap().unwrap(),
+                   Argument::Positional("foo".into()));
+        assert!(i.next().is_none());
+
+        let mut i = parser.parse_args(vec!["--quiet", "foo", "-q"]);
+        assert_eq!(i.next().unwrap().unwrap(),
+                   Argument::Option(oQuiet, Value::None));
+        assert_eq!(i.next().unwrap().unwrap(),
+                   Argument::Positional("foo".into()));
+        assert_eq!(i.next().unwrap().unwrap(),
+                   Argument::Positional("-q".into()));
+        assert!(i.next().is_none());
+
+        let mut i =
+            parser.parse_args(vec!["--quiet", "foo", "-q", "--status-fd"]);
+        assert_eq!(i.next().unwrap().unwrap(),
+                   Argument::Option(oQuiet, Value::None));
+        assert_eq!(i.next().unwrap().unwrap(),
+                   Argument::Positional("foo".into()));
+        assert_eq!(i.next().unwrap().unwrap(),
+                   Argument::Positional("-q".into()));
+        assert_eq!(i.next().unwrap().unwrap(),
+                   Argument::Positional("--status-fd".into()));
+        assert!(i.next().is_none());
+
+        Ok(())
+    }
+}
