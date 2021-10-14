@@ -401,7 +401,7 @@ impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Iterator for Iter<T> {
             },
         };
 
-        let (long, a) = if self.cmdline {
+        let (long, mut a) = if self.cmdline {
             if ! arg.starts_with("-") {
                 // A positional argument.
                 self.seen_positional = true;
@@ -421,10 +421,15 @@ impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Iterator for Iter<T> {
         };
 
         let m = if long {
+            // See if we have a value in this argument.
+            let mut split = a.splitn(2, "=");
+            a = split.next().unwrap();
+            let value = split.next();
+
             let matches = self.options.iter().filter(|o| o.long_opt.starts_with(a))
                 .collect::<Vec<_>>();
 
-            match matches.len() {
+            let matched = match matches.len() {
                 0 => return Some(Err(Error::Unkown(a.into()))),
                 1 => matches[0],
                 n => {
@@ -454,7 +459,27 @@ impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Iterator for Iter<T> {
                         return Some(Err(Error::Ambiguous(a.into(), also)))
                     }
                 },
+            };
+
+            if let Some(value) = value {
+                if flags_type(matched.flags) != TYPE_NONE {
+                    // This long argument takes a value.  If we have a
+                    // value from this very argument (--foo=value), stash
+                    // that into `current_short` for `maybe_get_value` to
+                    // find.
+                    self.current_short = Some(value.into());
+                } else {
+                    // This argument does not take a value, but the GnuPG
+                    // argument parser silently ignores that.
+                    if ! self.quiet {
+                        eprintln!("gpg: Note: Ignoring value {:?} \
+                                   for option \"--{}\"",
+                                  value, a);
+                    }
+                }
             }
+
+            matched
         } else {
             let mut chars = a.chars();
             let a0 = match chars.next() {
