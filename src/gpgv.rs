@@ -3,7 +3,7 @@ use std::{
     convert::TryInto,
     fs,
     io,
-    path::PathBuf,
+    path::{Path, PathBuf},
 };
 
 use anyhow::{Context, Result};
@@ -11,6 +11,7 @@ use anyhow::{Context, Result};
 use sequoia_openpgp as openpgp;
 use openpgp::{
     types::*,
+    policy::{Policy, StandardPolicy},
 };
 
 #[macro_use]
@@ -18,6 +19,7 @@ mod macros;
 #[allow(dead_code)]
 mod argparse;
 use argparse::{Argument, Opt, flags::*};
+mod control;
 mod keydb;
 
 /// Commands and options.
@@ -86,6 +88,7 @@ struct Config {
     enable_special_filenames: bool,
     homedir: PathBuf,
     ignore_time_conflict: bool,
+    keydb: keydb::KeyDB,
     list_sigs: bool,
     outfile: Option<String>,
     quiet: bool,
@@ -97,6 +100,8 @@ struct Config {
     logger_fd: Box<dyn io::Write>,
     status_fd: Box<dyn io::Write>,
 }
+
+const POLICY: &dyn Policy = &StandardPolicy::new();
 
 impl Default for Config {
     fn default() -> Self {
@@ -110,6 +115,7 @@ impl Default for Config {
                                 .expect("cannot get user's home directory")
                                 .join(".gnupg")),
             ignore_time_conflict: false,
+            keydb: keydb::KeyDB::for_gpgv(),
             list_sigs: false,
             outfile: None,
             quiet: false,
@@ -121,6 +127,48 @@ impl Default for Config {
             logger_fd: Box::new(io::sink()),
             status_fd: Box::new(io::sink()),
         }
+    }
+}
+
+impl control::Common for Config {
+    fn debug(&self) -> u32 {
+        self.debug
+    }
+
+    fn homedir(&self) -> &Path {
+        &self.homedir
+    }
+
+    fn keydb(&self) -> &keydb::KeyDB {
+        &self.keydb
+    }
+
+    fn outfile(&self) -> Option<&String> {
+        self.outfile.as_ref()
+    }
+
+    fn policy(&self) -> &dyn Policy {
+        POLICY
+    }
+
+    fn quiet(&self) -> bool {
+        self.quiet
+    }
+
+    fn verbose(&self) -> usize {
+        self.verbose
+    }
+
+    fn special_filenames(&self) -> bool {
+        self.enable_special_filenames
+    }
+
+    fn logger(&mut self) -> &mut dyn io::Write {
+        &mut self.logger_fd
+    }
+
+    fn status(&mut self) -> &mut dyn io::Write {
+        &mut self.status_fd
     }
 }
 
@@ -255,15 +303,13 @@ fn real_main() -> anyhow::Result<()> {
         }
     }
 
-    let mut keydb = keydb::KeyDB::for_gpgv();
-
     // Get the default one if no keyring has been specified.
     if keyrings.is_empty() {
-        keydb.add_resource(&opt.homedir, "trustedkeys.kbx", true, true)?;
+        opt.keydb.add_resource(&opt.homedir, "trustedkeys.kbx", true, true)?;
     }
 
     for path in keyrings {
-        keydb.add_resource(&opt.homedir, path, true, false)?;
+        opt.keydb.add_resource(&opt.homedir, path, true, false)?;
     }
 
 
