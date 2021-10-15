@@ -1,12 +1,11 @@
 use std::{
     collections::HashSet,
-    convert::TryInto,
     fs,
     io,
     path::{Path, PathBuf},
 };
 
-use anyhow::{Context, Result};
+use anyhow::Context;
 
 use sequoia_openpgp as openpgp;
 use openpgp::{
@@ -21,6 +20,7 @@ mod argparse;
 use argparse::{Argument, Opt, flags::*};
 mod control;
 mod keydb;
+mod utils;
 
 /// Commands and options.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -172,38 +172,6 @@ impl control::Common for Config {
     }
 }
 
-fn sink_from_fd(fd: i64) -> Result<Box<dyn io::Write>> {
-    platform! {
-        unix => {
-            use std::os::unix::io::FromRawFd;
-            let fd = fd.try_into().context(
-                format!("Not a valid file descriptor: {}", fd))?;
-            Ok(Box::new(unsafe {
-                fs::File::from_raw_fd(fd)
-            }))
-        },
-        windows => {
-            unimplemented!()
-        },
-    }
-}
-
-fn source_from_fd(fd: i64) -> Result<Box<dyn io::Read>> {
-    platform! {
-        unix => {
-            use std::os::unix::io::FromRawFd;
-            let fd = fd.try_into().context(
-                format!("Not a valid file descriptor: {}", fd))?;
-            Ok(Box::new(unsafe {
-                fs::File::from_raw_fd(fd)
-            }))
-        },
-        windows => {
-            unimplemented!()
-        },
-    }
-}
-
 fn real_main() -> anyhow::Result<()> {
     let parser = argparse::Parser::new(
         "gpgv",
@@ -261,11 +229,11 @@ fn real_main() -> anyhow::Result<()> {
             },
 
 	    Argument::Option(oStatusFD, value) => {
-                opt.status_fd = sink_from_fd(value.as_int().unwrap())?;
+                opt.status_fd = utils::sink_from_fd(value.as_int().unwrap())?;
             },
 
 	    Argument::Option(oLoggerFD, value) => {
-                opt.logger_fd = sink_from_fd(value.as_int().unwrap())?;
+                opt.logger_fd = utils::sink_from_fd(value.as_int().unwrap())?;
             },
             Argument::Option(oLoggerFile, value) => {
                 opt.logger_fd =

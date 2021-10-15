@@ -18,9 +18,12 @@ mod macros;
 #[allow(dead_code)]
 mod argparse;
 use argparse::{Argument, Opt, flags::*};
+mod control;
+mod keydb;
 #[allow(dead_code)]
 mod flags;
 use flags::*;
+mod utils;
 
 /// Commands and options.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -1374,38 +1377,6 @@ fn deprecated_warning(s: &str, repl1: &str, repl2: &str) {
               s, repl1, repl2);
 }
 
-fn sink_from_fd(fd: i64) -> Result<Box<dyn io::Write>> {
-    platform! {
-        unix => {
-            use std::os::unix::io::FromRawFd;
-            let fd = fd.try_into().context(
-                format!("Not a valid file descriptor: {}", fd))?;
-            Ok(Box::new(unsafe {
-                fs::File::from_raw_fd(fd)
-            }))
-        },
-        windows => {
-            unimplemented!()
-        },
-    }
-}
-
-fn source_from_fd(fd: i64) -> Result<Box<dyn io::Read>> {
-    platform! {
-        unix => {
-            use std::os::unix::io::FromRawFd;
-            let fd = fd.try_into().context(
-                format!("Not a valid file descriptor: {}", fd))?;
-            Ok(Box::new(unsafe {
-                fs::File::from_raw_fd(fd)
-            }))
-        },
-        windows => {
-            unimplemented!()
-        },
-    }
-}
-
 enum Keyring {
     Primary(PathBuf),
     Secondary(PathBuf),
@@ -1737,21 +1708,21 @@ fn real_main() -> anyhow::Result<()> {
             },
 
 	    oStatusFD => {
-                opt.status_fd = sink_from_fd(value.as_int().unwrap())?;
+                opt.status_fd = utils::sink_from_fd(value.as_int().unwrap())?;
             },
 	    oStatusFile => {
                 opt.status_fd =
                     Box::new(fs::File::create(value.as_str().unwrap())?);
             },
 	    oAttributeFD => {
-                opt.attribute_fd = sink_from_fd(value.as_int().unwrap())?;
+                opt.attribute_fd = utils::sink_from_fd(value.as_int().unwrap())?;
             },
 	    oAttributeFile => {
                 opt.attribute_fd =
                     Box::new(fs::File::create(value.as_str().unwrap())?);
             },
 	    oLoggerFD => {
-                opt.logger_fd = sink_from_fd(value.as_int().unwrap())?;
+                opt.logger_fd = utils::sink_from_fd(value.as_int().unwrap())?;
             },
             oLoggerFile => {
                 // XXX: Why is this different from opt.logger_fd??
@@ -2170,7 +2141,7 @@ fn real_main() -> anyhow::Result<()> {
                 opt.passphrase = value.as_str().map(Into::into);
 	    },
 	    oPassphraseFD => {
-                pwfd = Some(source_from_fd(value.as_int().unwrap())?);
+                pwfd = Some(utils::source_from_fd(value.as_int().unwrap())?);
             },
 	    oPassphraseFile => {
                 pwfd = Some(Box::new(fs::File::open(value.as_str().unwrap())?));
@@ -2188,7 +2159,7 @@ fn real_main() -> anyhow::Result<()> {
 	    },
 
 	    oCommandFD => {
-                opt.command_fd = source_from_fd(value.as_int().unwrap())?;
+                opt.command_fd = utils::source_from_fd(value.as_int().unwrap())?;
             },
 	    oCommandFile => {
                 opt.command_fd = Box::new(fs::File::open(value.as_str().unwrap())?);
