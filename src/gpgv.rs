@@ -21,6 +21,7 @@ use argparse::{Argument, Opt, flags::*};
 mod control;
 mod keydb;
 mod utils;
+mod verify;
 
 /// Commands and options.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -281,6 +282,8 @@ fn real_main() -> anyhow::Result<()> {
     }
 
     opt.keydb.initialize()?;
+
+    verify::cmd_verify(&opt, &args)?;
 
     Ok(())
 }
