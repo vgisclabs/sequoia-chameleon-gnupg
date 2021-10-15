@@ -1,24 +1,36 @@
 //! Manages keyrings and keyboxes.
 
 use std::{
+    collections::HashMap,
     fs,
     io::Read,
     path::{Path, PathBuf},
+    rc::Rc,
 };
 
-use anyhow::{anyhow, Result};
+use anyhow::{anyhow, Context, Result};
 use home_dir::HomeDirExt;
 
 use sequoia_openpgp as openpgp;
 use openpgp::{
     Cert,
+    Fingerprint,
+    KeyHandle,
+    KeyID,
+    parse::Parse,
 };
 
 pub struct KeyDB {
     for_gpgv: bool,
     resources: Vec<Resource>,
+    initialized: bool,
+    by_fp: HashMap<Fingerprint, Rc<Cert>>,
+    by_id: HashMap<KeyID, Rc<Cert>>,
+    by_subkey_fp: HashMap<Fingerprint, Rc<Cert>>,
+    by_subkey_id: HashMap<KeyID, Rc<Cert>>,
 }
 
+#[derive(Clone)]
 struct Resource {
     kind: Kind,
     path: PathBuf,
@@ -68,15 +80,19 @@ impl KeyDB {
         Self {
             for_gpgv: false,
             resources: Vec::default(),
+            initialized: false,
+            by_fp: Default::default(),
+            by_id: Default::default(),
+            by_subkey_fp: Default::default(),
+            by_subkey_id: Default::default(),
         }
     }
 
     /// Creates a KeyDB for gpgv.
     pub fn for_gpgv() -> Self {
-        Self {
-            for_gpgv: true,
-            resources: Vec::default(),
-        }
+        let mut db = Self::for_gpg();
+        db.for_gpgv = true;
+        db
     }
 
     pub fn add_resource<U>(&mut self,
@@ -186,6 +202,88 @@ impl KeyDB {
                 );
                 Ok(())
             },
+        }
+    }
+
+    /// Looks up a cert by key handle.
+    pub fn get(&self, handle: &KeyHandle) -> Option<&Cert> {
+        self.by_subkey(handle)
+           .or_else(|| self.by_primary(handle))
+    }
+
+    /// Looks up a cert by primary key handle.
+    pub fn by_primary(&self, handle: &KeyHandle) -> Option<&Cert> {
+        match handle {
+            KeyHandle::Fingerprint(fp) =>
+                self.by_fp.get(fp).map(AsRef::as_ref),
+            KeyHandle::KeyID(id) =>
+                self.by_id.get(id).map(AsRef::as_ref),
+        }
+    }
+
+    /// Looks up a cert by subkey key handle.
+    pub fn by_subkey(&self, handle: &KeyHandle) -> Option<&Cert> {
+        match handle {
+            KeyHandle::Fingerprint(fp) =>
+                self.by_subkey_fp.get(fp).map(AsRef::as_ref),
+            KeyHandle::KeyID(id) =>
+                self.by_subkey_id.get(id).map(AsRef::as_ref),
+        }
+    }
+
+    /// Initializes the store, if not already done.
+    pub fn initialize(&mut self) -> Result<()> {
+        if self.initialized {
+            return Ok(());
+        }
+        self.initialized = true;
+
+        for resource in &self.resources.clone() {
+            if resource.create && ! resource.path.exists() {
+                continue;
+            }
+
+            match resource.kind {
+                Kind::Keyring => {
+                    use openpgp::cert::CertParser;
+                    for cert in CertParser::from_file(&resource.path)? {
+                        let cert = cert.context(
+                            format!("While parsing {:?}", resource.path))?;
+                        self.insert(cert);
+                    }
+                },
+                Kind::Keybox => {
+                    use sequoia_ipc::keybox::*;
+                    for record in Keybox::from_file(&resource.path)? {
+                        let record = record.context(
+                            format!("While parsing {:?}", resource.path))?;
+                        if let KeyboxRecord::OpenPGP(r) = record {
+                            self.insert(
+                                r.cert().context(format!(
+                                    "While parsing {:?}", resource.path))?);
+                        }
+                    }
+                },
+            }
+        }
+
+        Ok(())
+    }
+
+    /// Inserts the given cert into the database.
+    fn insert(&mut self, cert: Cert) {
+        let rccert = Rc::new(cert);
+
+        let fp = rccert.fingerprint();
+        let keyid = KeyID::from(&fp);
+        self.by_fp.insert(fp, rccert.clone());
+        self.by_id.insert(keyid, rccert.clone());
+
+        for subkey in rccert.keys().subkeys() {
+            let fp = subkey.fingerprint();
+            let keyid = KeyID::from(&fp);
+            self.by_subkey_fp.insert(fp, rccert.clone());
+            self.by_subkey_id.insert(keyid, rccert.clone());
         }
     }
 }

@@ -280,6 +280,7 @@ fn real_main() -> anyhow::Result<()> {
         opt.keydb.add_resource(&opt.homedir, path, true, false)?;
     }
 
+    opt.keydb.initialize()?;
 
     Ok(())
 }
