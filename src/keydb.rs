@@ -117,10 +117,13 @@ impl KeyDB {
         }
 
         // Expand tildes.
-        let path = PathBuf::from(url).expand_home()?;
+        let mut path = PathBuf::from(url).expand_home()?;
 
-        // Make absolute.
-        let mut path = home_dir.join(path);
+        // If the path contains just a single component, it is
+        // relative to the home directory.
+        if path.components().count() == 1 {
+            path = home_dir.join(path);
+        }
 
         if kind.is_none() {
             if path.exists() {
