@@ -23,6 +23,7 @@ mod keydb;
 #[allow(dead_code)]
 mod flags;
 use flags::*;
+mod status;
 mod utils;
 
 /// Commands and options.

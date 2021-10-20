@@ -12,6 +12,7 @@ use openpgp::{
 
 use crate::{
     keydb::KeyDB,
+    status,
 };
 
 /// Controls common to gpgv and gpg.
@@ -44,5 +45,5 @@ pub trait Common {
     fn logger(&mut self) -> &mut dyn io::Write;
 
     /// Returns the status stream.
-    fn status(&mut self) -> &mut dyn io::Write;
+    fn status(&self) -> &status::Fd;
 }

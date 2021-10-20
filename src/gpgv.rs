@@ -20,6 +20,7 @@ mod argparse;
 use argparse::{Argument, Opt, flags::*};
 mod control;
 mod keydb;
+mod status;
 mod utils;
 mod verify;
 
@@ -83,6 +84,7 @@ const OPTIONS: &[Opt<CmdOrOpt>] = &[
     Opt { short_opt: o301, long_opt: "", flags: 0, description: "@\n", },
 ];
 
+#[allow(dead_code)]
 struct Config {
     // Configuration.
     debug: u32,
@@ -99,7 +101,7 @@ struct Config {
 
     // Streams.
     logger_fd: Box<dyn io::Write>,
-    status_fd: Box<dyn io::Write>,
+    status_fd: status::Fd,
 }
 
 const POLICY: &dyn Policy = &StandardPolicy::new();
@@ -126,7 +128,7 @@ impl Default for Config {
 
             // Streams.
             logger_fd: Box::new(io::sink()),
-            status_fd: Box::new(io::sink()),
+            status_fd: Box::new(io::sink()).into(),
         }
     }
 }
@@ -168,8 +170,8 @@ impl control::Common for Config {
         &mut self.logger_fd
     }
 
-    fn status(&mut self) -> &mut dyn io::Write {
-        &mut self.status_fd
+    fn status(&self) -> &status::Fd {
+        &self.status_fd
     }
 }
 
@@ -230,7 +232,8 @@ fn real_main() -> anyhow::Result<()> {
             },
 
 	    Argument::Option(oStatusFD, value) => {
-                opt.status_fd = utils::sink_from_fd(value.as_int().unwrap())?;
+                opt.status_fd =
+                    utils::sink_from_fd(value.as_int().unwrap())?.into();
             },
 
 	    Argument::Option(oLoggerFD, value) => {

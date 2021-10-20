@@ -8,6 +8,7 @@ edition = "2018"
 
 [dependencies]
 anyhow = "1"
+base64 = "0.13"
 chrono = "0.4"
 dirs = "3"
 home-dir = "0.1"
@@ -15,6 +16,10 @@ libc = "0.2"
 sequoia-openpgp = "1.4"
 sequoia-ipc = "0.26"
 thiserror = "1"
+
+[dev-dependencies]
+edit-distance = "2"
+tempfile = "3"
 
 [[bin]]
 name = "sequoia-chameleon-gpg"
