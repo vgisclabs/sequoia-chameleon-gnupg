@@ -1,5 +1,6 @@
 use std::{
     collections::HashSet,
+    fmt,
     fs,
     io,
     path::{Path, PathBuf},
@@ -18,6 +19,7 @@ mod macros;
 #[allow(dead_code)]
 mod argparse;
 use argparse::{Argument, Opt, flags::*};
+mod babel;
 mod control;
 mod keydb;
 mod status;
@@ -86,6 +88,9 @@ const OPTIONS: &[Opt<CmdOrOpt>] = &[
 
 #[allow(dead_code)]
 struct Config {
+    // Runtime.
+    fail: std::cell::Cell<bool>,
+
     // Configuration.
     debug: u32,
     enable_special_filenames: bool,
@@ -109,6 +114,9 @@ const POLICY: &dyn Policy = &StandardPolicy::new();
 impl Default for Config {
     fn default() -> Self {
         Config {
+            // Runtime.
+            fail: Default::default(),
+
             // Configuration.
             debug: 0,
             enable_special_filenames: false,
@@ -134,6 +142,15 @@ impl Default for Config {
 }
 
 impl control::Common for Config {
+    fn argv0(&self) -> &'static str {
+        "gpgv"
+    }
+
+    fn error(&self, msg: fmt::Arguments) {
+        self.warn(msg);
+        self.fail.set(true);
+    }
+
     fn debug(&self) -> u32 {
         self.debug
     }
@@ -286,9 +303,16 @@ fn real_main() -> anyhow::Result<()> {
 
     opt.keydb.initialize()?;
 
-    verify::cmd_verify(&opt, &args)?;
-
-    Ok(())
+    match verify::cmd_verify(&opt, &args) {
+        Ok(()) => {
+            if opt.fail.get() {
+                std::process::exit(2);
+            }
+            Ok(())
+        },
+        Err(e) if opt.verbose > 0 => Err(e),
+        Err(_) => std::process::exit(1),
+    }
 }
 
 fn main() {

@@ -1,6 +1,7 @@
 //! Controls the execution of commands via the configuration.
 
 use std::{
+    fmt,
     io,
     path::Path,
 };
@@ -17,6 +18,20 @@ use crate::{
 
 /// Controls common to gpgv and gpg.
 pub trait Common {
+    /// Returns the name of the program.
+    fn argv0(&self) -> &'static str;
+
+    /// Prints a warning to stderr.
+    fn warn(&self, msg: fmt::Arguments) {
+        eprintln!("{}: {}", self.argv0(), msg);
+    }
+
+    /// Prints an error to stderr.
+    ///
+    /// In contrast to Self::warn, this makes the program report a
+    /// failure when exiting.
+    fn error(&self, msg: fmt::Arguments);
+
     /// Returns the debug level.
     fn debug(&self) -> u32;
 

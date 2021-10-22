@@ -7,10 +7,13 @@ use anyhow::Result;
 use sequoia_openpgp as openpgp;
 use openpgp::{
     Cert,
+    KeyID,
     crypto::hash::Digest,
     packet::Signature,
     packet::signature::subpacket::*,
+    packet::key,
     types::*,
+    policy::HashAlgoSecurity,
     serialize::Marshal,
 };
 use openpgp::cert::prelude::*;
@@ -20,8 +23,9 @@ use openpgp::parse::{
 use openpgp::parse::stream::*;
 
 use crate::{
+    babel,
     control,
-    status::Status,
+    status::{Status, ErrSigStatus},
     utils,
 };
 
@@ -89,8 +93,8 @@ pub fn cmd_verify(control: &dyn control::Common, args: &[String])
 }
 
 struct VHelper<'a> {
-    #[allow(dead_code)]
     control: &'a dyn control::Common,
+    #[allow(dead_code)]
     signatures: usize,
     good_signatures: usize,
     good_checksums: usize,
@@ -166,27 +170,83 @@ impl<'a> VHelper<'a> {
         Ok(base64::encode_config(h.into_digest()?, base64::STANDARD_NO_PAD))
     }
 
-    fn emit_sig_header(&self, sig: &Signature) -> Result<()> {
+    fn emit_sig_header(&self, sig: &Signature) -> Result<bool> {
+        let good_signature_type = sig.typ() == SignatureType::Binary ||
+            sig.typ() == SignatureType::Text;
+
         self.control.status().emit(Status::NewSig {
             signers_uid: sig.signers_user_id().map(Into::into),
         })?;
+
+        if ! good_signature_type {
+            self.control.error(
+                format_args!("standalone signature of class 0x{:02x}",
+                             u8::from(sig.typ())));
+        }
         eprintln!("{}: Signature made {}",
                   "gpgv",
                   sig.signature_creation_time()
-                  .map(|t| {
-                      use chrono::*;
-                      DateTime::<Utc>::from(t).with_timezone(&Local)
-                          .format("%c %Z").to_string()
-                  })
+                  .map(|t| babel::Fish(t).to_string())
                   .unwrap_or_else(|| "without creation time".into()));
-        eprintln!("{}:                using {:?} key {}",
+        eprintln!("{}:                using {} key {}",
                   "gpgv",
-                  sig.pk_algo(),
+                  babel::Fish(sig.pk_algo()),
                   sig.get_issuers().get(0)
                   .map(ToString::to_string)
                   .unwrap_or_else(|| "without issuer information".into()));
 
-        Ok(())
+        if good_signature_type {
+            Ok(false)
+        } else {
+            use SignatureType::*;
+
+            self.control.status().emit(Status::ErrSig {
+                issuer: sig.issuers().cloned().next()
+                    .unwrap_or(KeyID::wildcard()),
+                creation_time: sig.signature_creation_time()
+                    .expect("every well-formed signature has one"),
+                pk_algo: sig.pk_algo(),
+                hash_algo: sig.hash_algo(),
+                sig_class: sig.typ(),
+                rc: if sig.typ() == KeyRevocation {
+                    ErrSigStatus::UnexpectedRevocation
+                } else {
+                    ErrSigStatus::BadSignatureClass
+                },
+                issuer_fingerprint: sig.issuer_fingerprints().cloned().next(),
+            })?;
+
+            match sig.typ() {
+                GenericCertification
+                    | PersonaCertification
+                    | CasualCertification
+                    | PositiveCertification
+                    | SubkeyBinding
+                    | DirectKey
+                    | SubkeyRevocation
+                    | CertificationRevocation =>
+                {
+                    self.control.error(
+                        format_args!("invalid root packet for sigclass {:02x}",
+                                     u8::from(sig.typ())));
+                },
+                KeyRevocation =>
+                {
+                    self.control.error(
+                        format_args!("standalone revocation - \
+                                      use \"gpg --import\" to apply"));
+                },
+                _ => (),
+            }
+
+            if sig.typ() != KeyRevocation {
+                self.control.error(
+                    format_args!("Can't check signature: \
+                                  Invalid signature class"));
+            }
+
+            Ok(true)
+        }
     }
 
     fn emit_key_considered(&self, cert: &Cert, not_selected: bool)
@@ -195,11 +255,140 @@ impl<'a> VHelper<'a> {
             fingerprint: cert.fingerprint(),
             not_selected,
             all_expired_or_revoked:
+            false && // XXX: I haven't seen GnuPG set that.
             cert.with_policy(self.control.policy(), None)
-                .map(|vcert| vcert.keys().revoked(false)
+                .map(|vcert| vcert.keys().subkeys().revoked(false)
                      .all(|ka| ka.alive().is_err()))
                 .unwrap_or(true),
         })
+    }
+
+    fn emit_good_signature(&self,
+                           sig: &Signature,
+                           ka: &ValidErasedKeyAmalgamation<key::PublicParts>,
+                           error: Option<&openpgp::Error>)
+                           -> Result<()> {
+        if sig.typ() == SignatureType::Binary
+            || sig.typ() == SignatureType::Text
+        {
+            self.control.status().emit(Status::SigId {
+                id: self.compute_signature_id(sig)?,
+                creation_time: sig.signature_creation_time()
+                    .expect("every valid sig has one"),
+            })?;
+        }
+
+        match error {
+            None => {
+                self.control.status().emit(Status::GoodSig {
+                    issuer: ka.fingerprint().into(),
+                    primary_uid:
+                    ka.cert().primary_userid().map(|u| u.value().into())
+                        .unwrap_or_else(|_| b"unknown"[..].into()),
+                })?;
+            },
+            Some(openpgp::Error::Expired(at)) => {
+                self.control.status().emit(Status::KeyExpired {
+                    at: *at,
+                })?;
+
+                self.control.status().emit(Status::ExpKeySig {
+                    issuer: ka.fingerprint().into(),
+                    primary_uid:
+                    ka.cert().primary_userid().map(|u| u.value().into())
+                        .unwrap_or_else(|_| b"unknown"[..].into()),
+                })?;
+            },
+            Some(openpgp::Error::InvalidKey(_)) => {
+                self.control.status().emit(Status::RevKeySig {
+                    issuer: ka.fingerprint().into(),
+                    primary_uid:
+                    ka.cert().primary_userid().map(|u| u.value().into())
+                        .unwrap_or_else(|_| b"unknown"[..].into()),
+                })?;
+            },
+            e => unimplemented!("{:?}", e),
+        }
+
+        let primary_uid =
+            ka.cert().primary_userid().map(|u| {
+                String::from_utf8_lossy(u.value()).to_string()
+            })
+            .unwrap_or_else(|_| ka.fingerprint().to_string());
+        eprintln!("{}: Good signature from {:?}",
+                  "gpgv", primary_uid);
+        for uid in ka.cert().userids() {
+            let uid = String::from_utf8_lossy(uid.value());
+            if uid != primary_uid {
+                eprintln!("{}:                     {:?}",
+                          "gpgv", uid);
+            }
+        }
+
+        // Dump notations.
+        for notation in sig.notation_data() {
+            self.control.status().emit(Status::NotationName {
+                name: notation.name().into(),
+            })?;
+            if notation.flags().human_readable() {
+                self.control.status().emit(Status::NotationFlags {
+                    // If it were critical, the sig would
+                    // not have checked out
+                    critical: false,
+                    human_readable: true,
+                })?;
+            }
+            self.control.status().emit(Status::NotationData {
+                data: notation.value().into(),
+            })?;
+        }
+
+        // Cryptographically valid.
+        self.control.status().emit(Status::ValidSig {
+            issuer: ka.fingerprint(),
+            creation_time: sig.signature_creation_time()
+                .expect("every well-formed signature has one"),
+            expire_time: sig.signature_expiration_time(),
+            version: sig.version(),
+            pk_algo: sig.pk_algo(),
+            hash_algo: sig.hash_algo(),
+            sig_class: sig.typ(),
+            primary: ka.cert().fingerprint(),
+        })?;
+
+        Ok(())
+    }
+
+    fn emit_bad_signature(&mut self,
+                          ka: &ValidErasedKeyAmalgamation<key::PublicParts>,
+                          error: Option<&openpgp::Error>)
+                          -> Result<()> {
+        match error {
+            Some(openpgp::Error::Expired(at)) => {
+                self.control.status().emit(Status::KeyExpired {
+                    at: *at,
+                })?;
+            },
+            _ => (),
+        }
+
+        self.control.status().emit(Status::BadSig {
+            issuer: ka.fingerprint().into(),
+            primary_uid:
+            ka.cert().primary_userid().map(|u| u.value().into())
+                .unwrap_or_else(|_| b"unknown"[..].into()),
+        })?;
+
+        eprintln!("{}: BAD signature from {:?}",
+                  "gpgv",
+                  ka.cert().primary_userid().map(|u| {
+                      String::from_utf8_lossy(u.value()).to_string()
+                  })
+                  .unwrap_or_else(|_|
+                                  ka.fingerprint().to_string()));
+
+        self.bad_checksums += 1;
+        Ok(())
     }
 
     fn print_sigs(&mut self, results: &[VerificationResult]) -> Result<()> {
@@ -208,83 +397,27 @@ impl<'a> VHelper<'a> {
         for result in results {
             match result {
                 Ok(GoodChecksum { sig, ka, .. }) => {
-                    self.emit_sig_header(sig)?;
+                    if self.emit_sig_header(sig)? {
+                        continue;
+                    }
                     self.emit_key_considered(ka.cert(), false)?;
-
-                    if sig.typ() == SignatureType::Binary
-                        || sig.typ() == SignatureType::Text
-                    {
-                        self.control.status().emit(Status::SigId {
-                            id: self.compute_signature_id(sig)?,
-                            creation_time: sig.signature_creation_time()
-                                .expect("every valid sig has one"),
-                        })?;
-                    }
-
-                    self.control.status().emit(Status::GoodSig {
-                        issuer: ka.fingerprint().into(),
-                        primary_uid:
-                        ka.cert().primary_userid().map(|u| u.value().into())
-                            .unwrap_or_else(|_| b"unknown"[..].into()),
-                    })?;
-
-                    let primary_uid =
-                        ka.cert().primary_userid().map(|u| {
-                            String::from_utf8_lossy(u.value()).to_string()
-                        })
-                        .unwrap_or_else(|_| ka.fingerprint().to_string());
-                    eprintln!("{}: Good signature from {:?}",
-                              "gpgv", primary_uid);
-                    for uid in ka.cert().userids() {
-                        let uid = String::from_utf8_lossy(uid.value());
-                        if uid != primary_uid {
-                            eprintln!("{}:                     {:?}",
-                                      "gpgv", uid);
-                        }
-                    }
-
-                    // Dump notations.
-                    for notation in sig.notation_data() {
-                        self.control.status().emit(Status::NotationName {
-                            name: notation.name().into(),
-                        })?;
-                        if notation.flags().human_readable() {
-                            self.control.status().emit(Status::NotationFlags {
-                                // If it were critical, the sig would
-                                // not have checked out
-                                critical: false,
-                                human_readable: true,
-                            })?;
-                        }
-                        self.control.status().emit(Status::NotationData {
-                            data: notation.value().into(),
-                        })?;
-                    }
-
-                    // Cryptographically valid.
-                    self.control.status().emit(Status::ValidSig {
-                        issuer: ka.fingerprint(),
-                        creation_time: sig.signature_creation_time()
-                            .expect("every well-formed signature has one"),
-                        expire_time: sig.signature_expiration_time(),
-                        version: sig.version(),
-                        pk_algo: sig.pk_algo(),
-                        hash_algo: sig.hash_algo(),
-                        sig_class: sig.typ(),
-                        primary: ka.cert().fingerprint(),
-                    })?;
+                    self.emit_good_signature(sig, ka, None)?;
 
                     self.good_signatures += 1;
                 },
                 Err(MalformedSignature { sig, error, .. }) => {
-                    self.emit_sig_header(sig)?;
+                    if self.emit_sig_header(sig)? {
+                        continue;
+                    }
                     eprintln!("Malformed signature:");
                     print_error_chain(error);
                     self.broken_signatures += 1;
                     continue;
                 },
                 Err(MissingKey { sig, .. }) => {
-                    self.emit_sig_header(sig)?;
+                    if self.emit_sig_header(sig)? {
+                        continue;
+                    }
                     let issuer = sig.get_issuers().get(0)
                         .expect("missing key checksum has an issuer")
                         .to_string();
@@ -297,7 +430,9 @@ impl<'a> VHelper<'a> {
                     continue;
                 },
                 Err(UnboundKey { sig, cert, error, .. }) => {
-                    self.emit_sig_header(sig)?;
+                    if self.emit_sig_header(sig)? {
+                        continue;
+                    }
                     // XXX does this case map to KEY_CONSIDERED not_selected?
                     self.emit_key_considered(cert, true)?;
                     eprintln!("Signing key on {} is not bound:",
@@ -307,41 +442,43 @@ impl<'a> VHelper<'a> {
                     continue;
                 },
                 Err(BadKey { sig, ka, error, .. }) => {
-                    self.emit_sig_header(sig)?;
+                    if self.emit_sig_header(sig)? {
+                        continue;
+                    }
                     self.emit_key_considered(ka.cert(), false)?;
-                    // xxx: check sig.verify(ka.key()) && policy(sig) first
 
+                    let mut sig = (*sig).clone();
+                    let openpgp_error = error.downcast_ref::<openpgp::Error>();
+                    if sig.verify(ka.key()).is_ok()
+                        && self.control.policy().signature(
+                            &sig, HashAlgoSecurity::CollisionResistance).is_ok()
+                    {
+                        self.emit_good_signature(&sig, ka, openpgp_error)?;
+                    } else {
+                        self.emit_bad_signature(ka, openpgp_error)?;
+                    }
                     // ExpKeySig, RevKeySig
-                    eprintln!("Signing key on {} is bad:",
-                              ka.cert().fingerprint());
-                    print_error_chain(error);
-                    self.bad_checksums += 1;
+
+                    if self.control.verbose() > 0 {
+                        eprintln!("Signing key on {} is bad:",
+                                  ka.cert().fingerprint());
+                        print_error_chain(error);
+                    }
+
                     continue;
                 },
                 Err(BadSignature { sig, ka, error }) => {
-                    self.emit_sig_header(sig)?;
+                    if self.emit_sig_header(sig)? {
+                        continue;
+                    }
                     self.emit_key_considered(ka.cert(), false)?;
-
-                    self.control.status().emit(Status::BadSig {
-                        issuer: ka.fingerprint().into(),
-                        primary_uid:
-                        ka.cert().primary_userid().map(|u| u.value().into())
-                            .unwrap_or_else(|_| b"unknown"[..].into()),
-                    })?;
-
-                    eprintln!("{}: BAD signature from {:?}",
-                              "gpgv",
-                              ka.cert().primary_userid().map(|u| {
-                                  String::from_utf8_lossy(u.value()).to_string()
-                              })
-                              .unwrap_or_else(|_|
-                                              ka.fingerprint().to_string()));
+                    let openpgp_error = error.downcast_ref::<openpgp::Error>();
+                    self.emit_bad_signature(ka, openpgp_error)?;
 
                     if self.control.verbose() > 0 {
                         print_error_chain(error);
                     }
 
-                    self.bad_checksums += 1;
                     continue;
                 }
             };
@@ -374,8 +511,7 @@ impl<'a> VerificationHelper for VHelper<'a> {
             }
         }
 
-        if self.good_signatures >= self.signatures
-            && self.bad_signatures + self.bad_checksums == 0
+        if self.bad_signatures + self.bad_checksums == 0
         {
             Ok(())
         } else {

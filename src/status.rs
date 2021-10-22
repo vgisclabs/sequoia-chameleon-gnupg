@@ -2,7 +2,7 @@
 
 use std::{
     cell::RefCell,
-    fmt::Write,
+    fmt::{self, Write},
     io,
     sync::Mutex,
     time::SystemTime,
@@ -104,6 +104,10 @@ pub enum Status {
         not_selected: bool,
         all_expired_or_revoked: bool,
     },
+
+    KeyExpired {
+        at: SystemTime,
+    },
 }
 
 impl Status {
@@ -168,6 +172,30 @@ impl Status {
                 writeln!(w)?;
             },
 
+            ErrSig {
+                issuer,
+                creation_time,
+                pk_algo,
+                hash_algo,
+                sig_class,
+                rc,
+                issuer_fingerprint,
+            } => {
+                let t =
+                    chrono::DateTime::<chrono::Utc>::from(*creation_time);
+                write!(w, "ERRSIG {:X} {} {} {:02x} {} {}",
+                       issuer,
+                       u8::from(*pk_algo),
+                       u8::from(*hash_algo),
+                       u8::from(*sig_class),
+                       t.format("%s"),
+                       rc)?;
+                if let Some(fp) = issuer_fingerprint {
+                    write!(w, " {:X}", fp)?;
+                }
+                writeln!(w)?;
+            },
+
             ValidSig {
                 issuer,
                 creation_time,
@@ -182,7 +210,7 @@ impl Status {
                     chrono::DateTime::<chrono::Utc>::from(*creation_time);
                 let e = expire_time
                     .map(|t| chrono::DateTime::<chrono::Utc>::from(t));
-                writeln!(w, "VALIDSIG {:X} {} {} {} {} {} {} {} {:02X} {:X}",
+                writeln!(w, "VALIDSIG {:X} {} {} {} {} {} {} {} {:02x} {:X}",
                          issuer,
                          t.format("%Y-%m-%d"),
                          t.format("%s"),
@@ -244,7 +272,13 @@ impl Status {
                          | if *all_expired_or_revoked { 2 } else { 0 }
                 )?;
             },
-            _ => unimplemented!(),
+
+            KeyExpired {
+                at,
+            } => {
+                let t = chrono::DateTime::<chrono::Utc>::from(*at);
+                writeln!(w, "KEYEXPIRED {}", t.format("%s"))?;
+            },
         }
 
         Ok(())
@@ -290,4 +324,18 @@ fn e(sink: &mut dyn io::Write, s: impl AsRef<[u8]>) -> Result<()> {
 pub enum ErrSigStatus {
     UnsupportedAlgorithm,
     MissingKey,
+    BadSignatureClass,
+    UnexpectedRevocation,
+}
+
+impl fmt::Display for ErrSigStatus {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        use ErrSigStatus::*;
+        match self {
+            UnsupportedAlgorithm => f.write_str("4"),
+            MissingKey => f.write_str("9"),
+            BadSignatureClass => f.write_str("32"),
+            UnexpectedRevocation => f.write_str("52"),
+        }
+    }
 }

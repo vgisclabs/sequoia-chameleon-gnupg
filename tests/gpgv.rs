@@ -3,6 +3,7 @@ use std::{
     fmt,
     fs,
     process::*,
+    time::*,
 };
 
 use anyhow::Result;
@@ -11,11 +12,13 @@ use sequoia_openpgp as openpgp;
 use openpgp::{
     cert::prelude::*,
     packet::{*, signature::*},
-    types::*,
+    types::{ReasonForRevocation, SignatureType},
     serialize::SerializeInto,
 };
 
 const MSG: &[u8] = b"Hello, world!";
+const MSG_BAD: &[u8] = b"Hello, world?";
+
 const GPGV: &[&str] =
     &["/usr/bin/gpgv"];
 const GPGV_CHAMELEON: &[&str] =
@@ -29,7 +32,7 @@ const STDERR_EDIT_DISTANCE_THRESHOLD: usize = 20;
 fn basic() -> Result<()> {
     build();
 
-    let (cert, rev) = CertBuilder::new()
+    let (cert, _) = CertBuilder::new()
         .add_userid("Alice Lovelace <alice@lovelace.name>")
         .add_signing_subkey()
         .generate()?;
@@ -51,6 +54,219 @@ fn basic() -> Result<()> {
     assert_eq!(oracle.normalized_status_messages(),
                us.normalized_status_messages());
     assert!(oracle.stderr_edit_distance(&us) < STDERR_EDIT_DISTANCE_THRESHOLD);
+
+    Ok(())
+}
+
+#[test]
+fn cipher_suites() -> Result<()> {
+    build();
+
+    use CipherSuite::*;
+    for cs in vec![
+        Cv25519,
+        RSA3k,
+        P256,
+        P384,
+        P521,
+        RSA2k,
+        RSA4k,
+    ] {
+        let (cert, _) = CertBuilder::new()
+            .set_cipher_suite(cs)
+            .add_userid("Alice Lovelace <alice@lovelace.name>")
+            .add_signing_subkey()
+            .generate()?;
+
+        let mut subkey_signer =
+            cert.keys().subkeys().secret().next().unwrap()
+            .key().clone().into_keypair()?;
+
+        let sig = SignatureBuilder::new(SignatureType::Binary)
+            .sign_message(&mut subkey_signer, MSG)?;
+
+        let oracle = invoke(&cert, &sig, GPGV)?;
+        let us = invoke(&cert, &sig, GPGV_CHAMELEON)?;
+
+        eprintln!("oracle: {}", oracle);
+        eprintln!("us: {}", us);
+
+        assert_eq!(oracle.status, us.status);
+        assert_eq!(oracle.normalized_status_messages(),
+                   us.normalized_status_messages());
+        assert!(oracle.stderr_edit_distance(&us)
+                < STDERR_EDIT_DISTANCE_THRESHOLD);
+    }
+
+    Ok(())
+}
+
+#[test]
+fn signature_types() -> Result<()> {
+    build();
+
+    use SignatureType::*;
+    for typ in vec![
+        Binary,
+        Text,
+        // Trick Sequoia into making weird signatures:
+        Unknown(Standalone.into()),
+        Unknown(GenericCertification.into()),
+        Unknown(PersonaCertification.into()),
+        Unknown(CasualCertification.into()),
+        Unknown(PositiveCertification.into()),
+        Unknown(AttestationKey.into()),
+        Unknown(SubkeyBinding.into()),
+        Unknown(PrimaryKeyBinding.into()),
+        Unknown(DirectKey.into()),
+        Unknown(KeyRevocation.into()),
+        Unknown(SubkeyRevocation.into()),
+        Unknown(CertificationRevocation.into()),
+        Unknown(Timestamp.into()),
+        Unknown(Confirmation.into()),
+        Unknown(77),
+    ] {
+        let (cert, _) = CertBuilder::new()
+            .add_userid("Alice Lovelace <alice@lovelace.name>")
+            .add_signing_subkey()
+            .generate()?;
+
+        let mut subkey_signer =
+            cert.keys().subkeys().secret().next().unwrap()
+            .key().clone().into_keypair()?;
+
+        let sig = SignatureBuilder::new(typ)
+            .sign_message(&mut subkey_signer, MSG)?;
+
+        let oracle = invoke(&cert, &sig, GPGV)?;
+        let us = invoke(&cert, &sig, GPGV_CHAMELEON)?;
+
+        eprintln!("oracle: {}", oracle);
+        eprintln!("us: {}", us);
+
+        assert_eq!(oracle.status, us.status);
+        assert_eq!(oracle.normalized_status_messages(),
+                   us.normalized_status_messages());
+        assert!(oracle.stderr_edit_distance(&us)
+                < STDERR_EDIT_DISTANCE_THRESHOLD);
+    }
+
+    Ok(())
+}
+
+#[test]
+fn extended() -> Result<()> {
+    build();
+
+    let (cert, primary_revocation) = CertBuilder::new()
+        .set_creation_time(SystemTime::now() - Duration::new(3600, 0))
+        .add_userid("Alice Lovelace <alice@lovelace.name>")
+        .add_signing_subkey()
+        .generate()?;
+
+    let primary =
+        cert.primary_key().key().clone();
+    let uid =
+        cert.userids().next().unwrap().userid().clone();
+    let uid_binding =
+        cert.userids().next().unwrap().self_signatures().next().unwrap().clone();
+    let subkey =
+        cert.keys().subkeys().next().unwrap().key().clone();
+    let subkey_binding =
+        cert.keys().subkeys().next().unwrap().self_signatures().next().unwrap().clone();
+
+    let mut primary_signer =
+        primary.clone().parts_into_secret()?.into_keypair()?;
+    let mut subkey_signer =
+        subkey.clone().parts_into_secret()?.into_keypair()?;
+
+    let uid_binding_expired =
+        uid.bind(&mut primary_signer, &cert,
+                 SignatureBuilder::from(uid_binding.clone())
+                 .set_key_validity_period(Duration::new(1800, 0))?)?;
+
+    let subkey_binding_expired =
+        subkey.bind(&mut primary_signer, &cert,
+                    SignatureBuilder::from(subkey_binding.clone())
+                    .set_key_validity_period(Duration::new(1800, 0))?)?;
+
+    let subkey_revocation =
+        SubkeyRevocationBuilder::new()
+        .set_reason_for_revocation(ReasonForRevocation::KeyRetired,
+                                   b"Revoking due to the recent crypto vulnerabilities.")?
+        .build(&mut primary_signer, &cert, &subkey, None)?;
+
+    for primary_revoked in vec![false, true] {
+        for primary_expired in vec![false, true] {
+            for subkey_revoked in vec![false, true] {
+                for subkey_expired in vec![false, true] {
+                    for good in vec![false, true] {
+                        dbg!((primary_revoked, primary_expired,
+                              subkey_revoked, subkey_expired,
+                              good));
+
+                        let mut acc = vec![
+                            Packet::from(primary.clone()),
+                        ];
+
+                        if primary_revoked {
+                            acc.push(primary_revocation.clone().into());
+                        }
+
+                        acc.push(uid.clone().into());
+                        acc.push(
+                            if primary_expired {
+                                uid_binding_expired.clone().into()
+                            } else {
+                                uid_binding.clone().into()
+                            }
+                        );
+
+                        acc.push(subkey.clone().into());
+                        if subkey_revoked {
+                            acc.push(subkey_revocation.clone().into());
+                        }
+
+                        acc.push(
+                            if subkey_expired {
+                                subkey_binding_expired.clone().into()
+                            } else {
+                                subkey_binding.clone().into()
+                            }
+                        );
+
+                        let cert = Cert::from_packets(acc.into_iter())?;
+
+                        if false {
+                            let name = format!(
+                                "/tmp/key-{:?}-{:?}-{:?}-{:?}-{:?}",
+                                primary_revoked, primary_expired,
+                                subkey_revoked, subkey_expired,
+                                good);
+                            std::fs::write(name, cert.to_vec()?)?;
+                        }
+
+                        let sig = SignatureBuilder::new(SignatureType::Binary)
+                            .sign_message(
+                                &mut subkey_signer,
+                                if good { MSG } else { MSG_BAD })?;
+
+                        let oracle = invoke(&cert, &sig, GPGV)?;
+                        let us = invoke(&cert, &sig, GPGV_CHAMELEON)?;
+
+                        eprintln!("oracle: {}", oracle);
+                        eprintln!("us: {}", us);
+
+                        assert_eq!(oracle.status, us.status);
+                        assert_eq!(oracle.normalized_status_messages(),
+                                   us.normalized_status_messages());
+                        assert!(oracle.stderr_edit_distance(&us)
+                                < STDERR_EDIT_DISTANCE_THRESHOLD);
+                    }
+                }
+            }
+        }
+    }
 
     Ok(())
 }
@@ -126,6 +342,17 @@ impl Output {
         self.status_messages()
             .filter(|l| ! l.starts_with(b"NOTATION_DATA")) // GnuPG bug 5667
             .map(|l| String::from_utf8_lossy(l).to_string())
+        // GnuPG emits those if primary key is expired but the subkey
+        // is not.  Filter it out, because even the DETAILS admits
+        // that this status line is not helpful:
+        //
+        // > This status line is not very useful because
+        // > it will also be emitted for expired subkeys even if this subkey is
+        // > not used.  To check whether a key used to sign a message has
+        // > expired, the EXPKEYSIG status line is to be used.
+            .filter(|l| l != "KEYEXPIRED 0")
+        // XXX: For now, exclude compliance messages.
+            .filter(|l| ! l.contains("_COMPLIANCE_MODE "))
             .map(|l| {
                 if l.starts_with("GOODSIG")
                     || l.starts_with("EXPSIG")
