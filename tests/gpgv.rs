@@ -19,8 +19,13 @@ use openpgp::{
 const MSG: &[u8] = b"Hello, world!";
 const MSG_BAD: &[u8] = b"Hello, world?";
 
-const GPGV: &[&str] =
-    &["/usr/bin/gpgv"];
+lazy_static::lazy_static! {
+    static ref GPGV: [&'static str; 1] =
+        [std::env::var("REAL_GPGV_BIN")
+          .map(|s| &*Box::leak(s.into_boxed_str()))
+          .unwrap_or("/usr/bin/gpgv")];
+}
+
 const GPGV_CHAMELEON: &[&str] =
     &["cargo", "run", "--quiet", "--bin", "sequoia-chameleon-gpgv", "--"];
 const GPGV_CHAMELEON_BUILD: &[&str] =
@@ -30,7 +35,7 @@ const STDERR_EDIT_DISTANCE_THRESHOLD: usize = 20;
 
 #[test]
 fn basic() -> Result<()> {
-    build();
+    setup();
 
     let (cert, _) = CertBuilder::new()
         .add_userid("Alice Lovelace <alice@lovelace.name>")
@@ -44,7 +49,7 @@ fn basic() -> Result<()> {
     let sig = SignatureBuilder::new(SignatureType::Binary)
         .sign_message(&mut subkey_signer, MSG)?;
 
-    let oracle = invoke(&cert, &sig, GPGV)?;
+    let oracle = invoke(&cert, &sig, &GPGV[..])?;
     let us = invoke(&cert, &sig, GPGV_CHAMELEON)?;
 
     eprintln!("oracle: {}", oracle);
@@ -60,7 +65,7 @@ fn basic() -> Result<()> {
 
 #[test]
 fn cipher_suites() -> Result<()> {
-    build();
+    setup();
 
     use CipherSuite::*;
     for cs in vec![
@@ -85,7 +90,7 @@ fn cipher_suites() -> Result<()> {
         let sig = SignatureBuilder::new(SignatureType::Binary)
             .sign_message(&mut subkey_signer, MSG)?;
 
-        let oracle = invoke(&cert, &sig, GPGV)?;
+        let oracle = invoke(&cert, &sig, &GPGV[..])?;
         let us = invoke(&cert, &sig, GPGV_CHAMELEON)?;
 
         eprintln!("oracle: {}", oracle);
@@ -103,7 +108,7 @@ fn cipher_suites() -> Result<()> {
 
 #[test]
 fn signature_types() -> Result<()> {
-    build();
+    setup();
 
     use SignatureType::*;
     for typ in vec![
@@ -138,7 +143,7 @@ fn signature_types() -> Result<()> {
         let sig = SignatureBuilder::new(typ)
             .sign_message(&mut subkey_signer, MSG)?;
 
-        let oracle = invoke(&cert, &sig, GPGV)?;
+        let oracle = invoke(&cert, &sig, &GPGV[..])?;
         let us = invoke(&cert, &sig, GPGV_CHAMELEON)?;
 
         eprintln!("oracle: {}", oracle);
@@ -156,7 +161,7 @@ fn signature_types() -> Result<()> {
 
 #[test]
 fn extended() -> Result<()> {
-    build();
+    setup();
 
     let (cert, primary_revocation) = CertBuilder::new()
         .set_creation_time(SystemTime::now() - Duration::new(3600, 0))
@@ -251,7 +256,7 @@ fn extended() -> Result<()> {
                                 &mut subkey_signer,
                                 if good { MSG } else { MSG_BAD })?;
 
-                        let oracle = invoke(&cert, &sig, GPGV)?;
+                        let oracle = invoke(&cert, &sig, &GPGV[..])?;
                         let us = invoke(&cert, &sig, GPGV_CHAMELEON)?;
 
                         eprintln!("oracle: {}", oracle);
@@ -271,6 +276,28 @@ fn extended() -> Result<()> {
     Ok(())
 }
 
+/// Sets up the test environment.
+fn setup() {
+    check_gpgv_oracle();
+    build();
+}
+
+/// Makes sure that we're talking to the right oracle.
+fn check_gpgv_oracle() {
+    use std::sync::Once;
+
+    static START: Once = Once::new();
+    START.call_once(|| {
+        let o = Command::new(&GPGV[0])
+            .arg("--version").output().unwrap();
+        if String::from_utf8_lossy(&o.stdout).contains("equoia") {
+            panic!("The oracle {:?} is Sequoia-based, please provide the \
+                    stock gpgv in REAL_GPGV_BIN", GPGV[0]);
+        }
+    });
+}
+
+/// Makes sure that the chameleon is built once.
 fn build() {
     use std::sync::Once;
 

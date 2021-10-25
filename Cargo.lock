@@ -1087,6 +1087,7 @@ dependencies = [
  "dirs 3.0.2",
  "edit-distance",
  "home-dir",
+ "lazy_static",
  "libc",
  "sequoia-ipc",
  "sequoia-openpgp",
