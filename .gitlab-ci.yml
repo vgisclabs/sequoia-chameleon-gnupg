@@ -1,0 +1,14 @@
+image: registry.gitlab.com/sequoia-pgp/build-docker-image/bullseye:latest
+
+test:
+  script:
+    - if [ -d target ]; then find target | wc --lines; du -sh target; fi
+    - if [ -d cargo ]; then find cargo | wc --lines; du -sh cargo; fi
+    - rustc --version
+    - cargo --version
+    - cargo test
+
+variables:
+  CARGO_HOME: $CI_PROJECT_DIR/cargo
+  CARGO_FLAGS: --color always
+  CARGO_INCREMENTAL: 0
