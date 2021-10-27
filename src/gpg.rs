@@ -1,5 +1,4 @@
 use std::{
-    convert::TryInto,
     fs,
     io,
     path::PathBuf,
@@ -891,6 +890,7 @@ const OPTIONS: &[Opt<CmdOrOpt>] = &[
     Opt { short_opt: oNoop, long_opt: "no-disable-mdc", flags: TYPE_NONE, description: "@", },
 ];
 
+#[allow(dead_code)]
 struct Config {
     // Configuration.
     answer_no: bool,
@@ -1306,7 +1306,7 @@ struct KeyserverOptions {
 impl std::str::FromStr for KeyserverOptions {
     type Err = anyhow::Error;
 
-    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+    fn from_str(_s: &str) -> std::result::Result<Self, Self::Err> {
         Ok(Self {
             // XXX
         })
@@ -1396,6 +1396,7 @@ struct Sender {
     config: bool,
 }
 
+#[allow(dead_code, unused_variables, unused_assignments)]
 fn real_main() -> anyhow::Result<()> {
     let parser = argparse::Parser::new(
         "gpg",
