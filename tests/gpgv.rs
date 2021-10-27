@@ -3,7 +3,7 @@ use std::{
     fmt,
     fs,
     process::*,
-    time::*,
+    time::{SystemTime, Duration},
 };
 
 use anyhow::Result;
@@ -12,7 +12,7 @@ use sequoia_openpgp as openpgp;
 use openpgp::{
     cert::prelude::*,
     packet::{*, signature::*},
-    types::{ReasonForRevocation, SignatureType},
+    types::*,
     serialize::SerializeInto,
 };
 
@@ -92,6 +92,96 @@ fn cipher_suites() -> Result<()> {
 
         let oracle = invoke(&cert, &sig, &GPGV[..])?;
         let us = invoke(&cert, &sig, GPGV_CHAMELEON)?;
+
+        eprintln!("oracle: {}", oracle);
+        eprintln!("us: {}", us);
+
+        assert_eq!(oracle.status, us.status);
+        assert_eq!(oracle.normalized_status_messages(),
+                   us.normalized_status_messages());
+        assert!(oracle.stderr_edit_distance(&us)
+                < STDERR_EDIT_DISTANCE_THRESHOLD);
+    }
+
+    Ok(())
+}
+
+#[test]
+fn hash_algos() -> Result<()> {
+    setup();
+
+    use HashAlgorithm::*;
+    for algo in vec![
+        MD5,
+        // XXX: Upstream doesn't consider SHA1 weak.
+        // SHA1,
+        // XXX: Upstream doesn't consider RipeMD weak.
+        // RipeMD,
+        SHA256,
+        SHA384,
+        SHA512,
+        SHA224,
+    ] {
+        let (cert, _) = CertBuilder::new()
+            .add_userid("Alice Lovelace <alice@lovelace.name>")
+            .add_signing_subkey()
+            .generate()?;
+
+        let mut subkey_signer =
+            cert.keys().subkeys().secret().next().unwrap()
+            .key().clone().into_keypair()?;
+
+        let sig = SignatureBuilder::new(SignatureType::Binary)
+            .set_hash_algo(algo)
+            .sign_message(&mut subkey_signer, MSG)?;
+
+        let oracle = invoke(&cert, &sig, &GPGV[..])?;
+        let us = invoke(&cert, &sig, GPGV_CHAMELEON)?;
+
+        eprintln!("oracle: {}", oracle);
+        eprintln!("us: {}", us);
+
+        assert_eq!(oracle.status, us.status);
+        assert_eq!(oracle.normalized_status_messages(),
+                   us.normalized_status_messages());
+        assert!(oracle.stderr_edit_distance(&us)
+                < STDERR_EDIT_DISTANCE_THRESHOLD);
+    }
+
+    Ok(())
+}
+
+#[test]
+fn weak_hash_algos() -> Result<()> {
+    setup();
+
+    use HashAlgorithm::*;
+    for algo in vec![
+        MD5,
+        SHA1,
+        RipeMD,
+        SHA256,
+        SHA384,
+        SHA224,
+        SHA512,
+    ] {
+        let (cert, _) = CertBuilder::new()
+            .set_cipher_suite(CipherSuite::P521) // Forces SHA512.
+            .add_userid("Alice Lovelace <alice@lovelace.name>")
+            .add_signing_subkey()
+            .generate()?;
+
+        let mut subkey_signer =
+            cert.keys().subkeys().secret().next().unwrap()
+            .key().clone().into_keypair()?;
+
+        let sig = SignatureBuilder::new(SignatureType::Binary)
+            .set_hash_algo(algo)
+            .sign_message(&mut subkey_signer, MSG)?;
+
+        let weak = ["--weak-digest", &algo.to_string()];
+        let oracle = invoke_with(&cert, &sig, &GPGV[..], &weak)?;
+        let us = invoke_with(&cert, &sig, GPGV_CHAMELEON, &weak)?;
 
         eprintln!("oracle: {}", oracle);
         eprintln!("us: {}", us);
@@ -313,6 +403,11 @@ fn build() {
 }
 
 fn invoke(cert: &Cert, sig: &Signature, prog: &[&str]) -> Result<Output> {
+    invoke_with(cert, sig, prog, &[])
+}
+
+fn invoke_with(cert: &Cert, sig: &Signature, prog: &[&str], options: &[&str])
+               -> Result<Output> {
     let temp = tempfile::tempdir()?;
     let wd = temp.path();
 
@@ -322,6 +417,10 @@ fn invoke(cert: &Cert, sig: &Signature, prog: &[&str]) -> Result<Output> {
 
     let mut c = Command::new(&prog[0]);
     for arg in &prog[1..] {
+        c.arg(arg);
+    }
+
+    for arg in options {
         c.arg(arg);
     }
 

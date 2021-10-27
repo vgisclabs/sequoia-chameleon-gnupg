@@ -89,6 +89,7 @@ impl KeyDB {
     }
 
     /// Creates a KeyDB for gpgv.
+    #[allow(dead_code)]
     pub fn for_gpgv() -> Self {
         let mut db = Self::for_gpg();
         db.for_gpgv = true;

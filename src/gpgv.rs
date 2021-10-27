@@ -10,8 +10,14 @@ use anyhow::Context;
 
 use sequoia_openpgp as openpgp;
 use openpgp::{
+    cert::prelude::*,
     types::*,
-    policy::{Policy, StandardPolicy},
+    Packet,
+    packet::{
+        key::PublicParts,
+        Signature,
+    },
+    policy::{HashAlgoSecurity, Policy, StandardPolicy},
 };
 
 #[macro_use]
@@ -90,6 +96,7 @@ const OPTIONS: &[Opt<CmdOrOpt>] = &[
 struct Config {
     // Runtime.
     fail: std::cell::Cell<bool>,
+    policy: GPGVPolicy,
 
     // Configuration.
     debug: u32,
@@ -102,7 +109,6 @@ struct Config {
     quiet: bool,
     verbose: usize,
     verify_options: u32,
-    weak_digest: HashSet<HashAlgorithm>,
 
     // Streams.
     logger_fd: Box<dyn io::Write>,
@@ -116,6 +122,7 @@ impl Default for Config {
         Config {
             // Runtime.
             fail: Default::default(),
+            policy: Default::default(),
 
             // Configuration.
             debug: 0,
@@ -132,7 +139,6 @@ impl Default for Config {
             quiet: false,
             verbose: 0,
             verify_options: 0,
-            weak_digest: Default::default(),
 
             // Streams.
             logger_fd: Box::new(io::sink()),
@@ -168,7 +174,7 @@ impl control::Common for Config {
     }
 
     fn policy(&self) -> &dyn Policy {
-        POLICY
+        &self.policy
     }
 
     fn quiet(&self) -> bool {
@@ -189,6 +195,57 @@ impl control::Common for Config {
 
     fn status(&self) -> &status::Fd {
         &self.status_fd
+    }
+}
+
+#[derive(Debug, Default)]
+struct GPGVPolicy {
+    /// Additional weak hash algorithms.
+    ///
+    /// The value indicates whether a warning has been printed for
+    /// this algorithm.
+    weak_digests: HashSet<HashAlgorithm>,
+}
+
+impl Policy for GPGVPolicy {
+    fn signature(&self, sig: &Signature, sec: HashAlgoSecurity)
+                 -> openpgp::Result<()>
+    {
+        // First, consult the standard policy.
+        POLICY.signature(sig, sec)?;
+
+
+        // Then, consult our set.
+        if self.weak_digests.contains(&sig.hash_algo()) {
+            return Err(openpgp::Error::PolicyViolation(
+                sig.hash_algo().to_string(), None).into());
+        }
+
+        Ok(())
+    }
+
+    fn key(&self, ka: &ValidErasedKeyAmalgamation<'_, PublicParts>)
+           -> openpgp::Result<()>
+    {
+        POLICY.key(ka)
+    }
+
+    fn symmetric_algorithm(&self, algo: SymmetricAlgorithm)
+                           -> openpgp::Result<()>
+    {
+        POLICY.symmetric_algorithm(algo)
+    }
+
+    fn aead_algorithm(&self, algo: AEADAlgorithm)
+                      -> openpgp::Result<()>
+    {
+        POLICY.aead_algorithm(algo)
+    }
+
+    fn packet(&self, packet: &Packet)
+              -> openpgp::Result<()>
+    {
+        POLICY.packet(packet)
     }
 }
 
@@ -266,7 +323,7 @@ fn real_main() -> anyhow::Result<()> {
             },
 
 	    Argument::Option(oWeakDigest, value) => {
-                opt.weak_digest.insert(
+                opt.policy.weak_digests.insert(
                     argparse::utils::parse_digest(value.as_str().unwrap())?);
             },
 

@@ -91,3 +91,22 @@ impl fmt::Display for Fish<PublicKeyAlgorithm> {
         }
     }
 }
+
+impl fmt::Display for Fish<HashAlgorithm> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        use HashAlgorithm::*;
+        #[allow(deprecated)]
+        match self.0 {
+            MD5 => f.write_str("MD5"),
+            SHA1 => f.write_str("SHA1"),
+            RipeMD => f.write_str("RIPEMD160"),
+            SHA256 => f.write_str("SHA256"),
+            SHA384 => f.write_str("SHA384"),
+            SHA512 => f.write_str("SHA512"),
+            SHA224 => f.write_str("SHA224"),
+            Private(u) => write!(f, "Private({})", u),
+            Unknown(u) => write!(f, "Unknown({})", u),
+            catchall => write!(f, "{:?}", catchall),
+        }
+    }
+}

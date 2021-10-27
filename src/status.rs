@@ -321,11 +321,14 @@ fn e(sink: &mut dyn io::Write, s: impl AsRef<[u8]>) -> Result<()> {
 }
 
 #[allow(dead_code)]
+#[derive(Clone, Copy)]
 pub enum ErrSigStatus {
     UnsupportedAlgorithm,
     MissingKey,
     BadSignatureClass,
     UnexpectedRevocation,
+    WeakHash,
+    BadPublicKey,
 }
 
 impl fmt::Display for ErrSigStatus {
@@ -333,6 +336,8 @@ impl fmt::Display for ErrSigStatus {
         use ErrSigStatus::*;
         match self {
             UnsupportedAlgorithm => f.write_str("4"),
+            WeakHash => f.write_str("5"),
+            BadPublicKey => f.write_str("6"),
             MissingKey => f.write_str("9"),
             BadSignatureClass => f.write_str("32"),
             UnexpectedRevocation => f.write_str("52"),

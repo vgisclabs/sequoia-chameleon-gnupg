@@ -1,4 +1,5 @@
 use std::{
+    collections::HashSet,
     io,
 };
 
@@ -102,6 +103,12 @@ struct VHelper<'a> {
     bad_signatures: usize,
     bad_checksums: usize,
     broken_signatures: usize,
+
+    /// Weak hash algorithm warnings.
+    ///
+    /// The value indicates whether a warning has been printed for
+    /// this algorithm.
+    weak_digest_warning_printed: HashSet<HashAlgorithm>,
 }
 
 impl<'a> VHelper<'a> {
@@ -116,6 +123,7 @@ impl<'a> VHelper<'a> {
             bad_signatures: 0,
             bad_checksums: 0,
             broken_signatures: 0,
+            weak_digest_warning_printed: Default::default(),
         }
     }
 
@@ -170,9 +178,31 @@ impl<'a> VHelper<'a> {
         Ok(base64::encode_config(h.into_digest()?, base64::STANDARD_NO_PAD))
     }
 
-    fn emit_sig_header(&self, sig: &Signature) -> Result<bool> {
+    fn emit_signature<'c, C>(&mut self, sig: &Signature,
+                             err_sig_status: Option<ErrSigStatus>,
+                             cert: C, not_selected: bool)
+                             -> Result<bool>
+    where
+        C: Into<Option<&'c Cert>>,
+    {
         let good_signature_type = sig.typ() == SignatureType::Binary ||
             sig.typ() == SignatureType::Text;
+
+        let weak_hash =
+            if let Err(e) = self.control.policy().signature(
+                sig, HashAlgoSecurity::CollisionResistance)
+        {
+            // Yuck.  Get the hash algo back from the error.
+            if let Some(openpgp::Error::PolicyViolation(m, _)) =
+                e.downcast_ref()
+            {
+                m.parse::<HashAlgorithm>().ok()
+            } else {
+                None
+            }
+        } else {
+            None
+        };
 
         self.control.status().emit(Status::NewSig {
             signers_uid: sig.signers_user_id().map(Into::into),
@@ -195,10 +225,28 @@ impl<'a> VHelper<'a> {
                   .map(ToString::to_string)
                   .unwrap_or_else(|| "without issuer information".into()));
 
-        if good_signature_type {
+        if let Some(cert) = cert.into() {
+            if good_signature_type {
+                self.emit_key_considered(cert, not_selected)?;
+            }
+        }
+
+        if good_signature_type && weak_hash.is_none() {
             Ok(false)
         } else {
             use SignatureType::*;
+
+            if let Some(algo) = weak_hash.as_ref().cloned() {
+                if ! self.weak_digest_warning_printed.contains(&algo)
+                    && ! self.control.quiet()
+                {
+                    self.control.warn(format_args!(
+                        "Note: signatures using the {} \
+                         algorithm are rejected",
+                        babel::Fish(algo)));
+                    self.weak_digest_warning_printed.insert(algo);
+                }
+            }
 
             self.control.status().emit(Status::ErrSig {
                 issuer: sig.issuers().cloned().next()
@@ -208,7 +256,11 @@ impl<'a> VHelper<'a> {
                 pk_algo: sig.pk_algo(),
                 hash_algo: sig.hash_algo(),
                 sig_class: sig.typ(),
-                rc: if sig.typ() == KeyRevocation {
+                rc: if let Some(s) = err_sig_status {
+                    s
+                } else if weak_hash.is_some() {
+                    ErrSigStatus::WeakHash
+                } else if sig.typ() == KeyRevocation {
                     ErrSigStatus::UnexpectedRevocation
                 } else {
                     ErrSigStatus::BadSignatureClass
@@ -239,7 +291,19 @@ impl<'a> VHelper<'a> {
                 _ => (),
             }
 
-            if sig.typ() != KeyRevocation {
+            if let Some(s) = err_sig_status {
+                match s {
+                    ErrSigStatus::BadPublicKey =>
+                        self.control.error(
+                            format_args!("Can't check signature: \
+                                          Bad public key")),
+                    _ => unreachable!(),
+                }
+            } else if weak_hash.is_some() {
+                self.control.error(
+                    format_args!("Can't check signature: \
+                                  Invalid digest algorithm"));
+            } else if sig.typ() != KeyRevocation {
                 self.control.error(
                     format_args!("Can't check signature: \
                                   Invalid signature class"));
@@ -397,16 +461,17 @@ impl<'a> VHelper<'a> {
         for result in results {
             match result {
                 Ok(GoodChecksum { sig, ka, .. }) => {
-                    if self.emit_sig_header(sig)? {
+                    if self.emit_signature(sig, None, ka.cert().cert(), false)?
+                    {
                         continue;
                     }
-                    self.emit_key_considered(ka.cert(), false)?;
                     self.emit_good_signature(sig, ka, None)?;
 
                     self.good_signatures += 1;
                 },
                 Err(MalformedSignature { sig, error, .. }) => {
-                    if self.emit_sig_header(sig)? {
+                    if self.emit_signature(sig, None, None, false)?
+                    {
                         continue;
                     }
                     eprintln!("Malformed signature:");
@@ -415,7 +480,8 @@ impl<'a> VHelper<'a> {
                     continue;
                 },
                 Err(MissingKey { sig, .. }) => {
-                    if self.emit_sig_header(sig)? {
+                    if self.emit_signature(sig, None, None, false)?
+                    {
                         continue;
                     }
                     let issuer = sig.get_issuers().get(0)
@@ -430,11 +496,13 @@ impl<'a> VHelper<'a> {
                     continue;
                 },
                 Err(UnboundKey { sig, cert, error, .. }) => {
-                    if self.emit_sig_header(sig)? {
+                    // XXX does this case map to KEY_CONSIDERED not_selected?
+                    // XXX apparently not...
+                    if self.emit_signature(
+                        sig, Some(ErrSigStatus::BadPublicKey), *cert, false)?
+                    {
                         continue;
                     }
-                    // XXX does this case map to KEY_CONSIDERED not_selected?
-                    self.emit_key_considered(cert, true)?;
                     eprintln!("Signing key on {} is not bound:",
                               cert.fingerprint());
                     print_error_chain(error);
@@ -442,10 +510,10 @@ impl<'a> VHelper<'a> {
                     continue;
                 },
                 Err(BadKey { sig, ka, error, .. }) => {
-                    if self.emit_sig_header(sig)? {
+                    if self.emit_signature(sig, None, ka.cert().cert(), false)?
+                    {
                         continue;
                     }
-                    self.emit_key_considered(ka.cert(), false)?;
 
                     let mut sig = (*sig).clone();
                     let openpgp_error = error.downcast_ref::<openpgp::Error>();
@@ -468,10 +536,10 @@ impl<'a> VHelper<'a> {
                     continue;
                 },
                 Err(BadSignature { sig, ka, error }) => {
-                    if self.emit_sig_header(sig)? {
+                    if self.emit_signature(sig, None, ka.cert().cert(), false)?
+                    {
                         continue;
                     }
-                    self.emit_key_considered(ka.cert(), false)?;
                     let openpgp_error = error.downcast_ref::<openpgp::Error>();
                     self.emit_bad_signature(ka, openpgp_error)?;
 
