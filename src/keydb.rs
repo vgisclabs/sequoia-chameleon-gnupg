@@ -20,6 +20,7 @@ use openpgp::{
     parse::Parse,
 };
 
+#[allow(dead_code)]
 pub struct KeyDB {
     for_gpgv: bool,
     resources: Vec<Resource>,
@@ -38,6 +39,7 @@ struct Resource {
 }
 
 #[derive(PartialEq, Eq, Clone, Copy)]
+#[allow(dead_code)]
 pub enum Kind {
     Keybox,
     Keyring,
@@ -45,6 +47,7 @@ pub enum Kind {
 
 impl Kind {
     /// Guesses the kind by probing for magic bytes.
+    #[allow(dead_code)]
     fn guess<P>(path: P) -> Result<Option<Self>>
     where
         P: AsRef<Path>,
@@ -96,6 +99,7 @@ impl KeyDB {
         db
     }
 
+    #[allow(dead_code)]
     pub fn add_resource<U>(&mut self,
                            home_dir: &Path,
                            url: U,
@@ -210,12 +214,14 @@ impl KeyDB {
     }
 
     /// Looks up a cert by key handle.
+    #[allow(dead_code)]
     pub fn get(&self, handle: &KeyHandle) -> Option<&Cert> {
         self.by_subkey(handle)
            .or_else(|| self.by_primary(handle))
     }
 
     /// Looks up a cert by primary key handle.
+    #[allow(dead_code)]
     pub fn by_primary(&self, handle: &KeyHandle) -> Option<&Cert> {
         match handle {
             KeyHandle::Fingerprint(fp) =>
@@ -236,6 +242,7 @@ impl KeyDB {
     }
 
     /// Initializes the store, if not already done.
+    #[allow(dead_code)]
     pub fn initialize(&mut self) -> Result<()> {
         if self.initialized {
             return Ok(());

@@ -13,6 +13,7 @@ use crate::{
 };
 
 /// Opens a (special) file.
+#[allow(dead_code)]
 pub fn open(control: &dyn control::Common, name: &str)
             -> Result<Box<dyn io::Read + Send + Sync>>
 {
@@ -29,6 +30,7 @@ pub fn open(control: &dyn control::Common, name: &str)
 }
 
 /// Opens multiple (special) files, joining them into one stream.
+#[allow(dead_code)]
 pub fn open_multiple(control: &dyn control::Common, names: &[String])
                      -> Box<dyn io::Read + Send + Sync>
 {
@@ -84,6 +86,7 @@ impl io::Read for MultiReader {
 }
 
 /// Opens a (special) file for writing.
+#[allow(dead_code)]
 pub fn create(control: &dyn control::Common, name: &str)
               -> Result<Box<dyn io::Write + Send + Sync>>
 {

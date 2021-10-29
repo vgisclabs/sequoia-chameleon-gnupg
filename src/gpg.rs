@@ -1383,6 +1383,7 @@ enum Keyring {
     Secondary(PathBuf),
 }
 
+#[allow(dead_code)]
 struct Recipient {
     name: String,
     hidden: bool,
@@ -1391,6 +1392,7 @@ struct Recipient {
     additional: bool,
 }
 
+#[allow(dead_code)]
 struct Sender {
     name: String,
     config: bool,

@@ -27,6 +27,7 @@ impl<S: io::Write + Send + Sync + 'static> From<S> for Fd {
 }
 
 impl Fd {
+    #[allow(dead_code)]
     pub fn emit(&self, status: Status) -> Result<()> {
         status.emit(&mut *self.0.lock().expect("not poisoned").borrow_mut())
     }
@@ -111,6 +112,7 @@ pub enum Status {
 }
 
 impl Status {
+    #[allow(dead_code)]
     fn emit(&self, w: &mut impl io::Write) -> Result<()> {
         w.write_all(b"[GNUPG:] ")?;
 
