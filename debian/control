@@ -1,0 +1,29 @@
+Source: sequoia-chameleon-gnupg
+Maintainer: Lars Wirzenius <liw@liw.fi>
+Section: admin
+Priority: optional
+Standards-Version: 4.2.0
+Build-Depends:
+ debhelper (>= 10~),
+ dh-cargo,
+ build-essential,
+ git,
+ rustc,
+ cargo,
+ clang,
+ libclang-dev,
+ make,
+ pkg-config,
+ nettle-dev,
+ libssl-dev,
+ capnproto,
+ libsqlite3-dev
+Homepage: https://sequoia-pgp.org/
+
+Package: sequoia-chameleon-gnupg
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Built-Using: ${cargo:Built-Using}
+Description: unofficial Sequoia-PGP GnuPG lookalike
+ This is an unofficial package of the Sequoia-PGP command line tools
+ that mimic how GnuPG's gpg and gpgv work.
