@@ -109,6 +109,10 @@ pub enum Status {
     KeyExpired {
         at: SystemTime,
     },
+
+    NoPubkey {
+        issuer: KeyID,
+    },
 }
 
 impl Status {
@@ -281,6 +285,12 @@ impl Status {
                 let t = chrono::DateTime::<chrono::Utc>::from(*at);
                 writeln!(w, "KEYEXPIRED {}", t.format("%s"))?;
             },
+
+            NoPubkey {
+                issuer,
+            } => {
+                writeln!(w, "NO_PUBKEY {:X}", issuer)?;
+            },
         }
 
         Ok(())
@@ -331,6 +341,7 @@ pub enum ErrSigStatus {
     UnexpectedRevocation,
     WeakHash,
     BadPublicKey,
+    WrongKeyUsage,
 }
 
 impl fmt::Display for ErrSigStatus {
@@ -343,6 +354,7 @@ impl fmt::Display for ErrSigStatus {
             MissingKey => f.write_str("9"),
             BadSignatureClass => f.write_str("32"),
             UnexpectedRevocation => f.write_str("52"),
+            WrongKeyUsage => f.write_str("125"),
         }
     }
 }

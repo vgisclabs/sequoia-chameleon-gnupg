@@ -11,7 +11,7 @@ use anyhow::Result;
 use sequoia_openpgp as openpgp;
 use openpgp::{
     cert::prelude::*,
-    packet::{*, signature::*},
+    packet::{*, signature::*, key::*},
     types::*,
     serialize::SerializeInto,
 };
@@ -360,6 +360,60 @@ fn extended() -> Result<()> {
                     }
                 }
             }
+        }
+    }
+
+    Ok(())
+}
+
+#[test]
+fn wrong_key() -> Result<()> {
+    setup();
+
+    let (cert, _) = CertBuilder::new()
+        .set_cipher_suite(CipherSuite::RSA2k)
+        .set_creation_time(SystemTime::now() - Duration::new(3600, 0))
+        .add_userid("Alice Lovelace <alice@lovelace.name>")
+        .add_signing_subkey()
+        .add_authentication_subkey()
+        .add_storage_encryption_subkey()
+        .add_transport_encryption_subkey()
+        .generate()?;
+    let standalone: Key<SecretParts, UnspecifiedRole> =
+        Key4::generate_ecc(true, Curve::Ed25519)?.into();
+
+    for (i, mut signer) in cert
+        .keys()
+        .map(|ka| ka.key().clone().parts_into_secret().unwrap())
+        .chain(std::iter::once(standalone))
+        .map(|key| key.into_keypair().unwrap())
+        .enumerate()
+    {
+        for good in vec![false, true] {
+            dbg!((i, good));
+            let sig = SignatureBuilder::new(SignatureType::Binary)
+                .sign_message(
+                    &mut signer,
+                    if good { MSG } else { MSG_BAD })?;
+
+            let oracle = invoke(&cert, &sig, &GPGV[..])?;
+            let us = invoke(&cert, &sig, GPGV_CHAMELEON)?;
+
+            if false {
+                std::fs::write("/tmp/key", cert.to_vec()?)?;
+                std::fs::write("/tmp/sig",
+                               Packet::from(sig.clone()).to_vec()?)?;
+                std::fs::write("/tmp/msg", MSG)?;
+            }
+
+            eprintln!("oracle: {}", oracle);
+            eprintln!("us: {}", us);
+
+            assert_eq!(oracle.status, us.status);
+            assert_eq!(oracle.normalized_status_messages(),
+                       us.normalized_status_messages());
+            assert!(oracle.stderr_edit_distance(&us)
+                    < STDERR_EDIT_DISTANCE_THRESHOLD);
         }
     }
 

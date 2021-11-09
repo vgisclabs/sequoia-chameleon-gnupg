@@ -178,13 +178,19 @@ impl<'a> VHelper<'a> {
         Ok(base64::encode_config(h.into_digest()?, base64::STANDARD_NO_PAD))
     }
 
-    fn emit_signature<'c, C>(&mut self, sig: &Signature,
-                             err_sig_status: Option<ErrSigStatus>,
-                             cert: C, not_selected: bool)
-                             -> Result<bool>
+    fn emit_signature<'c, C, K, E>(&mut self, sig: &Signature,
+                                   ka: K,
+                                   err_sig_status: E,
+                                   cert: C, not_selected: bool)
+                                   -> Result<bool>
     where
+        K: Into<Option<&'c ValidErasedKeyAmalgamation<'c, key::PublicParts>>>,
+        E: Into<Option<ErrSigStatus>>,
         C: Into<Option<&'c Cert>>,
     {
+        let ka = ka.into();
+        let err_sig_status = err_sig_status.into();
+
         let good_signature_type = sig.typ() == SignatureType::Binary ||
             sig.typ() == SignatureType::Text;
 
@@ -231,7 +237,9 @@ impl<'a> VHelper<'a> {
             }
         }
 
-        if good_signature_type && weak_hash.is_none() {
+        if good_signature_type && weak_hash.is_none()
+            && err_sig_status.is_none()
+        {
             Ok(false)
         } else {
             use SignatureType::*;
@@ -297,6 +305,29 @@ impl<'a> VHelper<'a> {
                         self.control.error(
                             format_args!("Can't check signature: \
                                           Bad public key")),
+                    ErrSigStatus::WrongKeyUsage => {
+                        self.control.error(
+                            format_args!("bad data signature from key {:X}: \
+                                          Wrong key usage (0x{:02x}, 0x{:x})",
+                                         ka.map(|ka| ka.keyid())
+                                         .unwrap_or_else(|| KeyID::wildcard()),
+                                         u8::from(sig.typ()),
+                                         ka.and_then(|ka| ka.key_flags())
+                                         .map(key_flags_to_usage)
+                                         .unwrap_or(0)));
+                        self.control.error(
+                            format_args!("Can't check signature: \
+                                          Wrong key usage"));
+                    },
+                    ErrSigStatus::MissingKey => {
+                        self.control.status().emit(Status::NoPubkey {
+                            issuer: sig.get_issuers().get(0).map(Into::into)
+                                .unwrap_or_else(KeyID::wildcard),
+                        })?;
+                        self.control.error(
+                            format_args!("Can't check signature: \
+                                          No public key"));
+                    },
                     _ => unreachable!(),
                 }
             } else if weak_hash.is_some() {
@@ -461,7 +492,8 @@ impl<'a> VHelper<'a> {
         for result in results {
             match result {
                 Ok(GoodChecksum { sig, ka, .. }) => {
-                    if self.emit_signature(sig, None, ka.cert().cert(), false)?
+                    if self.emit_signature(sig, ka, None, ka.cert().cert(),
+                                           false)?
                     {
                         continue;
                     }
@@ -470,7 +502,7 @@ impl<'a> VHelper<'a> {
                     self.good_signatures += 1;
                 },
                 Err(MalformedSignature { sig, error, .. }) => {
-                    if self.emit_signature(sig, None, None, false)?
+                    if self.emit_signature(sig, None, None, None, false)?
                     {
                         continue;
                     }
@@ -480,7 +512,8 @@ impl<'a> VHelper<'a> {
                     continue;
                 },
                 Err(MissingKey { sig, .. }) => {
-                    if self.emit_signature(sig, None, None, false)?
+                    if self.emit_signature(sig, None, ErrSigStatus::MissingKey,
+                                           None, false)?
                     {
                         continue;
                     }
@@ -499,7 +532,8 @@ impl<'a> VHelper<'a> {
                     // XXX does this case map to KEY_CONSIDERED not_selected?
                     // XXX apparently not...
                     if self.emit_signature(
-                        sig, Some(ErrSigStatus::BadPublicKey), *cert, false)?
+                        sig, None, ErrSigStatus::BadPublicKey, *cert,
+                        false)?
                     {
                         continue;
                     }
@@ -510,7 +544,16 @@ impl<'a> VHelper<'a> {
                     continue;
                 },
                 Err(BadKey { sig, ka, error, .. }) => {
-                    if self.emit_signature(sig, None, ka.cert().cert(), false)?
+                    let e =
+                        if ! ka.binding_signature().key_flags()
+                        .map(|f| f.for_signing()).unwrap_or(false)
+                    {
+                        Some(ErrSigStatus::WrongKeyUsage)
+                    } else {
+                        None
+                    };
+
+                    if self.emit_signature(sig, ka, e, ka.cert().cert(), false)?
                     {
                         continue;
                     }
@@ -536,7 +579,8 @@ impl<'a> VHelper<'a> {
                     continue;
                 },
                 Err(BadSignature { sig, ka, error }) => {
-                    if self.emit_signature(sig, None, ka.cert().cert(), false)?
+                    if self.emit_signature(sig, ka, None, ka.cert().cert(),
+                                           false)?
                     {
                         continue;
                     }
@@ -589,4 +633,30 @@ impl<'a> VerificationHelper for VHelper<'a> {
             Err(anyhow::anyhow!("Verification failed"))
         }
     }
+}
+
+const GCRY_PK_USAGE_SIGN: u8 = 1;   // Good for signatures.
+const GCRY_PK_USAGE_ENCR: u8 = 2;   // Good for encryption.
+const GCRY_PK_USAGE_CERT: u8 = 4;   // Good to certify other keys.
+const GCRY_PK_USAGE_AUTH: u8 = 8;   // Good for authentication.
+const GCRY_PK_USAGE_UNKN: u8 = 128; // Unknown usage flag.
+
+/// Converts KeyFlags to a gcrypt-style key usage octet.
+fn key_flags_to_usage(f: KeyFlags) -> u8 {
+    0
+    | if f.for_signing()              { GCRY_PK_USAGE_SIGN } else { 0 }
+    | if f.for_transport_encryption() { GCRY_PK_USAGE_ENCR } else { 0 }
+    | if f.for_storage_encryption()   { GCRY_PK_USAGE_ENCR } else { 0 }
+    | if f.for_certification()        { GCRY_PK_USAGE_CERT } else { 0 }
+    | if f.for_authentication()       { GCRY_PK_USAGE_AUTH } else { 0 }
+    | if ! f
+        .clear_signing()
+        .clear_transport_encryption()
+        .clear_storage_encryption()
+        .clear_certification()
+        .clear_authentication()
+    // XXX: Enable this once we use sequoia-openpgp 1.6.
+    // .clear_group_key()
+        .clear_split_key()
+        .is_empty()                   { GCRY_PK_USAGE_UNKN } else { 0 }
 }
