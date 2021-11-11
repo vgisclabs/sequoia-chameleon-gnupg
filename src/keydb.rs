@@ -20,6 +20,9 @@ use openpgp::{
     parse::Parse,
 };
 
+/// Controls tracing.
+const TRACE: bool = false;
+
 #[allow(dead_code)]
 pub struct KeyDB {
     for_gpgv: bool,
@@ -52,6 +55,9 @@ impl Kind {
     where
         P: AsRef<Path>,
     {
+        tracer!(TRACE, "Kind::guess");
+        t!("Guessing kind of {:?}", path.as_ref());
+
         let mut magic = [0; 4];
         let mut f = fs::File::open(path)?;
         f.read_exact(&mut magic)?;
@@ -59,6 +65,7 @@ impl Kind {
         if magic == [0x13, 0x57, 0x9a, 0xce]
             || magic == [0xce, 0x9a, 0x57, 0x13]
         {
+            t!("-> No longer supported.");
             return Ok(None);
         } else {
             let mut verbuf = [0; 4];
@@ -66,6 +73,7 @@ impl Kind {
             f.read_exact(&mut magic)?;
             if verbuf[0] == 1 && &magic[..] == b"KBXf" {
                 if verbuf[3] & 0x02 == 0x02 {
+                    t!("-> Keybox.");
                     return Ok(Some(Kind::Keybox));
                 } else {
                     return Ok(None);
@@ -73,6 +81,7 @@ impl Kind {
             }
         }
 
+        t!("-> Keyring.");
         Ok(Some(Kind::Keyring))
     }
 }
@@ -109,6 +118,10 @@ impl KeyDB {
     where
         U: AsRef<str>,
     {
+        tracer!(TRACE, "KeyDB::add_resource");
+        t!("home_dir {:?}, url {:?}, read_only {:?}, default {:?}",
+           home_dir, url.as_ref(), read_only, default);
+
         let mut url = url.as_ref();
         let mut kind = None;
         let create = ! read_only && self.resources.is_empty();
@@ -129,8 +142,10 @@ impl KeyDB {
         if path.components().count() == 1 {
             path = home_dir.join(path);
         }
+        t!("abolute path: {:?}", path);
 
         if kind.is_none() {
+            t!("Kind is unknown, using heuristic");
             if path.exists() {
                 kind = Kind::guess(&path)?;
                 if let Some(Kind::Keyring) = kind {
