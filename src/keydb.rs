@@ -132,9 +132,8 @@ impl KeyDB {
 
         if kind.is_none() {
             if path.exists() {
-                if let Some(Kind::Keyring) = Kind::guess(&path)? {
-                    kind = Some(Kind::Keyring);
-
+                kind = Kind::guess(&path)?;
+                if let Some(Kind::Keyring) = kind {
                     // Now let us check whether in addition to the
                     // "pubring.gpg" a "pubring.kbx with openpgp keys
                     // exists.  This is so that GPG 2.1 will use an
