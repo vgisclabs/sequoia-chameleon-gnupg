@@ -506,8 +506,10 @@ impl<'a> VHelper<'a> {
                     {
                         continue;
                     }
-                    eprintln!("Malformed signature:");
-                    print_error_chain(error);
+                    if self.control.verbose() > 0 {
+                        eprintln!("Malformed signature:");
+                        print_error_chain(error);
+                    }
                     self.broken_signatures += 1;
                     continue;
                 },
@@ -515,18 +517,17 @@ impl<'a> VHelper<'a> {
                     if self.emit_signature(sig, None, ErrSigStatus::MissingKey,
                                            None, false)?
                     {
+                        if self.control.verbose() > 0 {
+                            let issuer = sig.get_issuers().get(0)
+                                .expect("missing key checksum has an issuer")
+                                .to_string();
+                            eprintln!("No key to check signature from {}",
+                                      issuer);
+                        }
+                        self.unknown_checksums += 1;
                         continue;
                     }
-                    let issuer = sig.get_issuers().get(0)
-                        .expect("missing key checksum has an issuer")
-                        .to_string();
-                    let what = match sig.level() {
-                        0 => "checksum".into(),
-                        n => format!("level {} notarizing checksum", n),
-                    };
-                    eprintln!("No key to check {} from {}", what, issuer);
-                    self.unknown_checksums += 1;
-                    continue;
+                    unreachable!("emit_signature with error short-circuits")
                 },
                 Err(UnboundKey { sig, cert, error, .. }) => {
                     // XXX does this case map to KEY_CONSIDERED not_selected?
@@ -535,13 +536,14 @@ impl<'a> VHelper<'a> {
                         sig, None, ErrSigStatus::BadPublicKey, *cert,
                         false)?
                     {
+                        if self.control.verbose() > 0 {
+                            eprintln!("Signing key on {} is not bound:",
+                                      cert.fingerprint());
+                            print_error_chain(error);
+                        }
                         continue;
                     }
-                    eprintln!("Signing key on {} is not bound:",
-                              cert.fingerprint());
-                    print_error_chain(error);
-                    self.bad_checksums += 1;
-                    continue;
+                    unreachable!("emit_signature with error short-circuits")
                 },
                 Err(BadKey { sig, ka, error, .. }) => {
                     let e =
@@ -609,15 +611,8 @@ impl<'a> VerificationHelper for VHelper<'a> {
     fn check(&mut self, structure: MessageStructure) -> Result<()> {
         for layer in structure {
             match layer {
-                MessageLayer::Compression { algo } =>
-                    eprintln!("Compressed using {}", algo),
-                MessageLayer::Encryption { sym_algo, aead_algo } =>
-                    if let Some(aead_algo) = aead_algo {
-                        eprintln!("Encrypted and protected using {}/{}",
-                                  sym_algo, aead_algo);
-                    } else {
-                        eprintln!("Encrypted using {}", sym_algo);
-                    },
+                MessageLayer::Compression { .. } => (),
+                MessageLayer::Encryption { .. } => (),
                 MessageLayer::SignatureGroup { ref results } =>
                     self.print_sigs(results)?,
             }
