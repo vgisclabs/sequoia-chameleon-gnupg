@@ -219,17 +219,17 @@ impl<'a> VHelper<'a> {
                 format_args!("standalone signature of class 0x{:02x}",
                              u8::from(sig.typ())));
         }
-        eprintln!("{}: Signature made {}",
-                  "gpgv",
-                  sig.signature_creation_time()
-                  .map(|t| babel::Fish(t).to_string())
-                  .unwrap_or_else(|| "without creation time".into()));
-        eprintln!("{}:                using {} key {}",
-                  "gpgv",
-                  babel::Fish(sig.pk_algo()),
-                  sig.get_issuers().get(0)
-                  .map(ToString::to_string)
-                  .unwrap_or_else(|| "without issuer information".into()));
+        self.control.warn(format_args!(
+            "Signature made {}",
+            sig.signature_creation_time()
+                .map(|t| babel::Fish(t).to_string())
+                .unwrap_or_else(|| "without creation time".into())));
+        self.control.warn(format_args!(
+            "               using {} key {}",
+            babel::Fish(sig.pk_algo()),
+            sig.get_issuers().get(0)
+                .map(ToString::to_string)
+                .unwrap_or_else(|| "without issuer information".into())));
 
         if let Some(cert) = cert.into() {
             if good_signature_type {
@@ -410,13 +410,13 @@ impl<'a> VHelper<'a> {
                 String::from_utf8_lossy(u.value()).to_string()
             })
             .unwrap_or_else(|_| ka.fingerprint().to_string());
-        eprintln!("{}: Good signature from {:?}",
-                  "gpgv", primary_uid);
+        self.control.warn(format_args!(
+            "Good signature from {:?}", primary_uid));
         for uid in ka.cert().userids() {
             let uid = String::from_utf8_lossy(uid.value());
             if uid != primary_uid {
-                eprintln!("{}:                     {:?}",
-                          "gpgv", uid);
+                self.control.warn(format_args!(
+                    "                    {:?}", uid));
             }
         }
 
@@ -474,13 +474,13 @@ impl<'a> VHelper<'a> {
                 .unwrap_or_else(|_| b"unknown"[..].into()),
         })?;
 
-        eprintln!("{}: BAD signature from {:?}",
-                  "gpgv",
-                  ka.cert().primary_userid().map(|u| {
-                      String::from_utf8_lossy(u.value()).to_string()
-                  })
-                  .unwrap_or_else(|_|
-                                  ka.fingerprint().to_string()));
+        self.control.warn(format_args!(
+            "BAD signature from {:?}",
+            ka.cert().primary_userid().map(|u| {
+                String::from_utf8_lossy(u.value()).to_string()
+            })
+                .unwrap_or_else(|_|
+                                ka.fingerprint().to_string())));
 
         self.bad_checksums += 1;
         Ok(())
