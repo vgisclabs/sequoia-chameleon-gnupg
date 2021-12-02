@@ -1,7 +1,9 @@
 use std::{
+    collections::HashSet,
+    fmt,
     fs,
     io,
-    path::PathBuf,
+    path::{Path, PathBuf},
     time,
 };
 
@@ -9,6 +11,13 @@ use anyhow::{Context, Result};
 
 use sequoia_openpgp as openpgp;
 use openpgp::{
+    cert::prelude::*,
+    packet::{
+        prelude::*,
+        key::PublicParts,
+        Signature,
+    },
+    policy::{HashAlgoSecurity, Policy, StandardPolicy},
     types::*,
 };
 
@@ -17,6 +26,7 @@ mod macros;
 #[allow(dead_code)]
 mod argparse;
 use argparse::{Argument, Opt, flags::*};
+mod babel;
 mod control;
 mod keydb;
 #[allow(dead_code)]
@@ -24,6 +34,7 @@ mod flags;
 use flags::*;
 mod status;
 mod utils;
+mod verify;
 
 /// Commands and options.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -892,6 +903,10 @@ const OPTIONS: &[Opt<CmdOrOpt>] = &[
 
 #[allow(dead_code)]
 struct Config {
+    // Runtime.
+    fail: std::cell::Cell<bool>,
+    policy: GPGPolicy,
+
     // Configuration.
     answer_no: bool,
     answer_yes: bool,
@@ -927,6 +942,7 @@ struct Config {
     import_options: u32,
     input_size_hint: Option<u64>,
     interactive: bool,
+    keydb: keydb::KeyDB,
     keyserver: KeyserverURL,
     keyserver_options: KeyserverOptions,
     list_options: u32,
@@ -981,12 +997,16 @@ struct Config {
     attribute_fd: Box<dyn io::Write>,
     command_fd: Box<dyn io::Read>,
     logger_fd: Box<dyn io::Write>,
-    status_fd: Box<dyn io::Write>,
+    status_fd: status::Fd,
 }
 
 impl Default for Config {
     fn default() -> Self {
         Config {
+            // Runtime.
+            fail: Default::default(),
+            policy: Default::default(),
+
             // Configuration.
             answer_no: false,
             answer_yes: false,
@@ -1026,6 +1046,7 @@ impl Default for Config {
             import_options: Default::default(),
             input_size_hint: None,
             interactive: false,
+            keydb: keydb::KeyDB::for_gpg(),
             keyserver: Default::default(),
             keyserver_options: Default::default(),
             list_options: Default::default(),
@@ -1080,7 +1101,7 @@ impl Default for Config {
             attribute_fd: Box::new(io::sink()),
             command_fd: Box::new(io::empty()),
             logger_fd: Box::new(io::sink()),
-            status_fd: Box::new(io::sink()),
+            status_fd: Box::new(io::sink()).into(),
         }
     }
 }
@@ -1124,6 +1145,110 @@ impl Config {
         }
 
         Ok(())
+    }
+}
+
+impl control::Common for Config {
+    fn argv0(&self) -> &'static str {
+        "gpg"
+    }
+
+    fn error(&self, msg: fmt::Arguments) {
+        self.warn(msg);
+        self.fail.set(true);
+    }
+
+    fn debug(&self) -> u32 {
+        self.debug
+    }
+
+    fn homedir(&self) -> &Path {
+        &self.homedir
+    }
+
+    fn keydb(&self) -> &keydb::KeyDB {
+        &self.keydb
+    }
+
+    fn outfile(&self) -> Option<&String> {
+        self.outfile.as_ref()
+    }
+
+    fn policy(&self) -> &dyn Policy {
+        &self.policy
+    }
+
+    fn quiet(&self) -> bool {
+        self.quiet
+    }
+
+    fn verbose(&self) -> usize {
+        self.verbose
+    }
+
+    fn special_filenames(&self) -> bool {
+        false // XXX: is there no self.enable_special_filenames in gpg?
+    }
+
+    fn logger(&mut self) -> &mut dyn io::Write {
+        &mut self.logger_fd
+    }
+
+    fn status(&self) -> &status::Fd {
+        &self.status_fd
+    }
+}
+
+const POLICY: &dyn Policy = &StandardPolicy::new();
+
+#[derive(Debug, Default)]
+struct GPGPolicy {
+    /// Additional weak hash algorithms.
+    ///
+    /// The value indicates whether a warning has been printed for
+    /// this algorithm.
+    weak_digests: HashSet<HashAlgorithm>,
+}
+
+impl Policy for GPGPolicy {
+    fn signature(&self, sig: &Signature, sec: HashAlgoSecurity)
+                 -> openpgp::Result<()>
+    {
+        // First, consult the standard policy.
+        POLICY.signature(sig, sec)?;
+
+
+        // Then, consult our set.
+        if self.weak_digests.contains(&sig.hash_algo()) {
+            return Err(openpgp::Error::PolicyViolation(
+                sig.hash_algo().to_string(), None).into());
+        }
+
+        Ok(())
+    }
+
+    fn key(&self, ka: &ValidErasedKeyAmalgamation<'_, PublicParts>)
+           -> openpgp::Result<()>
+    {
+        POLICY.key(ka)
+    }
+
+    fn symmetric_algorithm(&self, algo: SymmetricAlgorithm)
+                           -> openpgp::Result<()>
+    {
+        POLICY.symmetric_algorithm(algo)
+    }
+
+    fn aead_algorithm(&self, algo: AEADAlgorithm)
+                      -> openpgp::Result<()>
+    {
+        POLICY.aead_algorithm(algo)
+    }
+
+    fn packet(&self, packet: &Packet)
+              -> openpgp::Result<()>
+    {
+        POLICY.packet(packet)
     }
 }
 
@@ -1379,8 +1504,17 @@ fn deprecated_warning(s: &str, repl1: &str, repl2: &str) {
 }
 
 enum Keyring {
-    Primary(PathBuf),
-    Secondary(PathBuf),
+    Primary(String),
+    Secondary(String),
+}
+
+impl AsRef<str> for Keyring {
+    fn as_ref(&self) -> &str {
+        match self {
+            Keyring::Primary(s) => s,
+            Keyring::Secondary(s) => s,
+        }
+    }
 }
 
 #[allow(dead_code)]
@@ -1423,6 +1557,7 @@ fn real_main() -> anyhow::Result<()> {
     }
 
     let mut opt = Config::default();
+    let mut args = Vec::new();
     let mut command = None;
     let mut greeting = false;
     let mut no_greeting = false;
@@ -1474,7 +1609,10 @@ fn real_main() -> anyhow::Result<()> {
 
         let (cmd, value) = match argument {
             Argument::Option(cmd, value) => (cmd, value),
-            Argument::Positional(arg) => unimplemented!(),
+            Argument::Positional(arg) => {
+                args.push(arg);
+                continue;
+            },
         };
         eprintln!("{:?} {:?}", cmd, value);
 
@@ -1712,11 +1850,12 @@ fn real_main() -> anyhow::Result<()> {
             },
 
 	    oStatusFD => {
-                opt.status_fd = utils::sink_from_fd(value.as_int().unwrap())?;
+                opt.status_fd =
+                    utils::sink_from_fd(value.as_int().unwrap())?.into();
             },
 	    oStatusFile => {
                 opt.status_fd =
-                    Box::new(fs::File::create(value.as_str().unwrap())?);
+                    Box::new(fs::File::create(value.as_str().unwrap())?).into();
             },
 	    oAttributeFD => {
                 opt.attribute_fd = utils::sink_from_fd(value.as_int().unwrap())?;
@@ -2221,9 +2360,33 @@ fn real_main() -> anyhow::Result<()> {
         eprintln!("Greetings from the people of earth!");
     }
 
-    dbg!(command);
+    // XXX: More option frobbing.
 
-    Ok(())
+    // Get the default one if no keyring has been specified.
+    if keyrings.is_empty() {
+        opt.keydb.add_resource(&opt.homedir, "pubring.gpg", true, true)?;
+    }
+
+    for path in keyrings {
+        opt.keydb.add_resource(&opt.homedir, path, true, false)?;
+    }
+
+    opt.keydb.initialize()?;
+    let result = match command {
+        Some(aVerify) => verify::cmd_verify(&opt, &args),
+        c => unimplemented!("{:?}", c),
+    };
+
+    match result {
+        Ok(()) => {
+            if opt.fail.get() {
+                std::process::exit(2);
+            }
+            Ok(())
+        },
+        Err(e) if opt.verbose > 0 => Err(e),
+        Err(_) => std::process::exit(1),
+    }
 }
 
 fn main() {
