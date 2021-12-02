@@ -45,6 +45,7 @@ struct Resource {
 #[allow(dead_code)]
 pub enum Kind {
     Keybox,
+    KeyboxX509,
     Keyring,
 }
 
@@ -73,10 +74,11 @@ impl Kind {
             f.read_exact(&mut magic)?;
             if verbuf[0] == 1 && &magic[..] == b"KBXf" {
                 if verbuf[3] & 0x02 == 0x02 {
-                    t!("-> Keybox.");
+                    t!("-> Keybox also used for OpenPGP.");
                     return Ok(Some(Kind::Keybox));
                 } else {
-                    return Ok(None);
+                    t!("-> Keybox used only for X509.");
+                    return Ok(Some(Kind::KeyboxX509));
                 }
             }
         }
@@ -298,6 +300,10 @@ impl KeyDB {
                                     "While parsing {:?}", resource.path))?);
                         }
                     }
+                },
+                Kind::KeyboxX509 => {
+                    t!("ignoring keybox {:?} only used fox X509",
+                       resource.path);
                 },
             }
         }
