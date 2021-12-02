@@ -230,6 +230,8 @@ impl KeyDB {
     /// Looks up a cert by key handle.
     #[allow(dead_code)]
     pub fn get(&self, handle: &KeyHandle) -> Option<&Cert> {
+        tracer!(TRACE, "KeyDB::get");
+        t!("{}", handle);
         self.by_subkey(handle)
            .or_else(|| self.by_primary(handle))
     }
@@ -237,6 +239,8 @@ impl KeyDB {
     /// Looks up a cert by primary key handle.
     #[allow(dead_code)]
     pub fn by_primary(&self, handle: &KeyHandle) -> Option<&Cert> {
+        tracer!(TRACE, "KeyDB::by_primary");
+        t!("{}", handle);
         match handle {
             KeyHandle::Fingerprint(fp) =>
                 self.by_fp.get(fp).map(AsRef::as_ref),
@@ -247,6 +251,8 @@ impl KeyDB {
 
     /// Looks up a cert by subkey key handle.
     pub fn by_subkey(&self, handle: &KeyHandle) -> Option<&Cert> {
+        tracer!(TRACE, "KeyDB::by_subkey");
+        t!("{}", handle);
         match handle {
             KeyHandle::Fingerprint(fp) =>
                 self.by_subkey_fp.get(fp).map(AsRef::as_ref),
@@ -258,10 +264,12 @@ impl KeyDB {
     /// Initializes the store, if not already done.
     #[allow(dead_code)]
     pub fn initialize(&mut self) -> Result<()> {
+        tracer!(TRACE, "KeyDB::initialize");
         if self.initialized {
             return Ok(());
         }
         self.initialized = true;
+        t!("initializing");
 
         for resource in &self.resources.clone() {
             if resource.create && ! resource.path.exists() {
@@ -271,6 +279,7 @@ impl KeyDB {
             match resource.kind {
                 Kind::Keyring => {
                     use openpgp::cert::CertParser;
+                    t!("loading keyring {:?}", resource.path);
                     for cert in CertParser::from_file(&resource.path)? {
                         let cert = cert.context(
                             format!("While parsing {:?}", resource.path))?;
@@ -279,6 +288,7 @@ impl KeyDB {
                 },
                 Kind::Keybox => {
                     use sequoia_ipc::keybox::*;
+                    t!("loading keybox {:?}", resource.path);
                     for record in Keybox::from_file(&resource.path)? {
                         let record = record.context(
                             format!("While parsing {:?}", resource.path))?;
