@@ -280,9 +280,10 @@ impl KeyDB {
 
             match resource.kind {
                 Kind::Keyring => {
-                    use openpgp::cert::CertParser;
+                    use sequoia_openpgp_mt::keyring;
                     t!("loading keyring {:?}", resource.path);
-                    for cert in CertParser::from_file(&resource.path)? {
+                    for cert in keyring::parse(fs::File::open(&resource.path)?)?
+                    {
                         let cert = cert.context(
                             format!("While parsing {:?}", resource.path))?;
                         self.insert(cert);
