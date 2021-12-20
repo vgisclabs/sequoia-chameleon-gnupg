@@ -1,4 +1,4 @@
-image: registry.gitlab.com/sequoia-pgp/build-docker-image/bullseye:latest
+image: registry.gitlab.com/sequoia-pgp/build-docker-image/bookworm:latest
 
 test:
   script:
