@@ -2374,6 +2374,7 @@ fn real_main() -> anyhow::Result<()> {
     opt.keydb.initialize()?;
     let result = match command {
         Some(aVerify) => verify::cmd_verify(&opt, &args),
+        None => Err(anyhow::anyhow!("There is no implicit command.")),
         c => unimplemented!("{:?}", c),
     };
 
@@ -2384,8 +2385,12 @@ fn real_main() -> anyhow::Result<()> {
             }
             Ok(())
         },
-        Err(e) if opt.verbose > 0 => Err(e),
-        Err(_) => std::process::exit(1),
+        Err(e) => if opt.verbose > 0 {
+            Err(e)
+        } else {
+            eprintln!("Error: {}", e);
+            std::process::exit(1);
+        }
     }
 }
 
