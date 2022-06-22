@@ -15,7 +15,7 @@ home-dir = "0.1"
 libc = "0.2"
 sequoia-openpgp = "1.6"
 sequoia-openpgp-mt = "0.1"
-sequoia-ipc = "0.27"
+sequoia-ipc = "0.28"
 thiserror = "1"
 
 [dev-dependencies]
