@@ -93,7 +93,7 @@ pub fn cmd_verify(control: &dyn control::Common, args: &[String])
     Ok(())
 }
 
-struct VHelper<'a> {
+pub struct VHelper<'a> {
     control: &'a dyn control::Common,
     #[allow(dead_code)]
     signatures: usize,
@@ -112,8 +112,8 @@ struct VHelper<'a> {
 }
 
 impl<'a> VHelper<'a> {
-    fn new(control: &'a dyn control::Common, signatures: usize)
-           -> Self {
+    pub fn new(control: &'a dyn control::Common, signatures: usize)
+               -> Self {
         VHelper {
             control,
             signatures,

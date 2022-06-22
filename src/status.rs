@@ -2,6 +2,7 @@
 
 use std::{
     cell::RefCell,
+    convert::TryFrom,
     fmt::{self, Write},
     io,
     sync::Mutex,
@@ -15,6 +16,8 @@ use openpgp::{
     Fingerprint,
     KeyHandle,
     KeyID,
+    crypto::SessionKey,
+    fmt::hex,
     types::*,
 };
 
@@ -84,6 +87,22 @@ pub enum Status {
         creation_time: SystemTime,
     },
 
+    // Encryption-related.
+    BeginDecryption,
+    EndDecryption,
+    DecryptionInfo {
+        use_mdc: bool,
+        sym_algo: SymmetricAlgorithm,
+        aead_algo: Option<AEADAlgorithm>,
+    },
+    DecryptionFailed,
+    DecryptionOkay,
+    GoodMDC,
+    SessionKey {
+        algo: SymmetricAlgorithm,
+        sk: SessionKey,
+    },
+
     // Miscellaneous.
     NotationName {
         name: String,
@@ -97,6 +116,14 @@ pub enum Status {
     NotationData {
         data: Box<[u8]>,
     },
+
+    Plaintext {
+        format: DataFormat,
+        timestamp: Option<SystemTime>,
+        filename: Option<Vec<u8>>,
+    },
+
+    PlaintextLength(u32),
 
     // Key related.
 
@@ -242,6 +269,34 @@ impl Status {
                          t.format("%s"))?;
             },
 
+            BeginDecryption => writeln!(w, "BEGIN_DECRYPTION")?,
+            EndDecryption => writeln!(w, "END_DECRYPTION")?,
+            DecryptionInfo {
+                use_mdc,
+                sym_algo,
+                aead_algo,
+            } => {
+                writeln!(w, "DECRYPTION_INFO {} {} {}",
+                         if *use_mdc {
+                             u8::from(HashAlgorithm::SHA1)
+                         } else {
+                             0
+                         },
+                         u8::from(*sym_algo),
+                         aead_algo.map(|a| u8::from(a)).unwrap_or(0))?;
+            },
+            DecryptionFailed => writeln!(w, "DECRYPTION_FAILED")?,
+            DecryptionOkay => writeln!(w, "DECRYPTION_OKAY")?,
+            GoodMDC => writeln!(w, "GOODMDC")?,
+            SessionKey {
+                algo,
+                sk,
+            } => {
+                writeln!(w, "SESSION_KEY {}:{}",
+                         u8::from(*algo),
+                         hex::encode(sk))?;
+            },
+
             NotationName {
                 name,
             } => {
@@ -265,6 +320,24 @@ impl Status {
                 e(w, data)?;
                 writeln!(w)?;
             },
+
+            Plaintext {
+                format,
+                timestamp,
+                filename,
+            } => {
+                write!(w, "PLAINTEXT {:x} {}",
+                       u8::from(*format),
+                       timestamp.as_ref().and_then(|t| Timestamp::try_from(*t).ok())
+                       .map(|t| u32::from(t)).unwrap_or(0))?;
+                if let Some(filename) = filename {
+                    write!(w, " ")?;
+                    e(w, filename)?;
+                }
+                writeln!(w)?;
+            },
+
+            PlaintextLength(l) => writeln!(w, "PLAINTEXT_LENGTH {}", l)?,
 
             KeyConsidered {
                 fingerprint,

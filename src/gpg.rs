@@ -35,6 +35,7 @@ use flags::*;
 mod status;
 mod utils;
 mod verify;
+pub mod decrypt;
 
 /// Commands and options.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -902,7 +903,7 @@ const OPTIONS: &[Opt<CmdOrOpt>] = &[
 ];
 
 #[allow(dead_code)]
-struct Config {
+pub struct Config {
     // Runtime.
     fail: std::cell::Cell<bool>,
     policy: GPGPolicy,
@@ -971,6 +972,7 @@ struct Config {
     secret_keys_to_try: Vec<String>,
     sender_list: Vec<String>,
     set_filename: Option<PathBuf>,
+    show_session_key: bool,
     sig_keyserver_url: Vec<URL>,
     sig_policy_url: Vec<URL>,
     skip_hidden_recipients: bool,
@@ -1075,6 +1077,7 @@ impl Default for Config {
             secret_keys_to_try: Vec::new(),
             sender_list: Vec::new(),
             set_filename: None,
+            show_session_key: false,
             sig_keyserver_url: Vec::new(),
             sig_policy_url: Vec::new(),
             skip_hidden_recipients: false,
@@ -1466,7 +1469,6 @@ impl std::str::FromStr for RequestOrigin {
 
 fn set_cmd(cmd: &mut Option<CmdOrOpt>, new_cmd: CmdOrOpt)
            -> anyhow::Result<()> {
-    dbg!((&cmd, new_cmd));
     match cmd.as_ref().clone() {
         None => *cmd = Some(new_cmd),
         Some(c) if *c == new_cmd => (),
@@ -2352,6 +2354,10 @@ fn real_main() -> anyhow::Result<()> {
                 opt.keyserver_options = value.as_str().unwrap().parse()?;
 	    },
 
+	    oShowSessionKey => {
+                opt.show_session_key = true;
+            },
+
             _ => (),
         }
     }
@@ -2374,6 +2380,7 @@ fn real_main() -> anyhow::Result<()> {
     opt.keydb.initialize()?;
     let result = match command {
         Some(aVerify) => verify::cmd_verify(&opt, &args),
+        Some(aDecrypt) => decrypt::cmd_decrypt(&opt, &args),
         None => Err(anyhow::anyhow!("There is no implicit command.")),
         c => unimplemented!("{:?}", c),
     };
