@@ -1179,6 +1179,8 @@ impl Config {
         }
         send_simple(&mut agent, "OPTION allow-pinentry-notify").await?;
         send_simple(&mut agent, "OPTION agent-awareness=2.1.0").await?;
+        send_simple(&mut agent, format!("OPTION pinentry-mode={}",
+                                        self.pinentry_mode.as_str())).await?;
 
         Ok(agent)
     }
@@ -2431,6 +2433,12 @@ fn real_main() -> anyhow::Result<()> {
     }
 
     opt.keydb.initialize()?;
+
+    if let agent::PinentryMode::Loopback = opt.pinentry_mode {
+        // In loopback mode, never ask for the password multiple
+        // times.
+	opt.passphrase_repeat = 0;
+    }
 
     if let Some(mut pwfd) = pwfd {
         // Read the passphrase now.

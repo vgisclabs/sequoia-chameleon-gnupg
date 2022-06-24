@@ -32,6 +32,18 @@ impl Default for PinentryMode {
     }
 }
 
+impl PinentryMode {
+    /// Returns a string representation usable with the gpg-agent.
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            PinentryMode::Ask => "ask",
+            PinentryMode::Cancel => "cancel",
+            PinentryMode::Error => "error",
+            PinentryMode::Loopback => "loopback",
+        }
+    }
+}
+
 impl std::str::FromStr for PinentryMode {
     type Err = anyhow::Error;
 
@@ -107,7 +119,7 @@ where
     C: Into<Option<CS>>,
     CS: AsRef<str>,
     ES: AsRef<str>,
-    P: FnMut(Vec<u8>),
+    P: FnMut(&mut Agent, Response) -> Option<Protected>,
 {
     agent.send(format!(
         "GET_PASSPHRASE --data --repeat={}{}{} -- {} {} {} {}",
@@ -123,17 +135,25 @@ where
     let mut password = Vec::new();
     while let Some(response) = agent.next().await {
         match response? {
-            Response::Ok { .. }
-            | Response::Comment { .. }
-            | Response::Status { .. } =>
-                (), // Ignore.
-            Response::Inquire { keyword, parameters } => {
-                match keyword.as_str() {
-                    "PINENTRY_LAUNCHED" =>
-                        pinentry_cb(parameters.unwrap_or_default()),
-                    _ => (),
+            r @ Response::Ok { .. }
+            | r @ Response::Comment { .. }
+            | r @ Response::Status { .. } => {
+                pinentry_cb(agent, r);
+            },
+            r @ Response::Inquire { .. } => {
+                if let Some(data) = pinentry_cb(agent, r) {
+                    agent.data(&data[..])?;
+                    // Dummy read to send data.
+                    while let Some(r) = agent.next().await {
+                        if matches!(r?, Response::Ok { .. }) {
+                            break;
+                        }
+                    }
+
+                    // Sending the data acknowledges the inquiry.
+                } else {
+                    acknowledge_inquiry(agent).await?;
                 }
-                acknowledge_inquiry(agent).await?;
             },
             Response::Data { partial } => {
                 // Securely erase partial.

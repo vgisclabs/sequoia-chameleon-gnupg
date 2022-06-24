@@ -252,11 +252,26 @@ impl<'a> DHelper<'a> {
                 crate::agent::get_passphrase(
                     &mut agent,
                     &cacheid, error, None, None, false, 0, false,
-                    |info| {
-                        let info = String::from_utf8_lossy(&info);
-                        let _ = self.config.status().emit(
-                            Status::PinentryLaunched(info.into()));
-                    },
+                    |_agent, response| if let ipc::assuan::Response::Inquire {
+                        keyword, parameters } = response
+                    {
+                        match keyword.as_str() {
+                            "PINENTRY_LAUNCHED" => {
+                                let p = parameters.unwrap_or_default();
+                                let info = String::from_utf8_lossy(&p);
+                                let _ = self.config.status().emit(
+                                    Status::PinentryLaunched(info.into()));
+                                None
+                            },
+                            "PASSPHRASE" =>
+                                self.config.static_passprase.take()
+                                .map(|encrypted| encrypted.map(
+                                    |decrypted| decrypted.clone())),
+                            _ => None,
+                        }
+                    } else {
+                        None
+                    }
                 ).await?;
 
             for skesk in skesks {
