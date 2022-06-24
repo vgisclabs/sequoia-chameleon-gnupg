@@ -202,6 +202,7 @@ impl KeyDB {
                 // existing ".gpg" keyring, but create a new keybox
                 // file with an ".kbx" suffix.
                 path = path.with_extension("kbx");
+                kind = Some(Kind::Keybox);
             } else {
                 // No file yet: create keybox.
                 kind = Some(Kind::Keybox);

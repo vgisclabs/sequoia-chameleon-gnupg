@@ -2375,7 +2375,7 @@ fn real_main() -> anyhow::Result<()> {
 
     // Get the default one if no keyring has been specified.
     if keyrings.is_empty() {
-        opt.keydb.add_resource(&opt.homedir, "pubring.gpg", true, true)?;
+        opt.keydb.add_resource(&opt.homedir, "pubring.gpg", false, true)?;
     }
 
     for path in keyrings {
