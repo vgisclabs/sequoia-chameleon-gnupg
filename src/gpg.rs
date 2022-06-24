@@ -1129,6 +1129,28 @@ impl Config {
 
         send_simple(&mut agent, "RESET").await?;
 
+        if let Ok(tty) = std::env::var("GPG_TTY") {
+            send_simple(&mut agent, format!(
+                "OPTION ttyname={}", tty)).await?;
+        } else {
+            #[cfg(unix)]
+            {
+                let tty = unsafe {
+                    use std::ffi::CStr;
+                    let tty = libc::ttyname(0);
+                    if tty.is_null() {
+                        None
+                    } else {
+                        CStr::from_ptr(tty).to_str().ok()
+                    }
+                };
+
+                if let Some(tty) = tty {
+                    send_simple(&mut agent, format!(
+                        "OPTION ttyname={}", tty)).await?;
+                }
+            }
+        }
         let ttyname = unsafe { libc::ttyname(0) };
         if ! ttyname.is_null() {
             let ttyname = unsafe { std::ffi::CStr::from_ptr(ttyname) };
