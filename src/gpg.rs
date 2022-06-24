@@ -1393,6 +1393,7 @@ impl std::str::FromStr for PinentryMode {
 }
 
 #[derive(Clone)]
+#[allow(dead_code)]
 struct URL {
     url: String,
     critical: bool,
@@ -1409,6 +1410,7 @@ impl URL {
 }
 
 #[derive(Clone)]
+#[allow(dead_code)]
 struct KeyserverURL {
     url: String,
 }
