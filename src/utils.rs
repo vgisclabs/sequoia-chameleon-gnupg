@@ -105,7 +105,7 @@ pub fn create(control: &dyn control::Common, name: &str)
 
 /// Returns the file descriptor if the given name is a special
 /// filename.
-fn special_filename_fd(name: &str) -> Option<i64> {
+pub fn special_filename_fd(name: &str) -> Option<i64> {
     if name.starts_with("-&") {
         name[2..].parse().ok()
     } else {

@@ -161,6 +161,7 @@ impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
             current_short: None,
             cmdline,
             seen_positional: false,
+            special_filenames: false,
             quiet: false,
         }
     }
@@ -286,6 +287,9 @@ pub struct Iter<T: Copy + PartialEq + Eq + Into<isize> + 'static> {
     current_short: Option<String>,
     cmdline: bool,
     seen_positional: bool,
+
+    /// Did we see --enable-special-filenames?
+    special_filenames: bool,
 
     // Whether to emit warnings on stderr.
     quiet: bool,
@@ -433,6 +437,22 @@ impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Iterator for Iter<T> {
             // Config file.  All options are long options.
             (true, &arg[..])
         };
+
+        if long && a == "enable-special-filenames"
+            && ! self.seen_positional
+        {
+            // From now on, we'll handle -@ slightly differently.
+            self.special_filenames = true;
+        }
+
+        if ! long && self.special_filenames
+            && crate::utils::special_filename_fd(&arg).is_some()
+        {
+            // This is a named file descriptor as a positional
+            // argument.
+            self.seen_positional = true;
+            return Some(Ok(Argument::Positional(arg.into())));
+        }
 
         let m = if long {
             // See if we have a value in this argument.
