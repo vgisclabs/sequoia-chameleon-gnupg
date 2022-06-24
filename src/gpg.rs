@@ -2426,6 +2426,10 @@ fn real_main() -> anyhow::Result<()> {
         opt.keydb.add_resource(&opt.homedir, path, true, false)?;
     }
 
+    if let Some(aGPGConfTest) = command {
+        return Ok(());
+    }
+
     opt.keydb.initialize()?;
 
     if let Some(mut pwfd) = pwfd {
