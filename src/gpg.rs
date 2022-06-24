@@ -22,6 +22,8 @@ use openpgp::{
     types::*,
 };
 
+pub mod gnupg_interface;
+
 #[macro_use]
 mod macros;
 pub mod agent;

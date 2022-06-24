@@ -20,6 +20,8 @@ use openpgp::{
     policy::{HashAlgoSecurity, Policy, StandardPolicy},
 };
 
+pub mod gnupg_interface;
+
 #[macro_use]
 mod macros;
 #[allow(dead_code)]

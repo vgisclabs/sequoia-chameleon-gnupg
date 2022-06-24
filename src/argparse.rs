@@ -169,6 +169,8 @@ impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
     /// Displays version information.
     pub fn version(&self) {
         println!("{} (GnuPG-compatible Sequoia Chameleon) {}",
+                 self.name, crate::gnupg_interface::VERSION);
+        println!("Sequoia {} Chameleon {}",
                  self.name, env!("CARGO_PKG_VERSION"));
         println!("sequoia-openpgp {}", sequoia_openpgp::VERSION);
         println!("Copyright (C) 2021 p≡p foundation");
