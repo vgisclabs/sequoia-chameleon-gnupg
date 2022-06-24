@@ -13,6 +13,7 @@ use sequoia_openpgp as openpgp;
 use sequoia_ipc as ipc;
 use openpgp::{
     cert::prelude::*,
+    crypto::Password,
     packet::{
         prelude::*,
         key::PublicParts,
@@ -982,6 +983,7 @@ pub struct Config {
     skip_hidden_recipients: bool,
     skip_verify: bool,
     special_filenames: bool,
+    static_passprase: std::cell::Cell<Option<Password>>,
     textmode: usize,
     throw_keyids: bool,
     tofu_default_policy: TofuPolicy,
@@ -1088,6 +1090,7 @@ impl Default for Config {
             skip_hidden_recipients: false,
             skip_verify: false,
             special_filenames: false,
+            static_passprase: Default::default(),
             textmode: 0,
             throw_keyids: false,
             tofu_default_policy: Default::default(),
@@ -2424,6 +2427,14 @@ fn real_main() -> anyhow::Result<()> {
     }
 
     opt.keydb.initialize()?;
+
+    if let Some(mut pwfd) = pwfd {
+        // Read the passphrase now.
+        let mut password = Vec::new();
+        pwfd.read_to_end(&mut password)?;
+        opt.static_passprase = Some(password.into()).into();
+    }
+
     let result = match command {
         Some(aVerify) => verify::cmd_verify(&opt, &args),
         Some(aDecrypt) => decrypt::cmd_decrypt(&opt, &args),
