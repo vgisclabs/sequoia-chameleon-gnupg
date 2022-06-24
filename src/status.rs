@@ -140,6 +140,8 @@ pub enum Status {
     NoPubkey {
         issuer: KeyID,
     },
+
+    PinentryLaunched(String),
 }
 
 impl Status {
@@ -364,6 +366,8 @@ impl Status {
             } => {
                 writeln!(w, "NO_PUBKEY {:X}", issuer)?;
             },
+
+            PinentryLaunched(i) => writeln!(w, "PINENTRY_LAUNCHED {}", i)?,
         }
 
         Ok(())

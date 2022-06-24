@@ -10,6 +10,7 @@ use std::{
 use anyhow::{Context, Result};
 
 use sequoia_openpgp as openpgp;
+use sequoia_ipc as ipc;
 use openpgp::{
     cert::prelude::*,
     packet::{
@@ -23,6 +24,7 @@ use openpgp::{
 
 #[macro_use]
 mod macros;
+pub mod agent;
 #[allow(dead_code)]
 mod argparse;
 use argparse::{Argument, Opt, flags::*};
@@ -1112,6 +1114,48 @@ impl Default for Config {
 }
 
 impl Config {
+    /// Returns an IPC context.
+    pub fn ipc(&self) -> Result<ipc::gnupg::Context> {
+        ipc::gnupg::Context::with_homedir(&self.homedir)
+    }
+
+    /// Returns a connection to the GnuPG agent.
+    pub async fn connect_agent(&self) -> Result<ipc::gnupg::Agent> {
+        use agent::send_simple;
+
+        let ctx = self.ipc()?;
+        ctx.start("gpg-agent")?;
+        let mut agent = ipc::gnupg::Agent::connect(&ctx).await?;
+
+        send_simple(&mut agent, "RESET").await?;
+
+        let ttyname = unsafe { libc::ttyname(0) };
+        if ! ttyname.is_null() {
+            let ttyname = unsafe { std::ffi::CStr::from_ptr(ttyname) };
+            send_simple(&mut agent, format!(
+                "OPTION ttyname={}",
+                String::from_utf8_lossy(ttyname.to_bytes()))).await?;
+        }
+        if let Ok(term) = std::env::var("TERM") {
+            send_simple(&mut agent, format!("OPTION ttytype={}", term)).await?;
+        }
+        if let Ok(display) = std::env::var("DISPLAY") {
+            send_simple(&mut agent, format!("OPTION display={}", display)).await?;
+        }
+        if let Ok(xauthority) = std::env::var("XAUTHORITY") {
+            send_simple(&mut agent, format!("OPTION xauthority={}", xauthority)).await?;
+        }
+        if let Ok(dbus) = std::env::var("DBUS_SESSION_BUS_ADDRESS") {
+            send_simple(&mut agent,
+                        format!("OPTION putenv=DBUS_SESSION_BUS_ADDRESS={}",
+                                dbus)).await?;
+        }
+        send_simple(&mut agent, "OPTION allow-pinentry-notify").await?;
+        send_simple(&mut agent, "OPTION agent-awareness=2.1.0").await?;
+
+        Ok(agent)
+    }
+
     /// Checks whether the permissions on the state directory are
     /// sane.
     fn check_homedir_permissions(&self) -> Result<()> {
