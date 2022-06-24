@@ -1618,7 +1618,6 @@ fn real_main() -> anyhow::Result<()> {
                 continue;
             },
         };
-        eprintln!("{:?} {:?}", cmd, value);
 
         use CmdOrOpt::*;
         match cmd {
