@@ -977,6 +977,7 @@ pub struct Config {
     sig_policy_url: Vec<URL>,
     skip_hidden_recipients: bool,
     skip_verify: bool,
+    special_filenames: bool,
     textmode: usize,
     throw_keyids: bool,
     tofu_default_policy: TofuPolicy,
@@ -1082,6 +1083,7 @@ impl Default for Config {
             sig_policy_url: Vec::new(),
             skip_hidden_recipients: false,
             skip_verify: false,
+            special_filenames: false,
             textmode: 0,
             throw_keyids: false,
             tofu_default_policy: Default::default(),
@@ -1190,7 +1192,7 @@ impl control::Common for Config {
     }
 
     fn special_filenames(&self) -> bool {
-        false // XXX: is there no self.enable_special_filenames in gpg?
+        self.special_filenames
     }
 
     fn logger(&mut self) -> &mut dyn io::Write {
@@ -2356,6 +2358,9 @@ fn real_main() -> anyhow::Result<()> {
 
 	    oShowSessionKey => {
                 opt.show_session_key = true;
+            },
+	    oEnableSpecialFilenames => {
+                opt.special_filenames = true;
             },
 
             _ => (),
