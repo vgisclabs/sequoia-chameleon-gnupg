@@ -965,7 +965,7 @@ pub struct Config {
     passphrase: Option<String>,
     passphrase_repeat: i64,
     photo_viewer: Option<PathBuf>,
-    pinentry_mode: PinentryMode,
+    pinentry_mode: agent::PinentryMode,
     quiet: bool,
     request_origin: RequestOrigin,
     rfc2440_text: bool,
@@ -1426,34 +1426,6 @@ impl std::str::FromStr for TofuPolicy {
             "bad" => Ok(TofuPolicy::Bad),
             "ask" => Ok(TofuPolicy::Ask),
             _ => Err(anyhow::anyhow!("Unknown TOFU policy {:?}", s)),
-        }
-    }
-}
-
-enum PinentryMode {
-    Ask,
-    Cancel,
-    Error,
-    Loopback,
-}
-
-impl Default for PinentryMode {
-    fn default() -> Self {
-        PinentryMode::Ask
-    }
-}
-
-impl std::str::FromStr for PinentryMode {
-    type Err = anyhow::Error;
-
-    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
-        match s.to_lowercase().as_str() {
-            "ask" => Ok(PinentryMode::Ask),
-            "default" => Ok(PinentryMode::Ask),
-            "cancel" => Ok(PinentryMode::Cancel),
-            "error" => Ok(PinentryMode::Error),
-            "loopback" => Ok(PinentryMode::Loopback),
-            _ => Err(anyhow::anyhow!("Unknown pinentry mode {:?}", s)),
         }
     }
 }

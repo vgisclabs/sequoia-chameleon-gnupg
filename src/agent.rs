@@ -14,6 +14,39 @@ use ipc::{
 };
 use futures::stream::StreamExt;
 
+/// Controls how gpg-agent inquires passwords.
+pub enum PinentryMode {
+    /// Ask using pinentry.  This is the default.
+    Ask,
+    /// Cancel all inquiries.
+    Cancel,
+    /// Refuse all inquiries.
+    Error,
+    /// Ask the frontend (us) for passwords.
+    Loopback,
+}
+
+impl Default for PinentryMode {
+    fn default() -> Self {
+        PinentryMode::Ask
+    }
+}
+
+impl std::str::FromStr for PinentryMode {
+    type Err = anyhow::Error;
+
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        match s.to_lowercase().as_str() {
+            "ask" => Ok(PinentryMode::Ask),
+            "default" => Ok(PinentryMode::Ask),
+            "cancel" => Ok(PinentryMode::Cancel),
+            "error" => Ok(PinentryMode::Error),
+            "loopback" => Ok(PinentryMode::Loopback),
+            _ => Err(anyhow::anyhow!("Unknown pinentry mode {:?}", s)),
+        }
+    }
+}
+
 /// Returns a convenient Err value for use in the state machines
 /// below.
 fn operation_failed<T>(message: &Option<String>) -> Result<T> {
