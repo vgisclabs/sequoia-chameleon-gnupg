@@ -287,7 +287,7 @@ impl KeyDB {
                     {
                         let cert = cert.context(
                             format!("While parsing {:?}", resource.path))?;
-                        self.insert(cert);
+                        self.index(cert);
                     }
                 },
                 Kind::Keybox => {
@@ -297,7 +297,7 @@ impl KeyDB {
                         let record = record.context(
                             format!("While parsing {:?}", resource.path))?;
                         if let KeyboxRecord::OpenPGP(r) = record {
-                            self.insert(
+                            self.index(
                                 r.cert().context(format!(
                                     "While parsing {:?}", resource.path))?);
                         }
@@ -313,8 +313,8 @@ impl KeyDB {
         Ok(())
     }
 
-    /// Inserts the given cert into the database.
-    fn insert(&mut self, cert: Cert) {
+    /// Inserts the given cert into the in-memory database.
+    fn index(&mut self, cert: Cert) {
         let rccert = Rc::new(cert);
 
         let fp = rccert.fingerprint();
