@@ -10,6 +10,7 @@ use openpgp::{
     Fingerprint,
     crypto::{
         self,
+        Decryptor as _,
         SessionKey,
     },
     fmt::hex,
@@ -98,6 +99,8 @@ impl<'a> DHelper<'a> {
     fn emit_session_key(&self, algo: SymmetricAlgorithm, sk: SessionKey)
                         -> Result<()>
     {
+        self.config.status().emit(Status::BeginDecryption)?;
+
         self.config.status().emit(
             Status::DecryptionInfo {
                 use_mdc: self.used_mdc,
@@ -161,6 +164,13 @@ impl<'a> DHelper<'a> {
             })
         {
             Some((algo, sk)) => {
+                self.config.status().emit(
+                    Status::DecryptionKey {
+                        fp: decryptor.0.public().fingerprint(),
+                        cert_fp: cert.fingerprint(),
+                        owner_trust: crate::status::OwnerTrust::Ultimate, // XXX
+                    })?;
+
                 self.emit_session_key(algo, sk)?;
                 Ok(Some(cert.fingerprint()))
             },
@@ -186,6 +196,13 @@ impl<'a> DHelper<'a> {
                 continue; // XXX
             }
 
+            self.config.status().emit(
+                Status::EncTo {
+                    keyid: keyid.clone(),
+                    pk_algo: Some(pkesk.pk_algo()),
+                    pk_len: None,
+                })?;
+
             // See if we have the recipient cert.
             let keyid: openpgp::KeyHandle = keyid.into();
             let cert = match self.config.keydb().by_subkey(&keyid) {
@@ -196,6 +213,13 @@ impl<'a> DHelper<'a> {
                 Ok(c) => c,
                 Err(_) => continue,
             };
+
+            self.config.status().emit(
+                Status::KeyConsidered {
+                    fingerprint: cert.fingerprint(),
+                    not_selected: false,
+                    all_expired_or_revoked: false,
+                })?;
 
             // Get the subkey.
             let key = match vcert.keys().key_handle(keyid)
@@ -308,8 +332,6 @@ impl<'a> DecryptionHelper for DHelper<'a> {
                   decrypt: D) -> Result<Option<openpgp::Fingerprint>>
         where D: FnMut(SymmetricAlgorithm, &SessionKey) -> bool
     {
-        self.config.status().emit(Status::BeginDecryption)?;
-
         let rt = tokio::runtime::Runtime::new()?;
         let r =
             rt.block_on(self.async_decrypt(pkesks, skesks, sym_algo, decrypt));

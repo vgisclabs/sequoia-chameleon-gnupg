@@ -88,8 +88,18 @@ pub enum Status {
     },
 
     // Encryption-related.
+    EncTo {
+        keyid: KeyID,
+        pk_algo: Option<PublicKeyAlgorithm>,
+        pk_len: Option<usize>,
+    },
     BeginDecryption,
     EndDecryption,
+    DecryptionKey {
+        fp: Fingerprint,
+        cert_fp: Fingerprint,
+        owner_trust: OwnerTrust,
+    },
     DecryptionInfo {
         use_mdc: bool,
         sym_algo: SymmetricAlgorithm,
@@ -271,8 +281,31 @@ impl Status {
                          t.format("%s"))?;
             },
 
+            EncTo {
+                keyid,
+                pk_algo,
+                pk_len,
+            } => {
+                writeln!(w, "ENC_TO {:X} {} {}",
+                         keyid,
+                         pk_algo.map(|a| u8::from(a)).unwrap_or(0),
+                         pk_len.unwrap_or(0))?;
+            },
+
             BeginDecryption => writeln!(w, "BEGIN_DECRYPTION")?,
             EndDecryption => writeln!(w, "END_DECRYPTION")?,
+
+            DecryptionKey {
+                fp,
+                cert_fp,
+                owner_trust,
+            } => {
+                writeln!(w, "DECRYPTION_KEY {:X} {:X} {}",
+                         fp,
+                         cert_fp,
+                         owner_trust)?;
+            },
+
             DecryptionInfo {
                 use_mdc,
                 sym_algo,
@@ -432,6 +465,21 @@ impl fmt::Display for ErrSigStatus {
             BadSignatureClass => f.write_str("32"),
             UnexpectedRevocation => f.write_str("52"),
             WrongKeyUsage => f.write_str("125"),
+        }
+    }
+}
+
+#[allow(dead_code)]
+#[derive(Clone, Copy)]
+pub enum OwnerTrust {
+    Ultimate,
+}
+
+impl fmt::Display for OwnerTrust {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        use OwnerTrust::*;
+        match self {
+            Ultimate => f.write_str("u"),
         }
     }
 }
