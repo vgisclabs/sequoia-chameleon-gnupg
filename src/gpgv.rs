@@ -25,14 +25,14 @@ pub mod gnupg_interface;
 #[macro_use]
 mod macros;
 #[allow(dead_code)]
-mod argparse;
+pub mod argparse;
 use argparse::{Argument, Opt, flags::*};
-mod babel;
-mod control;
-mod keydb;
-mod status;
-mod utils;
-mod verify;
+pub mod babel;
+pub mod control;
+pub mod keydb;
+pub mod status;
+pub mod utils;
+pub mod verify;
 
 /// Commands and options.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

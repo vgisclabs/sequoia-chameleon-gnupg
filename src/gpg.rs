@@ -29,17 +29,17 @@ pub mod gnupg_interface;
 mod macros;
 pub mod agent;
 #[allow(dead_code)]
-mod argparse;
+pub mod argparse;
 use argparse::{Argument, Opt, flags::*};
-mod babel;
-mod control;
-mod keydb;
+pub mod babel;
+pub mod control;
+pub mod keydb;
 #[allow(dead_code)]
-mod flags;
+pub mod flags;
 use flags::*;
-mod status;
-mod utils;
-mod verify;
+pub mod status;
+pub mod utils;
+pub mod verify;
 pub mod decrypt;
 
 /// Commands and options.
