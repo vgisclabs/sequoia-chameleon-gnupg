@@ -2452,7 +2452,7 @@ fn real_main() -> anyhow::Result<()> {
         Some(aVerify) => verify::cmd_verify(&opt, &args),
         Some(aDecrypt) => decrypt::cmd_decrypt(&opt, &args),
         None => Err(anyhow::anyhow!("There is no implicit command.")),
-        c => unimplemented!("{:?}", c),
+        Some(c) => unimplemented!("{:?}", c),
     };
 
     match result {
