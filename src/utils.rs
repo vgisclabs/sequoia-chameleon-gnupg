@@ -8,6 +8,12 @@ use std::{
 
 use anyhow::{Context, Result};
 
+use sequoia_openpgp as openpgp;
+use openpgp::{
+    Cert,
+    policy::Policy,
+};
+
 use crate::{
     control,
 };
@@ -147,3 +153,39 @@ pub fn source_from_fd(fd: i64) -> Result<Box<dyn io::Read + Send + Sync>> {
     }
 }
 
+/// Best-effort heuristic to compute the primary User ID of a given cert.
+pub fn best_effort_primary_uid(policy: &dyn Policy, cert: &Cert) -> String {
+    // Try to be more helpful by including a User ID in the
+    // listing.  We'd like it to be the primary one.  Use
+    // decreasingly strict policies.
+    let mut primary_uid = None;
+
+    // First, apply our policy.
+    if let Ok(vcert) = cert.with_policy(policy, None) {
+        if let Ok(primary) = vcert.primary_userid() {
+            primary_uid = Some(primary.value().to_vec());
+        }
+    }
+
+    // Second, apply the null policy.
+    if primary_uid.is_none() {
+        let null = openpgp::policy::NullPolicy::new();
+        if let Ok(vcert) = cert.with_policy(&null, None) {
+            if let Ok(primary) = vcert.primary_userid() {
+                primary_uid = Some(primary.value().to_vec());
+            }
+        }
+    }
+
+    // As a last resort, pick the first user id.
+    if primary_uid.is_none() {
+        if let Some(primary) = cert.userids().next() {
+            primary_uid = Some(primary.value().to_vec());
+        } else {
+            // Special case, there is no user id.
+            primary_uid = Some(b"(NO USER ID)"[..].into());
+        }
+    }
+
+    String::from_utf8_lossy(&primary_uid.expect("set at this point")).into()
+}
