@@ -41,6 +41,7 @@ pub mod status;
 pub mod utils;
 pub mod verify;
 pub mod decrypt;
+pub mod import;
 
 /// Commands and options.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -1223,6 +1224,10 @@ impl Config {
         }
 
         Ok(())
+    }
+
+    fn mut_keydb(&mut self) -> &mut keydb::KeyDB {
+        &mut self.keydb
     }
 }
 
@@ -2451,6 +2456,7 @@ fn real_main() -> anyhow::Result<()> {
     let result = match command {
         Some(aVerify) => verify::cmd_verify(&opt, &args),
         Some(aDecrypt) => decrypt::cmd_decrypt(&opt, &args),
+        Some(aImport) => import::cmd_import(&mut opt, &args),
         None => Err(anyhow::anyhow!("There is no implicit command.")),
         Some(c) => unimplemented!("{:?}", c),
     };

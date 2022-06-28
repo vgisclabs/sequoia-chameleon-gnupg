@@ -151,6 +151,20 @@ pub enum Status {
         issuer: KeyID,
     },
 
+    Imported {
+        keyid: KeyID,
+        username: String,
+    },
+    ImportOk {
+        flags: ImportOkFlags,
+        fingerprint: Option<Fingerprint>,
+    },
+    ImportProblem {
+        reason: ImportProblem,
+        fingerprint: Option<Fingerprint>,
+    },
+    ImportRes(ImportResult),
+
     PinentryLaunched(String),
 }
 
@@ -400,6 +414,69 @@ impl Status {
                 writeln!(w, "NO_PUBKEY {:X}", issuer)?;
             },
 
+            Imported {
+                keyid,
+                username,
+            } => {
+                writeln!(w, "IMPORTED {:X} {}", keyid, username)?;
+            },
+
+            ImportOk {
+                flags,
+                fingerprint,
+            } => {
+                write!(w, "IMPORT_OK {}", u8::from(*flags))?;
+                if let Some(fp) = fingerprint {
+                    write!(w, " {}", fp)?;
+                }
+                writeln!(w)?;
+            },
+
+            ImportProblem {
+                reason,
+                fingerprint,
+            } => {
+                write!(w, "IMPORT_PROBLEM {}", u8::from(*reason))?;
+                if let Some(fp) = fingerprint {
+                    write!(w, " {}", fp)?;
+                }
+                writeln!(w)?;
+            },
+
+            ImportRes(ImportResult {
+                count,
+                imported,
+                unchanged,
+                n_uids,
+                n_subk,
+                n_sigs,
+                n_revoc,
+                sec_read,
+                sec_imported,
+                sec_dups,
+                skipped_new_keys,
+                not_imported,
+                skipped_v3_keys,
+            }) => {
+                writeln!(w, "IMPORT_RES {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}",
+                         count,
+                         0, // no_user_id
+                         imported,
+                         0, // always 0
+                         unchanged,
+                         n_uids,
+                         n_subk,
+                         n_sigs,
+                         n_revoc,
+                         sec_read,
+                         sec_imported,
+                         sec_dups,
+                         skipped_new_keys,
+                         not_imported,
+                         skipped_v3_keys,
+                )?;
+            },
+
             PinentryLaunched(i) => writeln!(w, "PINENTRY_LAUNCHED {}", i)?,
         }
 
@@ -480,6 +557,90 @@ impl fmt::Display for OwnerTrust {
         use OwnerTrust::*;
         match self {
             Ultimate => f.write_str("u"),
+        }
+    }
+}
+
+#[derive(Clone, Default, Debug)]
+pub struct ImportResult {
+    pub count: usize,
+    pub imported: usize,
+    pub unchanged: usize,
+    pub n_uids: usize,
+    pub n_subk: usize,
+    pub n_sigs: usize,
+    pub n_revoc: usize,
+    pub sec_read: usize,
+    pub sec_imported: usize,
+    pub sec_dups: usize,
+    pub skipped_new_keys: usize,
+    pub not_imported: usize,
+    pub skipped_v3_keys: usize,
+}
+
+impl ImportResult {
+    pub fn changed_since(&self, base: ImportResult) -> ImportResult {
+        ImportResult {
+            count: self.count - base.count,
+            imported: self.imported - base.imported,
+            unchanged: self.unchanged - base.unchanged,
+            n_uids: self.n_uids - base.n_uids,
+            n_subk: self.n_subk - base.n_subk,
+            n_sigs: self.n_sigs - base.n_sigs,
+            n_revoc: self.n_revoc - base.n_revoc,
+            sec_read: self.sec_read - base.sec_read,
+            sec_imported: self.sec_imported - base.sec_imported,
+            sec_dups: self.sec_dups - base.sec_dups,
+            skipped_new_keys: self.skipped_new_keys - base.skipped_new_keys,
+            not_imported: self.not_imported - base.not_imported,
+            skipped_v3_keys: self.skipped_v3_keys - base.skipped_v3_keys,
+        }
+    }
+}
+
+#[derive(Copy, Clone, Default, Debug)]
+pub struct ImportOkFlags(u8);
+pub const IMPORT_OK_NOT_CHANGED: ImportOkFlags = ImportOkFlags(0);
+pub const IMPORT_OK_NEW_KEY: ImportOkFlags = ImportOkFlags(1);
+pub const IMPORT_OK_NEW_UIDS: ImportOkFlags = ImportOkFlags(2);
+pub const IMPORT_OK_NEW_SIGS: ImportOkFlags = ImportOkFlags(4);
+pub const IMPORT_OK_NEW_SUBKEYS: ImportOkFlags = ImportOkFlags(8);
+pub const IMPORT_OK_HAS_SECRET: ImportOkFlags = ImportOkFlags(16);
+
+impl ImportOkFlags {
+    pub fn set(&mut self, flag: ImportOkFlags) {
+        self.0 |= flag.0;
+    }
+
+    pub fn is_set(&self, flag: ImportOkFlags) -> bool {
+        self.0 & flag.0 > 0
+    }
+}
+
+impl From<ImportOkFlags> for u8 {
+    fn from(v: ImportOkFlags) -> u8 {
+        v.0
+    }
+}
+
+#[derive(Copy, Clone, Debug)]
+pub enum ImportProblem {
+    Unspecified,
+    InvalidCert,
+    IssuerCertMissing,
+    CertChainTooLong,
+    ErrorStoringCert,
+}
+
+impl From<ImportProblem> for u8 {
+    fn from(v: ImportProblem) -> u8 {
+        use ImportProblem::*;
+        match v {
+            Unspecified => 0,
+            InvalidCert => 1,
+            IssuerCertMissing => 2,
+            CertChainTooLong => 3,
+            ErrorStoringCert => 4,
         }
     }
 }
