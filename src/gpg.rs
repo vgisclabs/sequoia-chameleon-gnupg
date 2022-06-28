@@ -2432,6 +2432,7 @@ fn real_main() -> anyhow::Result<()> {
         return Ok(());
     }
 
+    opt.keydb.add_certd_overlay()?;
     opt.keydb.initialize()?;
 
     if let agent::PinentryMode::Loopback = opt.pinentry_mode {

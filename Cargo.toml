@@ -14,6 +14,7 @@ dirs = "4"
 futures = "0.3"
 home-dir = "0.1"
 libc = "0.2"
+pgp-cert-d = { git = "https://gitlab.com/sequoia-pgp/pgp-cert-d", default-features = false }
 sequoia-openpgp = "1.6"
 sequoia-openpgp-mt = "0.1"
 sequoia-ipc = "0.28"

@@ -18,6 +18,7 @@ use openpgp::{
     KeyHandle,
     KeyID,
     parse::Parse,
+    serialize::SerializeInto,
 };
 
 /// Controls tracing.
@@ -38,7 +39,37 @@ pub struct KeyDB {
 struct Resource {
     kind: Kind,
     path: PathBuf,
+    writable: bool,
     create: bool,
+}
+
+impl Resource {
+    fn insert(&self, cert: &Cert) -> Result<()> {
+        if ! self.writable {
+            return Err(Error::ReadOnly.into());
+        }
+
+        if ! self.create && ! self.path.exists() {
+            return Err(Error::ReadOnly.into());
+        }
+
+        if self.kind != Kind::CertD {
+            return Err(Error::ReadOnly.into());
+        }
+
+        let certd = pgp_cert_d::CertD::with_base_dir(&self.path)?;
+        certd.insert(cert.to_vec()?.into(), |new, old| {
+            if let Some(old) = old {
+                Ok(Cert::from_bytes(&old)?
+                   .merge_public(Cert::from_bytes(&new)?)?
+                   .to_vec()?.into())
+            } else {
+                Ok(new)
+            }
+        })?;
+
+        Ok(())
+    }
 }
 
 #[derive(PartialEq, Eq, Clone, Copy)]
@@ -47,6 +78,7 @@ pub enum Kind {
     Keybox,
     KeyboxX509,
     Keyring,
+    CertD,
 }
 
 impl Kind {
@@ -58,6 +90,11 @@ impl Kind {
     {
         tracer!(TRACE, "Kind::guess");
         t!("Guessing kind of {:?}", path.as_ref());
+
+        if path.as_ref().is_dir() {
+            // XXX: Is there a more robust way to detect cert-ds?
+            return Ok(Some(Kind::CertD));
+        }
 
         let mut magic = [0; 4];
         let mut f = fs::File::open(path)?;
@@ -134,6 +171,9 @@ impl KeyDB {
         } else if url.starts_with("gnupg-kbx:") {
             kind = Some(Kind::Keybox);
             url = &url[10..];
+        } else if url.starts_with("pgp-cert-d:") {
+            kind = Some(Kind::CertD);
+            url = &url[11..];
         }
 
         // Expand tildes.
@@ -222,6 +262,7 @@ impl KeyDB {
                     Resource {
                         path,
                         kind,
+                        writable: ! read_only,
                         create,
                     }
                 );
@@ -262,6 +303,29 @@ impl KeyDB {
             KeyHandle::KeyID(id) =>
                 self.by_subkey_id.get(id).map(AsRef::as_ref),
         }
+    }
+
+    /// Adds a writable pgp-cert-d overlay to the resources, if not
+    /// already in place.
+    pub fn add_certd_overlay(&mut self) -> Result<()> {
+        tracer!(TRACE, "KeyDB::add_certd_overlay");
+        if let Some(topmost) = self.resources.last().cloned() {
+            if topmost.writable && topmost.kind == Kind::CertD {
+                t!("Writable CertD already configured.");
+                return Ok(());
+            }
+
+            self.resources.push(Resource {
+                path: topmost.path.with_extension("d"),
+                kind: Kind::CertD,
+                writable: true,
+                create: true,
+            });
+        } else {
+            return Err(Error::NoWritableResource.into()); // XXX not quite the right error
+        }
+
+        Ok(())
     }
 
     /// Initializes the store, if not already done.
@@ -307,6 +371,17 @@ impl KeyDB {
                     t!("ignoring keybox {:?} only used fox X509",
                        resource.path);
                 },
+                Kind::CertD => {
+                    t!("loading cert-d {:?}", resource.path);
+                    let certd =
+                        pgp_cert_d::CertD::with_base_dir(&resource.path)?;
+                    for (_, _, cert) in certd.iter()? {
+                        let cert = Cert::from_bytes(&cert)
+                            .context(format!(
+                                "While parsing {:?}", resource.path))?;
+                        self.index(cert);
+                    }
+                },
             }
         }
 
@@ -329,4 +404,35 @@ impl KeyDB {
             self.by_subkey_id.insert(keyid, rccert.clone());
         }
     }
+
+    /// Inserts the given cert into the database.
+    ///
+    /// The cert is written to the first writable resource, and the
+    /// in-memory database is updated.
+    pub fn insert(&mut self, cert: Cert) -> Result<()> {
+        fn do_insert(db: &KeyDB, cert: &Cert) -> Result<()> {
+            if let Some(r) = db.resources.iter().rev().find(|r| r.writable) {
+                r.insert(cert)
+            } else {
+                Err(anyhow::Error::from(Error::NoWritableResource)
+                    .context("Inserting cert into database failed"))
+            }
+        }
+
+        if let Err(e) = do_insert(self, &cert) {
+            Err(e)
+        } else {
+            self.index(cert);
+            Ok(())
+        }
+    }
+}
+
+/// KeyDB-related errors.
+#[derive(thiserror::Error, Debug)]
+pub enum Error {
+    #[error("No writable key database resource configured")]
+    NoWritableResource,
+    #[error("Impossible to update read-only resource")]
+    ReadOnly,
 }
