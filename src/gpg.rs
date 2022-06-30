@@ -931,6 +931,7 @@ pub struct Config {
     debug: u32,
     def_cert_expire: Option<time::Duration>,
     def_cert_level: i64,
+    def_digest: HashAlgorithm,
     def_recipient: Option<String>,
     def_recipient_self: bool,
     def_secret_key: Vec<String>,
@@ -954,6 +955,7 @@ pub struct Config {
     keyserver_options: KeyserverOptions,
     list_options: u32,
     list_sigs: bool,
+    local_user: Vec<Sender>,
     lock_once: bool,
     marginals_needed: i64,
     max_cert_depth: i64,
@@ -1034,6 +1036,7 @@ impl Default for Config {
             debug: 0,
             def_cert_expire: None,
             def_cert_level: 0, // XXX
+            def_digest: Default::default(),
             def_recipient: None,
             def_recipient_self: false,
             def_secret_key: Default::default(),
@@ -1061,6 +1064,7 @@ impl Default for Config {
             keyserver_options: Default::default(),
             list_options: Default::default(),
             list_sigs: false,
+            local_user: vec![],
             lock_once: false,
             marginals_needed: 0, // XXX
             max_cert_depth: 0, // XXX
@@ -1228,6 +1232,19 @@ impl Config {
 
     fn mut_keydb(&mut self) -> &mut keydb::KeyDB {
         &mut self.keydb
+    }
+
+    /// Returns the local users used e.g. in signing operations.
+    pub fn local_users(&self) -> Result<Vec<String>> {
+        if self.local_user.is_empty() {
+            if self.def_secret_key.is_empty() {
+                Err(anyhow::anyhow!("There is no default key, use -u"))
+            } else {
+                Ok(self.def_secret_key.clone())
+            }
+        } else {
+            Ok(self.local_user.iter().map(|s| s.name.clone()).collect())
+        }
     }
 }
 
@@ -1582,10 +1599,10 @@ struct Recipient {
     additional: bool,
 }
 
-#[allow(dead_code)]
-struct Sender {
-    name: String,
-    config: bool,
+#[derive(Clone)]
+pub struct Sender {
+    pub name: String,
+    pub config: bool,
 }
 
 #[allow(dead_code, unused_variables, unused_assignments)]
@@ -1629,10 +1646,8 @@ fn real_main() -> anyhow::Result<()> {
     let mut s2k_digest: Option<HashAlgorithm> = None;
     let mut s2k_cipher: Option<SymmetricAlgorithm> = None;
     let mut remote_user: Vec<Recipient> = Vec::new();
-    let mut local_user: Vec<Sender> = Vec::new();
     let mut any_explicit_recipient = false;
     let mut pwfd: Option<Box<dyn io::Read>> = None;
-    let mut def_digest: HashAlgorithm = Default::default();
     let mut def_cipher: SymmetricAlgorithm = Default::default();
     let mut compress_algo: CompressionAlgorithm = Default::default();
     let mut cert_digest: HashAlgorithm = Default::default();
@@ -2314,7 +2329,7 @@ fn real_main() -> anyhow::Result<()> {
             },
 	    oLocalUser => {
                 // store the local users */
-                local_user.push(Sender {
+                opt.local_user.push(Sender {
                     name: value.as_str().unwrap().into(),
                     config: config_file.is_some(),
                 });
@@ -2366,7 +2381,8 @@ fn real_main() -> anyhow::Result<()> {
                 def_cipher = argparse::utils::parse_cipher(value.as_str().unwrap())?;
             },
 	    oDigestAlgo => {
-                def_digest = argparse::utils::parse_digest(value.as_str().unwrap())?;
+                opt.def_digest =
+                    argparse::utils::parse_digest(value.as_str().unwrap())?;
             },
 	    oCompressAlgo => {
 		compress_algo = argparse::utils::parse_compressor(value.as_str().unwrap())?;
