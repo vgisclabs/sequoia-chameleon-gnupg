@@ -24,6 +24,13 @@ use crate::{
 pub fn cmd_import(config: &mut crate::Config, args: &[String])
                   -> Result<()>
 {
+    let rt = tokio::runtime::Runtime::new()?;
+    rt.block_on(real_cmd_import(config, args))
+}
+
+async fn real_cmd_import(config: &mut crate::Config, args: &[String])
+                         -> Result<()>
+{
     // We collect stats for the final IMPORT_RES status line.
     let mut s = crate::status::ImportResult::default();
 
@@ -56,6 +63,7 @@ pub fn cmd_import(config: &mut crate::Config, args: &[String])
                 Ok(c) => c,
                 Err(e) => {
                     // XXX: check for v3 key
+                    // XXX: we also need to support revocation certificates
                     config.warn(format_args!("{}", e));
                     continue;
                 },
@@ -202,9 +210,43 @@ pub fn cmd_import(config: &mut crate::Config, args: &[String])
             }
 
             if let Some(key) = key {
+                let mut agent = config.connect_agent().await?;
+
+                // We collect stats for the IMPORT_OK status line.
+                let mut flags = crate::status::ImportOkFlags::default();
+                flags.set(IMPORT_OK_HAS_SECRET);
                 s.sec_read += 1;
-                // XXX actually insert the cert.
-                let _ = key;
+
+                // GnuPG summarizes changes on a TSK-granularity.  If
+                // we see a new subkey in a known TSK, that TSK is
+                // imported and unchanged at the same time.
+                let mut changed = false;
+                let mut unchanged = false;
+
+                for subkey in key.keys().secret() {
+                    // See if we import a new key or subkey.
+                    let c = crate::agent::import(&mut agent,
+                                                 config.policy(),
+                                                 &key, &subkey).await?;
+
+                    changed |= c;
+                    unchanged |= !c;
+                }
+
+                if changed {
+                    s.sec_imported += 1;
+                }
+                if unchanged {
+                    s.sec_dups += 1;
+                }
+
+                config.warn(format_args!("key {:X}: secret key imported",
+                                         key.keyid()));
+                config.status().emit(
+                    Status::ImportOk {
+                        flags,
+                        fingerprint: Some(key.fingerprint()),
+                    })?;
             }
         }
     }

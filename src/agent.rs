@@ -1,12 +1,24 @@
+use std::convert::TryFrom;
+
 use anyhow::Result;
 
 use sequoia_openpgp as openpgp;
 use sequoia_ipc as ipc;
 use openpgp::{
+    Cert,
     crypto::{
         Password,
         mem::Protected,
     },
+    packet::{
+        Key,
+        key::{
+            SecretParts,
+            UnspecifiedRole,
+            SecretKeyMaterial,
+        },
+    },
+    policy::Policy,
 };
 use ipc::{
     gnupg::Agent,
@@ -83,13 +95,19 @@ async fn acknowledge_inquiry(agent: &mut Agent) -> Result<()> {
 }
 
 pub async fn send_simple<C>(agent: &mut ipc::gnupg::Agent, cmd: C)
-                            -> Result<()>
+                            -> Result<Protected>
 where
     C: AsRef<str>,
 {
     agent.send(cmd.as_ref())?;
+    let mut data = Vec::new();
     while let Some(response) = agent.next().await {
         match response? {
+            Response::Data { partial } => {
+                // Securely erase partial.
+                let partial = Protected::from(partial);
+                data.extend_from_slice(&partial);
+            },
             Response::Ok { .. }
             | Response::Comment { .. }
             | Response::Status { .. } =>
@@ -101,7 +119,7 @@ where
         }
     }
 
-    Ok(())
+    Ok(data.into())
 }
 
 /// Makes the agent ask for a password.
@@ -201,4 +219,280 @@ where
         }
     }
     Ok(())
+}
+
+/// Imports a secret key into the agent.
+pub async fn import(agent: &mut Agent,
+                    policy: &dyn Policy,
+                    cert: &Cert,
+                    key: &Key<SecretParts, UnspecifiedRole>)
+                    -> Result<bool>
+{
+    use ipc::sexp::*;
+
+    /// Makes a tuple cell, i.e. a *C*ons.
+    fn c(name: &str, data: &[u8]) -> Sexp {
+        Sexp::List(vec![Sexp::String(name.as_bytes().into()),
+                        Sexp::String(data.into())])
+    }
+
+    /// Makes a tuple cell with a string value, i.e. a *S*tring cons.
+    fn s(name: &str, data: impl ToString) -> Sexp {
+        c(name, data.to_string().as_bytes())
+    }
+
+    fn add_signed_mpi(list: &mut Vec<Sexp>, v: &[u8]) {
+        let mut v = v.to_vec();
+
+        // If the high bit is set, we need to prepend a zero byte,
+        // otherwise the agent will interpret the value as signed, and
+        // thus negative.
+        if v[0] & 0x80 > 0 {
+            v.insert(0, 0);
+        }
+
+        add_raw(list, "_", &v);
+    }
+
+    fn add(list: &mut Vec<Sexp>, mpi: &mpi::MPI) {
+        add_signed_mpi(list, mpi.value());
+    }
+    fn addp(list: &mut Vec<Sexp>, checksum: &mut u16, mpi: &mpi::ProtectedMPI) {
+        add_signed_mpi(list, mpi.value());
+
+        use openpgp::serialize::MarshalInto;
+        *checksum = checksum.wrapping_add(
+            mpi.to_vec().expect("infallible").iter()
+                .fold(0u16, |acc, v| acc.wrapping_add(*v as u16)));
+    }
+
+    fn add_raw(list: &mut Vec<Sexp>, name: &str, data: &[u8]) {
+        list.push(Sexp::String(name.into()));
+        list.push(Sexp::String(data.into()));
+    }
+
+    use openpgp::crypto::mpi::{self, PublicKey};
+    let mut skey = vec![Sexp::String("skey".into())];
+    let curve = match key.mpis() {
+        PublicKey::RSA { e, n, } => {
+            add(&mut skey, n);
+            add(&mut skey, e);
+            None
+        },
+        PublicKey::DSA { p, q, g, y, } => {
+            add(&mut skey, p);
+            add(&mut skey, q);
+            add(&mut skey, g);
+            add(&mut skey, y);
+            None
+        },
+        PublicKey::ElGamal { p, g, y, } => {
+            add(&mut skey, p);
+            add(&mut skey, g);
+            add(&mut skey, y);
+            None
+        },
+        PublicKey::EdDSA { curve, q, }
+        | PublicKey::ECDSA { curve, q, }
+        | PublicKey::ECDH { curve, q, .. } => {
+            add(&mut skey, q);
+            Some(curve.clone())
+        },
+        PublicKey::Unknown { mpis, rest, } => {
+            for m in mpis.iter() {
+                add(&mut skey, m);
+            }
+            add_raw(&mut skey, "_", rest);
+            None
+        },
+        _ => return
+            Err(openpgp::Error::UnsupportedPublicKeyAlgorithm(key.pk_algo())
+                .into()),
+    };
+
+    // Now we append the secret bits.  We also compute a checksum over
+    // the MPIs.
+    let mut checksum = 0u16;
+    let protection = match key.secret() {
+        SecretKeyMaterial::Encrypted(_e) => {
+            unimplemented!()
+        },
+        SecretKeyMaterial::Unencrypted(u) => {
+            u.map(|s| match s {
+                mpi::SecretKeyMaterial::RSA { d, p, q, u, } => {
+                    addp(&mut skey, &mut checksum, d);
+                    addp(&mut skey, &mut checksum, p);
+                    addp(&mut skey, &mut checksum, q);
+                    addp(&mut skey, &mut checksum, u);
+                },
+                mpi::SecretKeyMaterial::DSA { x, }
+                | mpi::SecretKeyMaterial::ElGamal { x, } =>
+                    addp(&mut skey, &mut checksum, x),
+                mpi::SecretKeyMaterial::EdDSA { scalar, }
+                | mpi::SecretKeyMaterial::ECDSA { scalar, }
+                | mpi::SecretKeyMaterial::ECDH { scalar, } =>
+                    addp(&mut skey, &mut checksum, scalar),
+                mpi::SecretKeyMaterial::Unknown { mpis, rest, } => {
+                    for m in mpis.iter() {
+                        addp(&mut skey, &mut checksum, m);
+                    }
+                    add_raw(&mut skey, "_", rest);
+                    checksum = checksum.wrapping_add(
+                        rest.iter()
+                            .fold(0u16, |acc, v| acc.wrapping_add(*v as u16)));
+                },
+                _ => (), // XXX This will fail anyway.
+            });
+            s("protection", "none")
+        },
+    };
+
+    let mut transfer_key = vec![
+        Sexp::String("openpgp-private-key".into()),
+        s("version", key.version()),
+        s("algo", key.pk_algo()), // XXX does that map correctly?
+    ];
+    if let Some(curve) = curve {
+        transfer_key.push(s("curve", curve.to_string()));
+    }
+    transfer_key.push(Sexp::List(skey));
+    transfer_key.push(s("csum", checksum));
+    transfer_key.push(protection);
+
+    let transfer_key = Sexp::List(transfer_key);
+
+    // Pad to a multiple of 64 bits so that we can AESWRAP it.
+    let mut buf = Vec::new();
+    transfer_key.serialize(&mut buf)?;
+    while buf.len() % 8 > 0 {
+        buf.push(0);
+    }
+    let padded_transfer_key = Protected::from(buf);
+
+    send_simple(agent,
+                format!("SETKEYDESC {}",
+                        escape(make_import_prompt(policy, cert, key)))).await?;
+
+    // Get the Key Encapsulation Key for transferring the key.
+    let kek = send_simple(agent, "KEYWRAP_KEY --import").await?;
+
+    // Now encrypt the key.
+    let encrypted_transfer_key = openpgp::crypto::ecdh::aes_key_wrap(
+        openpgp::types::SymmetricAlgorithm::AES128,
+        &kek,
+        &padded_transfer_key)?;
+    assert_eq!(padded_transfer_key.len() + 8, encrypted_transfer_key.len());
+
+    // Did we import it?
+    let mut imported = false;
+
+    // And send it!
+    agent.send(format!("IMPORT_KEY --timestamp={}",
+                       chrono::DateTime::<chrono::Utc>::from(key.creation_time())
+                       .format("%Y%m%dT%H%M%S")))?;
+    while let Some(response) = agent.next().await {
+        match response? {
+            Response::Ok { .. }
+            | Response::Comment { .. }
+            | Response::Status { .. } =>
+                (), // Ignore.
+            Response::Inquire { keyword, .. } => {
+                match keyword.as_str() {
+                    "KEYDATA" => {
+                        agent.data(&encrypted_transfer_key)?;
+                        // Dummy read to send data.
+                        agent.next().await;
+
+                        // Then, handle the inquiry.
+                        while let Some(r) = agent.next().await {
+                            match r? {
+                                Response::Ok { .. } => {
+                                    imported = true;
+                                    break;
+                                },
+                                Response::Error { code, message } => {
+                                    match code {
+                                        0x4008023 => // File exists.
+                                        // Ignore error, we don't set imported.
+                                            (),
+                                        _ => {
+                                            if let Some(m) = message.as_ref() {
+                                                // XXX: use warn()
+                                                eprintln!("gpg: {}", m);
+                                            }
+                                            return operation_failed(&message);
+                                        },
+                                    }
+                                    break;
+                                },
+                                response =>
+                                    return protocol_error(&response),
+                            }
+                        }
+
+                        // Sending the data acknowledges the inquiry.
+                    },
+                    _ => acknowledge_inquiry(agent).await?,
+                }
+            },
+            Response::Error { ref message, .. } =>
+                return operation_failed(message),
+            response =>
+                return protocol_error(&response),
+        }
+    }
+
+    Ok(imported)
+}
+
+fn make_import_prompt(policy: &dyn Policy, cert: &Cert,
+                      key: &Key<SecretParts, UnspecifiedRole>)
+                      -> String
+{
+    use openpgp::types::Timestamp;
+
+    let primary_id = cert.keyid();
+    let keyid = key.keyid();
+    let uid = crate::utils::best_effort_primary_uid(policy, cert);
+
+    match (primary_id == keyid, Some(uid)) {
+        (true, Some(uid)) => format!(
+            "Please enter the passphrase to \
+             unlock the OpenPGP secret key:\n\
+             {}\n\
+             ID {:X}, created {}.",
+            uid,
+            keyid,
+            Timestamp::try_from(key.creation_time())
+                .expect("creation time is representable"),
+        ),
+        (false, Some(uid)) => format!(
+            "Please enter the passphrase to \
+             unlock the OpenPGP secret key:\n\
+             {}\n\
+             ID {:X}, created {} (main key ID {}).",
+            uid,
+            keyid,
+            Timestamp::try_from(key.creation_time())
+                .expect("creation time is representable"),
+            primary_id,
+        ),
+        (true, None) => format!(
+            "Please enter the passphrase to \
+             unlock the OpenPGP secret key:\n\
+             ID {:X}, created {}.",
+            keyid,
+            Timestamp::try_from(key.creation_time())
+                .expect("creation time is representable"),
+        ),
+        (false, None) => format!(
+            "Please enter the passphrase to \
+             unlock the OpenPGP secret key:\n\
+             ID {:X}, created {} (main key ID {}).",
+            keyid,
+            Timestamp::try_from(key.creation_time())
+                .expect("creation time is representable"),
+            primary_id,
+        ),
+    }
 }

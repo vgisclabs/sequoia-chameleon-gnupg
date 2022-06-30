@@ -116,16 +116,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "buffered-reader"
-version = "1.1.2"
-source = "git+https://gitlab.com/sequoia-pgp/sequoia#16b5a1228990f53574f3b2d9d2a4143163e7cd91"
-dependencies = [
- "bzip2",
- "flate2",
- "libc",
-]
-
-[[package]]
 name = "bumpalo"
 version = "3.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1188,7 +1178,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b0d77ed9e61ea15856bc379246be754c149d40920983a2ca87a8fced24cc9328"
 dependencies = [
  "anyhow",
- "buffered-reader 1.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "buffered-reader",
  "capnp-rpc",
  "ctor",
  "dirs",
@@ -1211,12 +1201,13 @@ dependencies = [
 
 [[package]]
 name = "sequoia-openpgp"
-version = "1.9.0"
-source = "git+https://gitlab.com/sequoia-pgp/sequoia#16b5a1228990f53574f3b2d9d2a4143163e7cd91"
+version = "1.10.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4ee32fced98917f2c03d571658934aadae9b1527133ae9c7ac3cadb9d8252a05"
 dependencies = [
  "anyhow",
  "base64",
- "buffered-reader 1.1.2 (git+https://gitlab.com/sequoia-pgp/sequoia)",
+ "buffered-reader",
  "bzip2",
  "chrono",
  "dyn-clone",
@@ -1244,7 +1235,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "02a86b047ba5a71263eb36a1baba6c3124ceb4a34c221592e878a82fc34e4445"
 dependencies = [
  "anyhow",
- "buffered-reader 1.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "buffered-reader",
  "num_cpus",
  "sequoia-openpgp",
 ]

@@ -15,14 +15,11 @@ futures = "0.3"
 home-dir = "0.1"
 libc = "0.2"
 pgp-cert-d = { git = "https://gitlab.com/sequoia-pgp/pgp-cert-d", default-features = false }
-sequoia-openpgp = "1.6"
+sequoia-openpgp = "1.10"
 sequoia-openpgp-mt = "0.1"
 sequoia-ipc = "0.28"
 thiserror = "1"
 tokio = { version = "1.19", features = [ "rt-multi-thread", "io-util", "net" ] }
-
-[patch.crates-io]
-sequoia-openpgp = { git = "https://gitlab.com/sequoia-pgp/sequoia" }
 
 [dev-dependencies]
 edit-distance = "2"
