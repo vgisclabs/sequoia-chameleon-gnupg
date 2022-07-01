@@ -923,15 +923,18 @@ pub struct Config {
     ask_cert_level: bool,
     ask_sig_expire: bool,
     batch: bool,
+    cert_digest: HashAlgorithm,
     cert_policy_url: Vec<URL>,
     check_sigs: bool,
     comments: Vec<String>,
     completes_needed: i64,
     compliance: Compliance,
+    compress_algo: Option<CompressionAlgorithm>,
     compress_level: i64,
     debug: u32,
     def_cert_expire: Option<time::Duration>,
     def_cert_level: i64,
+    def_cipher: SymmetricAlgorithm,
     def_digest: HashAlgorithm,
     def_recipient: Option<String>,
     def_recipient_self: bool,
@@ -974,6 +977,7 @@ pub struct Config {
     photo_viewer: Option<PathBuf>,
     pinentry_mode: agent::PinentryMode,
     quiet: bool,
+    remote_user: Vec<Recipient>,
     request_origin: RequestOrigin,
     rfc2440_text: bool,
     s2k_count: Option<i64>,
@@ -1028,15 +1032,18 @@ impl Default for Config {
             ask_cert_level: false,
             ask_sig_expire: false,
             batch: false,
+            cert_digest: Default::default(),
             cert_policy_url: Vec::new(),
             check_sigs: false,
             comments: Vec::new(),
             completes_needed: 0, // XXX
             compliance: Default::default(),
+            compress_algo: Default::default(),
             compress_level: 5,
             debug: 0,
             def_cert_expire: None,
             def_cert_level: 0, // XXX
+            def_cipher: Default::default(),
             def_digest: Default::default(),
             def_recipient: None,
             def_recipient_self: false,
@@ -1083,6 +1090,7 @@ impl Default for Config {
             photo_viewer: None,
             pinentry_mode: Default::default(),
             quiet: false,
+            remote_user: vec![],
             request_origin: Default::default(),
             rfc2440_text: false,
             s2k_count: None,
@@ -1657,12 +1665,7 @@ fn real_main() -> anyhow::Result<()> {
     let mut eyes_only = false;
     let mut s2k_digest: Option<HashAlgorithm> = None;
     let mut s2k_cipher: Option<SymmetricAlgorithm> = None;
-    let mut remote_user: Vec<Recipient> = Vec::new();
-    let mut any_explicit_recipient = false;
     let mut pwfd: Option<Box<dyn io::Read>> = None;
-    let mut def_cipher: SymmetricAlgorithm = Default::default();
-    let mut compress_algo: CompressionAlgorithm = Default::default();
-    let mut cert_digest: HashAlgorithm = Default::default();
 
     // Second pass: check special options.
     for rarg in parser.parse_command_line().quietly() {
@@ -2260,7 +2263,7 @@ fn real_main() -> anyhow::Result<()> {
 	        | oEncryptTo
 	        | oHiddenEncryptTo =>
             {
-                remote_user.push(Recipient {
+                opt.remote_user.push(Recipient {
                     name: value.as_str().unwrap().into(),
                     hidden: cmd == oHiddenRecipient
                         || cmd == oHiddenRecipientFile
@@ -2271,7 +2274,6 @@ fn real_main() -> anyhow::Result<()> {
                     additional: cmd == oEncryptTo
                         || cmd == oHiddenEncryptTo,
                 });
-                any_explicit_recipient = true;
 	    },
 
 	    oNoEncryptTo => {
@@ -2394,17 +2396,20 @@ fn real_main() -> anyhow::Result<()> {
                 opt.command_fd = Box::new(fs::File::open(value.as_str().unwrap())?);
             },
 	    oCipherAlgo => {
-                def_cipher = argparse::utils::parse_cipher(value.as_str().unwrap())?;
+                opt.def_cipher =
+                    argparse::utils::parse_cipher(value.as_str().unwrap())?;
             },
 	    oDigestAlgo => {
                 opt.def_digest =
                     argparse::utils::parse_digest(value.as_str().unwrap())?;
             },
 	    oCompressAlgo => {
-		compress_algo = argparse::utils::parse_compressor(value.as_str().unwrap())?;
+		opt.compress_algo = Some(
+                    argparse::utils::parse_compressor(value.as_str().unwrap())?);
 	    },
 	    oCertDigestAlgo => {
-                cert_digest = argparse::utils::parse_digest(value.as_str().unwrap())?;
+                opt.cert_digest =
+                    argparse::utils::parse_digest(value.as_str().unwrap())?;
             },
 
 	    oNoSecmemWarn => (),
