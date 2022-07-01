@@ -113,6 +113,16 @@ pub enum Status {
         sk: SessionKey,
     },
 
+    BeginSigning(HashAlgorithm),
+    SigCreated {
+        typ: SigType,
+        pk_algo: PublicKeyAlgorithm,
+        hash_algo: HashAlgorithm,
+        class: SignatureType,
+        timestamp: openpgp::types::Timestamp,
+        fingerprint: Fingerprint,
+    },
+
     // Miscellaneous.
     NotationName {
         name: String,
@@ -344,6 +354,25 @@ impl Status {
                 writeln!(w, "SESSION_KEY {}:{}",
                          u8::from(*algo),
                          hex::encode(sk))?;
+            },
+
+            BeginSigning(hash) =>
+                writeln!(w, "BEGIN_SIGNING H{}", u8::from(*hash))?,
+            SigCreated {
+                typ,
+                pk_algo,
+                hash_algo,
+                class,
+                timestamp,
+                fingerprint,
+            } => {
+                writeln!(w, "SIG_CREATED {} {} {} {} {} {:X}",
+                         typ,
+                         u8::from(*pk_algo),
+                         u8::from(*hash_algo),
+                         u8::from(*class),
+                         u32::from(*timestamp),
+                         fingerprint)?;
             },
 
             NotationName {
@@ -641,6 +670,24 @@ impl From<ImportProblem> for u8 {
             IssuerCertMissing => 2,
             CertChainTooLong => 3,
             ErrorStoringCert => 4,
+        }
+    }
+}
+
+#[derive(Copy, Clone, Debug)]
+pub enum SigType {
+    Standard,
+    Detached,
+    Cleartext,
+}
+
+impl fmt::Display for SigType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        use SigType::*;
+        match self {
+            Detached => f.write_str("D"),
+            Standard => f.write_str("S"),
+            Cleartext => f.write_str("C"),
         }
     }
 }

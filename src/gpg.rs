@@ -16,7 +16,7 @@ use openpgp::{
     crypto::Password,
     packet::{
         prelude::*,
-        key::PublicParts,
+        key::{PublicParts, UnspecifiedRole},
         Signature,
     },
     policy::{HashAlgoSecurity, Policy, StandardPolicy},
@@ -42,6 +42,7 @@ pub mod utils;
 pub mod verify;
 pub mod decrypt;
 pub mod import;
+pub mod sign;
 
 /// Commands and options.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -1234,6 +1235,17 @@ impl Config {
         &mut self.keydb
     }
 
+    /// Returns a signer for the given key.
+    pub fn get_signer(&self,
+                      vcert: &ValidCert<'_>,
+                      subkey: &Key<PublicParts, UnspecifiedRole>)
+                      -> Result<Box<dyn openpgp::crypto::Signer + Send + Sync>>
+    {
+        let ctx = self.ipc()?;
+        Ok(Box::new(ipc::gnupg::KeyPair::new(&ctx, subkey)?
+                    .with_cert(vcert)))
+    }
+
     /// Returns the local users used e.g. in signing operations.
     pub fn local_users(&self) -> Result<Vec<String>> {
         if self.local_user.is_empty() {
@@ -1777,6 +1789,10 @@ fn real_main() -> anyhow::Result<()> {
             },
 
 	    aDetachedSign => {
+                // XXX: This is stupid.  It should be a command of its
+                // own.  As is, detached signing is orthogonal to
+                // encryption, so gpg --encrypt --detach-sign does
+                // what it is asked to.
                 detached_sig = true;
                 set_cmd(&mut command, aSign )?;
             },
@@ -2473,6 +2489,8 @@ fn real_main() -> anyhow::Result<()> {
         Some(aVerify) => verify::cmd_verify(&opt, &args),
         Some(aDecrypt) => decrypt::cmd_decrypt(&opt, &args),
         Some(aImport) => import::cmd_import(&mut opt, &args),
+        Some(aSign) => sign::cmd_sign(&mut opt, &args, detached_sig, false),
+        Some(aClearsign) => sign::cmd_sign(&mut opt, &args, detached_sig, true),
         None => Err(anyhow::anyhow!("There is no implicit command.")),
         Some(c) => unimplemented!("{:?}", c),
     };
