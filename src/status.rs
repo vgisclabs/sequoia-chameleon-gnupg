@@ -113,6 +113,12 @@ pub enum Status {
         sk: SessionKey,
     },
 
+    BeginEncryption {
+        mdc_method: MDCMethod,
+        cipher: SymmetricAlgorithm,
+    },
+    EndEncryption,
+
     BeginSigning(HashAlgorithm),
     SigCreated {
         typ: SigType,
@@ -355,6 +361,15 @@ impl Status {
                          u8::from(*algo),
                          hex::encode(sk))?;
             },
+
+            BeginEncryption {
+                mdc_method,
+                cipher,
+            } => {
+                writeln!(w, "BEGIN_ENCRYPTION {} {}",
+                         mdc_method, u8::from(*cipher))?;
+            },
+            EndEncryption => writeln!(w, "END_ENCRYPTION")?,
 
             BeginSigning(hash) =>
                 writeln!(w, "BEGIN_SIGNING H{}", u8::from(*hash))?,
@@ -688,6 +703,20 @@ impl fmt::Display for SigType {
             Detached => f.write_str("D"),
             Standard => f.write_str("S"),
             Cleartext => f.write_str("C"),
+        }
+    }
+}
+
+#[derive(Copy, Clone, Debug)]
+pub enum MDCMethod {
+    SEIPDv1,
+}
+
+impl fmt::Display for MDCMethod {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        use MDCMethod::*;
+        match self {
+            SEIPDv1 => f.write_str("2"),
         }
     }
 }
