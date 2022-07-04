@@ -13,6 +13,7 @@ use openpgp::{
     packet::{
         Key,
         key::{
+            PublicParts,
             SecretParts,
             UnspecifiedRole,
             SecretKeyMaterial,
@@ -21,6 +22,7 @@ use openpgp::{
     policy::Policy,
 };
 use ipc::{
+    Keygrip,
     gnupg::Agent,
     assuan::{Response, escape},
 };
@@ -219,6 +221,15 @@ where
         }
     }
     Ok(())
+}
+
+/// Imports a secret key into the agent.
+pub async fn has_key(agent: &mut Agent,
+                     key: &Key<PublicParts, UnspecifiedRole>)
+                     -> Result<bool>
+{
+    let grip = Keygrip::of(key.mpis())?;
+    Ok(send_simple(agent, format!("HAS_KEY {}", grip)).await.is_ok())
 }
 
 /// Imports a secret key into the agent.

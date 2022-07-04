@@ -1244,11 +1244,14 @@ impl Config {
     }
 
     /// Returns a signer for the given key.
-    pub fn get_signer(&self,
-                      vcert: &ValidCert<'_>,
-                      subkey: &Key<PublicParts, UnspecifiedRole>)
-                      -> Result<Box<dyn openpgp::crypto::Signer + Send + Sync>>
+    pub async fn get_signer(&self,
+                            vcert: &ValidCert<'_>,
+                            subkey: &Key<PublicParts, UnspecifiedRole>)
+                            -> Result<Box<dyn openpgp::crypto::Signer + Send + Sync>>
     {
+        let mut agent = self.connect_agent().await?;
+        agent::has_key(&mut agent, subkey).await?;
+
         let ctx = self.ipc()?;
         Ok(Box::new(ipc::gnupg::KeyPair::new(&ctx, subkey)?
                     .with_cert(vcert)))

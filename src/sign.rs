@@ -61,14 +61,19 @@ pub fn cmd_sign(config: &crate::Config, args: &[String],
         let vcert = cert.with_policy(policy, None)
             .context(format!("Key {:X} is not valid", handle))?;
 
-        let key = vcert.keys().for_signing().next()
-            .ok_or_else(|| anyhow::anyhow!("Key {:X} is not signing-capable", handle))?;
-
-        // XXX: This is a bit sad.  We don't know whether the agent
-        // has the key until we try to use it, but then it is too late
-        // to try a different signing-capable subkey.
-        signers.push(config.get_signer(&vcert, &key)?);
-        signers_desc.push((key.pk_algo(), key.fingerprint()));
+        let rt = tokio::runtime::Runtime::new()?;
+        let mut found_one = false;
+        for key in vcert.keys().for_signing() {
+            if let Ok(signer) = rt.block_on(config.get_signer(&vcert, &key)) {
+                signers.push(signer);
+                signers_desc.push((key.pk_algo(), key.fingerprint()));
+                found_one = true;
+            }
+        }
+        if ! found_one {
+            return Err(anyhow::anyhow!(
+                "Key {:X} is not signing-capable", handle));
+        }
     }
 
     let mut sink = if let Some(name) = config.outfile() {
