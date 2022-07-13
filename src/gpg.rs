@@ -1225,7 +1225,7 @@ impl Config {
                               self.homedir);
                 }
 
-                if m.mode() & (libc::S_IRWXG | libc::S_IRWXO) > 0 {
+                if m.mode() & (libc::S_IRWXG | libc::S_IRWXO) as u32 > 0 {
                     eprintln!("WARNING: unsafe permissions on homedir {:?}",
                               self.homedir);
                 }
