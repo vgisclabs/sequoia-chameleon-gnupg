@@ -98,6 +98,10 @@ pub fn cmd_sign(config: &crate::Config, args: &[String],
         .creation_time(timestamp)
         .hash_algo(hash_algo)?;
 
+    if detached {
+        signer = signer.detached();
+    }
+
     if cleartext {
         signer = signer.cleartext();
     }
