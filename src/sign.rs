@@ -48,7 +48,7 @@ pub fn cmd_sign(config: &crate::Config, args: &[String],
         let handle: KeyHandle = local_user.parse()
             .context("Local users and default keys must be key handles")?;
 
-        let cert = config.keydb().by_primary(&handle)
+        let cert = config.keydb().get(&handle)
             .ok_or_else(|| anyhow::anyhow!("Key {:X} not found", handle))?;
 
         config.status().emit(
