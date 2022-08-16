@@ -390,6 +390,8 @@ impl KeyDB {
 
     /// Inserts the given cert into the in-memory database.
     fn index(&mut self, cert: Cert) {
+        tracer!(TRACE, "KeyDB::index");
+        t!("Inserting {}", cert.fingerprint());
         let rccert = Rc::new(cert);
 
         let fp = rccert.fingerprint();
