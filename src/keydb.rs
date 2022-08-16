@@ -57,7 +57,7 @@ impl Resource {
             return Err(Error::ReadOnly.into());
         }
 
-        let certd = pgp_cert_d::CertD::with_base_dir(&self.path)?;
+        let certd = openpgp_cert_d::CertD::with_base_dir(&self.path)?;
         certd.insert(cert.to_vec()?.into(), |new, old| {
             if let Some(old) = old {
                 Ok(Cert::from_bytes(&old)?
@@ -374,7 +374,7 @@ impl KeyDB {
                 Kind::CertD => {
                     t!("loading cert-d {:?}", resource.path);
                     let certd =
-                        pgp_cert_d::CertD::with_base_dir(&resource.path)?;
+                        openpgp_cert_d::CertD::with_base_dir(&resource.path)?;
                     for (_, _, cert) in certd.iter()? {
                         let cert = Cert::from_bytes(&cert)
                             .context(format!(
