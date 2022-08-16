@@ -428,6 +428,11 @@ impl KeyDB {
             Ok(())
         }
     }
+
+    /// Iterates over all certs in the database.
+    pub fn iter(&self) -> impl Iterator<Item = Rc<Cert>> + '_ {
+        self.by_fp.values().cloned()
+    }
 }
 
 /// KeyDB-related errors.

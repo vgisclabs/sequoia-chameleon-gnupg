@@ -38,12 +38,15 @@ pub mod keydb;
 pub mod flags;
 use flags::*;
 pub mod status;
+pub mod trust;
+pub mod colons;
 pub mod utils;
 pub mod verify;
 pub mod decrypt;
 pub mod import;
 pub mod sign;
 pub mod encrypt;
+pub mod list_keys;
 
 /// Commands and options.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -2501,6 +2504,7 @@ fn real_main() -> anyhow::Result<()> {
         Some(aSign) => sign::cmd_sign(&mut opt, &args, detached_sig, false),
         Some(aClearsign) => sign::cmd_sign(&mut opt, &args, detached_sig, true),
         Some(aEncr) => encrypt::cmd_encrypt(&mut opt, &args, false),
+        Some(aListKeys) => list_keys::cmd_list_keys(&mut opt, &args),
         None => Err(anyhow::anyhow!("There is no implicit command.")),
         Some(c) => unimplemented!("{:?}", c),
     };
