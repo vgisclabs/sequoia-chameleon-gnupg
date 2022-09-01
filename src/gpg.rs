@@ -1216,18 +1216,18 @@ impl Config {
                 let m = std::fs::metadata(&self.homedir)?;
 
                 if ! m.is_dir() {
-                    eprintln!("WARNING: homedir {:?} is not a directory",
-                              self.homedir);
+                    eprintln!("gpg: WARNING: homedir '{}' is not a directory",
+                              self.homedir.display());
                 }
 
                 if m.uid() != unsafe { libc::getuid() } {
-                    eprintln!("WARNING: unsafe ownership on homedir {:?}",
-                              self.homedir);
+                    eprintln!("gpg: WARNING: unsafe ownership on homedir '{}'",
+                              self.homedir.display());
                 }
 
                 if m.mode() & (libc::S_IRWXG | libc::S_IRWXO) as u32 > 0 {
-                    eprintln!("WARNING: unsafe permissions on homedir {:?}",
-                              self.homedir);
+                    eprintln!("gpg: WARNING: unsafe permissions on homedir '{}'",
+                              self.homedir.display());
                 }
             },
 
