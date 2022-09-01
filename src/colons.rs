@@ -6,7 +6,7 @@
 
 use std::{
     cell::RefCell,
-    fmt::Write,
+    fmt::{self, Write},
     io,
     sync::Mutex,
     time::SystemTime,
@@ -217,8 +217,8 @@ impl Record {
                     e(w, userid.value())?;
                     writeln!(w, "::::::::::0:")?;
                 } else {
-                    writeln!(w, "uid           [{}] {}",
-                             babel::Fish(*validity),
+                    writeln!(w, "uid           {} {}",
+                             BoxedValidity(*validity),
                              String::from_utf8_lossy(userid.value()))?;
                 }
             },
@@ -261,4 +261,17 @@ fn e(sink: &mut dyn io::Write, s: impl AsRef<[u8]>) -> Result<()> {
     }
 
     Ok(())
+}
+
+/// Boxes validity labels for the human-readable key list output.
+struct BoxedValidity(Validity);
+
+impl fmt::Display for BoxedValidity {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        use Validity::*;
+        match self.0 {
+            Unknown =>  f.write_str("[ unknown]"),
+            Ultimate => f.write_str("[ultimate]"),
+        }
+    }
 }
