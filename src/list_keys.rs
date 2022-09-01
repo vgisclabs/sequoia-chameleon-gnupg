@@ -1,5 +1,5 @@
 use std::{
-    io,
+    io::{self, Write},
 };
 
 use anyhow::{Context, Result};
@@ -134,6 +134,11 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String])
                     Record::Keygrip(grip).emit(&mut sink, config.with_colons)?;
                 }
             }
+        }
+
+        // Print a separating newline for humans.
+        if ! config.with_colons {
+            writeln!(sink)?;
         }
     }
 
