@@ -11,7 +11,6 @@ macro_rules! trace {
 
 // Converts an indentation level to whitespace.
 pub(crate) fn indent(i: isize) -> &'static str {
-    use std::convert::TryFrom;
     let s = "                                                  ";
     &s[0..std::cmp::min(usize::try_from(i).unwrap_or(0), s.len())]
 }
