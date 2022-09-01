@@ -125,8 +125,10 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String])
                 curve: get_curve(subkey.mpis()),
             }.emit(&mut sink, config.with_colons)?;
 
-            Record::Fingerprint(subkey.fingerprint())
-                .emit(&mut sink, config.with_colons)?;
+            if config.with_colons || config.with_subkey_fingerprint {
+                Record::Fingerprint(subkey.fingerprint())
+                    .emit(&mut sink, config.with_colons)?;
+            }
             if config.with_keygrip {
                 if let Ok(grip) = Keygrip::of(subkey.mpis()) {
                     Record::Keygrip(grip).emit(&mut sink, config.with_colons)?;
