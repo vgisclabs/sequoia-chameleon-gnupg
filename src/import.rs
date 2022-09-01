@@ -192,7 +192,7 @@ async fn real_cmd_import(config: &mut crate::Config, args: &[String])
             } else {
                 flags.set(IMPORT_OK_NEW_KEY);
                 s.imported += 1;
-                config.warn(format_args!("key {:X}: {:?} imported",
+                config.warn(format_args!("key {:X}: public key {:?} imported",
                                          cert.keyid(), primary_uid));
                 config.status().emit(
                     Status::Imported {
