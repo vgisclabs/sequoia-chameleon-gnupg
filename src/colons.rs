@@ -84,6 +84,17 @@ impl Record {
     /// machine-readable.
     pub fn emit(&self, w: &mut impl io::Write, mr: bool) -> Result<()> {
         use Record::*;
+
+        // Helper function to format expiration times in
+        // human-readable key listings.
+        let expire_x = |t: Option<chrono::DateTime::<chrono::Utc>>| -> String {
+            t.map(|t| format!(
+                " [{}: {}]",
+                if t > chrono::Utc::now() { "expires" } else { "expired" },
+                t.format("%Y-%m-%d"))
+            ).unwrap_or_else(|| "".into())
+        };
+
         match self {
             PublicKey {
                 validity,
@@ -126,9 +137,7 @@ impl Record {
                              babel::Fish((*pk_algo, *key_length, curve)),
                              creation_date.format("%Y-%m-%d"),
                              babel::Fish(primary_key_flags).to_string().to_uppercase(),
-                             expiration_date.map(|t| format!(" [expires: {}]", // XXX: expired
-                                                             t.format("%Y-%m-%d")))
-                             .unwrap_or_else(|| "".into())
+                             expire_x(expiration_date),
                     )?;
                 }
             },
@@ -169,9 +178,7 @@ impl Record {
                              babel::Fish((*pk_algo, *key_length, curve)),
                              creation_date.format("%Y-%m-%d"),
                              babel::Fish(key_flags).to_string().to_uppercase(),
-                             expiration_date.map(|t| format!(" [expires: {}]", // XXX: expired
-                                                             t.format("%Y-%m-%d")))
-                             .unwrap_or_else(|| "".into())
+                             expire_x(expiration_date),
                     )?;
                 }
             },
