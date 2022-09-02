@@ -4,6 +4,18 @@ use std::{
     fmt,
 };
 
+pub mod db;
+
+/// The default value for the --marginals-needed option.
+pub const DEFAULT_MARGINALS_NEEDED: u8 = 3;
+
+/// The default value for the --completes-needed option.
+pub const DEFAULT_COMPLETES_NEEDED: u8 = 1;
+
+/// The default value for the --max-cert-depth option.
+pub const DEFAULT_MAX_CERT_DEPTH: u8 = 5;
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum TrustModel {
     PGP,
     Classic,
@@ -12,6 +24,24 @@ pub enum TrustModel {
     Tofu,
     TofuPGP,
     Auto,
+    Unknown(u8),
+}
+
+impl From<u8> for TrustModel {
+    fn from(v: u8) -> Self {
+        // See enum trust_model in g10/options.h.
+        use TrustModel::*;
+        match v {
+            0 => Classic,
+            1 => PGP,
+            3 => Always,
+            4 => Direct,
+            5 => Auto,
+            6 => Tofu,
+            7 => TofuPGP,
+            n => Unknown(n),
+        }
+    }
 }
 
 impl Default for TrustModel {
@@ -36,6 +66,7 @@ impl std::str::FromStr for TrustModel {
     }
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum TofuPolicy {
     Auto,
     Good,

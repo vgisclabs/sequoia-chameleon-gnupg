@@ -918,6 +918,7 @@ pub struct Config {
     // Runtime.
     fail: std::cell::Cell<bool>,
     policy: GPGPolicy,
+    trustdb: trust::db::TrustDB,
 
     // Configuration.
     answer_no: bool,
@@ -931,7 +932,7 @@ pub struct Config {
     cert_policy_url: Vec<URL>,
     check_sigs: bool,
     comments: Vec<String>,
-    completes_needed: i64,
+    completes_needed: Option<i64>,
     compliance: Compliance,
     compress_algo: Option<CompressionAlgorithm>,
     compress_level: i64,
@@ -965,8 +966,8 @@ pub struct Config {
     list_sigs: bool,
     local_user: Vec<Sender>,
     lock_once: bool,
-    marginals_needed: i64,
-    max_cert_depth: i64,
+    marginals_needed: Option<i64>,
+    max_cert_depth: Option<i64>,
     max_output: Option<u64>,
     mimemode: bool,
     min_cert_level: i64,
@@ -999,7 +1000,7 @@ pub struct Config {
     textmode: usize,
     throw_keyids: bool,
     tofu_default_policy: trust::TofuPolicy,
-    trust_model: trust::TrustModel,
+    trust_model: Option<trust::TrustModel>,
     use_embedded_filename: bool,
     verbose: usize,
     verify_options: u32,
@@ -1027,6 +1028,7 @@ impl Default for Config {
             // Runtime.
             fail: Default::default(),
             policy: Default::default(),
+            trustdb: Default::default(),
 
             // Configuration.
             answer_no: false,
@@ -1040,7 +1042,7 @@ impl Default for Config {
             cert_policy_url: Vec::new(),
             check_sigs: false,
             comments: Vec::new(),
-            completes_needed: 0, // XXX
+            completes_needed: None,
             compliance: Default::default(),
             compress_algo: Default::default(),
             compress_level: 5,
@@ -1078,8 +1080,8 @@ impl Default for Config {
             list_sigs: false,
             local_user: vec![],
             lock_once: false,
-            marginals_needed: 0, // XXX
-            max_cert_depth: 0, // XXX
+            marginals_needed: None,
+            max_cert_depth: None,
             max_output: None,
             mimemode: false,
             min_cert_level: 0,
@@ -1112,7 +1114,7 @@ impl Default for Config {
             textmode: 0,
             throw_keyids: false,
             tofu_default_policy: Default::default(),
-            trust_model: Default::default(),
+            trust_model: None,
             use_embedded_filename: false,
             verbose: 0,
             verify_options: 0,
@@ -1607,7 +1609,6 @@ fn real_main() -> anyhow::Result<()> {
     let mut logfile = None;
     let mut fpr_maybe_cmd = false;
     let mut default_keyring = false;
-    let mut trustdb_name = None;
     let mut eyes_only = false;
     let mut s2k_digest: Option<HashAlgorithm> = None;
     let mut s2k_cipher: Option<SymmetricAlgorithm> = None;
@@ -1969,17 +1970,18 @@ fn real_main() -> anyhow::Result<()> {
                 opt.emit_version = 0;
             },
 	    oCompletesNeeded => {
-                opt.completes_needed = value.as_int().unwrap();
+                opt.completes_needed = Some(value.as_int().unwrap());
             },
 	    oMarginalsNeeded => {
-                opt.marginals_needed = value.as_int().unwrap();
+                opt.marginals_needed = Some(value.as_int().unwrap());
             },
 	    oMaxCertDepth => {
-                opt.max_cert_depth = value.as_int().unwrap();
+                opt.max_cert_depth = Some(value.as_int().unwrap());
             },
 
 	    oTrustDBName => {
-                trustdb_name = Some(value.as_str().unwrap());
+                opt.trustdb =
+                    trust::db::TrustDB::with_name(value.as_str().unwrap());
             },
 
 	    oDefaultKey => {
@@ -2046,11 +2048,11 @@ fn real_main() -> anyhow::Result<()> {
 	    // --always-trust so keep this option around for a long
 	    // time.
 	    oAlwaysTrust => {
-                opt.trust_model = trust::TrustModel::Always;
+                opt.trust_model = Some(trust::TrustModel::Always);
             },
 
 	    oTrustModel => {
-	        opt.trust_model = value.as_str().unwrap().parse()?;
+	        opt.trust_model = Some(value.as_str().unwrap().parse()?);
 	    },
 
 	    oTOFUDefaultPolicy => {
