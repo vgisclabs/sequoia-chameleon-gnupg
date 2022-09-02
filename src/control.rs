@@ -3,7 +3,7 @@
 use std::{
     fmt,
     io,
-    path::Path,
+    path::{Path, PathBuf},
 };
 
 use sequoia_openpgp as openpgp;
@@ -37,6 +37,19 @@ pub trait Common {
 
     /// Returns the home directory.
     fn homedir(&self) -> &Path;
+
+    /// Returns a path that can be relative to the home directory.
+    ///
+    /// Canonicalizes the given path name with the property that if it
+    /// contains no slash (i.e. just one component), it is interpreted
+    /// as being relative to the GnuPG home directory.
+    fn make_filename(&self, name: &Path) -> PathBuf {
+        if name.is_relative() && name.components().count() == 1 {
+            self.homedir().join(name)
+        } else {
+            name.into()
+        }
+    }
 
     /// Returns a reference to the key database.
     fn keydb(&self) -> &KeyDB;
