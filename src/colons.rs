@@ -126,8 +126,8 @@ impl Record {
                              babel::Fish((*pk_algo, *key_length, curve)),
                              creation_date.format("%Y-%m-%d"),
                              babel::Fish(primary_key_flags).to_string().to_uppercase(),
-                             expiration_date.map(|t| format!(" expires: {}", // XXX: expired
-                                                             t.format("%s")))
+                             expiration_date.map(|t| format!(" [expires: {}]", // XXX: expired
+                                                             t.format("%Y-%m-%d")))
                              .unwrap_or_else(|| "".into())
                     )?;
                 }
@@ -165,10 +165,13 @@ impl Record {
                     )?;
                 } else {
                     writeln!(w,
-                             "sub   {} {} [{}]",
+                             "sub   {} {} [{}]{}",
                              babel::Fish((*pk_algo, *key_length, curve)),
                              creation_date.format("%Y-%m-%d"),
                              babel::Fish(key_flags).to_string().to_uppercase(),
+                             expiration_date.map(|t| format!(" [expires: {}]", // XXX: expired
+                                                             t.format("%Y-%m-%d")))
+                             .unwrap_or_else(|| "".into())
                     )?;
                 }
             },
