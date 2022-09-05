@@ -27,6 +27,18 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String])
     let mut sink = io::stdout(); // XXX
     let p = config.policy();
 
+    let v = config.trustdb.version(config);
+    Record::TrustDBInformation {
+        old: false,
+        changed_model: false,
+        model: v.model,
+        creation_time: v.creation_time,
+        expiration_time: v.expiration_time,
+        marginals_needed: v.marginals_needed,
+        completes_needed: v.completes_needed,
+        max_cert_depth: v.max_cert_depth,
+    }.emit(&mut sink, config.with_colons)?;
+
     // XXX: currently, this only works with keyids and fingerprints
     let filter: Vec<KeyHandle> = args.iter().map(|a| a.parse())
         .collect::<Result<Vec<KeyHandle>>>()

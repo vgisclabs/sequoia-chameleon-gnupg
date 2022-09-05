@@ -77,6 +77,17 @@ pub enum Record {
         expiration_date: Option<SystemTime>,
         userid: UserID,
     },
+
+    TrustDBInformation {
+        old: bool,
+        changed_model: bool,
+        model: TrustModel,
+        creation_time: SystemTime,
+        expiration_time: Option<SystemTime>,
+        marginals_needed: u8,
+        completes_needed: u8,
+        max_cert_depth: u8,
+    },
 }
 
 impl Record {
@@ -230,6 +241,38 @@ impl Record {
                     writeln!(w, "uid           {} {}",
                              BoxedValidity(*validity),
                              String::from_utf8_lossy(userid.value()))?;
+                }
+            },
+
+            TrustDBInformation {
+                old,
+                changed_model,
+                model,
+                creation_time,
+                expiration_time,
+                marginals_needed,
+                completes_needed,
+                max_cert_depth,
+            } => {
+                let creation_time =
+                    chrono::DateTime::<chrono::Utc>::from(*creation_time);
+
+                let expiration_time = expiration_time.map(|t| {
+                    chrono::DateTime::<chrono::Utc>::from(t)
+                });
+
+                if mr {
+                    writeln!(w, "tru:{}{}:{}:{}:{}:{}:{}:{}",
+                             if *old { "o" } else { "" },
+                             if *changed_model { "o" } else { "" },
+                             if let TrustModel::Classic = model { "0" } else { "1" },
+                             creation_time.format("%s"),
+                             expiration_time.map(|t| t.format("%s").to_string())
+                             .unwrap_or_else(|| "0".into()),
+                             marginals_needed,
+                             completes_needed,
+                             max_cert_depth,
+                    )?;
                 }
             },
         }
