@@ -280,8 +280,13 @@ impl fmt::Display for BoxedValidity {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         use Validity::*;
         match self.0 {
-            Unknown =>  f.write_str("[ unknown]"),
-            Ultimate => f.write_str("[ultimate]"),
+            Unknown =>   f.write_str("[ unknown]"),
+            Expired =>   f.write_str("[ expired]"),
+            Undefined => f.write_str("[  undef ]"),
+            Never =>     f.write_str("[  never ]"),
+            Marginal =>  f.write_str("[marginal]"),
+            Fully =>     f.write_str("[  full  ]"),
+            Ultimate =>  f.write_str("[ultimate]"),
         }
     }
 }

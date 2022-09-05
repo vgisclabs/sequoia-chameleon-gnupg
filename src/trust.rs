@@ -99,6 +99,11 @@ impl std::str::FromStr for TofuPolicy {
 #[derive(Copy, Clone, Debug)]
 pub enum Validity {
     Unknown,
+    Expired,
+    Undefined,
+    Never,
+    Marginal,
+    Fully,
     Ultimate,
 }
 
@@ -106,7 +111,12 @@ impl fmt::Display for Validity {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         use Validity::*;
         match self {
-            Unknown => f.write_str("q"),
+            Unknown => f.write_str("-"),
+            Expired => f.write_str("e"),
+            Undefined => f.write_str("q"),
+            Never => f.write_str("n"),
+            Marginal => f.write_str("m"),
+            Fully => f.write_str("f"),
             Ultimate => f.write_str("u"),
         }
     }
@@ -117,6 +127,11 @@ impl fmt::Display for crate::babel::Fish<Validity> {
         use Validity::*;
         match self.0 {
             Unknown => f.write_str("unknown"),
+            Expired => f.write_str("expired"),
+            Undefined => f.write_str("undefined"),
+            Never => f.write_str("never"),
+            Marginal => f.write_str("marginal"),
+            Fully => f.write_str("full"),
             Ultimate => f.write_str("ultimate"),
         }
     }
