@@ -17,7 +17,7 @@ use ipc::Keygrip;
 use crate::{
     control::Common,
     colons::*,
-    trust::*,
+    trust::{*, cert::*},
 };
 
 /// Dispatches the --list-keys command (and similar ones).
@@ -25,7 +25,8 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String])
                      -> Result<()>
 {
     let mut sink = io::stdout(); // XXX
-    let p = config.policy();
+    let vtm = config.trust_model_impl.with_policy(config, None)?;
+    let p = vtm.policy();
 
     let v = config.trustdb.version(config);
     Record::TrustDBInformation {
@@ -55,10 +56,11 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String])
             }
         }
 
+        let acert = AuthenticatedCert::new(vtm.as_ref(), &cert)?;
         let vcert = cert.with_policy(p, None).ok();
 
         Record::PublicKey {
-            validity: Validity::Unknown,
+            validity: acert.cert_validity(),
             key_length: cert.primary_key().mpis().bits().unwrap_or_default(),
             pk_algo: cert.primary_key().pk_algo(),
             keyid: cert.keyid(),
@@ -102,11 +104,11 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String])
             }
         }
 
-        for uid in cert.userids() {
+        for (validity, uid) in acert.userids() {
             let vuid = uid.clone().with_policy(p, None).ok();
 
             Record::UserID {
-                validity: Validity::Unknown,
+                validity,
                 creation_date: vuid.as_ref()
                     .and_then(|v| v.binding_signature().signature_creation_time())
                     .unwrap_or_else(|| {
@@ -120,11 +122,11 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String])
             }.emit(&mut sink, config.with_colons)?;
         }
 
-        for subkey in cert.keys().subkeys() {
+        for (validity, subkey) in acert.subkeys() {
             let vsubkey = subkey.clone().with_policy(p, None).ok();
 
             Record::Subkey {
-                validity: Validity::Unknown,
+                validity: validity,
                 key_length: subkey.mpis().bits().unwrap_or_default(),
                 pk_algo: subkey.pk_algo(),
                 keyid: subkey.keyid(),

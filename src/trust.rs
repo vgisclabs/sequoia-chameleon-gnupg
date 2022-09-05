@@ -4,7 +4,9 @@ use std::{
     fmt,
 };
 
+pub mod cert;
 pub mod db;
+pub mod model;
 
 /// The default value for the --marginals-needed option.
 pub const DEFAULT_MARGINALS_NEEDED: u8 = 3;
@@ -46,7 +48,7 @@ impl From<u8> for TrustModel {
 
 impl Default for TrustModel {
     fn default() -> Self {
-        TrustModel::PGP // XXX
+        TrustModel::Auto
     }
 }
 
@@ -96,7 +98,7 @@ impl std::str::FromStr for TofuPolicy {
     }
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Validity {
     Unknown,
     Revoked, // XXX: This is a flag in GnuPG.

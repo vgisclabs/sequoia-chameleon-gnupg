@@ -920,6 +920,7 @@ pub struct Config {
     fail: std::cell::Cell<bool>,
     policy: GPGPolicy,
     trustdb: trust::db::TrustDB,
+    trust_model_impl: Box<dyn trust::model::Model>,
 
     // Configuration.
     answer_no: bool,
@@ -1002,6 +1003,7 @@ pub struct Config {
     throw_keyids: bool,
     tofu_default_policy: trust::TofuPolicy,
     trust_model: Option<trust::TrustModel>,
+    trusted_keys: Vec<openpgp::Fingerprint>,
     use_embedded_filename: bool,
     verbose: usize,
     verify_options: u32,
@@ -1030,6 +1032,7 @@ impl Default for Config {
             fail: Default::default(),
             policy: Default::default(),
             trustdb: Default::default(),
+            trust_model_impl: trust::model::null_model(),
 
             // Configuration.
             answer_no: false,
@@ -1116,6 +1119,7 @@ impl Default for Config {
             throw_keyids: false,
             tofu_default_policy: Default::default(),
             trust_model: None,
+            trusted_keys: vec![],
             use_embedded_filename: false,
             verbose: 0,
             verify_options: 0,
@@ -2396,6 +2400,10 @@ fn real_main() -> anyhow::Result<()> {
 	    oShowSessionKey => {
                 opt.show_session_key = true;
             },
+            oTrustedKey => {
+                // XXX: We don't really support KeyIDs here.
+                opt.trusted_keys.push(value.as_str().unwrap().parse()?);
+            },
 	    oEnableSpecialFilenames => {
                 opt.special_filenames = true;
             },
@@ -2425,6 +2433,8 @@ fn real_main() -> anyhow::Result<()> {
 
     opt.keydb.add_certd_overlay(&opt.homedir().join("pubring.cert.d"))?;
     opt.keydb.initialize()?;
+    opt.trust_model_impl =
+        opt.trust_model.unwrap_or_default().build(&opt)?;
 
     if let agent::PinentryMode::Loopback = opt.pinentry_mode {
         // In loopback mode, never ask for the password multiple
