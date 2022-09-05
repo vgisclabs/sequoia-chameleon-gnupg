@@ -6,6 +6,7 @@ use std::{
     io::Read,
     path::{Path, PathBuf},
     rc::Rc,
+    time::{SystemTime, UNIX_EPOCH},
 };
 
 use anyhow::{anyhow, Context, Result};
@@ -14,11 +15,13 @@ use home_dir::HomeDirExt;
 use sequoia_openpgp as openpgp;
 use openpgp::{
     Cert,
+    crypto::hash::Digest,
     Fingerprint,
     KeyHandle,
     KeyID,
     parse::Parse,
     serialize::SerializeInto,
+    types::HashAlgorithm,
 };
 
 /// Controls tracing.
@@ -28,6 +31,8 @@ const TRACE: bool = false;
 pub struct KeyDB {
     for_gpgv: bool,
     resources: Vec<Resource>,
+    overlay: Option<Overlay>,
+
     initialized: bool,
     by_fp: HashMap<Fingerprint, Rc<Cert>>,
     by_id: HashMap<KeyID, Rc<Cert>>,
@@ -39,37 +44,7 @@ pub struct KeyDB {
 struct Resource {
     kind: Kind,
     path: PathBuf,
-    writable: bool,
     create: bool,
-}
-
-impl Resource {
-    fn insert(&self, cert: &Cert) -> Result<()> {
-        if ! self.writable {
-            return Err(Error::ReadOnly.into());
-        }
-
-        if ! self.create && ! self.path.exists() {
-            return Err(Error::ReadOnly.into());
-        }
-
-        if self.kind != Kind::CertD {
-            return Err(Error::ReadOnly.into());
-        }
-
-        let certd = openpgp_cert_d::CertD::with_base_dir(&self.path)?;
-        certd.insert(cert.to_vec()?.into(), |new, old| {
-            if let Some(old) = old {
-                Ok(Cert::from_bytes(&old)?
-                   .merge_public(Cert::from_bytes(&new)?)?
-                   .to_vec()?.into())
-            } else {
-                Ok(new)
-            }
-        })?;
-
-        Ok(())
-    }
 }
 
 #[derive(PartialEq, Eq, Clone, Copy)]
@@ -132,6 +107,7 @@ impl KeyDB {
             for_gpgv: false,
             resources: Vec::default(),
             initialized: false,
+            overlay: None,
             by_fp: Default::default(),
             by_id: Default::default(),
             by_subkey_fp: Default::default(),
@@ -262,7 +238,6 @@ impl KeyDB {
                     Resource {
                         path,
                         kind,
-                        writable: ! read_only,
                         create,
                     }
                 );
@@ -307,24 +282,14 @@ impl KeyDB {
 
     /// Adds a writable pgp-cert-d overlay to the resources, if not
     /// already in place.
-    pub fn add_certd_overlay(&mut self) -> Result<()> {
+    pub fn add_certd_overlay(&mut self, path: &Path) -> Result<()> {
         tracer!(TRACE, "KeyDB::add_certd_overlay");
-        if let Some(topmost) = self.resources.last().cloned() {
-            if topmost.writable && topmost.kind == Kind::CertD {
-                t!("Writable CertD already configured.");
-                return Ok(());
-            }
-
-            self.resources.push(Resource {
-                path: topmost.path.with_extension("d"),
-                kind: Kind::CertD,
-                writable: true,
-                create: true,
-            });
-        } else {
-            return Err(Error::NoWritableResource.into()); // XXX not quite the right error
+        if self.overlay.is_some() {
+            t!("CertD overlay already configured.");
+            return Ok(());
         }
 
+        self.overlay = Some(Overlay::new(path)?);
         Ok(())
     }
 
@@ -340,6 +305,31 @@ impl KeyDB {
 
         for resource in &self.resources.clone() {
             if resource.create && ! resource.path.exists() {
+                t!("skipping non-existing resource {:?}", resource.path);
+                continue;
+            }
+
+            let f = fs::File::open(&resource.path)?;
+            let modified = f.metadata()?.modified()?;
+
+            // If there is a writable openpgp-cert-d overlay on top of
+            // the stack.  We import all certs from our resources
+            // there, and use it as a cache into the resources.
+
+            // Get rid of sub-second precision, filetime doesn't seem
+            // to set them reliably on Linux.
+            let unix_time = |t: SystemTime| {
+                t.duration_since(UNIX_EPOCH).unwrap().as_secs()
+            };
+
+            if self.overlay.as_ref()
+                .and_then(|overlay| overlay.get_cached_mtime(&resource).ok())
+                .map(|cached| unix_time(modified) == unix_time(cached))
+                .unwrap_or(false)
+            {
+                // The overlay already contains all data from
+                // this resource.
+                t!("skipping up-to-date resource {:?}", resource.path);
                 continue;
             }
 
@@ -347,23 +337,23 @@ impl KeyDB {
                 Kind::Keyring => {
                     use sequoia_openpgp_mt::keyring;
                     t!("loading keyring {:?}", resource.path);
-                    for cert in keyring::parse(fs::File::open(&resource.path)?)?
+                    for cert in keyring::parse(f)?
                     {
                         let cert = cert.context(
                             format!("While parsing {:?}", resource.path))?;
-                        self.index(cert);
+                        self.insert(cert)?;
                     }
                 },
                 Kind::Keybox => {
                     use sequoia_ipc::keybox::*;
                     t!("loading keybox {:?}", resource.path);
-                    for record in Keybox::from_file(&resource.path)? {
+                    for record in Keybox::from_reader(f)? {
                         let record = record.context(
                             format!("While parsing {:?}", resource.path))?;
                         if let KeyboxRecord::OpenPGP(r) = record {
-                            self.index(
+                            self.insert(
                                 r.cert().context(format!(
-                                    "While parsing {:?}", resource.path))?);
+                                    "While parsing {:?}", resource.path))?)?;
                         }
                     }
                 },
@@ -379,9 +369,22 @@ impl KeyDB {
                         let cert = Cert::from_bytes(&cert)
                             .context(format!(
                                 "While parsing {:?}", resource.path))?;
-                        self.index(cert);
+                        self.insert(cert)?;
                     }
                 },
+            }
+
+            if let Some(overlay) = &self.overlay {
+                overlay.set_cached_mtime(&resource, modified)?;
+            }
+        }
+
+        if let Some(overlay) = &self.overlay {
+            if let Ok(certd) = openpgp_cert_d::CertD::with_base_dir(&overlay.path) {
+                for (fp, tag, data) in certd.iter().into_iter().flatten() {
+                    t!("loading {} from overlay", fp);
+                    self.index(Cert::from_bytes(&data)?, Some(tag));
+                }
             }
         }
 
@@ -389,7 +392,7 @@ impl KeyDB {
     }
 
     /// Inserts the given cert into the in-memory database.
-    fn index(&mut self, cert: Cert) {
+    fn index(&mut self, cert: Cert, _tag: Option<openpgp_cert_d::Tag>) {
         tracer!(TRACE, "KeyDB::index");
         t!("Inserting {}", cert.fingerprint());
         let rccert = Rc::new(cert);
@@ -412,26 +415,71 @@ impl KeyDB {
     /// The cert is written to the first writable resource, and the
     /// in-memory database is updated.
     pub fn insert(&mut self, cert: Cert) -> Result<()> {
-        fn do_insert(db: &KeyDB, cert: &Cert) -> Result<()> {
-            if let Some(r) = db.resources.iter().rev().find(|r| r.writable) {
-                r.insert(cert)
-            } else {
-                Err(anyhow::Error::from(Error::NoWritableResource)
-                    .context("Inserting cert into database failed"))
-            }
-        }
+        if let Some(overlay) = &self.overlay {
+            let certd = openpgp_cert_d::CertD::with_base_dir(&overlay.path)?;
+            let (tag, merged) = certd.insert(cert.to_vec()?.into(), |new, old| {
+                if let Some(old) = old {
+                    Ok(Cert::from_bytes(&old)?
+                       .merge_public(Cert::from_bytes(&new)?)?
+                       .to_vec()?.into())
+                } else {
+                    Ok(new)
+                }
+            })?;
 
-        if let Err(e) = do_insert(self, &cert) {
-            Err(e)
+            self.index(Cert::from_bytes(&merged)?, Some(tag));
         } else {
-            self.index(cert);
-            Ok(())
+            self.index(cert, None);
         }
+        Ok(())
     }
 
     /// Iterates over all certs in the database.
     pub fn iter(&self) -> impl Iterator<Item = Rc<Cert>> + '_ {
         self.by_fp.values().cloned()
+    }
+}
+
+struct Overlay {
+    path: PathBuf,
+}
+
+impl Overlay {
+    fn new(p: &Path) -> Result<Overlay> {
+        Ok(Overlay {
+            path: p.into(),
+        })
+    }
+
+    #[allow(dead_code)]
+    fn certd_mtime(&self) -> Result<SystemTime> {
+        Ok(std::fs::metadata(&self.path)?.modified()?)
+    }
+
+    fn mtime_cache_path(&self, of: &Resource) -> PathBuf {
+        let mut hash = HashAlgorithm::SHA256.context()
+            .expect("MTI hash algorithm");
+        hash.update(of.path.to_string_lossy().as_bytes());
+
+        let name = format!(
+            "_sequoia_gpg_chameleon_mtime_{}",
+            openpgp::fmt::hex::encode(
+                hash.into_digest().expect("SHA2 is complete")));
+
+        self.path.join(name)
+    }
+
+    fn get_cached_mtime(&self, of: &Resource) -> Result<SystemTime> {
+        Ok(std::fs::metadata(self.mtime_cache_path(&of))?.modified()?)
+    }
+
+    fn set_cached_mtime(&self, of: &Resource, new: SystemTime)
+                        -> Result<()> {
+        let p = self.mtime_cache_path(&of);
+        let f = tempfile::NamedTempFile::new_in(&self.path)?;
+        filetime::set_file_mtime(f.path(), new.into())?;
+        f.persist(p)?;
+        Ok(())
     }
 }
 

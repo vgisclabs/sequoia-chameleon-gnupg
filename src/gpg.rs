@@ -33,6 +33,7 @@ pub mod argparse;
 use argparse::{Argument, Opt, flags::*};
 pub mod babel;
 pub mod control;
+use control::Common;
 pub mod keydb;
 #[allow(dead_code)]
 pub mod flags;
@@ -2422,7 +2423,7 @@ fn real_main() -> anyhow::Result<()> {
         return Ok(());
     }
 
-    opt.keydb.add_certd_overlay()?;
+    opt.keydb.add_certd_overlay(&opt.homedir().join("pubring.cert.d"))?;
     opt.keydb.initialize()?;
 
     if let agent::PinentryMode::Loopback = opt.pinentry_mode {
