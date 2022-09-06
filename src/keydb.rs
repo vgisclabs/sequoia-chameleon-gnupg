@@ -379,11 +379,32 @@ impl KeyDB {
             }
         }
 
+        // Currently, we eagerly parse all certs in the overlay.  In
+        // the future, we may defer that until it is really needed
+        // (e.g. for WoT computations, but not for lookup by subkey).
         if let Some(overlay) = &self.overlay {
             if let Ok(certd) = openpgp_cert_d::CertD::with_base_dir(&overlay.path) {
-                for (fp, tag, data) in certd.iter().into_iter().flatten() {
-                    t!("loading {} from overlay", fp);
-                    self.index(Cert::from_bytes(&data)?, Some(tag));
+                use rayon::prelude::*;
+                // XXX: Use upstream version of lazy_iter.
+                let items = lazy_iter(&certd, &overlay.path)
+                    .into_iter().flatten() // Folds errors.
+                    .collect::<Vec<_>>();
+
+                // For performance reasons, we read, parse, and
+                // canonicalize certs in parallel.
+                for (_fp, tag, cert) in items.into_par_iter()
+                    .map(|(fp, tag, file)| {
+                        // XXX: Once we have a cached tag and
+                        // presumably a Sync index, avoid the work if
+                        // tags match.
+                        t!("loading {} from overlay", fp);
+                        Ok((fp, tag, Cert::from_reader(file)?))
+                    })
+                    .collect::<Result<Vec<_>>>()?
+                {
+                    // But in the end, we insert from the main thread,
+                    // because our index is not Sync.
+                    self.index(cert, Some(tag));
                 }
             }
         }
@@ -439,6 +460,22 @@ impl KeyDB {
         self.by_fp.values().cloned()
     }
 }
+
+/// Like CertD::iter, but returns open `File`s.
+///
+/// XXX: Use the upstream version once available.
+fn lazy_iter<'c>(c: &'c openpgp_cert_d::CertD, base: &'c Path)
+                 -> Result<impl Iterator<Item = (String,
+                                                 openpgp_cert_d::Tag,
+                                                 fs::File)> + 'c> {
+    Ok(c.iter_fingerprints()?.filter_map(move |fp| {
+        let path = base.join(&fp[..2]).join(&fp[2..]);
+        let f = fs::File::open(path).ok()?;
+        let tag = f.metadata().ok()?.try_into().ok()?;
+        Some((fp, tag, f))
+    }))
+}
+
 
 struct Overlay {
     path: PathBuf,
