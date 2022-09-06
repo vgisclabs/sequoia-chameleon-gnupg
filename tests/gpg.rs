@@ -298,13 +298,29 @@ impl Diff {
     /// `out_limit` (`err_limit`).  Panics otherwise.
     pub fn assert_equal_up_to(&self, out_limit: usize, err_limit: usize) {
         let mut pass = true;
-        if self.oracle.stdout_edit_distance(&self.us) > out_limit {
+
+        let d = self.oracle.stdout_edit_distance(&self.us);
+        if d > out_limit {
             pass = false;
-            eprintln!("Stdout edit distance exceeds limit of {}.", out_limit);
+            eprintln!("Stdout edit distance {} exceeds limit of {}.",
+                      d, out_limit);
         }
-        if self.oracle.stderr_edit_distance(&self.us) > err_limit {
+        if out_limit > 20 && d < out_limit / 2 {
             pass = false;
-            eprintln!("Stderr edit distance exceeds limit of {}.", err_limit);
+            eprintln!("Stdout edit distance {} smaller than half of limit {}.",
+                      d, out_limit);
+        }
+
+        let d = self.oracle.stderr_edit_distance(&self.us);
+        if d > err_limit {
+            pass = false;
+            eprintln!("Stderr edit distance {} exceeds limit of {}.",
+                      d, err_limit);
+        }
+        if err_limit > 20 && d < err_limit / 2 {
+            pass = false;
+            eprintln!("Stderr edit distance {} smaller than half of limit {}.",
+                      d, err_limit);
         }
 
         if ! pass {

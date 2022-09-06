@@ -28,14 +28,14 @@ fn basic() -> Result<()> {
         "--list-keys",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(60, 0);
+    diff.assert_equal_up_to(9, 0);
 
     let diff = experiment.invoke(&[
         "--list-keys",
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(30, 0);
+    diff.assert_equal_up_to(3, 0);
 
     Ok(())
 }
@@ -94,14 +94,14 @@ fn general_purpose(cs: CipherSuite) -> Result<()> {
         "--list-keys",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(60, 0);
+    diff.assert_equal_up_to(9, 0);
 
     let diff = experiment.invoke(&[
         "--list-keys",
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(40, 0);
+    diff.assert_equal_up_to(15, 0);
 
     Ok(())
 }
