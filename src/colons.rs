@@ -324,6 +324,7 @@ impl fmt::Display for BoxedValidity {
         use Validity::*;
         match self.0 {
             Unknown =>   f.write_str("[ unknown]"),
+            Revoked =>   f.write_str("[ revoked]"),
             Expired =>   f.write_str("[ expired]"),
             Undefined => f.write_str("[  undef ]"),
             Never =>     f.write_str("[  never ]"),
