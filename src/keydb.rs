@@ -293,6 +293,11 @@ impl KeyDB {
         Ok(())
     }
 
+    /// Gets the writable pgp-cert-d overlay.
+    pub fn get_certd_overlay(&self) -> Result<&Overlay> {
+        self.overlay.as_ref().ok_or_else(|| anyhow::anyhow!("No overlay added"))
+    }
+
     /// Initializes the store, if not already done.
     #[allow(dead_code)]
     pub fn initialize(&mut self) -> Result<()> {
@@ -477,7 +482,7 @@ fn lazy_iter<'c>(c: &'c openpgp_cert_d::CertD, base: &'c Path)
 }
 
 
-struct Overlay {
+pub struct Overlay {
     path: PathBuf,
 }
 
@@ -486,6 +491,10 @@ impl Overlay {
         Ok(Overlay {
             path: p.into(),
         })
+    }
+
+    pub fn path(&self) -> &Path {
+        &self.path
     }
 
     #[allow(dead_code)]

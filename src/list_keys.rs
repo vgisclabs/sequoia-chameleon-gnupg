@@ -28,17 +28,28 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String])
     let vtm = config.trust_model_impl.with_policy(config, None)?;
     let p = vtm.policy();
 
-    let v = config.trustdb.version(config);
-    Record::TrustDBInformation {
-        old: false,
-        changed_model: false,
-        model: v.model,
-        creation_time: v.creation_time,
-        expiration_time: v.expiration_time,
-        marginals_needed: v.marginals_needed,
-        completes_needed: v.completes_needed,
-        max_cert_depth: v.max_cert_depth,
-    }.emit(&mut sink, config.with_colons)?;
+    // First, emit a header.
+    if config.with_colons {
+        // For our robot friends, we emit a TrustDB record.
+        let v = config.trustdb.version(config);
+        Record::TrustDBInformation {
+            old: false,
+            changed_model: false,
+            model: v.model,
+            creation_time: v.creation_time,
+            expiration_time: v.expiration_time,
+            marginals_needed: v.marginals_needed,
+            completes_needed: v.completes_needed,
+            max_cert_depth: v.max_cert_depth,
+        }.emit(&mut sink, config.with_colons)?;
+    } else {
+        // For humans, we print the location of the store.
+        let path =
+            config.keydb().get_certd_overlay()?.path().display().to_string();
+        writeln!(&mut sink, "{}", path)?;
+        sink.write_all(crate::utils::undeline_for(&path))?;
+        writeln!(&mut sink)?;
+    }
 
     // XXX: currently, this only works with keyids and fingerprints
     let filter: Vec<KeyHandle> = args.iter().map(|a| a.parse())

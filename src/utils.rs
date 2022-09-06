@@ -189,3 +189,10 @@ pub fn best_effort_primary_uid(policy: &dyn Policy, cert: &Cert) -> String {
 
     String::from_utf8_lossy(&primary_uid.expect("set at this point")).into()
 }
+
+/// Returns a line with the same length of `t` (up to 80 characters).
+pub fn undeline_for(t: &str) -> &[u8] {
+    const U: [u8; 80] = ['-' as u8; 80];
+    let l = U.len().min(t.len());
+    &U[..l]
+}
