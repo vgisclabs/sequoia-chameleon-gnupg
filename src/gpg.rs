@@ -2458,7 +2458,7 @@ fn real_main() -> anyhow::Result<()> {
         Some(aEncr) => encrypt::cmd_encrypt(&mut opt, &args, false),
         Some(aListKeys) => list_keys::cmd_list_keys(&mut opt, &args),
         None => Err(anyhow::anyhow!("There is no implicit command.")),
-        Some(c) => unimplemented!("{:?}", c),
+        Some(c) => Err(anyhow::anyhow!("Command {:?} is not implemented.", c)),
     };
 
     match result {
