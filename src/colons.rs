@@ -128,7 +128,7 @@ impl Record {
 
                 if mr {
                     writeln!(w,
-                             "pub:{}:{}:{}:{:X}:{}:{}::{}:::{}{}:::::{}:::0:",
+                             "pub:{}:{}:{}:{:X}:{}:{}::{:#}:::{}{}:::::{}:::0:",
                              validity,
                              key_length,
                              u8::from(*pk_algo),

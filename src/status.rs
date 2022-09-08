@@ -21,6 +21,10 @@ use openpgp::{
     types::*,
 };
 
+use crate::{
+    control::OwnerTrust,
+};
+
 /// Match GnuPG's behavior more strictly.
 ///
 /// Strictly match GnuPG's output even if the protocol allows other
@@ -597,21 +601,6 @@ impl fmt::Display for ErrSigStatus {
             BadSignatureClass => f.write_str("32"),
             UnexpectedRevocation => f.write_str("52"),
             WrongKeyUsage => f.write_str("125"),
-        }
-    }
-}
-
-#[allow(dead_code)]
-#[derive(Clone, Copy)]
-pub enum OwnerTrust {
-    Ultimate,
-}
-
-impl fmt::Display for OwnerTrust {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        use OwnerTrust::*;
-        match self {
-            Ultimate => f.write_str("u"),
         }
     }
 }

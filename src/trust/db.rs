@@ -22,7 +22,7 @@ use openpgp::{
 use crate::{
     Config,
     control::Common,
-    trust::TrustModel,
+    trust::{TrustModel, OwnerTrust},
 };
 
 /// The mask covers the type.
@@ -136,7 +136,7 @@ impl TrustDB {
         while let Ok(record) = Record::from_buffered_reader(&mut reader) {
             match record {
                 Record::Trust { fingerprint, ownertrust, .. } => {
-                    if ownertrust as u32 & TRUST_MASK == TRUST_ULTIMATE {
+                    if ownertrust == OwnerTrust::Ultimate {
                         utks.push(fingerprint);
                     }
                 }
@@ -166,7 +166,7 @@ pub enum Record {
 
     Trust {
         fingerprint: Fingerprint,
-        ownertrust: u8,
+        ownertrust: OwnerTrust,
         depth: u8,
         min_ownertrust: u8,
         flags: u8,
@@ -228,7 +228,7 @@ impl Record {
 
             12 => Ok(Record::Trust {
                 fingerprint: Fingerprint::from_bytes(&b[2..22]),
-                ownertrust:     b[22],
+                ownertrust:     b[22].try_into()?,
                 depth:          b[23],
                 min_ownertrust: b[24],
                 flags:          b[25],

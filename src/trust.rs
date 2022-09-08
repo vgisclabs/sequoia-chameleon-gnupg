@@ -142,16 +142,4 @@ impl fmt::Display for crate::babel::Fish<Validity> {
     }
 }
 
-#[derive(Copy, Clone, Debug)]
-pub enum OwnerTrust {
-    Unknown,
-}
-
-impl fmt::Display for OwnerTrust {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        use OwnerTrust::*;
-        match self {
-            Unknown => f.write_str("-"),
-        }
-    }
-}
+pub use crate::control::OwnerTrust;

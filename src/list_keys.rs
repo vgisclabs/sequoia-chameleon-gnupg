@@ -79,7 +79,7 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String])
             expiration_date:  vcert.as_ref()
                 .and_then(|v| v.keys().next().expect("primary key")
                           .key_expiration_time()),
-            ownertrust: OwnerTrust::Unknown,
+            ownertrust: OwnerTrust::Undefined,
             primary_key_flags: vcert.as_ref()
                 .and_then(|v| v.keys().next().expect("primary key").key_flags())
                 .unwrap_or_else(|| KeyFlags::empty()),

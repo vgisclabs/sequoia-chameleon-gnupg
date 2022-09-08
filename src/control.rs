@@ -6,6 +6,8 @@ use std::{
     path::{Path, PathBuf},
 };
 
+use anyhow::Result;
+
 use sequoia_openpgp as openpgp;
 use openpgp::{
     policy::Policy,
@@ -74,4 +76,68 @@ pub trait Common {
 
     /// Returns the status stream.
     fn status(&self) -> &status::Fd;
+}
+
+
+#[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub enum OwnerTrust {
+    Undefined,
+    Never,
+    Marginal,
+    Fully,
+    Ultimate,
+}
+
+impl fmt::Display for OwnerTrust {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        use OwnerTrust::*;
+
+        if f.alternate() {
+            // Machine-readable.
+            match self {
+                Undefined => f.write_str("-"),
+                Never => f.write_str("n"),
+                Marginal => f.write_str("m"),
+                Fully => f.write_str("f"),
+                Ultimate => f.write_str("u"),
+            }
+        } else {
+            // Human-readable.
+            match self {
+                Undefined => f.write_str("undefined"),
+                Never => f.write_str("never"),
+                Marginal => f.write_str("marginal"),
+                Fully => f.write_str("full"),
+                Ultimate => f.write_str("ultimate"),
+            }
+        }
+    }
+}
+
+impl TryFrom<u8> for OwnerTrust {
+    type Error = anyhow::Error;
+    fn try_from(v: u8) -> Result<Self> {
+        use OwnerTrust::*;
+        match v {
+            2 => Ok(Undefined), // == TRUST_UNDEFINED
+            3 => Ok(Never),     // == TRUST_NEVER
+            4 => Ok(Marginal),  // == TRUST_MARGINAL
+            5 => Ok(Fully),     // == TRUST_FULLY
+            6 => Ok(Ultimate),  // == TRUST_ULTIMATE
+            n => Err(anyhow::anyhow!("Bad ownertrust value {}", n)),
+        }
+    }
+}
+
+impl From<OwnerTrust> for u8 {
+    fn from(ot: OwnerTrust) -> u8 {
+        use OwnerTrust::*;
+        match ot {
+            Undefined => 2, // == TRUST_UNDEFINED
+            Never => 3,     // == TRUST_NEVER
+            Marginal => 4,  // == TRUST_MARGINAL
+            Fully => 5,     // == TRUST_FULLY
+            Ultimate => 6,  // == TRUST_ULTIMATE
+        }
+    }
 }
