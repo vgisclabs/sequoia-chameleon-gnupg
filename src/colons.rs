@@ -282,7 +282,9 @@ impl Record {
 }
 
 /// Escapes the given string.
-#[allow(dead_code)]
+pub fn escape(s: impl AsRef<str>) -> String {
+    e_str(s.as_ref())
+}
 fn e_str(s: impl AsRef<str>) -> String {
     let s = s.as_ref();
     let mut o = String::with_capacity(s.len());
@@ -301,6 +303,10 @@ fn e_str(s: impl AsRef<str>) -> String {
 }
 
 /// Escapes the given byte sequence.
+pub fn escape_bytes(sink: &mut dyn io::Write, s: impl AsRef<[u8]>) -> Result<()>
+{
+    e(sink, s.as_ref())
+}
 fn e(sink: &mut dyn io::Write, s: impl AsRef<[u8]>) -> Result<()> {
     let s = s.as_ref();
 

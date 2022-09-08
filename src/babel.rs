@@ -119,6 +119,30 @@ impl fmt::Display for Fish<(PublicKeyAlgorithm, usize, &Option<Curve>)> {
     }
 }
 
+impl fmt::Display for Fish<SymmetricAlgorithm> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        use SymmetricAlgorithm::*;
+        #[allow(deprecated)]
+        match self.0 {
+            Unencrypted => f.write_str("Unencrypted"),
+            IDEA => f.write_str("IDEA"),
+            TripleDES => f.write_str("3DES"),
+            CAST5 => f.write_str("CAST5"),
+            Blowfish => f.write_str("BLOWFISH"),
+            AES128 => f.write_str("AES128"),
+            AES192 => f.write_str("AES192"),
+            AES256 => f.write_str("AES256"),
+            Twofish => f.write_str("TWOFISH"),
+            Camellia128 => f.write_str("CAMELLIA128"),
+            Camellia192 => f.write_str("CAMELLIA192"),
+            Camellia256 => f.write_str("CAMELLIA256"),
+            Private(u) => write!(f, "Private({})", u),
+            Unknown(u) => write!(f, "Unknown({})", u),
+            catchall => write!(f, "{:?}", catchall),
+        }
+    }
+}
+
 impl fmt::Display for Fish<HashAlgorithm> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         use HashAlgorithm::*;
@@ -131,6 +155,22 @@ impl fmt::Display for Fish<HashAlgorithm> {
             SHA384 => f.write_str("SHA384"),
             SHA512 => f.write_str("SHA512"),
             SHA224 => f.write_str("SHA224"),
+            Private(u) => write!(f, "Private({})", u),
+            Unknown(u) => write!(f, "Unknown({})", u),
+            catchall => write!(f, "{:?}", catchall),
+        }
+    }
+}
+
+impl fmt::Display for Fish<CompressionAlgorithm> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        use CompressionAlgorithm::*;
+        #[allow(deprecated)]
+        match self.0 {
+            Uncompressed => f.write_str("Uncompressed"),
+            Zip => f.write_str("ZIP"),
+            Zlib => f.write_str("ZLIB"),
+            BZip2 => f.write_str("BZIP2"),
             Private(u) => write!(f, "Private({})", u),
             Unknown(u) => write!(f, "Unknown({})", u),
             catchall => write!(f, "{:?}", catchall),
