@@ -32,8 +32,8 @@ pub mod agent;
 pub mod argparse;
 use argparse::{Argument, Opt, flags::*};
 pub mod babel;
-pub mod control;
-use control::Common;
+pub mod common;
+use common::Common;
 pub mod keydb;
 #[allow(dead_code)]
 pub mod flags;
@@ -1032,7 +1032,7 @@ impl Default for Config {
             fail: Default::default(),
             policy: Default::default(),
             trustdb: Default::default(),
-            trust_model_impl: control::null_model(),
+            trust_model_impl: common::null_model(),
 
             // Configuration.
             answer_no: false,
@@ -1282,7 +1282,7 @@ impl Config {
     }
 }
 
-impl control::Common for Config {
+impl common::Common for Config {
     fn argv0(&self) -> &'static str {
         "gpg"
     }

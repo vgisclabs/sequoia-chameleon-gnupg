@@ -13,7 +13,7 @@ use openpgp::{
 };
 
 use crate::{
-    control::Common,
+    common::Common,
     status::{self, Status},
     utils,
 };

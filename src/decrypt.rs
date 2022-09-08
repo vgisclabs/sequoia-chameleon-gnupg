@@ -28,7 +28,7 @@ use ipc::gnupg::{
     KeyPair,
 };
 use crate::{
-    control::Common,
+    common::Common,
     status::Status,
     utils,
     verify::*,

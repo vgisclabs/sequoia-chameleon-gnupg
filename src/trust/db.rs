@@ -21,7 +21,7 @@ use openpgp::{
 
 use crate::{
     Config,
-    control::Common,
+    common::Common,
     trust::{TrustModel, OwnerTrust},
 };
 

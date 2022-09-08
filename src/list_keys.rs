@@ -15,7 +15,7 @@ use sequoia_ipc as ipc;
 use ipc::Keygrip;
 
 use crate::{
-    control::Common,
+    common::Common,
     colons::*,
     trust::{*, cert::*},
 };

@@ -22,7 +22,7 @@ use openpgp::{
 };
 
 use crate::{
-    control::OwnerTrust,
+    common::OwnerTrust,
 };
 
 /// Match GnuPG's behavior more strictly.

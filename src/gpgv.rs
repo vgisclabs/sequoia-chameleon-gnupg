@@ -28,7 +28,7 @@ mod macros;
 pub mod argparse;
 use argparse::{Argument, Opt, flags::*};
 pub mod babel;
-pub mod control;
+pub mod common;
 pub mod keydb;
 pub mod status;
 pub mod utils;
@@ -99,7 +99,7 @@ pub struct Config {
     // Runtime.
     fail: std::cell::Cell<bool>,
     policy: GPGVPolicy,
-    trust_model_impl: Box<dyn control::Model>,
+    trust_model_impl: Box<dyn common::Model>,
 
     // Configuration.
     debug: u32,
@@ -126,7 +126,7 @@ impl Default for Config {
             // Runtime.
             fail: Default::default(),
             policy: Default::default(),
-            trust_model_impl: control::null_model(),
+            trust_model_impl: common::null_model(),
 
             // Configuration.
             debug: 0,
@@ -151,7 +151,7 @@ impl Default for Config {
     }
 }
 
-impl control::Common for Config {
+impl common::Common for Config {
     fn argv0(&self) -> &'static str {
         "gpgv"
     }
@@ -201,7 +201,7 @@ impl control::Common for Config {
         &self.status_fd
     }
 
-    fn trust_model_impl(&self) -> &dyn control::Model {
+    fn trust_model_impl(&self) -> &dyn common::Model {
         self.trust_model_impl.as_ref()
     }
 }

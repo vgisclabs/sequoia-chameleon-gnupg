@@ -16,15 +16,15 @@ use sequoia_wot as wot;
 
 use crate::{
     Config,
-    control::Common,
+    common::Common,
     trust::{
         TrustModel,
         Validity,
     },
 };
 
-pub use crate::control::Model;
-pub use crate::control::ModelViewAt;
+pub use crate::common::Model;
+pub use crate::common::ModelViewAt;
 
 impl TrustModel {
     pub fn build(&self, config: &Config) -> Result<Box<dyn Model>> {

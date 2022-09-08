@@ -15,12 +15,12 @@ use openpgp::{
 };
 
 use crate::{
-    control,
+    common,
 };
 
 /// Opens a (special) file.
 #[allow(dead_code)]
-pub fn open(control: &dyn control::Common, name: &str)
+pub fn open(control: &dyn common::Common, name: &str)
             -> Result<Box<dyn io::Read + Send + Sync>>
 {
     if name == "-" {
@@ -37,7 +37,7 @@ pub fn open(control: &dyn control::Common, name: &str)
 
 /// Opens multiple (special) files, joining them into one stream.
 #[allow(dead_code)]
-pub fn open_multiple(control: &dyn control::Common, names: &[String])
+pub fn open_multiple(control: &dyn common::Common, names: &[String])
                      -> Box<dyn io::Read + Send + Sync>
 {
     Box::new(MultiReader {
@@ -93,7 +93,7 @@ impl io::Read for MultiReader {
 
 /// Opens a (special) file for writing.
 #[allow(dead_code)]
-pub fn create(control: &dyn control::Common, name: &str)
+pub fn create(control: &dyn common::Common, name: &str)
               -> Result<Box<dyn io::Write + Send + Sync>>
 {
     if name == "-" {

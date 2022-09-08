@@ -25,7 +25,7 @@ use openpgp::parse::stream::*;
 
 use crate::{
     babel,
-    control::Common,
+    common::Common,
     status::{Status, ErrSigStatus},
     utils,
 };

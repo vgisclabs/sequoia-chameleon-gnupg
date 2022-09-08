@@ -13,7 +13,11 @@ pub const DEFAULT_COMPLETES_NEEDED: u8 = 1;
 /// The default value for the --max-cert-depth option.
 pub const DEFAULT_MAX_CERT_DEPTH: u8 = 5;
 
-pub use crate::control::TrustModel;
+pub use crate::common::{
+    OwnerTrust,
+    TrustModel,
+    Validity,
+};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum TofuPolicy {
@@ -44,6 +48,3 @@ impl std::str::FromStr for TofuPolicy {
         }
     }
 }
-
-pub use crate::control::Validity;
-pub use crate::control::OwnerTrust;
