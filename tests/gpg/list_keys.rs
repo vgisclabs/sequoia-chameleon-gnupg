@@ -35,7 +35,7 @@ fn basic() -> Result<()> {
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(3, 0);
+    diff.assert_equal_up_to(5, 0);
 
     Ok(())
 }
