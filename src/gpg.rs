@@ -2439,6 +2439,16 @@ fn real_main() -> anyhow::Result<()> {
     opt.keydb.initialize()?;
     opt.trust_model_impl =
         opt.trust_model.unwrap_or_default().build(&opt)?;
+    let _ = opt.trustdb.read_ownertrust(opt.trustdb.path(&opt));
+
+    // Read the owner-trusts from our DB.
+    // XXX: Currently, this is a plain text file.
+    let overlay = opt.keydb.get_certd_overlay()?;
+    let ownertrust_overlay =
+        overlay.path().join("_sequoia_gpg_chameleon_ownertrust");
+    if let Ok(mut f) = fs::File::open(ownertrust_overlay) {
+        opt.trustdb.import_ownertrust(&mut f)?;
+    }
 
     if let agent::PinentryMode::Loopback = opt.pinentry_mode {
         // In loopback mode, never ask for the password multiple
@@ -2461,6 +2471,10 @@ fn real_main() -> anyhow::Result<()> {
         Some(aClearsign) => sign::cmd_sign(&mut opt, &args, detached_sig, true),
         Some(aEncr) => encrypt::cmd_encrypt(&mut opt, &args, false),
         Some(aListKeys) => list_keys::cmd_list_keys(&mut opt, &args),
+        Some(aImportOwnerTrust) =>
+            trust::db::cmd_import_ownertrust(&mut opt, &args),
+        Some(aExportOwnerTrust) =>
+            trust::db::cmd_export_ownertrust(&opt, &args),
         None => Err(anyhow::anyhow!("There is no implicit command.")),
         Some(c) => Err(anyhow::anyhow!("Command {:?} is not implemented.", c)),
     };

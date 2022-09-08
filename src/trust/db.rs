@@ -3,11 +3,13 @@
 /// See doc/DETAILS, section "Layout of the TrustDB".
 
 use std::{
+    collections::BTreeMap,
+    io::{self, BufRead},
     path::{Path, PathBuf},
     time::*,
 };
 
-use anyhow::Result;
+use anyhow::{Context, Result};
 
 use buffered_reader::{
     BufferedReader,
@@ -66,10 +68,44 @@ pub const TRUST_FLAG_PENDING_CHECK: u32 = 256;
 /// The trust value is based on the TOFU information.
 pub const TRUST_FLAG_TOFU_BASED: u32 = 512;
 
+/// Dispatches the --import-ownertrust command.
+pub fn cmd_import_ownertrust(config: &mut crate::Config, args: &[String])
+                             -> Result<()>
+{
+    if args.len() > 1 {
+        return Err(anyhow::anyhow!("Expected only one argument, got more"));
+    }
 
+    let filename = args.get(0).cloned().unwrap_or_else(|| "-".into());
+    let mut source = crate::utils::open(config, &filename)?;
+    config.trustdb.import_ownertrust(&mut source)?;
+
+    // Write the owner-trusts to our DB.
+    // XXX: Currently, this is a plain text file.
+    let overlay = config.keydb.get_certd_overlay()?;
+    let ownertrust_overlay =
+        overlay.path().join("_sequoia_gpg_chameleon_ownertrust");
+    config.trustdb.export_ownertrust(
+        &mut std::fs::File::create(ownertrust_overlay)?)?;
+
+    Ok(())
+}
+
+/// Dispatches the --export-ownertrust command.
+pub fn cmd_export_ownertrust(config: &crate::Config, args: &[String])
+                             -> Result<()>
+{
+    if args.len() > 0 {
+        return Err(anyhow::anyhow!("Expected no arguments, got some"));
+    }
+
+    config.trustdb.export_ownertrust(&mut std::io::stdout())?;
+    Ok(())
+}
 
 pub struct TrustDB {
     path: PathBuf,
+    ownertrust: BTreeMap<Fingerprint, OwnerTrust>,
 }
 
 impl Default for TrustDB {
@@ -82,7 +118,12 @@ impl TrustDB {
     pub fn with_name(name: impl AsRef<Path>) -> Self {
         TrustDB {
             path: name.as_ref().into(), // XXX
+            ownertrust: Default::default(),
         }
+    }
+
+    pub fn path(&self, config: &Config) -> PathBuf {
+        config.make_filename(&self.path)
     }
 
     pub fn version(&self, config: &Config) -> Version {
@@ -128,22 +169,68 @@ impl TrustDB {
         }
     }
 
-    pub fn ultimately_trusted_keys(&self, config: &Config)
-                                   -> Result<Vec<Fingerprint>>
-    {
-        let mut reader = File::open(config.make_filename(&self.path))?;
-        let mut utks = Vec::new();
+    pub fn read_ownertrust(&mut self, path: PathBuf) -> Result<()> {
+        let mut reader = File::open(path)?;
+
         while let Ok(record) = Record::from_buffered_reader(&mut reader) {
             match record {
-                Record::Trust { fingerprint, ownertrust, .. } => {
-                    if ownertrust == OwnerTrust::Ultimate {
-                        utks.push(fingerprint);
-                    }
-                }
+                Record::Trust { fingerprint, ownertrust, .. } =>
+                    self.set_ownertrust(fingerprint.clone(), ownertrust),
                 _ => (),
             }
         }
-        Ok(utks)
+
+        Ok(())
+    }
+
+    pub fn import_ownertrust(&mut self, source: &mut dyn io::Read)
+                             -> Result<()> {
+        for (i, line) in io::BufReader::new(source).lines().enumerate() {
+            let l = line?;
+            if l.is_empty() || l.starts_with("_") {
+                continue;
+            }
+            let f = l.split(':').collect::<Vec<&str>>();
+            if f.len() < 2 {
+                return Err(anyhow::anyhow!(
+                    "Malformed ownertrust line {}: too few fields", i));
+            }
+            let fp = f[0].parse()
+                .with_context(|| format!("Malformed ownertrust line {}: {}",
+                                         i, l))?;
+            let ownertrust = f[1].parse::<u8>()
+                .map_err(Into::into)
+                .and_then(|v| v.try_into())
+                .with_context(|| format!("Malformed ownertrust line {}: {}",
+                                         i, l))?;
+
+            self.set_ownertrust(fp, ownertrust);
+        }
+
+        Ok(())
+    }
+
+    pub fn export_ownertrust(&self, sink: &mut dyn io::Write)
+                             -> Result<()> {
+        for (fp, ownertrust) in self.ownertrust.iter() {
+            writeln!(sink, "{:X}:{}:", fp, u8::from(*ownertrust))?;
+        }
+
+        Ok(())
+    }
+
+    pub fn set_ownertrust(&mut self, fp: Fingerprint, ownertrust: OwnerTrust) {
+        self.ownertrust.insert(fp, ownertrust);
+    }
+
+    pub fn ultimately_trusted_keys(&self) -> impl Iterator<Item = &Fingerprint>
+    {
+        self.ownertrust.iter()
+            .filter_map(|(fp, ot)| if *ot == OwnerTrust::Ultimate {
+                Some(fp)
+            } else {
+                None
+            })
     }
 }
 
