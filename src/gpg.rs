@@ -2471,6 +2471,7 @@ fn real_main() -> anyhow::Result<()> {
         Err(e) => if opt.verbose > 0 {
             Err(e)
         } else {
+            let _ = log_invocation(&format!("Error: {}", e));
             eprintln!("Error: {}", e);
             std::process::exit(1);
         }
@@ -2480,13 +2481,34 @@ fn real_main() -> anyhow::Result<()> {
 fn main() {
     use std::process::exit;
 
+    let a = std::env::args().collect::<Vec<_>>();
+    let _ = log_invocation(&a.join(" "));
+
     match real_main() {
-        Ok(()) => exit(0),
+        Ok(()) => {
+            let _ = log_invocation("success");
+            exit(0);
+        },
         Err(e) => {
+            let _ = log_invocation(&format!("Error: {}", e));
             print_error_chain(&e);
             exit(1);
         },
     }
+}
+
+fn log_invocation(message: &str) -> Result<()> {
+    if cfg!(debug_assertions) {
+        if let Some(p) =
+            std::env::var_os("SEQUOIA_GPG_CHAMELEON_LOG_INVOCATIONS")
+        {
+            let mut f = std::fs::OpenOptions::new().append(true).create(true)
+                .open(p)?;
+            use std::io::Write;
+            writeln!(f, "{}: {}", unsafe { libc::getpid() }, message)?;
+        }
+    }
+    Ok(())
 }
 
 /// Prints the error and causes, if any.
