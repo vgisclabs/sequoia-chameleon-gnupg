@@ -95,7 +95,7 @@ const OPTIONS: &[Opt<CmdOrOpt>] = &[
 ];
 
 #[allow(dead_code)]
-struct Config {
+pub struct Config {
     // Runtime.
     fail: std::cell::Cell<bool>,
     policy: GPGVPolicy,

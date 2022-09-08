@@ -25,7 +25,7 @@ use openpgp::parse::stream::*;
 
 use crate::{
     babel,
-    control,
+    control::Common,
     status::{Status, ErrSigStatus},
     utils,
 };
@@ -40,7 +40,7 @@ use crate::{
 /// is expected from stdin. With more than 1 argument, the first
 /// should be a detached signature and the remaining files are the
 /// signed stuff.
-pub fn cmd_verify(control: &dyn control::Common, args: &[String])
+pub fn cmd_verify(control: &crate::Config, args: &[String])
                   -> Result<()>
 {
     // Decide whether we should handle a detached or a normal signature,
@@ -94,7 +94,7 @@ pub fn cmd_verify(control: &dyn control::Common, args: &[String])
 }
 
 pub struct VHelper<'a> {
-    control: &'a dyn control::Common,
+    control: &'a crate::Config,
     #[allow(dead_code)]
     signatures: usize,
     good_signatures: usize,
@@ -112,7 +112,7 @@ pub struct VHelper<'a> {
 }
 
 impl<'a> VHelper<'a> {
-    pub fn new(control: &'a dyn control::Common, signatures: usize)
+    pub fn new(control: &'a crate::Config, signatures: usize)
                -> Self {
         VHelper {
             control,
