@@ -2,11 +2,10 @@ use std::{
     io::{self, Write},
 };
 
-use anyhow::{Context, Result};
+use anyhow::Result;
 
 use sequoia_openpgp as openpgp;
 use openpgp::{
-    KeyHandle,
     cert::amalgamation::{ValidateAmalgamation, ValidAmalgamation},
     crypto::mpi::PublicKey,
     types::*,
@@ -18,6 +17,7 @@ use crate::{
     common::Common,
     colons::*,
     trust::{*, cert::*},
+    Query,
 };
 
 /// Dispatches the --list-keys command (and similar ones).
@@ -51,20 +51,14 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String])
         writeln!(&mut sink)?;
     }
 
-    // XXX: currently, this only works with keyids and fingerprints
-    let filter: Vec<KeyHandle> = args.iter().map(|a| a.parse())
-        .collect::<Result<Vec<KeyHandle>>>()
-        .context("XXX: Recipients must be key handles")?;
+    let filter: Vec<Query> = args.iter()
+        .map(|a| Query::from(&a[..]))
+        .collect::<Vec<_>>();
 
     for cert in config.keydb().iter() {
         // Filter out certs that the user is not interested in.
-        if ! filter.is_empty() {
-            // XXX: Ugh.
-            if ! cert.keys().map(|k| k.key_handle())
-                .any(|k| filter.iter().any(|l| k.aliases(l)))
-            {
-                continue;
-            }
+        if ! filter.is_empty() && ! filter.iter().any(|q| q.matches(&cert)) {
+            continue;
         }
 
         let acert = AuthenticatedCert::new(vtm.as_ref(), &cert)?;

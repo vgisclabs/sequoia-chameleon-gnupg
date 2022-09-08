@@ -1586,6 +1586,40 @@ pub struct Sender {
     pub config: bool,
 }
 
+/// A query for certs, e.g. for use with `--recipient` and
+/// `--list-keys`.
+pub enum Query<'a> {
+    Key(KeyHandle),
+    Email(String),
+    UserIDFragment(memchr::memmem::Finder<'a>),
+}
+
+impl<'a> From<&'a str> for Query<'a> {
+    fn from(s: &str) -> Query {
+        if let Ok(h) = s.parse() {
+            Query::Key(h)
+        } else if s.starts_with("<") && s.ends_with(">") {
+            Query::Email(s[1..s.len()-1].into())
+        } else {
+            Query::UserIDFragment(memchr::memmem::Finder::new(s))
+        }
+    }
+}
+
+impl Query<'_> {
+    /// Returns whether `cert` matches this query.
+    ///
+    /// Note: the match must be authenticated!
+    pub fn matches(&self, cert: &Cert) -> bool {
+        match self {
+            Query::Key(h) => cert.keys().any(|k| k.key_handle().aliases(h)),
+            Query::Email(e) => cert.userids().any(|u| u.email().ok().flatten().as_ref() == Some(e)),
+            Query::UserIDFragment(f) =>
+                cert.userids().any(|u| f.find(u.value()).is_some()),
+        }
+    }
+}
+
 #[allow(dead_code, unused_variables, unused_assignments)]
 fn real_main() -> anyhow::Result<()> {
     let parser = argparse::Parser::new(

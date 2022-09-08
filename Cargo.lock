@@ -1256,6 +1256,7 @@ dependencies = [
  "home-dir",
  "lazy_static",
  "libc",
+ "memchr",
  "openpgp-cert-d",
  "rayon",
  "sequoia-ipc",
