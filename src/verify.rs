@@ -451,6 +451,46 @@ impl<'a> VHelper<'a> {
             primary: ka.cert().fingerprint(),
         })?;
 
+        // Compute validity information.
+
+        // First, GnuPG emits a key considered status as a side-effect
+        // of evaluating the trust information.  Emulate that.
+        self.control.status().emit(Status::KeyConsidered {
+            fingerprint: ka.cert().fingerprint(),
+            not_selected: false,
+            all_expired_or_revoked: false // XXX: I haven't seen GnuPG set that.
+        })?;
+
+        // If we are gpg, we want to emit the validity of the cert.
+        // To that end, get a view on the trust model at the signature
+        // creation time.
+        if let Ok(vtm) = self.control.trust_model_impl().with_policy(
+            self.control,
+            sig.signature_creation_time())
+        {
+            let acert = crate::common::cert::AuthenticatedCert::new(vtm.as_ref(), ka.cert())?;
+            use crate::common::Validity::*;
+            match acert.cert_validity() {
+                Revoked | Expired => (),
+                Unknown | Undefined =>
+                    self.control.status().emit(Status::TrustUndefined)?,
+                Never =>
+                    self.control.status().emit(Status::TrustNever)?,
+                Marginal =>
+                    self.control.status().emit(Status::TrustMarginal {
+                        model: vtm.kind(),
+                    })?,
+                Fully =>
+                    self.control.status().emit(Status::TrustFully {
+                        model: vtm.kind(),
+                    })?,
+                Ultimate =>
+                    self.control.status().emit(Status::TrustUltimate {
+                        model: vtm.kind(),
+                    })?,
+            }
+        }
+
         Ok(())
     }
 

@@ -22,7 +22,7 @@ use openpgp::{
 };
 
 use crate::{
-    common::OwnerTrust,
+    common::{TrustModel, OwnerTrust},
 };
 
 /// Match GnuPG's behavior more strictly.
@@ -176,6 +176,18 @@ pub enum Status {
 
     NoPubkey {
         issuer: KeyID,
+    },
+
+    TrustUndefined,
+    TrustNever,
+    TrustMarginal {
+        model: TrustModel,
+    },
+    TrustFully {
+        model: TrustModel,
+    },
+    TrustUltimate {
+        model: TrustModel,
     },
 
     Imported {
@@ -471,6 +483,22 @@ impl Status {
                 issuer,
             } => {
                 writeln!(w, "NO_PUBKEY {:X}", issuer)?;
+            },
+
+            TrustUndefined => {
+                writeln!(w, "TRUST_UNDEFINED")?;
+            },
+            TrustNever => {
+                writeln!(w, "TRUST_NEVER")?;
+            },
+            TrustMarginal { model } => {
+                writeln!(w, "TRUST_MARGINAL 0 {}", model)?;
+            },
+            TrustFully { model } => {
+                writeln!(w, "TRUST_FULLY 0 {}", model)?;
+            },
+            TrustUltimate { model } => {
+                writeln!(w, "TRUST_ULTIMATE 0 {}", model)?;
             },
 
             Imported {

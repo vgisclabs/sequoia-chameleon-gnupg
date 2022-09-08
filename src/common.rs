@@ -173,6 +173,7 @@ pub fn null_model() -> Box<dyn Model> {
 }
 
 pub trait ModelViewAt {
+    fn kind(&self) -> TrustModel;
     fn time(&self) -> SystemTime;
     fn policy(&self) -> &dyn Policy;
     fn validity(&self, userid: &UserID, fingerprint: &Fingerprint)

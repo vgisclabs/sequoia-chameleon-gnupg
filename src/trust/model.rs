@@ -76,6 +76,10 @@ struct WoTViewAt<'a> {
 }
 
 impl ModelViewAt for WoTViewAt<'_> {
+    fn kind(&self) -> TrustModel {
+        TrustModel::PGP
+    }
+
     fn time(&self) -> SystemTime {
         self.network.reference_time()
     }
