@@ -21,6 +21,13 @@ use openpgp::{
     types::*,
 };
 
+/// Match GnuPG's behavior more strictly.
+///
+/// Strictly match GnuPG's output even if the protocol allows other
+/// output as well (e.g. GnuPG may only emit key ids whereas
+/// doc/DETAILS says fingerprints are also allowed.
+const STRICT_OUTPUT: bool = false;
+
 pub struct Fd(Mutex<RefCell<Box<dyn io::Write + Send + Sync>>>);
 
 impl<S: io::Write + Send + Sync + 'static> From<S> for Fd {
@@ -206,7 +213,11 @@ impl Status {
                 issuer,
                 primary_uid,
             } => {
-                write!(w, "GOODSIG {:X} ", issuer)?;
+                if STRICT_OUTPUT {
+                    write!(w, "GOODSIG {:X} ", KeyID::from(issuer))?;
+                } else {
+                    write!(w, "GOODSIG {:X} ", issuer)?;
+                }
                 e(w, primary_uid)?;
                 writeln!(w)?;
             },
