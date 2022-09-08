@@ -18,9 +18,9 @@ use openpgp::{
 };
 
 use crate::{
-    trust::{
+    common::{
         Validity,
-        model::ModelViewAt,
+        ModelViewAt,
     },
 };
 

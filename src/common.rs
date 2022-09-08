@@ -23,6 +23,8 @@ use crate::{
     status,
 };
 
+pub mod cert;
+
 /// Controls common to gpgv and gpg.
 pub trait Common {
     /// Returns the name of the program.

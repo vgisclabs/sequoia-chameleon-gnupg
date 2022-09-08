@@ -1,6 +1,5 @@
 //! Trust models and associated machinery.
 
-pub mod cert;
 pub mod db;
 pub mod model;
 
@@ -14,6 +13,7 @@ pub const DEFAULT_COMPLETES_NEEDED: u8 = 1;
 pub const DEFAULT_MAX_CERT_DEPTH: u8 = 5;
 
 pub use crate::common::{
+    cert,
     OwnerTrust,
     TrustModel,
     Validity,
