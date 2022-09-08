@@ -68,6 +68,22 @@ impl std::str::FromStr for TrustModel {
     }
 }
 
+impl fmt::Display for TrustModel {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        use TrustModel::*;
+        match self {
+            PGP => f.write_str("pgp"),
+            Classic => f.write_str("classic"),
+            Always => f.write_str("always"),
+            Direct => f.write_str("direct"),
+            Tofu => f.write_str("tofu"),
+            TofuPGP => f.write_str("tofu+pgp"),
+            Auto => f.write_str("auto"),
+            Unknown(n) => write!(f, "unknown({})", n),
+        }
+    }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum TofuPolicy {
     Auto,
