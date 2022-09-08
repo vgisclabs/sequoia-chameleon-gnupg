@@ -23,19 +23,8 @@ use crate::{
     },
 };
 
-pub trait Model {
-    fn with_policy<'a>(&'a self, config: &'a Config, at: Option<SystemTime>)
-                      -> Result<Box<dyn ModelViewAt + 'a>>;
-}
-
-pub trait ModelViewAt {
-    fn time(&self) -> SystemTime;
-    fn policy(&self) -> &dyn Policy;
-    fn validity(&self, userid: &UserID, fingerprint: &Fingerprint)
-                -> Result<Validity>;
-
-    fn lookup(&self, userid: &UserID) -> Result<Option<Rc<Cert>>>;
-}
+pub use crate::control::Model;
+pub use crate::control::ModelViewAt;
 
 impl TrustModel {
     pub fn build(&self, config: &Config) -> Result<Box<dyn Model>> {
@@ -119,16 +108,4 @@ impl ModelViewAt for WoTViewAt<'_> {
               -> Result<Option<Rc<Cert>>> {
         unimplemented!()
     }
-}
-
-pub fn null_model() -> Box<dyn Model> {
-    struct Null(());
-    impl Model for Null {
-        fn with_policy<'a>(&'a self, _: &'a Config, _: Option<SystemTime>)
-                           -> Result<Box<dyn ModelViewAt + 'a>>
-        {
-            Err(anyhow::anyhow!("Cannot instantiate null model"))
-        }
-    }
-    Box::new(Null(()))
 }

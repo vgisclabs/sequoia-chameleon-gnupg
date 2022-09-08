@@ -1,9 +1,5 @@
 //! Trust models and associated machinery.
 
-use std::{
-    fmt,
-};
-
 pub mod cert;
 pub mod db;
 pub mod model;
@@ -17,72 +13,7 @@ pub const DEFAULT_COMPLETES_NEEDED: u8 = 1;
 /// The default value for the --max-cert-depth option.
 pub const DEFAULT_MAX_CERT_DEPTH: u8 = 5;
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum TrustModel {
-    PGP,
-    Classic,
-    Always,
-    Direct,
-    Tofu,
-    TofuPGP,
-    Auto,
-    Unknown(u8),
-}
-
-impl From<u8> for TrustModel {
-    fn from(v: u8) -> Self {
-        // See enum trust_model in g10/options.h.
-        use TrustModel::*;
-        match v {
-            0 => Classic,
-            1 => PGP,
-            3 => Always,
-            4 => Direct,
-            5 => Auto,
-            6 => Tofu,
-            7 => TofuPGP,
-            n => Unknown(n),
-        }
-    }
-}
-
-impl Default for TrustModel {
-    fn default() -> Self {
-        TrustModel::Auto
-    }
-}
-
-impl std::str::FromStr for TrustModel {
-    type Err = anyhow::Error;
-
-    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
-        match s.to_lowercase().as_str() {
-            "pgp" => Ok(TrustModel::PGP),
-            "classic" => Ok(TrustModel::Classic),
-            "direct" => Ok(TrustModel::Direct),
-            "tofu" => Ok(TrustModel::Tofu),
-            "tofu+pgp" => Ok(TrustModel::TofuPGP),
-            "auto" => Ok(TrustModel::Auto),
-            _ => Err(anyhow::anyhow!("Unknown trust model {:?}", s)),
-        }
-    }
-}
-
-impl fmt::Display for TrustModel {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        use TrustModel::*;
-        match self {
-            PGP => f.write_str("pgp"),
-            Classic => f.write_str("classic"),
-            Always => f.write_str("always"),
-            Direct => f.write_str("direct"),
-            Tofu => f.write_str("tofu"),
-            TofuPGP => f.write_str("tofu+pgp"),
-            Auto => f.write_str("auto"),
-            Unknown(n) => write!(f, "unknown({})", n),
-        }
-    }
-}
+pub use crate::control::TrustModel;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum TofuPolicy {
@@ -114,48 +45,5 @@ impl std::str::FromStr for TofuPolicy {
     }
 }
 
-#[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
-pub enum Validity {
-    Unknown,
-    Revoked, // XXX: This is a flag in GnuPG.
-    Expired, // XXX: This is a flag in GnuPG.
-    Undefined,
-    Never,
-    Marginal,
-    Fully,
-    Ultimate,
-}
-
-impl fmt::Display for Validity {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        use Validity::*;
-        match self {
-            Unknown => f.write_str("-"),
-            Revoked => f.write_str("r"),
-            Expired => f.write_str("e"),
-            Undefined => f.write_str("q"),
-            Never => f.write_str("n"),
-            Marginal => f.write_str("m"),
-            Fully => f.write_str("f"),
-            Ultimate => f.write_str("u"),
-        }
-    }
-}
-
-impl fmt::Display for crate::babel::Fish<Validity> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        use Validity::*;
-        match self.0 {
-            Unknown => f.write_str("unknown"),
-            Revoked => f.write_str("revoked"),
-            Expired => f.write_str("expired"),
-            Undefined => f.write_str("undefined"),
-            Never => f.write_str("never"),
-            Marginal => f.write_str("marginal"),
-            Fully => f.write_str("full"),
-            Ultimate => f.write_str("ultimate"),
-        }
-    }
-}
-
+pub use crate::control::Validity;
 pub use crate::control::OwnerTrust;

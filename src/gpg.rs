@@ -1032,7 +1032,7 @@ impl Default for Config {
             fail: Default::default(),
             policy: Default::default(),
             trustdb: Default::default(),
-            trust_model_impl: trust::model::null_model(),
+            trust_model_impl: control::null_model(),
 
             // Configuration.
             answer_no: false,
@@ -1330,6 +1330,10 @@ impl control::Common for Config {
 
     fn status(&self) -> &status::Fd {
         &self.status_fd
+    }
+
+    fn trust_model_impl(&self) -> &dyn trust::model::Model {
+        self.trust_model_impl.as_ref()
     }
 }
 

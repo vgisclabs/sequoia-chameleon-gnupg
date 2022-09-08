@@ -99,6 +99,7 @@ pub struct Config {
     // Runtime.
     fail: std::cell::Cell<bool>,
     policy: GPGVPolicy,
+    trust_model_impl: Box<dyn control::Model>,
 
     // Configuration.
     debug: u32,
@@ -125,6 +126,7 @@ impl Default for Config {
             // Runtime.
             fail: Default::default(),
             policy: Default::default(),
+            trust_model_impl: control::null_model(),
 
             // Configuration.
             debug: 0,
@@ -197,6 +199,10 @@ impl control::Common for Config {
 
     fn status(&self) -> &status::Fd {
         &self.status_fd
+    }
+
+    fn trust_model_impl(&self) -> &dyn control::Model {
+        self.trust_model_impl.as_ref()
     }
 }
 
