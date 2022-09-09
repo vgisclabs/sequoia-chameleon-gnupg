@@ -76,6 +76,10 @@ pub fn cmd_sign(config: &crate::Config, args: &[String],
         }
     }
 
+    if signers.is_empty() {
+        return Err(anyhow::anyhow!("No signing keys found"));
+    }
+
     let mut sink = if let Some(name) = config.outfile() {
         utils::create(config, name)?
     } else {
