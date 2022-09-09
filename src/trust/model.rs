@@ -1,5 +1,4 @@
 use std::{
-    rc::Rc,
     time::SystemTime,
 };
 
@@ -18,6 +17,7 @@ use crate::{
     Config,
     common::Common,
     trust::{
+        Query,
         TrustModel,
         Validity,
     },
@@ -77,7 +77,7 @@ struct WoTViewAt<'a> {
     network: wot::Network,
 }
 
-impl ModelViewAt for WoTViewAt<'_> {
+impl<'a> ModelViewAt<'a> for WoTViewAt<'a> {
     fn kind(&self) -> TrustModel {
         TrustModel::PGP
     }
@@ -110,9 +110,20 @@ impl ModelViewAt for WoTViewAt<'_> {
         }
     }
 
-    fn lookup(&self, _userid: &UserID)
-              -> Result<Option<Rc<Cert>>> {
-        unimplemented!()
+    fn lookup(&self, query: &Query) -> Result<Vec<&'a Cert>> {
+        let mut certs = self.config.keydb.candidates_by_userid(&query)?;
+        certs.retain(|c| {
+            let fp = c.fingerprint();
+            let validity = c.userids()
+                .filter(|uid| query.matches_userid(uid))
+                .map(|uid| self.validity(&uid, &fp)
+                     .unwrap_or(Validity::Unknown))
+                .max()
+                .unwrap_or(Validity::Unknown);
+
+            validity >= Validity::Fully // XXX what is the threshold?
+        });
+        Ok(certs)
     }
 }
 
@@ -141,7 +152,7 @@ struct AlwaysViewAt<'a> {
     time: SystemTime,
 }
 
-impl ModelViewAt for AlwaysViewAt<'_> {
+impl<'a> ModelViewAt<'a> for AlwaysViewAt<'a> {
     fn kind(&self) -> TrustModel {
         TrustModel::Always
     }
@@ -160,8 +171,7 @@ impl ModelViewAt for AlwaysViewAt<'_> {
         Ok(Validity::Unknown)
     }
 
-    fn lookup(&self, _userid: &UserID)
-              -> Result<Option<Rc<Cert>>> {
-        unimplemented!()
+    fn lookup(&self, query: &Query) -> Result<Vec<&'a Cert>> {
+        self.config.keydb.candidates_by_userid(query)
     }
 }

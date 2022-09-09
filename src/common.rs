@@ -4,7 +4,6 @@ use std::{
     fmt,
     io,
     path::{Path, PathBuf},
-    rc::Rc,
     time::SystemTime,
 };
 
@@ -14,6 +13,7 @@ use sequoia_openpgp as openpgp;
 use openpgp::{
     Cert,
     Fingerprint,
+    KeyHandle,
     packet::UserID,
     policy::Policy,
 };
@@ -173,14 +173,14 @@ pub fn null_model() -> Box<dyn Model> {
     Box::new(Null(()))
 }
 
-pub trait ModelViewAt {
+pub trait ModelViewAt<'a> {
     fn kind(&self) -> TrustModel;
     fn time(&self) -> SystemTime;
     fn policy(&self) -> &dyn Policy;
     fn validity(&self, userid: &UserID, fingerprint: &Fingerprint)
                 -> Result<Validity>;
 
-    fn lookup(&self, userid: &UserID) -> Result<Option<Rc<Cert>>>;
+    fn lookup(&self, query: &Query) -> Result<Vec<&'a Cert>>;
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -223,6 +223,63 @@ impl fmt::Display for crate::babel::Fish<Validity> {
             Marginal => f.write_str("marginal"),
             Fully => f.write_str("full"),
             Ultimate => f.write_str("ultimate"),
+        }
+    }
+}
+
+/// A query for certs, e.g. for use with `--recipient` and
+/// `--list-keys`.
+#[derive(Clone, Debug)]
+pub enum Query<'a> {
+    Key(KeyHandle),
+    Email(String),
+    UserIDFragment(memchr::memmem::Finder<'a>),
+}
+
+impl fmt::Display for Query<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Query::Key(h) => write!(f, "{}", h),
+            Query::Email(e) => write!(f, "<{}>", e),
+            Query::UserIDFragment(v) =>
+                write!(f, "{}", String::from_utf8_lossy(v.needle())),
+        }
+    }
+}
+
+impl<'a> From<&'a str> for Query<'a> {
+    fn from(s: &str) -> Query {
+        if let Ok(h) = s.parse() {
+            Query::Key(h)
+        } else if s.starts_with("<") && s.ends_with(">") {
+            Query::Email(s[1..s.len()-1].into())
+        } else {
+            Query::UserIDFragment(memchr::memmem::Finder::new(s))
+        }
+    }
+}
+
+impl Query<'_> {
+    /// Returns whether `cert` matches this query.
+    ///
+    /// Note: the match must be authenticated!
+    pub fn matches(&self, cert: &Cert) -> bool {
+        match self {
+            Query::Key(h) => cert.keys().any(|k| k.key_handle().aliases(h)),
+            Query::Email(e) => cert.userids().any(|u| u.email().ok().flatten().as_ref() == Some(e)),
+            Query::UserIDFragment(f) =>
+                cert.userids().any(|u| f.find(u.value()).is_some()),
+        }
+    }
+
+    /// Returns whether a userid matches this query.
+    ///
+    /// Note: the match must be authenticated!
+    pub fn matches_userid(&self, uid: &UserID) -> bool {
+        match self {
+            Query::Key(_) => false,
+            Query::Email(e) => uid.email().ok().flatten().as_ref() == Some(e),
+            Query::UserIDFragment(f) => f.find(uid.value()).is_some(),
         }
     }
 }

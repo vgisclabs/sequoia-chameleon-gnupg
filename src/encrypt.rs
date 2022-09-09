@@ -6,7 +6,6 @@ use anyhow::{Context, Result};
 
 use sequoia_openpgp as openpgp;
 use openpgp::{
-    KeyHandle,
     serialize::stream::*,
     types::SignatureType,
 };
@@ -37,36 +36,46 @@ pub fn cmd_encrypt(config: &crate::Config, args: &[String],
     let mut recipients: Vec<Recipient> = vec![];
     for recipient in &config.remote_user {
         // XXX: honor constraints
-        // XXX: currently, this only works with keyids and fingerprints
-        let handle: KeyHandle = recipient.name.parse()
-            .context("XXX: Recipients must be key handles")?;
+        let query = crate::trust::Query::from(recipient.name.as_str());
 
-        let cert = config.keydb().get(&handle)
-            .ok_or_else(|| anyhow::anyhow!("Key {:X} not found", handle))?;
-
-        // GnuPG always reports the cert fingerprint even if a subkey
-        // has been given as recipient.
-        config.status().emit(
-            Status::KeyConsidered {
-                fingerprint: cert.fingerprint(),
-                not_selected: false,
-                all_expired_or_revoked: false,
-            })?;
-
-        let vcert = cert.with_policy(policy, None)
-            .context(format!("Key {:X} is not valid", handle))?;
-
+        // XXX: One remote user may expand to multiple recipients.  In
+        // the case of groups, this is a feature.  In the case of
+        // trust models, it depends.  For example, with
+        // --always-trust, expanding to multiple recipients is a
+        // problem.  We should be more diligent here.
         let mut found_one = false;
-        for key in vcert.keys().alive().revoked(false).supported()
-            .for_transport_encryption().for_transport_encryption()
-        {
-            recipients.push(key.key().into());
+        for cert in config.lookup_certs(&query)? {
+            // GnuPG always reports the cert fingerprint even if a
+            // subkey has been given as recipient.
+            config.status().emit(
+                Status::KeyConsidered {
+                    fingerprint: cert.fingerprint(),
+                    not_selected: false,
+                    all_expired_or_revoked: false,
+                })?;
+
+            let vcert = cert.with_policy(policy, None)
+                .context(format!("Key {:X} is not valid", cert.key_handle()))?;
+
+            let mut found_one_subkey = false;
+            for key in vcert.keys().alive().revoked(false).supported()
+                .for_transport_encryption().for_transport_encryption()
+            {
+                recipients.push(key.key().into());
+                found_one_subkey = true;
+            }
+
+            if ! found_one_subkey {
+                return Err(anyhow::anyhow!(
+                    "Key {:X} is not encrypting-capable", cert.key_handle()))?;
+            }
+
             found_one = true;
         }
 
         if ! found_one {
             return Err(anyhow::anyhow!(
-                "Key {:X} is not encrypting-capable", handle))?;
+                "No encrypting-capable key found for {}", query))?;
         }
     }
 

@@ -17,7 +17,6 @@ use crate::{
     common::Common,
     colons::*,
     trust::{*, cert::*},
-    Query,
 };
 
 /// Dispatches the --list-keys command (and similar ones).

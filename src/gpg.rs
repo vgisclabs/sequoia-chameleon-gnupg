@@ -34,7 +34,7 @@ pub mod argparse;
 use argparse::{Argument, Opt, flags::*};
 pub mod babel;
 pub mod common;
-use common::Common;
+use common::{Common, Query};
 pub mod keydb;
 #[allow(dead_code)]
 pub mod flags;
@@ -1284,6 +1284,30 @@ impl Config {
             Ok(self.local_user.iter().map(|s| s.name.clone()).collect())
         }
     }
+
+    /// Returns certs matching a given query using groups and the trust model.
+    pub fn lookup_certs(&self, query: &Query) -> Result<Vec<&Cert>> {
+        // First, try to map using groups.
+        match query {
+            Query::Key(h) => return self.keydb.by_primaries(Some(h)),
+            Query::Email(e) => {
+                if let Some(handles) = self.groups.get(e.as_str()) {
+                    return self.keydb.by_primaries(handles);
+                }
+            },
+            Query::UserIDFragment(f) => {
+                let e = std::str::from_utf8(f.needle())
+                    .expect("was a String before");
+                if let Some(handles) = self.groups.get(e) {
+                    return self.keydb.by_primaries(handles);
+                }
+            },
+        }
+
+        // Then, use the trust model to lookup the cert.
+        self.trust_model_impl.with_policy(self, None)?.lookup(query)
+    }
+
 }
 
 impl common::Common for Config {
@@ -1584,40 +1608,6 @@ struct Recipient {
 pub struct Sender {
     pub name: String,
     pub config: bool,
-}
-
-/// A query for certs, e.g. for use with `--recipient` and
-/// `--list-keys`.
-pub enum Query<'a> {
-    Key(KeyHandle),
-    Email(String),
-    UserIDFragment(memchr::memmem::Finder<'a>),
-}
-
-impl<'a> From<&'a str> for Query<'a> {
-    fn from(s: &str) -> Query {
-        if let Ok(h) = s.parse() {
-            Query::Key(h)
-        } else if s.starts_with("<") && s.ends_with(">") {
-            Query::Email(s[1..s.len()-1].into())
-        } else {
-            Query::UserIDFragment(memchr::memmem::Finder::new(s))
-        }
-    }
-}
-
-impl Query<'_> {
-    /// Returns whether `cert` matches this query.
-    ///
-    /// Note: the match must be authenticated!
-    pub fn matches(&self, cert: &Cert) -> bool {
-        match self {
-            Query::Key(h) => cert.keys().any(|k| k.key_handle().aliases(h)),
-            Query::Email(e) => cert.userids().any(|u| u.email().ok().flatten().as_ref() == Some(e)),
-            Query::UserIDFragment(f) =>
-                cert.userids().any(|u| f.find(u.value()).is_some()),
-        }
-    }
 }
 
 #[allow(dead_code, unused_variables, unused_assignments)]
