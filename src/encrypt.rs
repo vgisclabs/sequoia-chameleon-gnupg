@@ -8,6 +8,7 @@ use sequoia_openpgp as openpgp;
 use openpgp::{
     KeyHandle,
     serialize::stream::*,
+    types::SignatureType,
 };
 
 use crate::{
@@ -91,7 +92,34 @@ pub fn cmd_encrypt(config: &crate::Config, args: &[String],
     }
 
     if sign {
-        unimplemented!()
+        // First, get the signers.
+        let (mut signers, signers_desc) = crate::sign::get_signers(config)?;
+
+        let timestamp = openpgp::types::Timestamp::now();
+        let hash_algo = config.def_digest;
+        let mut signer =
+            Signer::new(message, signers.pop().expect("at least one"))
+            .creation_time(timestamp)
+            .hash_algo(hash_algo)?;
+        for additional_signer in signers {
+            signer = signer.add_signer(additional_signer);
+        }
+
+        message = signer.build()?;
+        config.status().emit(Status::BeginSigning(hash_algo))?;
+
+        let class = SignatureType::Binary;
+        for (pk_algo, fingerprint) in signers_desc {
+            config.status().emit(
+                Status::SigCreated {
+                    typ: status::SigType::Standard,
+                    pk_algo,
+                    hash_algo,
+                    class,
+                    timestamp,
+                    fingerprint,
+                })?;
+        }
     }
 
     if true { // XXX wrapping

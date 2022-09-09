@@ -6,10 +6,12 @@ use anyhow::{Context, Result};
 
 use sequoia_openpgp as openpgp;
 use openpgp::{
+    Fingerprint,
     KeyHandle,
     armor::Kind,
+    crypto,
     serialize::stream::*,
-    types::SignatureType,
+    types::{PublicKeyAlgorithm, SignatureType},
 };
 
 use crate::{
@@ -32,7 +34,6 @@ pub fn cmd_sign(config: &crate::Config, args: &[String],
 {
     assert!(detached ^ cleartext);
 
-    let policy = config.policy();
     let filenames =
         if args.is_empty() { vec!["-".into()] } else { args.to_vec() };
 
@@ -41,44 +42,7 @@ pub fn cmd_sign(config: &crate::Config, args: &[String],
     }
 
     // First, get the signers.
-    let mut signers = vec![];
-    let mut signers_desc = vec![];
-    for local_user in config.local_users()? {
-        // XXX: currently, this only works with keyids and fingerprints
-        let handle: KeyHandle = local_user.parse()
-            .context("Local users and default keys must be key handles")?;
-
-        let cert = config.keydb().get(&handle)
-            .ok_or_else(|| anyhow::anyhow!("Key {:X} not found", handle))?;
-
-        config.status().emit(
-            Status::KeyConsidered {
-                fingerprint: cert.fingerprint(),
-                not_selected: false,
-                all_expired_or_revoked: false,
-            })?;
-
-        let vcert = cert.with_policy(policy, None)
-            .context(format!("Key {:X} is not valid", handle))?;
-
-        let rt = tokio::runtime::Runtime::new()?;
-        let mut found_one = false;
-        for key in vcert.keys().for_signing() {
-            if let Ok(signer) = rt.block_on(config.get_signer(&vcert, &key)) {
-                signers.push(signer);
-                signers_desc.push((key.pk_algo(), key.fingerprint()));
-                found_one = true;
-            }
-        }
-        if ! found_one {
-            return Err(anyhow::anyhow!(
-                "Key {:X} is not signing-capable", handle));
-        }
-    }
-
-    if signers.is_empty() {
-        return Err(anyhow::anyhow!("No signing keys found"));
-    }
+    let (mut signers, signers_desc) = get_signers(config)?;
 
     let mut sink = if let Some(name) = config.outfile() {
         utils::create(config, name)?
@@ -150,4 +114,49 @@ pub fn cmd_sign(config: &crate::Config, args: &[String],
     }
 
     Ok(())
+}
+
+pub fn get_signers(config: &crate::Config)
+                   -> Result<(Vec<Box<dyn crypto::Signer + Send + Sync>>,
+                              Vec<(PublicKeyAlgorithm, Fingerprint)>)> {
+    let mut signers = vec![];
+    let mut signers_desc = vec![];
+    for local_user in config.local_users()? {
+        // XXX: currently, this only works with keyids and fingerprints
+        let handle: KeyHandle = local_user.parse()
+            .context("Local users and default keys must be key handles")?;
+
+        let cert = config.keydb().get(&handle)
+            .ok_or_else(|| anyhow::anyhow!("Key {:X} not found", handle))?;
+
+        config.status().emit(
+            Status::KeyConsidered {
+                fingerprint: cert.fingerprint(),
+                not_selected: false,
+                all_expired_or_revoked: false,
+            })?;
+
+        let vcert = cert.with_policy(config.policy(), None)
+            .context(format!("Key {:X} is not valid", handle))?;
+
+        let rt = tokio::runtime::Runtime::new()?;
+        let mut found_one = false;
+        for key in vcert.keys().for_signing() {
+            if let Ok(signer) = rt.block_on(config.get_signer(&vcert, &key)) {
+                signers.push(signer);
+                signers_desc.push((key.pk_algo(), key.fingerprint()));
+                found_one = true;
+            }
+        }
+        if ! found_one {
+            return Err(anyhow::anyhow!(
+                "Key {:X} is not signing-capable", handle));
+        }
+    }
+
+    if signers.is_empty() {
+        return Err(anyhow::anyhow!("No signing keys found"));
+    }
+
+    Ok((signers, signers_desc))
 }

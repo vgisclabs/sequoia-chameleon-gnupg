@@ -2526,6 +2526,7 @@ fn real_main() -> anyhow::Result<()> {
         Some(aSign) => sign::cmd_sign(&mut opt, &args, detached_sig, false),
         Some(aClearsign) => sign::cmd_sign(&mut opt, &args, detached_sig, true),
         Some(aEncr) => encrypt::cmd_encrypt(&mut opt, &args, false),
+        Some(aSignEncr) => encrypt::cmd_encrypt(&mut opt, &args, true),
         Some(aListKeys) => list_keys::cmd_list_keys(&mut opt, &args),
         Some(aImportOwnerTrust) =>
             trust::db::cmd_import_ownertrust(&mut opt, &args),
