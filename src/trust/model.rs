@@ -31,6 +31,7 @@ impl TrustModel {
         use TrustModel::*;
         match self {
             PGP | TofuPGP | Auto => WoT::new(config),
+            Always => self::Always::new(config),
             _ => Err(anyhow::anyhow!("Trust model {:?} not implemented", self))
         }
     }
@@ -107,6 +108,56 @@ impl ModelViewAt for WoTViewAt<'_> {
         } else {
             Ok(Validity::Unknown)
         }
+    }
+
+    fn lookup(&self, _userid: &UserID)
+              -> Result<Option<Rc<Cert>>> {
+        unimplemented!()
+    }
+}
+
+/// The "always trust" model.
+struct Always(());
+
+impl Always {
+    fn new(_: &Config) -> Result<Box<dyn Model>> {
+        Ok(Box::new(Always(())))
+    }
+}
+
+impl Model for Always {
+    fn with_policy<'a>(&'a self, config: &'a Config, time: Option<SystemTime>)
+                      -> Result<Box<dyn ModelViewAt + 'a>>
+    {
+        Ok(Box::new(AlwaysViewAt {
+            config,
+            time: time.unwrap_or_else(SystemTime::now),
+        }))
+    }
+}
+
+struct AlwaysViewAt<'a> {
+    config: &'a Config,
+    time: SystemTime,
+}
+
+impl ModelViewAt for AlwaysViewAt<'_> {
+    fn kind(&self) -> TrustModel {
+        TrustModel::Always
+    }
+
+    fn time(&self) -> SystemTime {
+        self.time
+    }
+
+    fn policy(&self) -> &dyn Policy {
+        self.config.policy()
+    }
+
+    fn validity(&self, _: &UserID, _: &Fingerprint)
+                -> Result<Validity> {
+        // Always unknown validity, see tdb_get_ownertrust.
+        Ok(Validity::Unknown)
     }
 
     fn lookup(&self, _userid: &UserID)

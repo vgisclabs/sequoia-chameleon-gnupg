@@ -130,6 +130,7 @@ impl std::str::FromStr for TrustModel {
         match s.to_lowercase().as_str() {
             "pgp" => Ok(TrustModel::PGP),
             "classic" => Ok(TrustModel::Classic),
+            "always" => Ok(TrustModel::Always),
             "direct" => Ok(TrustModel::Direct),
             "tofu" => Ok(TrustModel::Tofu),
             "tofu+pgp" => Ok(TrustModel::TofuPGP),
