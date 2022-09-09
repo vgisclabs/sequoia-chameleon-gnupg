@@ -19,9 +19,14 @@ use openpgp::{
     Fingerprint,
     KeyHandle,
     KeyID,
+    packet::UserID,
     parse::Parse,
     serialize::SerializeInto,
     types::HashAlgorithm,
+};
+
+use crate::{
+    common::Query,
 };
 
 /// Controls tracing.
@@ -38,6 +43,8 @@ pub struct KeyDB {
     by_id: HashMap<KeyID, Rc<Cert>>,
     by_subkey_fp: HashMap<Fingerprint, Rc<Cert>>,
     by_subkey_id: HashMap<KeyID, Rc<Cert>>,
+    by_userid: HashMap<UserID, Vec<Rc<Cert>>>,
+    by_email: HashMap<String, Vec<Rc<Cert>>>,
 }
 
 #[derive(Clone)]
@@ -112,6 +119,8 @@ impl KeyDB {
             by_id: Default::default(),
             by_subkey_fp: Default::default(),
             by_subkey_id: Default::default(),
+            by_userid: Default::default(),
+            by_email: Default::default(),
         }
     }
 
@@ -268,6 +277,29 @@ impl KeyDB {
         }
     }
 
+    /// Looks up certs by primary key handles.
+    pub fn by_primaries<'k, I>(&self, handles: I) -> Result<Vec<&Cert>>
+    where
+        I: IntoIterator<Item = &'k KeyHandle>,
+    {
+        tracer!(TRACE, "KeyDB::by_primaries");
+        let mut acc = Vec::new();
+        for handle in handles {
+            t!("{}", handle);
+            if let Some(cert) = match handle {
+                KeyHandle::Fingerprint(fp) =>
+                    self.by_fp.get(fp).map(AsRef::as_ref),
+                KeyHandle::KeyID(id) =>
+                    self.by_id.get(id).map(AsRef::as_ref),
+            } {
+                acc.push(cert);
+            } else {
+                return Err(anyhow::anyhow!("Cert {} not found", handle));
+            }
+        }
+        Ok(acc)
+    }
+
     /// Looks up a cert by subkey key handle.
     pub fn by_subkey(&self, handle: &KeyHandle) -> Option<&Cert> {
         tracer!(TRACE, "KeyDB::by_subkey");
@@ -277,6 +309,27 @@ impl KeyDB {
                 self.by_subkey_fp.get(fp).map(AsRef::as_ref),
             KeyHandle::KeyID(id) =>
                 self.by_subkey_id.get(id).map(AsRef::as_ref),
+        }
+    }
+
+    /// Looks up a cert by UserID queries.
+    ///
+    /// Note: The returned certs have to be validated using a trust
+    /// model!
+    pub fn candidates_by_userid(&self, query: &Query) -> Result<Vec<&Cert>> {
+        tracer!(TRACE, "KeyDB::candidates_by_userid");
+        t!("{}", query);
+        match query {
+            Query::Key(h) => self.by_primaries(Some(h)),
+            Query::Email(e) =>
+                Ok(self.by_email.get(e)
+                   .map(|certs| certs.iter().map(AsRef::as_ref).collect())
+                   .unwrap_or_default()),
+            Query::UserIDFragment(f) =>
+                Ok(self.by_userid.iter()
+                   .filter(|(k, _)| f.find(k.value()).is_some())
+                   .flat_map(|(_, v)| v.iter().map(AsRef::as_ref))
+                   .collect())
         }
     }
 
@@ -427,6 +480,18 @@ impl KeyDB {
         let keyid = KeyID::from(&fp);
         self.by_fp.insert(fp, rccert.clone());
         self.by_id.insert(keyid, rccert.clone());
+
+        for uidb in rccert.userids() {
+            self.by_userid.entry(uidb.userid().clone())
+                .or_default()
+                .push(rccert.clone());
+
+            if let Ok(Some(email)) = uidb.email() {
+                self.by_email.entry(email)
+                    .or_default()
+                    .push(rccert.clone());
+            }
+        }
 
         for subkey in rccert.keys().subkeys() {
             let fp = subkey.fingerprint();
