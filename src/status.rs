@@ -408,7 +408,12 @@ impl Status {
                 timestamp,
                 fingerprint,
             } => {
-                writeln!(w, "SIG_CREATED {} {} {} {} {} {:X}",
+                // XXX: Curiously, GnuPG emits two hex digits for the
+                // signature class, as documented in doc/DETAILS.  Not
+                // sure why they went with hex here, and indeed GPGME
+                // seems to mis-parse (e.g. 00 (== binary) which
+                // strtol will interpret as octal).
+                writeln!(w, "SIG_CREATED {} {} {} {:02X} {} {:X}",
                          typ,
                          u8::from(*pk_algo),
                          u8::from(*hash_algo),
