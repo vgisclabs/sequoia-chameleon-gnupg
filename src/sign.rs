@@ -57,12 +57,20 @@ pub fn cmd_sign(config: &crate::Config, args: &[String],
             .build()?;
     }
 
-    // We fix hash algorithm and timestamp here, we need that for the
-    // status messages.
+    // We compute class, timestamp, and hash algorithm here, we need
+    // that for the status messages.
+    let class = if cleartext || config.textmode > 0 {
+        SignatureType::Text
+    } else {
+        SignatureType::Binary
+    };
     let timestamp = openpgp::types::Timestamp::now();
     let hash_algo = config.def_digest;
 
-    let mut signer = Signer::new(message, signers.pop().expect("at least one"))
+    let mut signer = Signer::with_template(
+        message,
+        signers.pop().expect("at least one"),
+        openpgp::packet::signature::SignatureBuilder::new(class))
         .creation_time(timestamp)
         .hash_algo(hash_algo)?;
 
@@ -100,7 +108,6 @@ pub fn cmd_sign(config: &crate::Config, args: &[String],
     } else {
         status::SigType::Standard
     };
-    let class = SignatureType::Binary;
     for (pk_algo, fingerprint) in signers_desc {
         config.status().emit(
             Status::SigCreated {
