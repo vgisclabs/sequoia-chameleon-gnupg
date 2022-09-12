@@ -617,6 +617,8 @@ fn e(sink: &mut dyn io::Write, s: impl AsRef<[u8]>) -> Result<()> {
             b'%' => sink.write_all(b"%25")?,
             c if c.is_ascii() && *c < 20 =>
                 write!(sink, "%{:02X}", *c)?,
+            c if *c > 0x7e =>
+                write!(sink, "%{:02X}", *c)?,
             c => sink.write_all(&[*c])?,
         }
     }
