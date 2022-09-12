@@ -397,3 +397,9 @@ fn print_error_chain(err: &anyhow::Error) {
     eprintln!("           {}", err);
     err.chain().skip(1).for_each(|cause| eprintln!("  because: {}", cause));
 }
+
+pub fn with_invocation_log<F>(_: F)
+where
+    F: FnOnce(&mut dyn std::io::Write) -> anyhow::Result<()>,
+{
+}

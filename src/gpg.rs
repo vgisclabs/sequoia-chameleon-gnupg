@@ -2537,7 +2537,7 @@ fn real_main() -> anyhow::Result<()> {
         Err(e) => if opt.verbose > 0 {
             Err(e)
         } else {
-            let _ = log_invocation(&format!("Error: {}", e));
+            with_invocation_log(|w| write_error_chain_into(w, &e));
             eprintln!("Error: {}", e);
             std::process::exit(1);
         }
@@ -2547,38 +2547,58 @@ fn real_main() -> anyhow::Result<()> {
 fn main() {
     use std::process::exit;
 
-    let a = std::env::args().collect::<Vec<_>>();
-    let _ = log_invocation(&a.join(" "));
+    with_invocation_log(|w| {
+        let a = std::env::args().collect::<Vec<_>>();
+        writeln!(w, "{}", a.join(" "))?;
+        Ok(())
+    });
 
     match real_main() {
         Ok(()) => {
-            let _ = log_invocation("success");
+            with_invocation_log(|w| Ok(writeln!(w, "success")?));
             exit(0);
         },
         Err(e) => {
-            let _ = log_invocation(&format!("Error: {}", e));
+            with_invocation_log(|w| write_error_chain_into(w, &e));
             print_error_chain(&e);
             exit(1);
         },
     }
 }
 
-fn log_invocation(message: &str) -> Result<()> {
+pub fn with_invocation_log<F>(fun: F)
+where
+    F: FnOnce(&mut dyn std::io::Write) -> Result<()>,
+{
     if cfg!(debug_assertions) {
         if let Some(p) =
             std::env::var_os("SEQUOIA_GPG_CHAMELEON_LOG_INVOCATIONS")
         {
-            let mut f = std::fs::OpenOptions::new().append(true).create(true)
-                .open(p)?;
             use std::io::Write;
-            writeln!(f, "{}: {}", unsafe { libc::getpid() }, message)?;
+            let mut message = Vec::new();
+            let _ = write!(&mut message, "{}: ", unsafe { libc::getpid() });
+            if let Ok(()) = fun(&mut message) {
+                if let Ok(mut f) = std::fs::OpenOptions::new()
+                    .append(true).create(true).open(p)
+                {
+                    let _ = f.write_all(&message);
+                }
+            }
         }
     }
-    Ok(())
 }
 
 /// Prints the error and causes, if any.
 fn print_error_chain(err: &anyhow::Error) {
-    eprintln!("           {}", err);
-    err.chain().skip(1).for_each(|cause| eprintln!("  because: {}", cause));
+    let _ = write_error_chain_into(&mut io::stderr(), err);
+}
+
+/// Prints the error and causes, if any.
+fn write_error_chain_into(sink: &mut dyn io::Write, err: &anyhow::Error)
+                          -> Result<()> {
+    writeln!(sink, "           {}", err)?;
+    for cause in err.chain().skip(1) {
+        writeln!(sink, "  because: {}", cause)?;
+    }
+    Ok(())
 }

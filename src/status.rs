@@ -43,6 +43,7 @@ impl<S: io::Write + Send + Sync + 'static> From<S> for Fd {
 impl Fd {
     #[allow(dead_code)]
     pub fn emit(&self, status: Status) -> Result<()> {
+        crate::with_invocation_log(|sink| status.emit(sink));
         status.emit(&mut *self.0.lock().expect("not poisoned").borrow_mut())
     }
 }
@@ -211,7 +212,7 @@ pub enum Status {
 
 impl Status {
     #[allow(dead_code)]
-    fn emit(&self, w: &mut impl io::Write) -> Result<()> {
+    fn emit(&self, w: &mut (impl io::Write + ?Sized)) -> Result<()> {
         w.write_all(b"[GNUPG:] ")?;
 
         use Status::*;
@@ -609,7 +610,7 @@ fn e_str(s: impl AsRef<str>) -> String {
 }
 
 /// Escapes the given byte sequence.
-fn e(sink: &mut dyn io::Write, s: impl AsRef<[u8]>) -> Result<()> {
+fn e<W: io::Write + ?Sized>(sink: &mut W, s: impl AsRef<[u8]>) -> Result<()> {
     let s = s.as_ref();
 
     for c in s {
