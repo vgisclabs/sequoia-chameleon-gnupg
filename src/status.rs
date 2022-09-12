@@ -205,6 +205,8 @@ pub enum Status {
     ImportRes(ImportResult),
 
     PinentryLaunched(String),
+
+    NoData(NoDataReason),
 }
 
 impl Status {
@@ -570,6 +572,17 @@ impl Status {
             },
 
             PinentryLaunched(i) => writeln!(w, "PINENTRY_LAUNCHED {}", i)?,
+
+            NoData(reason) => {
+                use NoDataReason::*;
+                writeln!(w, "NODATA {}",
+                         match reason {
+                             NoArmoredData => 1,
+                             ExpectedPacket => 2,
+                             InvalidPacket => 3,
+                             ExpectedSignature => 4,
+                         })?;
+            },
         }
 
         Ok(())
@@ -752,4 +765,12 @@ impl fmt::Display for MDCMethod {
             SEIPDv1 => f.write_str("2"),
         }
     }
+}
+
+#[derive(Clone, Debug)]
+pub enum NoDataReason {
+    NoArmoredData,
+    ExpectedPacket,
+    InvalidPacket,
+    ExpectedSignature,
 }

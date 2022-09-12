@@ -26,7 +26,7 @@ use openpgp::parse::stream::*;
 use crate::{
     babel,
     common::Common,
-    status::{Status, ErrSigStatus},
+    status::{Status, ErrSigStatus, NoDataReason},
     utils,
 };
 
@@ -70,27 +70,55 @@ pub fn cmd_verify(control: &crate::Config, args: &[String])
 
     // Long story short: If we have at least two files, it is a
     // detached signature.
-    let _helper = if args.len() > 1 {
-        let data = utils::open_multiple(control, &args[1..]);
-        let helper = VHelper::new(control, 1);
-        let mut v = DetachedVerifierBuilder::from_reader(sig)?
-            .with_policy(policy, None, helper)?;
-        v.verify_reader(data)?;
-        v.into_helper()
-    } else {
-        let mut sink = if let Some(name) = control.outfile() {
-            utils::create(control, name)?
+    let do_it = || -> Result<()> {
+        if args.len() > 1 {
+            let data = utils::open_multiple(control, &args[1..]);
+            let helper = VHelper::new(control, 1);
+            let mut v = DetachedVerifierBuilder::from_reader(sig)?
+                .with_policy(policy, None, helper)?;
+            v.verify_reader(data)?;
+            Ok(())
         } else {
-            Box::new(io::sink())
-        };
-        let helper = VHelper::new(control, 1);
-        let mut v = VerifierBuilder::from_reader(sig)?
-            .with_policy(policy, None, helper)?;
-        io::copy(&mut v, &mut sink)?;
-        v.into_helper()
+            let mut sink = if let Some(name) = control.outfile() {
+                utils::create(control, name)?
+            } else {
+                Box::new(io::sink())
+            };
+            let helper = VHelper::new(control, 1);
+            let mut v = VerifierBuilder::from_reader(sig)?
+                .with_policy(policy, None, helper)?;
+            io::copy(&mut v, &mut sink)?;
+            Ok(())
+        }
     };
 
-    Ok(())
+    if let Err(e) = do_it() {
+        match e.downcast::<openpgp::Error>() {
+            Ok(oe) => {
+                // Map our errors to the way GnuPG reports errors.
+                match oe {
+                    openpgp::Error::MalformedPacket(_) =>
+                    {
+                        control.status().emit(Status::NoData(
+                            NoDataReason::ExpectedPacket))?;
+                        control.status().emit(Status::NoData(
+                            NoDataReason::ExpectedSignature))?;
+                    },
+                    openpgp::Error::MalformedMessage(_) => {
+                        control.status().emit(Status::NoData(
+                            NoDataReason::InvalidPacket))?;
+                        control.status().emit(Status::NoData(
+                            NoDataReason::ExpectedSignature))?;
+                    },
+                    _ => (),
+                }
+                Err(oe.into())
+            },
+            Err(e) => Err(e),
+        }
+    } else {
+        Ok(())
+    }
 }
 
 pub struct VHelper<'a> {
