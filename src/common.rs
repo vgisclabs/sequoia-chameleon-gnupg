@@ -32,6 +32,8 @@ pub trait Common {
 
     /// Prints a warning to stderr.
     fn warn(&self, msg: fmt::Arguments) {
+        crate::with_invocation_log(
+            |w| Ok(write!(w, "{}: {}", self.argv0(), msg)?));
         eprintln!("{}: {}", self.argv0(), msg);
     }
 
