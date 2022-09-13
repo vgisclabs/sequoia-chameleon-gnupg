@@ -320,7 +320,7 @@ impl KeyDB {
         tracer!(TRACE, "KeyDB::candidates_by_userid");
         t!("{}", query);
         match query {
-            Query::Key(h) => self.by_primaries(Some(h)),
+            Query::Key(_) | Query::ExactKey(_) => Ok(vec![]),
             Query::Email(e) =>
                 Ok(self.by_email.get(e)
                    .map(|certs| certs.iter().map(AsRef::as_ref).collect())

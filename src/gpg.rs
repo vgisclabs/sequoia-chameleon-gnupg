@@ -1291,7 +1291,8 @@ impl Config {
     pub fn lookup_certs(&self, query: &Query) -> Result<Vec<&Cert>> {
         // First, try to map using groups.
         match query {
-            Query::Key(h) => return self.keydb.by_primaries(Some(h)),
+            Query::Key(h) | Query::ExactKey(h) =>
+                return Ok(self.keydb.get(h).into_iter().collect()),
             Query::Email(e) => {
                 if let Some(handles) = self.groups.get(e.as_str()) {
                     return self.keydb.by_primaries(handles);

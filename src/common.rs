@@ -232,6 +232,7 @@ impl fmt::Display for crate::babel::Fish<Validity> {
 #[derive(Clone, Debug)]
 pub enum Query<'a> {
     Key(KeyHandle),
+    ExactKey(KeyHandle),
     Email(String),
     UserIDFragment(memchr::memmem::Finder<'a>),
 }
@@ -240,6 +241,7 @@ impl fmt::Display for Query<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Query::Key(h) => write!(f, "{}", h),
+            Query::ExactKey(h) => write!(f, "{}!", h),
             Query::Email(e) => write!(f, "<{}>", e),
             Query::UserIDFragment(v) =>
                 write!(f, "{}", String::from_utf8_lossy(v.needle())),
@@ -249,6 +251,12 @@ impl fmt::Display for Query<'_> {
 
 impl<'a> From<&'a str> for Query<'a> {
     fn from(s: &str) -> Query {
+        if s.ends_with("!") {
+            if let Ok(h) = s[..s.len()-1].parse() {
+                return Query::ExactKey(h);
+            }
+        }
+
         if let Ok(h) = s.parse() {
             Query::Key(h)
         } else if s.starts_with("<") && s.ends_with(">") {
@@ -265,7 +273,8 @@ impl Query<'_> {
     /// Note: the match must be authenticated!
     pub fn matches(&self, cert: &Cert) -> bool {
         match self {
-            Query::Key(h) => cert.keys().any(|k| k.key_handle().aliases(h)),
+            Query::Key(h) | Query::ExactKey(h) =>
+                cert.keys().any(|k| k.key_handle().aliases(h)),
             Query::Email(e) => cert.userids().any(|u| u.email().ok().flatten().as_ref() == Some(e)),
             Query::UserIDFragment(f) =>
                 cert.userids().any(|u| f.find(u.value()).is_some()),
@@ -277,7 +286,7 @@ impl Query<'_> {
     /// Note: the match must be authenticated!
     pub fn matches_userid(&self, uid: &UserID) -> bool {
         match self {
-            Query::Key(_) => false,
+            Query::Key(_) | Query::ExactKey(_) => false,
             Query::Email(e) => uid.email().ok().flatten().as_ref() == Some(e),
             Query::UserIDFragment(f) => f.find(uid.value()).is_some(),
         }

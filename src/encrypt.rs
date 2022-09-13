@@ -58,9 +58,23 @@ pub fn cmd_encrypt(config: &crate::Config, args: &[String],
                 .context(format!("Key {:X} is not valid", cert.key_handle()))?;
 
             let mut found_one_subkey = false;
-            for key in vcert.keys().alive().revoked(false).supported()
-                .for_transport_encryption().for_transport_encryption()
-            {
+            let mut key_query = vcert.keys();
+
+            // If we have an exact key query ("<FP>!"), use exactly
+            // that key.
+            if let crate::Query::ExactKey(h) = &query {
+                key_query = key_query.key_handle(h.clone());
+            } else {
+                key_query = key_query
+                    .for_transport_encryption()
+                    .for_transport_encryption();
+            }
+
+            // XXX: Figure out how exactly GnuPG behaves with bang
+            // expressions, e.g. can we then use keys that are not
+            // alive? Revoked? What if the algorithm is not supported?
+
+            for key in key_query.alive().revoked(false).supported() {
                 recipients.push(key.key().into());
                 found_one_subkey = true;
             }
