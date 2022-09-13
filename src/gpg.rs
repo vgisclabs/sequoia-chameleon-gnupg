@@ -1047,9 +1047,9 @@ impl Default for Config {
             ask_sig_expire: false,
             batch: false,
             cert_digest: Default::default(),
-            cert_policy_url: Vec::new(),
+            cert_policy_url: vec![],
             check_sigs: false,
-            comments: Vec::new(),
+            comments: vec![],
             completes_needed: None,
             compliance: Default::default(),
             compress_algo: Default::default(),
@@ -1061,7 +1061,7 @@ impl Default for Config {
             def_digest: Default::default(),
             def_recipient: None,
             def_recipient_self: false,
-            def_secret_key: Default::default(),
+            def_secret_key: vec![],
             def_sig_expire: None,
             default_keyring: true,
             dotlock_disable: false,
@@ -1111,12 +1111,12 @@ impl Default for Config {
             rfc2440_text: false,
             s2k_count: None,
             s2k_mode: 3,
-            secret_keys_to_try: Vec::new(),
-            sender_list: Vec::new(),
+            secret_keys_to_try: vec![],
+            sender_list: vec![],
             set_filename: None,
             show_session_key: false,
-            sig_keyserver_url: Vec::new(),
-            sig_policy_url: Vec::new(),
+            sig_keyserver_url: vec![],
+            sig_policy_url: vec![],
             skip_hidden_recipients: false,
             skip_verify: false,
             special_filenames: false,
@@ -1708,7 +1708,7 @@ fn real_main() -> anyhow::Result<()> {
     let mut no_greeting = false;
     let mut detached_sig = false;
     let mut multifile = false;
-    let mut keyrings = Vec::new();
+    let mut keyrings = vec![];
     let mut debug_level = None;
     let mut logfile = None;
     let mut fpr_maybe_cmd = false;
