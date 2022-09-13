@@ -1288,8 +1288,20 @@ impl Config {
         }
     }
 
-    /// Returns certs matching a given query using groups and the trust model.
+    /// Returns certs matching a given query using groups and the
+    /// configured trust model.
     pub fn lookup_certs(&self, query: &Query) -> Result<Vec<&Cert>> {
+        self.lookup_certs_with(
+            self.trust_model_impl.with_policy(self, None)?.as_ref(),
+            query)
+    }
+
+    /// Returns certs matching a given query using groups and the
+    /// given trust model.
+    pub fn lookup_certs_with<'a>(&'a self,
+                                 vtm: &dyn trust::model::ModelViewAt<'a>,
+                                 query: &Query)
+                                 -> Result<Vec<&'a Cert>> {
         // First, try to map using groups.
         match query {
             Query::Key(h) | Query::ExactKey(h) =>
@@ -1309,9 +1321,8 @@ impl Config {
         }
 
         // Then, use the trust model to lookup the cert.
-        self.trust_model_impl.with_policy(self, None)?.lookup(query)
+        vtm.lookup(query)
     }
-
 }
 
 impl common::Common for Config {
