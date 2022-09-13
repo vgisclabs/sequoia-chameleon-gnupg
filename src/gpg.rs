@@ -35,6 +35,7 @@ use argparse::{Argument, Opt, flags::*};
 pub mod babel;
 pub mod common;
 use common::{Common, Query};
+mod interactive;
 pub mod keydb;
 #[allow(dead_code)]
 pub mod flags;
@@ -1024,7 +1025,7 @@ pub struct Config {
 
     // Streams.
     attribute_fd: Box<dyn io::Write>,
-    command_fd: Box<dyn io::Read>,
+    command_fd: interactive::Fd,
     logger_fd: Box<dyn io::Write>,
     status_fd: status::Fd,
 }
@@ -1142,7 +1143,7 @@ impl Default for Config {
 
             // Streams.
             attribute_fd: Box::new(io::sink()),
-            command_fd: Box::new(io::empty()),
+            command_fd: io::stdin().into(),
             logger_fd: Box::new(io::sink()),
             status_fd: Box::new(io::sink()).into(),
         }
@@ -2443,10 +2444,12 @@ fn real_main() -> anyhow::Result<()> {
 	    },
 
 	    oCommandFD => {
-                opt.command_fd = utils::source_from_fd(value.as_int().unwrap())?;
+                opt.command_fd =
+                    utils::source_from_fd(value.as_int().unwrap())?.into();
             },
 	    oCommandFile => {
-                opt.command_fd = Box::new(fs::File::open(value.as_str().unwrap())?);
+                opt.command_fd =
+                    fs::File::open(value.as_str().unwrap())?.into();
             },
 	    oCipherAlgo => {
                 opt.def_cipher =
