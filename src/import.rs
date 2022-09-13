@@ -3,12 +3,14 @@ use anyhow::Result;
 use sequoia_openpgp as openpgp;
 use openpgp::{
     cert::{
-        CertParser,
+        Cert,
     },
     packet::prelude::*,
     types::*,
     parse::{
         Parse,
+        PacketParser,
+        PacketParserResult,
     },
 };
 
@@ -44,8 +46,8 @@ async fn real_cmd_import(config: &mut crate::Config, args: &[String])
 
     // Parse every cert from every file.
     for filename in filenames {
-        let parser = match
-            CertParser::from_reader(utils::open(config, &filename)?)
+        let mut ppr = match
+            PacketParser::from_reader(utils::open(config, &filename)?)
         {
             Ok(c) => c,
             Err(e) => {
@@ -53,23 +55,29 @@ async fn real_cmd_import(config: &mut crate::Config, args: &[String])
                 continue;
             },
         };
-        for cert in parser {
-            // We collect stats for the IMPORT_OK status line.
-            use crate::status::*;
-            let mut flags = crate::status::ImportOkFlags::default();
 
+        let mut acc = Vec::new();
+        while let PacketParserResult::Some(pp) = ppr {
+            let (packet, next_ppr) = pp.next()?;
+            ppr = next_ppr;
+
+            if ! acc.is_empty() && packet.tag() == Tag::PublicKey {
+                s.count += 1;
+                let packets = std::mem::take(&mut acc);
+                match Cert::from_packets(packets.clone().into_iter()) {
+                    Ok(c) => do_import_cert(config, &mut s, c).await?,
+                    Err(e) => do_import_failed(config, &mut s, e, packets).await?,
+                }
+            }
+            acc.push(packet);
+        }
+        if ! acc.is_empty() {
             s.count += 1;
-            let cert = match cert {
-                Ok(c) => c,
-                Err(e) => {
-                    // XXX: check for v3 key
-                    // XXX: we also need to support revocation certificates
-                    config.warn(format_args!("{}", e));
-                    continue;
-                },
-            };
-
-            do_import_cert(config, &mut s, cert).await?;
+            let packets = std::mem::take(&mut acc);
+            match Cert::from_packets(packets.clone().into_iter()) {
+                Ok(c) => do_import_cert(config, &mut s, c).await?,
+                Err(e) => do_import_failed(config, &mut s, e, packets).await?,
+            }
         }
     }
 
@@ -309,6 +317,65 @@ async fn do_import_cert(config: &mut crate::Config,
                 flags,
                 fingerprint: Some(key.fingerprint()),
             })?;
+    }
+
+    Ok(())
+}
+
+async fn do_import_failed(config: &mut crate::Config,
+                          s: &mut crate::status::ImportResult,
+                          e: anyhow::Error,
+                          packets: Vec<openpgp::Packet>) -> Result<()>
+{
+    match e.downcast_ref::<openpgp::Error>() {
+        Some(openpgp::Error::UnsupportedCert2(_, _)) => {
+            s.skipped_v3_keys += 1; // XXX: not very sharp
+        },
+        Some(openpgp::Error::MalformedCert(_)) => {
+            let mut revocations = Vec::new();
+            for p in packets {
+                use SignatureType::*;
+                match p {
+                    Packet::Signature(s) => {
+                        if s.typ() == KeyRevocation
+                            || s.typ() == SubkeyRevocation
+                            || s.typ() == CertificationRevocation
+                        {
+                            revocations.push(s);
+                        } else {
+                            config.warn(format_args!(
+                                "Ignoring non-revocation signature: {}",
+                                s.typ()));
+                        }
+                    },
+                    _ => (),
+                }
+            }
+
+            for revocation in revocations {
+                // See if we have the revokee.
+                // XXX: Support 3rd-party revocations.
+                let issuers = revocation.get_issuers();
+                if let Some(cert) = issuers.iter()
+                    .find_map(|i| config.keydb().by_primary(i))
+                {
+                    // Good.  Now, construct a minimal cert to import.
+                    let min = openpgp::Cert::from_packets(vec![
+                        cert.primary_key().key().clone().into(),
+                        Packet::from(revocation.clone()),
+                    ].into_iter())?;
+                    do_import_cert(config, s, min).await?;
+                } else {
+                    // XXX: Would be nice to save unknown
+                    //      revocations somewhere.
+                    config.warn(format_args!(
+                        "Ignoring revocation for unknown key{}",
+                        issuers.first().map(|i| format!(" {:X}", i))
+                            .unwrap_or_default()));
+                }
+            }
+        },
+        _ => return Err(e),
     }
 
     Ok(())
