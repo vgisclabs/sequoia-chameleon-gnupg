@@ -982,6 +982,7 @@ pub struct Config {
     no_perm_warn: bool,
     not_dash_escaped: bool,
     outfile: Option<String>,
+    override_session_key: Option<SessionKey>,
     passphrase: Option<String>,
     passphrase_repeat: i64,
     photo_viewer: Option<PathBuf>,
@@ -1099,6 +1100,7 @@ impl Default for Config {
             no_perm_warn: false,
             not_dash_escaped: false,
             outfile: None,
+            override_session_key: None,
             passphrase: None,
             passphrase_repeat: 0, // XXX
             photo_viewer: None,
@@ -1608,6 +1610,71 @@ struct Recipient {
 pub struct Sender {
     pub name: String,
     pub config: bool,
+}
+
+/// A session key.
+pub struct SessionKey {
+    cipher: SymmetricAlgorithm,
+    key: openpgp::crypto::SessionKey,
+}
+
+impl SessionKey {
+    /// Creates a new session key object.
+    pub fn new<C, K>(cipher: C, key: K) -> Result<Self>
+    where C: Into<u8>,
+          K: AsRef<[u8]>,
+    {
+        // XXX: Maybe sanity check key lengths.
+        Ok(SessionKey {
+            cipher: cipher.into().into(),
+            key: key.as_ref().into(),
+        })
+    }
+
+    /// Returns the symmetric algorithm octet.
+    pub fn cipher(&self) -> SymmetricAlgorithm {
+        self.cipher
+    }
+
+    /// Returns the session key.
+    pub fn key(&self) -> &openpgp::crypto::SessionKey {
+        &self.key
+    }
+}
+
+impl fmt::Display for SessionKey {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}:{}",
+               u8::from(self.cipher),
+               openpgp::fmt::hex::encode(&self.key))
+    }
+}
+
+impl std::str::FromStr for SessionKey {
+    type Err = anyhow::Error;
+    fn from_str(sk: &str) -> Result<Self> {
+        // The format is:
+        //
+        //   <decimal-cipher-octet> ":" <hex-session-key>
+        //
+        // We most likely will change the first field, so we split
+        // from the end of the string using `rsplit`, which puts the
+        // last segment first.  This is rather unexpected.  Reverse
+        // it.
+        let fields = sk.rsplit(':').rev().collect::<Vec<_>>();
+
+        if fields.len() != 2 {
+            return Err(anyhow::anyhow!(
+                "Expected two colon-separated fields, got {:?}",
+                fields));
+        }
+
+        let algo: u8 = fields[0].parse().map_err(
+            |e| anyhow::anyhow!("Failed to parse algorithm: {}", e))?;
+        let sk = openpgp::fmt::hex::decode(&fields[1])?;
+        Self::new(algo, sk).map_err(
+            |e| anyhow::anyhow!("Bad session key: {}", e))
+    }
 }
 
 #[allow(dead_code, unused_variables, unused_assignments)]
@@ -2431,6 +2498,17 @@ fn real_main() -> anyhow::Result<()> {
 
 	    oShowSessionKey => {
                 opt.show_session_key = true;
+            },
+            oOverrideSessionKey => {
+                opt.override_session_key =
+                    Some(value.as_str().unwrap().parse()?);
+            },
+            oOverrideSessionKeyFD => {
+                let mut h = utils::source_from_fd(value.as_int().unwrap())?;
+                let mut buf = Vec::new();
+                h.read_to_end(&mut buf)?;
+                opt.override_session_key =
+                    Some(String::from_utf8(buf)?.parse()?);
             },
             oTrustedKey => {
                 // XXX: We don't really support KeyIDs here.

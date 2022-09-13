@@ -186,6 +186,17 @@ impl<'a> DHelper<'a> {
         D: FnMut(SymmetricAlgorithm, &SessionKey) -> bool,
     {
         use openpgp::crypto::S2K;
+
+        // Before doing anything else, try if we were given a session
+        // key.
+        if let Some(sk) = &self.config.override_session_key {
+            if decrypt(sk.cipher(), sk.key()) {
+                self.emit_session_key(sk.cipher(), sk.key().clone())?;
+                return Ok(None);
+            }
+            // XXX: Does GnuPG keep trying if this fails?
+        }
+
         let ctx = self.config.ipc()?;
         let mut agent = self.config.connect_agent().await?;
 
