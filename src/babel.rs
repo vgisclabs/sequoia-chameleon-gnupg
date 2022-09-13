@@ -203,3 +203,26 @@ impl fmt::Display for Fish<&KeyFlags> {
         Ok(())
     }
 }
+
+impl fmt::Display for Fish<ReasonForRevocation> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        use ReasonForRevocation::*;
+        match self.0 {
+            Unspecified =>
+                f.write_str("No reason specified"),
+            KeySuperseded =>
+                f.write_str("Key is superseded"),
+            KeyCompromised =>
+                f.write_str("Key has been compromised"),
+            KeyRetired =>
+                f.write_str("Key is no longer used"),
+            UIDRetired =>
+                f.write_str("User ID is no longer valid"),
+            Private(u) =>
+                write!(f, "Private/Experimental revocation reason {}", u),
+            Unknown(u) =>
+                write!(f, "Unknown revocation reason {}", u),
+            u => write!(f, "{}", u),
+        }
+    }
+}

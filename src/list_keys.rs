@@ -163,7 +163,7 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String])
     Ok(())
 }
 
-fn get_curve(mpis: &PublicKey) -> Option<Curve> {
+pub fn get_curve(mpis: &PublicKey) -> Option<Curve> {
     match mpis {
         PublicKey::EdDSA { curve, .. }
         | PublicKey::ECDSA { curve, .. }

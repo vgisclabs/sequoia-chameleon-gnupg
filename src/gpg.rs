@@ -2616,6 +2616,7 @@ fn real_main() -> anyhow::Result<()> {
         Some(aExportOwnerTrust) =>
             trust::db::cmd_export_ownertrust(&opt, &args),
         Some(aListConfig) => commands::cmd_list_config(&opt, &args),
+        Some(aGenRevoke) => commands::cmd_generate_revocation(&opt, &args),
         None => Err(anyhow::anyhow!("There is no implicit command.")),
         Some(c) => Err(anyhow::anyhow!("Command {:?} is not implemented.", c)),
     };

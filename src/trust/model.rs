@@ -31,7 +31,7 @@ impl TrustModel {
         use TrustModel::*;
         match self {
             PGP | TofuPGP | Auto => WoT::new(config),
-            Always => self::Always::new(config),
+            Always => Ok(Box::new(self::Always::default())),
             _ => Err(anyhow::anyhow!("Trust model {:?} not implemented", self))
         }
     }
@@ -128,13 +128,8 @@ impl<'a> ModelViewAt<'a> for WoTViewAt<'a> {
 }
 
 /// The "always trust" model.
-struct Always(());
-
-impl Always {
-    fn new(_: &Config) -> Result<Box<dyn Model>> {
-        Ok(Box::new(Always(())))
-    }
-}
+#[derive(Default)]
+pub struct Always(());
 
 impl Model for Always {
     fn with_policy<'a>(&'a self, config: &'a Config, time: Option<SystemTime>)

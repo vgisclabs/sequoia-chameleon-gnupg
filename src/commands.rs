@@ -1,15 +1,27 @@
 //! Miscellaneous commands.
 
-use anyhow::Result;
+use std::{
+    io,
+};
+
+use anyhow::{Context, Result};
 
 use sequoia_openpgp as openpgp;
 use openpgp::{
+    cert::CertRevocationBuilder,
+    policy::NullPolicy,
     types::*,
+    serialize::{
+        Serialize,
+        stream::{Message, Armorer},
+    },
 };
 
 use crate::{
     babel,
     colons,
+    common::Common,
+    utils,
 };
 
 /// Dispatches the --list-config command.
@@ -184,3 +196,143 @@ pub fn cmd_list_config(config: &crate::Config, args: &[String])
     Ok(())
 }
 
+/// Dispatches the --generate-revocation command.
+pub fn cmd_generate_revocation(config: &crate::Config, args: &[String])
+                               -> Result<()>
+{
+    use crate::trust::{Query, model::{self, Model}};
+
+    if args.len() > 1 {
+        return Err(anyhow::anyhow!("Expected only one argument, got more"));
+    }
+
+    let q = Query::from(args[0].as_str());
+    let always = model::Always::default();
+    let vtm = always.with_policy(config, None)?;
+    let certs = config.lookup_certs_with(vtm.as_ref(), &q)?;
+
+    if certs.is_empty() {
+        return Err(anyhow::anyhow!("secret key \"{}\" not found", q));
+    }
+
+    // XXX: Maybe filter out the certs here instead of after the
+    // check.
+
+    if certs.len() > 1 {
+        return Err(anyhow::anyhow!("query \"{}\" matched multiple keys", q));
+    }
+    let cert = certs[0];
+    let primary = cert.primary_key().key();
+
+    // Get the primary signer.  To that end, we need a valid cert
+    // first to make password prompts more helpful for the user.
+    let null_policy = NullPolicy::new();
+    let vcert = cert.with_policy(config.policy(), None)
+        .or_else(|_| cert.with_policy(
+            config.policy(), cert.primary_key().creation_time()))
+        .or_else(|_| cert.with_policy(
+            &null_policy, cert.primary_key().creation_time()))
+        .context(format!("Key {:X} is not valid", cert.fingerprint()))?;
+    // XXX: Would be nice to make this infallible, but
+    // ipc::gnupg::KeyPair::with_cert takes a ValidCert, and there is
+    // no Cert equivalent.
+
+    let rt = tokio::runtime::Runtime::new()?;
+    let mut primary_signer =
+        rt.block_on(config.get_signer(&vcert, primary.into()))?;
+
+    let creation_time =
+        chrono::DateTime::<chrono::Utc>::from(primary.creation_time());
+
+    if ! config.prompt_yN(format_args!(
+        "
+sec  {}/{} {} {}
+
+Create a revocation certificate for this key?",
+        babel::Fish((primary.pk_algo(), primary.mpis().bits().unwrap_or(0),
+                     &crate::list_keys::get_curve(primary.mpis()))),
+        primary.keyid(),
+        creation_time.format("%Y-%m-%d"),
+        utils::best_effort_primary_uid(config.policy(), &cert),
+    ))? {
+        return Ok(());
+    }
+
+    'start_over: loop {
+        let reason = loop {
+            match config.prompt(format_args!(
+                "Please select the reason for the revocation:
+  0 = No reason specified
+  1 = Key has been compromised
+  2 = Key is superseded
+  3 = Key is no longer used
+  Q = Cancel
+(Probably you want to select 1 here)
+Your decision?"))?.to_lowercase().as_str()
+            {
+                "0" => break ReasonForRevocation::Unspecified,
+                "1" => break ReasonForRevocation::KeyCompromised,
+                "2" => break ReasonForRevocation::KeySuperseded,
+                "3" => break ReasonForRevocation::KeyRetired,
+                "q" => return Ok(()),
+                _ => {
+                    eprintln!("Invalid selection.");
+                },
+            }
+        };
+
+        eprintln!("Enter an optional description; end it with an empty line:");
+        let mut description = vec![];
+        loop {
+            let line = config.prompt(format_args!(">"))?;
+            if line.is_empty() {
+                break;
+            } else {
+                description.push(line);
+            }
+        }
+        let description = description.join("\n");
+
+        // Summarize, and check again.
+        eprintln!("Reason for revocation: {}", babel::Fish(reason));
+        if description.is_empty() {
+            eprintln!("(No description given)");
+        } else {
+            eprintln!("{}", description);
+        }
+        if ! config.prompt_yN(format_args!("Is this okay?"))? {
+            continue 'start_over;
+        }
+
+        let sig = CertRevocationBuilder::new()
+            .set_reason_for_revocation(reason, description.as_bytes())?
+            .build(&mut primary_signer, &cert, None)?;
+
+        let sink = if let Some(name) = config.outfile() {
+            utils::create(config, name)?
+        } else {
+            Box::new(io::stdout())
+        };
+
+        let mut message = Message::new(sink);
+
+        if config.armor {
+            message = Armorer::new(message)
+                .kind(openpgp::armor::Kind::PublicKey)
+                .add_header("Comment", "This is a revocation certificate")
+                .build()?;
+        }
+        openpgp::Packet::from(sig).serialize(&mut message)?;
+        message.finalize()?;
+
+        eprintln!("Revocation certificate created.
+
+Please move it to a medium which you can hide away; if Mallory gets
+access to this certificate he can use it to make your key unusable.
+It is smart to print this certificate and store it away, just in case
+your media become unreadable.  But have some caution:  The print system of
+your machine might store the data and make it available to others!");
+
+        return Ok(());
+    }
+}
