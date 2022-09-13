@@ -138,7 +138,7 @@ impl<'a> DHelper<'a> {
         let kek = agent.decrypt(&keypair, pkesk.esk()).await?;
 
         // XXX: This is a bit rough.  We get the raw plaintext from
-        // Agent::decrypt, but there is no nice API to encrypt a PKESK
+        // Agent::decrypt, but there is no nice API to decrypt a PKESK
         // with that.  What we can do, is use a shim that implements
         // the low-level crypto::Decryptor and merely returns the
         // plaintext that we already have.
