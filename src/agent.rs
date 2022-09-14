@@ -231,13 +231,13 @@ where
     Ok(())
 }
 
-/// Imports a secret key into the agent.
+/// Returns whether the agent has a secret key.
 pub async fn has_key(agent: &mut Agent,
                      key: &Key<PublicParts, UnspecifiedRole>)
                      -> Result<bool>
 {
     let grip = Keygrip::of(key.mpis())?;
-    Ok(send_simple(agent, format!("HAS_KEY {}", grip)).await.is_ok())
+    Ok(send_simple(agent, format!("HAVEKEY {}", grip)).await.is_ok())
 }
 
 /// Imports a secret key into the agent.
