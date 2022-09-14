@@ -293,7 +293,8 @@ async fn do_import_cert(config: &mut crate::Config,
         let mut changed = false;
         let mut unchanged = false;
 
-        for subkey in key.keys().secret() {
+        // XXX: allow importing encrypted keys
+        for subkey in key.keys().secret().unencrypted_secret() {
             // See if we import a new key or subkey.
             let c = crate::agent::import(&mut agent,
                                          config.policy(),
