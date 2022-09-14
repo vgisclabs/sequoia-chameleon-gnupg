@@ -75,11 +75,19 @@ impl std::str::FromStr for PinentryMode {
 
 /// Returns a convenient Err value for use in the state machines
 /// below.
-fn operation_failed<T>(message: &Option<String>) -> Result<T> {
-    Err(ipc::gnupg::Error::OperationFailed(
-        message.as_ref().map(|e| e.to_string())
-            .unwrap_or_else(|| "Unknown reason".into()))
-        .into())
+async fn operation_failed<T>(agent: &mut Agent, message: &Option<String>)
+                       -> Result<T>
+{
+    if let Some(response) = agent.next().await {
+        Err(ipc::gnupg::Error::ProtocolError(
+            format!("Got unexpected response {:?}", response))
+            .into())
+    } else {
+        Err(ipc::gnupg::Error::OperationFailed(
+            message.as_ref().map(|e| e.to_string())
+                .unwrap_or_else(|| "Unknown reason".into()))
+            .into())
+    }
 }
 
 /// Returns a convenient Err value for use in the state machines
@@ -115,7 +123,7 @@ where
             | Response::Status { .. } =>
                 (), // Ignore.
             Response::Error { ref message, .. } =>
-                return operation_failed(message),
+                return operation_failed(agent, message).await,
             response =>
                 return protocol_error(&response),
         }
@@ -181,7 +189,7 @@ where
                 password.extend_from_slice(&partial);
             },
             Response::Error { ref message, .. } =>
-                return operation_failed(message),
+                return operation_failed(agent, message).await,
         }
     }
     let password = Password::from(password);
@@ -215,7 +223,7 @@ where
                 acknowledge_inquiry(agent).await?
             },
             Response::Error { ref message, .. } =>
-                return operation_failed(message),
+                return operation_failed(agent, message).await,
             response =>
                 return protocol_error(&response),
         }
@@ -431,7 +439,7 @@ pub async fn import(agent: &mut Agent,
                                                 // XXX: use warn()
                                                 eprintln!("gpg: {}", m);
                                             }
-                                            return operation_failed(&message);
+                                            return operation_failed(agent, &message).await;
                                         },
                                     }
                                     break;
@@ -447,7 +455,7 @@ pub async fn import(agent: &mut Agent,
                 }
             },
             Response::Error { ref message, .. } =>
-                return operation_failed(message),
+                return operation_failed(agent, message).await,
             response =>
                 return protocol_error(&response),
         }
