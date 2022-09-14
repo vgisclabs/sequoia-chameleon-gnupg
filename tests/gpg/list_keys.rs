@@ -9,6 +9,54 @@ use openpgp::{
 use super::super::*;
 
 #[test]
+fn empty() -> Result<()> {
+    let experiment = Experiment::new()?;
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(0, 100);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-colons",
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(3, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-secret",
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(0, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-secret",
+        "--with-colons",
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(3, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-secret-keys",
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(0, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-secret-keys",
+        "--with-colons",
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(0, 0);
+
+    Ok(())
+}
+
+#[test]
 fn basic() -> Result<()> {
     let (cert, _) = CertBuilder::new()
         .add_userid("Alice Lovelace <alice@lovelace.name>")
@@ -17,6 +65,7 @@ fn basic() -> Result<()> {
 
     let experiment = Experiment::new()?;
 
+    eprintln!("Importing cert...");
     let diff = experiment.invoke(&[
         "--import",
         &experiment.store("cert", &cert.to_vec()?)?,
@@ -32,6 +81,83 @@ fn basic() -> Result<()> {
 
     let diff = experiment.invoke(&[
         "--list-keys",
+        "--with-colons",
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(5, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-secret",
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(9, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-secret",
+        "--with-colons",
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(5, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-secret-keys",
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(9, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-secret-keys",
+        "--with-colons",
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(5, 0);
+
+    eprintln!("Importing TSK...");
+    let diff = experiment.invoke(&[
+        "--import",
+        &experiment.store("cert", &cert.as_tsk().to_vec()?)?,
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(0, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(9, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-colons",
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(5, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-secret",
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(9, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-secret",
+        "--with-colons",
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(4, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-secret-keys",
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(9, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-secret-keys",
         "--with-colons",
     ])?;
     diff.assert_success();
@@ -83,6 +209,7 @@ fn general_purpose(cs: CipherSuite) -> Result<()> {
 
     let experiment = Experiment::new()?;
 
+    eprintln!("Importing cert...");
     let diff = experiment.invoke(&[
         "--import",
         &experiment.store("cert", &cert.to_vec()?)?,
@@ -98,6 +225,27 @@ fn general_purpose(cs: CipherSuite) -> Result<()> {
 
     let diff = experiment.invoke(&[
         "--list-keys",
+        "--with-colons",
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(15, 0);
+
+    eprintln!("Importing TSK...");
+    let diff = experiment.invoke(&[
+        "--import",
+        &experiment.store("cert", &cert.as_tsk().to_vec()?)?,
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(0, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-secret-keys",
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(9, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-secret-keys",
         "--with-colons",
     ])?;
     diff.assert_success();

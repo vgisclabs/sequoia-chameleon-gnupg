@@ -1,4 +1,5 @@
 use std::{
+    collections::BTreeMap,
     io::{self, Write},
 };
 
@@ -8,6 +9,7 @@ use sequoia_openpgp as openpgp;
 use openpgp::{
     cert::amalgamation::{ValidateAmalgamation, ValidAmalgamation},
     crypto::mpi::PublicKey,
+    Fingerprint,
     types::*,
 };
 use sequoia_ipc as ipc;
@@ -20,16 +22,15 @@ use crate::{
 };
 
 /// Dispatches the --list-keys command (and similar ones).
-pub fn cmd_list_keys(config: &crate::Config, args: &[String])
+pub fn cmd_list_keys(config: &crate::Config, args: &[String], list_secret: bool)
                      -> Result<()>
 {
     let mut sink = io::stdout(); // XXX
     let vtm = config.trust_model_impl.with_policy(config, None)?;
     let p = vtm.policy();
 
-    // First, emit a header.
-    if config.with_colons {
-        // For our robot friends, we emit a TrustDB record.
+    // First, emit a header on --list-keys --with-colons.
+    if config.with_colons && ! list_secret {
         let v = config.trustdb.version(config);
         Record::TrustDBInformation {
             old: false,
@@ -41,18 +42,23 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String])
             completes_needed: v.completes_needed,
             max_cert_depth: v.max_cert_depth,
         }.emit(&mut sink, config.with_colons)?;
-    } else {
-        // For humans, we print the location of the store.
-        let path =
-            config.keydb().get_certd_overlay()?.path().display().to_string();
-        writeln!(&mut sink, "{}", path)?;
-        sink.write_all(crate::utils::undeline_for(&path))?;
-        writeln!(&mut sink)?;
     }
 
     let filter: Vec<Query> = args.iter()
         .map(|a| Query::from(&a[..]))
         .collect::<Vec<_>>();
+
+    let rt = tokio::runtime::Runtime::new()?;
+    let mut agent =
+        if list_secret || (config.with_secret && config.with_colons) {
+            rt.block_on(config.connect_agent()).ok()
+        } else {
+            None
+        };
+
+    // We emit the location header for humans only if we actually list
+    // at least one key.
+    let mut emitted_header = false;
 
     for cert in config.keydb().iter() {
         // Filter out certs that the user is not interested in.
@@ -60,10 +66,41 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String])
             continue;
         }
 
+        let mut has_secret: BTreeMap<Fingerprint, bool> = Default::default();
+        if let Some(agent) = &mut agent {
+            // Check for which keys we have a secret.
+            for k in cert.keys().filter(|k| {
+                rt.block_on(crate::agent::has_key(agent, &k))
+                    .unwrap_or(false)
+            }) {
+                has_secret.insert(k.fingerprint(), true);
+            }
+        }
+
+        if list_secret && has_secret.is_empty() {
+            // No secret (sub)key, don't list this key in --list-secret-keys.
+            continue;
+        }
+
+        // For humans, we print the location of the store if we list
+        // at least one key.
+        if ! emitted_header && ! config.with_colons {
+            emitted_header = true;
+
+            let path =
+                config.keydb().get_certd_overlay()?.path().display().to_string();
+            writeln!(&mut sink, "{}", path)?;
+            sink.write_all(crate::utils::undeline_for(&path))?;
+            writeln!(&mut sink)?;
+        }
+
         let acert = AuthenticatedCert::new(vtm.as_ref(), &cert)?;
         let vcert = cert.with_policy(p, None).ok();
+        let cert_fp = cert.fingerprint();
+        let have_secret = has_secret.get(&cert_fp).cloned().unwrap_or(false);
 
-        Record::PublicKey {
+        Record::Key {
+            have_secret: have_secret && list_secret,
             validity: acert.cert_validity(),
             key_length: cert.primary_key().mpis().bits().unwrap_or_default(),
             pk_algo: cert.primary_key().pk_algo(),
@@ -97,12 +134,15 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String])
                 }
                 kf
             },
+            token_sn: have_secret.then(|| TokenSN::SecretAvaliable),
             curve: get_curve(cert.primary_key().mpis()),
         }.emit(&mut sink, config.with_colons)?;
 
-        Record::Fingerprint(cert.fingerprint())
+        Record::Fingerprint(cert_fp)
             .emit(&mut sink, config.with_colons)?;
-        if config.with_keygrip {
+        if config.with_keygrip
+            || (config.with_colons && (list_secret || have_secret))
+        {
             if let Ok(grip) = Keygrip::of(cert.primary_key().mpis()) {
                 Record::Keygrip(grip).emit(&mut sink, config.with_colons)?;
             }
@@ -128,8 +168,12 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String])
 
         for (validity, subkey) in acert.subkeys() {
             let vsubkey = subkey.clone().with_policy(p, None).ok();
+            let subkey_fp =subkey.fingerprint();
+            let have_secret =
+                has_secret.get(&subkey_fp).cloned().unwrap_or(false);
 
             Record::Subkey {
+                have_secret: have_secret && list_secret,
                 validity: validity,
                 key_length: subkey.mpis().bits().unwrap_or_default(),
                 pk_algo: subkey.pk_algo(),
@@ -140,14 +184,17 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String])
                 key_flags: vsubkey.as_ref()
                     .and_then(|v| v.key_flags())
                     .unwrap_or_else(|| KeyFlags::empty()),
+                token_sn: have_secret.then(|| TokenSN::SecretAvaliable),
                 curve: get_curve(subkey.mpis()),
             }.emit(&mut sink, config.with_colons)?;
 
             if config.with_colons || config.with_subkey_fingerprint {
-                Record::Fingerprint(subkey.fingerprint())
+                Record::Fingerprint(subkey_fp)
                     .emit(&mut sink, config.with_colons)?;
             }
-            if config.with_keygrip {
+            if config.with_keygrip
+                || (config.with_colons && (list_secret || have_secret))
+            {
                 if let Ok(grip) = Keygrip::of(subkey.mpis()) {
                     Record::Keygrip(grip).emit(&mut sink, config.with_colons)?;
                 }

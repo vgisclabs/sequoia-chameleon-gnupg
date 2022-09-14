@@ -47,7 +47,8 @@ impl Fd {
 
 #[allow(dead_code)]
 pub enum Record {
-    PublicKey {
+    Key {
+        have_secret: bool,
         validity: Validity,
         key_length: usize,
         pk_algo: PublicKeyAlgorithm,
@@ -57,9 +58,11 @@ pub enum Record {
         ownertrust: OwnerTrust,
         primary_key_flags: KeyFlags,
         sum_key_flags: KeyFlags,
+        token_sn: Option<TokenSN>,
         curve: Option<Curve>,
     },
     Subkey {
+        have_secret: bool,
         validity: Validity,
         key_length: usize,
         pk_algo: PublicKeyAlgorithm,
@@ -67,6 +70,7 @@ pub enum Record {
         creation_date: SystemTime,
         expiration_date: Option<SystemTime>,
         key_flags: KeyFlags,
+        token_sn: Option<TokenSN>,
         curve: Option<Curve>,
     },
     Fingerprint(Fingerprint),
@@ -107,7 +111,8 @@ impl Record {
         };
 
         match self {
-            PublicKey {
+            Key {
+                have_secret,
                 validity,
                 key_length,
                 pk_algo,
@@ -117,8 +122,15 @@ impl Record {
                 ownertrust,
                 primary_key_flags,
                 sum_key_flags,
+                token_sn,
                 curve,
             } => {
+                let record_type = if *have_secret {
+                    "sec"
+                } else {
+                    "pub"
+                };
+
                 let creation_date =
                     chrono::DateTime::<chrono::Utc>::from(*creation_date);
 
@@ -128,7 +140,8 @@ impl Record {
 
                 if mr {
                     writeln!(w,
-                             "pub:{}:{}:{}:{:X}:{}:{}::{:#}:::{}{}:::::{}:::0:",
+                             "{}:{}:{}:{}:{:X}:{}:{}::{:#}:::{}{}:::{}::{}:::0:",
+                             record_type,
                              validity,
                              key_length,
                              u8::from(*pk_algo),
@@ -139,12 +152,15 @@ impl Record {
                              ownertrust,
                              babel::Fish(primary_key_flags),
                              babel::Fish(sum_key_flags).to_string().to_uppercase(),
+                             token_sn.as_ref().map(ToString::to_string)
+                             .unwrap_or_default(),
                              curve.as_ref().map(|c| babel::Fish(c).to_string())
                              .unwrap_or_default(),
                     )?;
                 } else {
                     writeln!(w,
-                             "pub   {} {} [{}]{}",
+                             "{}   {} {} [{}]{}",
+                             record_type,
                              babel::Fish((*pk_algo, *key_length, curve)),
                              creation_date.format("%Y-%m-%d"),
                              babel::Fish(primary_key_flags).to_string().to_uppercase(),
@@ -154,6 +170,7 @@ impl Record {
             },
 
             Subkey {
+                have_secret,
                 validity,
                 key_length,
                 pk_algo,
@@ -161,8 +178,15 @@ impl Record {
                 creation_date,
                 expiration_date,
                 key_flags,
+                token_sn,
                 curve,
             } => {
+                let record_type = if *have_secret {
+                    "ssb"
+                } else {
+                    "sub"
+                };
+
                 let creation_date =
                     chrono::DateTime::<chrono::Utc>::from(*creation_date);
 
@@ -171,7 +195,8 @@ impl Record {
                 });
 
                 if mr {
-                    writeln!(w, "sub:{}:{}:{}:{:X}:{}:{}:::::{}:::::{}::",
+                    writeln!(w, "{}:{}:{}:{}:{:X}:{}:{}:::::{}:::{}::{}::",
+                             record_type,
                              validity,
                              key_length,
                              u8::from(*pk_algo),
@@ -180,12 +205,15 @@ impl Record {
                              expiration_date.map(|t| t.format("%s").to_string())
                              .unwrap_or_else(|| "".into()),
                              babel::Fish(key_flags),
+                             token_sn.as_ref().map(ToString::to_string)
+                             .unwrap_or_default(),
                              curve.as_ref().map(|c| babel::Fish(c).to_string())
                              .unwrap_or_default(),
                     )?;
                 } else {
                     writeln!(w,
-                             "sub   {} {} [{}]{}",
+                             "{}   {} {} [{}]{}",
+                             record_type,
                              babel::Fish((*pk_algo, *key_length, curve)),
                              creation_date.format("%Y-%m-%d"),
                              babel::Fish(key_flags).to_string().to_uppercase(),
@@ -278,6 +306,24 @@ impl Record {
         }
 
         Ok(())
+    }
+}
+
+/// Represents the value of field 15, "S/N of a token".
+pub enum TokenSN {
+    SerialNumber(String),
+    SimpleStub,
+    SecretAvaliable,
+}
+
+impl fmt::Display for TokenSN {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        use TokenSN::*;
+        match self {
+            SerialNumber(s) => f.write_str(s),
+            SimpleStub =>      f.write_str("#"),
+            SecretAvaliable => f.write_str("+"),
+        }
     }
 }
 
