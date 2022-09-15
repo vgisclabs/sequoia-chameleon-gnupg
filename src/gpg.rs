@@ -2608,8 +2608,12 @@ fn real_main() -> anyhow::Result<()> {
         Some(aImport) => import::cmd_import(&mut opt, &args),
         Some(aSign) => sign::cmd_sign(&mut opt, &args, detached_sig, false),
         Some(aClearsign) => sign::cmd_sign(&mut opt, &args, detached_sig, true),
-        Some(aEncr) => encrypt::cmd_encrypt(&mut opt, &args, false),
-        Some(aSignEncr) => encrypt::cmd_encrypt(&mut opt, &args, true),
+        Some(aEncr) => encrypt::cmd_encrypt(&mut opt, &args, false, false),
+        Some(aSym) => encrypt::cmd_encrypt(&mut opt, &args, true, false),
+        Some(aSignSym) => encrypt::cmd_encrypt(&mut opt, &args, true, true),
+        Some(aEncrSym) => encrypt::cmd_encrypt(&mut opt, &args, true, false),
+        Some(aSignEncr) => encrypt::cmd_encrypt(&mut opt, &args, false, true),
+        Some(aSignEncrSym) => encrypt::cmd_encrypt(&mut opt, &args, true, true),
         Some(aListKeys) =>
             list_keys::cmd_list_keys(&mut opt, &args, false),
         Some(aListSecretKeys) =>

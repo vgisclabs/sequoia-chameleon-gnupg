@@ -6,9 +6,12 @@ use anyhow::{Context, Result};
 
 use sequoia_openpgp as openpgp;
 use openpgp::{
-    serialize::stream::*,
+    crypto::{S2K, SessionKey},
+    packet::skesk::SKESK4,
+    serialize::{Serialize, stream::*},
     types::SignatureType,
 };
+use sequoia_ipc as ipc;
 
 use crate::{
     common::Common,
@@ -21,8 +24,16 @@ use crate::{
 /// Creates encrypted messages, optionally signing the plaintext
 /// first.
 pub fn cmd_encrypt(config: &crate::Config, args: &[String],
-                   sign: bool)
+                   symmetric: bool, sign: bool)
                    -> Result<()>
+{
+    let rt = tokio::runtime::Runtime::new()?;
+    rt.block_on(real_cmd_encrypt(config, args, symmetric, sign))
+}
+
+async fn real_cmd_encrypt(config: &crate::Config, args: &[String],
+                          symmetric: bool, sign: bool)
+                          -> Result<()>
 {
     let policy = config.policy();
     let filenames =
@@ -104,10 +115,52 @@ pub fn cmd_encrypt(config: &crate::Config, args: &[String],
         message = Armorer::new(message).build()?;
     }
 
+    // If we want to encrypt with a password, we need to do that now.
+    // The reason is that we want to produce the SKESK ourselves so
+    // that we can cache the password in the agent.  To that end, fix
+    // cipher and session key here.
     let cipher = config.def_cipher;
-    let encryptor = Encryptor::for_recipients(message, recipients)
-        .symmetric_algo(cipher);
-    // XXX symmetric
+    let sk = SessionKey::new(cipher.key_size()?);
+
+    // Now do our trick, maybe.
+    if symmetric {
+        let s2k = S2K::default();
+        let cacheid = crate::agent::cacheid_of(&s2k);
+        let mut agent = config.connect_agent().await?;
+        let p =
+            crate::agent::get_passphrase(
+                &mut agent,
+                &cacheid, &None, None, None, false, 0, false,
+                |_agent, response| if let ipc::assuan::Response::Inquire {
+                    keyword, parameters } = response
+                {
+                    match keyword.as_str() {
+                        "PINENTRY_LAUNCHED" => {
+                            let p = parameters.unwrap_or_default();
+                            let info = String::from_utf8_lossy(&p);
+                            let _ = config.status().emit(
+                                Status::PinentryLaunched(info.into()));
+                            None
+                        },
+                        _ => None,
+                    }
+                } else {
+                    None
+                }
+            ).await?;
+
+        // XXX: We emit the SKESK first.  Naive consumers may
+        // therefore ask for a password even if they could use a PKESK
+        // to decrypt the message.  If that turns out to be the case,
+        // we could produce and emit the PKESKs before this
+        // conditional.
+        let skesk = SKESK4::with_password(cipher, cipher, s2k, &sk, &p)?;
+        openpgp::Packet::from(skesk).serialize(&mut message)?;
+    }
+
+    let encryptor = Encryptor::with_session_key(message, cipher, sk)?
+        .add_recipients(recipients);
+
     let mut message = encryptor.build()?;
 
     if let Some(algo) = config.compress_algo {

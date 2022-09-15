@@ -196,6 +196,21 @@ where
     Ok(password)
 }
 
+/// Computes the cache id for a SKESK.
+///
+/// If an S2K algorithm unsupported by the caching id algorithm is
+/// given, this function returns `None`.
+pub fn cacheid_of(s2k: &S2K) -> Option<String> {
+    #[allow(deprecated)]
+    let salt = match s2k {
+        S2K::Iterated { salt, .. } => &salt[..8],
+        S2K::Salted { salt, .. } => &salt[..8],
+        _ => return None,
+    };
+
+    Some(format!("S{}", openpgp::fmt::hex::encode(&salt)))
+}
+
 /// Computes the cache id for a set of SKESKs.
 ///
 /// GnuPG prompts for a password for each SKESK separately, and uses
