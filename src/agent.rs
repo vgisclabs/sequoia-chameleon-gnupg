@@ -8,6 +8,7 @@ use openpgp::{
     Cert,
     crypto::{
         Password,
+        S2K,
         mem::Protected,
     },
     packet::{
@@ -18,6 +19,7 @@ use openpgp::{
             UnspecifiedRole,
             SecretKeyMaterial,
         },
+        SKESK,
     },
     policy::Policy,
 };
@@ -133,20 +135,17 @@ where
 }
 
 /// Makes the agent ask for a password.
-pub async fn get_passphrase<C, CS, ES, P>(agent: &mut ipc::gnupg::Agent,
-                                          cache_id: C,
-                                          err_msg: Option<ES>,
-                                          prompt: Option<String>,
-                                          desc_msg: Option<String>,
-                                          newsymkey: bool,
-                                          repeat: usize,
-                                          check: bool,
-                                          mut pinentry_cb: P)
-                                          -> Result<Password>
+pub async fn get_passphrase<P>(agent: &mut ipc::gnupg::Agent,
+                               cache_id: &Option<String>,
+                               err_msg: &Option<String>,
+                               prompt: Option<String>,
+                               desc_msg: Option<String>,
+                               newsymkey: bool,
+                               repeat: usize,
+                               check: bool,
+                               mut pinentry_cb: P)
+                               -> Result<Password>
 where
-    C: Into<Option<CS>>,
-    CS: AsRef<str>,
-    ES: AsRef<str>,
     P: FnMut(&mut Agent, Response) -> Option<Protected>,
 {
     agent.send(format!(
@@ -154,7 +153,7 @@ where
         repeat,
         if (repeat > 0 && check) || newsymkey { " --check" } else { "" },
         if newsymkey { " --newsymkey" } else { "" },
-        cache_id.into().as_ref().map(escape).unwrap_or_else(|| "X".into()),
+        cache_id.as_ref().map(escape).unwrap_or_else(|| "X".into()),
         err_msg.as_ref().map(escape).unwrap_or_else(|| "X".into()),
         prompt.as_ref().map(escape).unwrap_or_else(|| "X".into()),
         desc_msg.as_ref().map(escape).unwrap_or_else(|| "X".into()),
@@ -195,6 +194,48 @@ where
     let password = Password::from(password);
 
     Ok(password)
+}
+
+/// Computes the cache id for a set of SKESKs.
+///
+/// GnuPG prompts for a password for each SKESK separately, and uses
+/// the first eight bytes of salt from the S2K.  We ask for one
+/// password and try it with every SKESK.  Therefore, we have to cache
+/// that we asked for a set of SKESKs, i.e. this message.  To that
+/// end, we xor the first eight bytes of salt from every S2K, matching
+/// GnuPG's result in the common case of having just one SKESK.  Xor
+/// is also nice because it is commutative, so the order of the SKESKs
+/// doesn't matter.
+///
+/// Unsupported SKESK versions or S2K algorithms unsupported by the
+/// caching id algorithm are ignored.  We cannot use them anyway.
+///
+/// Further, if no SKESKs are given, this function returns `None`.
+pub fn cacheid_over_all(skesks: &[SKESK]) -> Option<String> {
+    if skesks.is_empty() {
+        return None;
+    }
+
+    let mut cacheid = [0; 8];
+
+    for skesk in skesks {
+        let s2k = match skesk {
+            SKESK::V4(skesk) => skesk.s2k(),
+            SKESK::V5(skesk) => skesk.s2k(),
+            _ => continue,
+        };
+
+        #[allow(deprecated)]
+        let salt = match s2k {
+            S2K::Iterated { salt, .. } => &salt[..8],
+            S2K::Salted { salt, .. } => &salt[..8],
+            _ => continue,
+        };
+
+        cacheid.iter_mut().zip(salt.iter()).for_each(|(p, s)| *p ^= *s);
+    }
+
+    Some(format!("S{}", openpgp::fmt::hex::encode(&cacheid)))
 }
 
 /// Makes the agent forget a password.

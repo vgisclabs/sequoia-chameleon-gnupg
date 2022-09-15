@@ -185,8 +185,6 @@ impl<'a> DHelper<'a> {
     where
         D: FnMut(SymmetricAlgorithm, &SessionKey) -> bool,
     {
-        use openpgp::crypto::S2K;
-
         // Before doing anything else, try if we were given a session
         // key.
         if let Some(sk) = &self.config.override_session_key {
@@ -259,34 +257,14 @@ impl<'a> DHelper<'a> {
             return Err(anyhow::anyhow!("decryption failed: No secret key"));
         }
 
-        // GnuPG asks for each SKESK separately, and uses the first
-        // eight bytes of salt from the S2K.  We ask for one password
-        // and try it with every SKESK.  We xor the first eight bytes
-        // of salt from every S2K, matching GnuPG's result in the
-        // common case of having just one SKESK.
-        let mut cacheid = [0; 8];
-        for skesk in skesks {
-            let s2k = match skesk {
-                SKESK::V4(skesk) => skesk.s2k(),
-                SKESK::V5(skesk) => skesk.s2k(),
-                _ => continue,
-            };
-            #[allow(deprecated)]
-            let salt = match s2k {
-                S2K::Iterated { salt, .. } => &salt[..8],
-                S2K::Salted { salt, .. } => &salt[..8],
-                _ => continue,
-            };
-            cacheid.iter_mut().zip(salt.iter()).for_each(|(p, s)| *p ^= *s);
-        }
-        let cacheid = format!("S{}", hex::encode(&cacheid));
+        let cacheid = crate::agent::cacheid_over_all(skesks);
 
         let mut error: Option<String> = None;
         loop {
             let p =
                 crate::agent::get_passphrase(
                     &mut agent,
-                    &cacheid, error, None, None, false, 0, false,
+                    &cacheid, &error, None, None, false, 0, false,
                     |_agent, response| if let ipc::assuan::Response::Inquire {
                         keyword, parameters } = response
                     {
@@ -324,15 +302,17 @@ impl<'a> DHelper<'a> {
 
             // Error message to display next time.
             error = Some("Decryption failed".to_string());
-            // Make gpg-agent forget the bad passphrase.
-            crate::agent::forget_passphrase(
-                &mut agent,
-                &cacheid,
-                |info| {
-                    let info = String::from_utf8_lossy(&info);
-                    let _ = self.config.status().emit(
-                        Status::PinentryLaunched(info.into()));
-                },).await?;
+            if let Some(cacheid) = &cacheid {
+                // Make gpg-agent forget the bad passphrase.
+                crate::agent::forget_passphrase(
+                    &mut agent,
+                    &cacheid,
+                    |info| {
+                        let info = String::from_utf8_lossy(&info);
+                        let _ = self.config.status().emit(
+                            Status::PinentryLaunched(info.into()));
+                    },).await?;
+            }
         }
     }
 }
