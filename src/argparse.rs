@@ -517,10 +517,16 @@ impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Iterator for Iter<T> {
 
             matched
         } else {
+            assert!(! self.seen_positional);
+
             let mut chars = a.chars();
             let a0 = match chars.next() {
                 Some(c) => c,
-                None => return Some(Err(Error::Malformed(a.into()))),
+                None => {
+                    // This is the first positional argument.
+                    self.seen_positional = true;
+                    return Some(Ok(Argument::Positional(arg.into())));
+                },
             };
 
             // See if there are more short arguments after this one.
@@ -696,6 +702,14 @@ mod tests {
                    Argument::Positional("-q".into()));
         assert_eq!(i.next().unwrap().unwrap(),
                    Argument::Positional("--status-fd".into()));
+        assert!(i.next().is_none());
+
+        let mut i =
+            parser.parse_args(vec!["--quiet", "-"]);
+        assert_eq!(i.next().unwrap().unwrap(),
+                   Argument::Option(oQuiet, Value::None));
+        assert_eq!(i.next().unwrap().unwrap(),
+                   Argument::Positional("-".into()));
         assert!(i.next().is_none());
 
         Ok(())
