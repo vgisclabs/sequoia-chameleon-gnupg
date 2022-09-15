@@ -2645,7 +2645,9 @@ fn main() {
     use std::process::exit;
 
     with_invocation_log(|w| {
-        let a = std::env::args().collect::<Vec<_>>();
+        let a = std::env::args()
+            .map(|a| format!("{:?}", a))
+            .collect::<Vec<_>>();
         writeln!(w, "{}", a.join(" "))?;
         Ok(())
     });
