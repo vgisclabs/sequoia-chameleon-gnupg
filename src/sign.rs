@@ -32,7 +32,7 @@ pub fn cmd_sign(config: &crate::Config, args: &[String],
                 detached: bool, cleartext: bool)
                 -> Result<()>
 {
-    assert!(detached ^ cleartext);
+    assert!(! (detached && cleartext));
 
     let filenames =
         if args.is_empty() { vec!["-".into()] } else { args.to_vec() };
