@@ -51,9 +51,31 @@ impl<'a> AuthenticatedCert<'a> {
     pub fn new(vtm: &dyn ModelViewAt, cert: &'a Cert) -> Result<Self> {
         let cert_fp = cert.fingerprint();
 
+        // A cert's validity is either revoked, expired, or the max
+        // over the validity of the user ids.  Further, if the cert is
+        // revoked or expired, so are the UserIDs.  Hence, we
+        // partially compute cert_validity here.
+        let cert_validity = {
+            if let Ok(vcert) = cert.with_policy(vtm.policy(), vtm.time()) {
+                if let RevocationStatus::Revoked(_) = vcert.revocation_status()
+                {
+                    Some(Validity::Revoked)
+                } else if vcert.alive().is_err() {
+                    Some(Validity::Expired)
+                } else {
+                    None
+                }
+            } else {
+                Some(Validity::Expired) // All binding signatures expired.
+            }
+        };
+
         let uid_validities: Vec<_> = cert.userids()
             .map(|uid| {
-                if let Ok(vuid) = uid.with_policy(vtm.policy(), vtm.time()) {
+                // If the cert is revoked or expired, so are the UserIDs.
+                if let Some(v) = cert_validity {
+                    v
+                } else if let Ok(vuid) = uid.with_policy(vtm.policy(), vtm.time()) {
                     if let RevocationStatus::Revoked(_) = vuid.revocation_status() {
                         Validity::Revoked
                     } else {
@@ -66,8 +88,10 @@ impl<'a> AuthenticatedCert<'a> {
             })
             .collect();
 
-        let cert_validity =
-            uid_validities.iter().max().cloned().unwrap_or(Validity::Unknown);
+        // A cert's validity is either revoked, expired, or the max
+        // over the validity of the user ids.
+        let cert_validity = cert_validity.unwrap_or_else(
+            || uid_validities.iter().max().cloned().unwrap_or(Validity::Unknown));
 
         let subkey_validities: Vec<_> = cert.keys().subkeys()
             .map(|skb| if let Some(RevocationStatus::Revoked(_)) = skb

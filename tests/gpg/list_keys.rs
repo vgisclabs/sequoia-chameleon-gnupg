@@ -1,9 +1,14 @@
+use std::{
+    time::*,
+};
+
 use anyhow::Result;
 
 use sequoia_openpgp as openpgp;
 use openpgp::{
     cert::prelude::*,
     serialize::SerializeInto,
+    types::KeyFlags,
 };
 
 use super::super::*;
@@ -57,12 +62,34 @@ fn empty() -> Result<()> {
 }
 
 #[test]
-fn basic() -> Result<()> {
+fn valid() -> Result<()> {
     let (cert, _) = CertBuilder::new()
         .add_userid("Alice Lovelace <alice@lovelace.name>")
         .add_signing_subkey()
         .generate()?;
 
+    test_key(cert)
+}
+
+#[test]
+fn expired() -> Result<()> {
+    let a_week = Duration::new(7 * 24 * 3600, 0);
+    let the_past = SystemTime::now()
+        .checked_sub(2 * a_week)
+        .unwrap();
+    let (cert, _) = CertBuilder::new()
+        .set_creation_time(the_past)
+        .set_validity_period(a_week)
+        .add_userid("Alice Lovelace <alice@lovelace.name>")
+        .add_signing_subkey()
+        .set_primary_key_flags(
+            KeyFlags::empty().set_signing().set_certification())
+        .generate()?;
+
+    test_key(cert)
+}
+
+fn test_key(cert: Cert) -> Result<()> {
     let experiment = Experiment::new()?;
 
     eprintln!("Importing cert...");

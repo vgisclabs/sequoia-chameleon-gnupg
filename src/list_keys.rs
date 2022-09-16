@@ -115,7 +115,9 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String], list_secret: bool)
                 .unwrap_or_else(|| KeyFlags::empty()),
             sum_key_flags: {
                 let mut kf = KeyFlags::empty();
-                if let Some(vcert) = vcert.as_ref() {
+                if acert.cert_validity() == Validity::Expired {
+                    // Expired certs don't list their subkeys' flags.
+                } else if let Some(vcert) = vcert.as_ref() {
                     if vcert.keys().for_signing().next().is_some() {
                         kf = kf.set_signing();
                     }
@@ -167,8 +169,13 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String], list_secret: bool)
         }
 
         for (validity, subkey) in acert.subkeys() {
+            // Don't display expired subkeys.
+            if ! config.with_colons && validity == Validity::Expired {
+                continue;
+            }
+
             let vsubkey = subkey.clone().with_policy(p, None).ok();
-            let subkey_fp =subkey.fingerprint();
+            let subkey_fp = subkey.fingerprint();
             let have_secret =
                 has_secret.get(&subkey_fp).cloned().unwrap_or(false);
 
