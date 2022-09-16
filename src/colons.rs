@@ -38,6 +38,7 @@ pub enum Record {
         keyid: KeyID,
         creation_date: SystemTime,
         expiration_date: Option<SystemTime>,
+        revocation_date: Option<SystemTime>,
         ownertrust: OwnerTrust,
         primary_key_flags: KeyFlags,
         sum_key_flags: KeyFlags,
@@ -52,6 +53,7 @@ pub enum Record {
         keyid: KeyID,
         creation_date: SystemTime,
         expiration_date: Option<SystemTime>,
+        revocation_date: Option<SystemTime>,
         key_flags: KeyFlags,
         token_sn: Option<TokenSN>,
         curve: Option<Curve>,
@@ -90,17 +92,21 @@ impl Record {
     fn do_emit(&self, w: &mut (impl io::Write + ?Sized), mr: bool)
                 -> Result<()>
     {
+        use chrono::{DateTime, Utc};
         use Record::*;
 
-        // Helper function to format expiration times in
-        // human-readable key listings.
-        let expire_x = |t: Option<chrono::DateTime::<chrono::Utc>>| -> String {
-            t.map(|t| format!(
-                " [{}: {}]",
-                if t > chrono::Utc::now() { "expires" } else { "expired" },
-                t.format("%Y-%m-%d"))
-            ).unwrap_or_else(|| "".into())
-        };
+        // Helper function to format expiration and revocation times
+        // in human-readable key listings.
+        fn bracket(revoked_at: Option<DateTime::<Utc>>,
+                   expired_at: Option<DateTime::<Utc>>) -> String {
+            revoked_at.map(|t| format!(
+                " [revoked: {}]", t.format("%Y-%m-%d")))
+                .or_else(|| expired_at.map(|t| format!(
+                    " [{}: {}]",
+                    if t > chrono::Utc::now() { "expires" } else { "expired" },
+                    t.format("%Y-%m-%d"))))
+                .unwrap_or_else(|| "".into())
+        }
 
         match self {
             Key {
@@ -111,6 +117,7 @@ impl Record {
                 keyid,
                 creation_date,
                 expiration_date,
+                revocation_date,
                 ownertrust,
                 primary_key_flags,
                 sum_key_flags,
@@ -127,6 +134,10 @@ impl Record {
                     chrono::DateTime::<chrono::Utc>::from(*creation_date);
 
                 let expiration_date = expiration_date.map(|t| {
+                    chrono::DateTime::<chrono::Utc>::from(t)
+                });
+
+                let revocation_date = revocation_date.map(|t| {
                     chrono::DateTime::<chrono::Utc>::from(t)
                 });
 
@@ -156,7 +167,7 @@ impl Record {
                              babel::Fish((*pk_algo, *key_length, curve)),
                              creation_date.format("%Y-%m-%d"),
                              babel::Fish(primary_key_flags).to_string().to_uppercase(),
-                             expire_x(expiration_date),
+                             bracket(revocation_date, expiration_date),
                     )?;
                 }
             },
@@ -169,6 +180,7 @@ impl Record {
                 keyid,
                 creation_date,
                 expiration_date,
+                revocation_date,
                 key_flags,
                 token_sn,
                 curve,
@@ -183,6 +195,10 @@ impl Record {
                     chrono::DateTime::<chrono::Utc>::from(*creation_date);
 
                 let expiration_date = expiration_date.map(|t| {
+                    chrono::DateTime::<chrono::Utc>::from(t)
+                });
+
+                let revocation_date = revocation_date.map(|t| {
                     chrono::DateTime::<chrono::Utc>::from(t)
                 });
 
@@ -209,7 +225,7 @@ impl Record {
                              babel::Fish((*pk_algo, *key_length, curve)),
                              creation_date.format("%Y-%m-%d"),
                              babel::Fish(key_flags).to_string().to_uppercase(),
-                             expire_x(expiration_date),
+                             bracket(revocation_date, expiration_date),
                     )?;
                 }
             },

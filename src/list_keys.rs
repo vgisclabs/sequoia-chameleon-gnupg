@@ -109,6 +109,14 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String], list_secret: bool)
             expiration_date:  vcert.as_ref()
                 .and_then(|v| v.keys().next().expect("primary key")
                           .key_expiration_time()),
+            revocation_date: vcert.as_ref()
+                .and_then(|v| if let RevocationStatus::Revoked(sigs)
+                          = v.primary_key().revocation_status()
+                          {
+                              sigs[0].signature_creation_time()
+                          } else {
+                              None
+                          }),
             ownertrust: OwnerTrust::Undefined,
             primary_key_flags: vcert.as_ref()
                 .and_then(|v| v.keys().next().expect("primary key").key_flags())
@@ -117,6 +125,8 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String], list_secret: bool)
                 let mut kf = KeyFlags::empty();
                 if acert.cert_validity() == Validity::Expired {
                     // Expired certs don't list their subkeys' flags.
+                } else if acert.cert_validity() == Validity::Revoked {
+                    // Revoked certs don't list their subkeys' flags.
                 } else if let Some(vcert) = vcert.as_ref() {
                     if vcert.keys().for_signing().next().is_some() {
                         kf = kf.set_signing();
@@ -169,8 +179,10 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String], list_secret: bool)
         }
 
         for (validity, subkey) in acert.subkeys() {
-            // Don't display expired subkeys.
-            if ! config.with_colons && validity == Validity::Expired {
+            // Don't display expired subkeys or revoked.
+            if ! config.with_colons
+                && (validity == Validity::Expired
+                    || validity == Validity::Revoked) {
                 continue;
             }
 
@@ -188,6 +200,14 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String], list_secret: bool)
                 creation_date: subkey.creation_time(),
                 expiration_date:  vsubkey.as_ref()
                     .and_then(|v| v.key_expiration_time()),
+                revocation_date: vsubkey.as_ref()
+                    .and_then(|v| if let RevocationStatus::Revoked(sigs)
+                              = v.revocation_status()
+                              {
+                                  sigs[0].signature_creation_time()
+                              } else {
+                                  None
+                              }),
                 key_flags: vsubkey.as_ref()
                     .and_then(|v| v.key_flags())
                     .unwrap_or_else(|| KeyFlags::empty()),

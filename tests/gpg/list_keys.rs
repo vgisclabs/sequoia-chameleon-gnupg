@@ -72,6 +72,17 @@ fn valid() -> Result<()> {
 }
 
 #[test]
+fn revoked() -> Result<()> {
+    let (cert, rev) = CertBuilder::new()
+        .add_userid("Alice Lovelace <alice@lovelace.name>")
+        .add_signing_subkey()
+        .generate()?;
+    let cert = cert.insert_packets(vec![rev])?;
+
+    test_key(cert)
+}
+
+#[test]
 fn expired() -> Result<()> {
     let a_week = Duration::new(7 * 24 * 3600, 0);
     let the_past = SystemTime::now()
