@@ -30,7 +30,10 @@ use crate::{
 /// Strictly match GnuPG's output even if the protocol allows other
 /// output as well (e.g. GnuPG may only emit key ids whereas
 /// doc/DETAILS says fingerprints are also allowed.
-const STRICT_OUTPUT: bool = false;
+///
+/// Annoyingly, test suites don't understand how key handles alias, so
+/// aligning more closely with GnuPG avoids a lot of false positives.
+const STRICT_OUTPUT: bool = true;
 
 pub struct Fd(Mutex<RefCell<Box<dyn io::Write + Send + Sync>>>);
 
@@ -245,7 +248,11 @@ impl Status {
                 issuer,
                 primary_uid,
             } => {
-                write!(w, "EXPSIG {:X} ", issuer)?;
+                if STRICT_OUTPUT {
+                    write!(w, "EXPSIG {:X} ", KeyID::from(issuer))?;
+                } else {
+                    write!(w, "EXPSIG {:X} ", issuer)?;
+                }
                 e(w, primary_uid)?;
                 writeln!(w)?;
             },
@@ -254,7 +261,11 @@ impl Status {
                 issuer,
                 primary_uid,
             } => {
-                write!(w, "EXPKEYSIG {:X} ", issuer)?;
+                if STRICT_OUTPUT {
+                    write!(w, "EXPKEYSIG {:X} ", KeyID::from(issuer))?;
+                } else {
+                    write!(w, "EXPKEYSIG {:X} ", issuer)?;
+                }
                 e(w, primary_uid)?;
                 writeln!(w)?;
             },
@@ -263,7 +274,11 @@ impl Status {
                 issuer,
                 primary_uid,
             } => {
-                write!(w, "REVKEYSIG {:X} ", issuer)?;
+                if STRICT_OUTPUT {
+                    write!(w, "REVKEYSIG {:X} ", KeyID::from(issuer))?;
+                } else {
+                    write!(w, "REVKEYSIG {:X} ", issuer)?;
+                }
                 e(w, primary_uid)?;
                 writeln!(w)?;
             },
@@ -272,7 +287,11 @@ impl Status {
                 issuer,
                 primary_uid,
             } => {
-                write!(w, "BADSIG {:X} ", issuer)?;
+                if STRICT_OUTPUT {
+                    write!(w, "BADSIG {:X} ", KeyID::from(issuer))?;
+                } else {
+                    write!(w, "BADSIG {:X} ", issuer)?;
+                }
                 e(w, primary_uid)?;
                 writeln!(w)?;
             },
