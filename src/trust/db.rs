@@ -24,32 +24,8 @@ use openpgp::{
 use crate::{
     Config,
     common::Common,
-    trust::{TrustModel, OwnerTrust},
+    trust::{TrustModel, OwnerTrust, OwnerTrustLevel},
 };
-
-/// The mask covers the type.
-pub const TRUST_MASK: u32 = 15;
-
-/// Not yet calculated/assigned (o).
-pub const TRUST_UNKNOWN: u32 = 0;
-
-/// Calculation may be invalid (e).
-pub const TRUST_EXPIRED: u32 = 1;
-
-/// Not enough information for calculation (q).
-pub const TRUST_UNDEFINED: u32 = 2;
-
-/// Never trust this pubkey (n).
-pub const TRUST_NEVER: u32 = 3;
-
-/// Marginally trusted (m).
-pub const TRUST_MARGINAL: u32 = 4;
-
-/// Fully trusted (f).
-pub const TRUST_FULLY: u32 = 5;
-
-/// Ultimately trusted (u).
-pub const TRUST_ULTIMATE: u32 = 6;
 
 // Trust values not covered by the mask.
 
@@ -83,6 +59,11 @@ pub fn cmd_import_ownertrust(config: &mut crate::Config, args: &[String])
     // Write the owner-trusts to our DB.
     // XXX: Currently, this is a plain text file.
     let overlay = config.keydb.get_certd_overlay()?;
+    if ! overlay.path().exists() {
+        // Importing ownertrust should work before the overlay has
+        // been created.
+        std::fs::create_dir(overlay.path())?;
+    }
     let ownertrust_overlay =
         overlay.path().join("_sequoia_gpg_chameleon_ownertrust");
     config.trustdb.export_ownertrust(
@@ -219,6 +200,10 @@ impl TrustDB {
         Ok(())
     }
 
+    pub fn get_ownertrust(&self, fp: &Fingerprint) -> Option<OwnerTrust> {
+        self.ownertrust.get(fp).cloned()
+    }
+
     pub fn set_ownertrust(&mut self, fp: Fingerprint, ownertrust: OwnerTrust) {
         self.ownertrust.insert(fp, ownertrust);
     }
@@ -226,7 +211,7 @@ impl TrustDB {
     pub fn ultimately_trusted_keys(&self) -> impl Iterator<Item = &Fingerprint>
     {
         self.ownertrust.iter()
-            .filter_map(|(fp, ot)| if *ot == OwnerTrust::Ultimate {
+            .filter_map(|(fp, ot)| if ot.level() == OwnerTrustLevel::Ultimate {
                 Some(fp)
             } else {
                 None

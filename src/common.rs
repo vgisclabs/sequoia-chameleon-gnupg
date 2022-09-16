@@ -301,7 +301,13 @@ impl Query<'_> {
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
-pub enum OwnerTrust {
+pub struct OwnerTrust {
+    level: OwnerTrustLevel,
+    disabled: bool,
+}
+
+#[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub enum OwnerTrustLevel {
     Undefined,
     Never,
     Marginal,
@@ -309,13 +315,32 @@ pub enum OwnerTrust {
     Ultimate,
 }
 
+impl From<OwnerTrustLevel> for OwnerTrust {
+    fn from(level: OwnerTrustLevel) -> OwnerTrust {
+        OwnerTrust {
+            level,
+            disabled: false,
+        }
+    }
+}
+
+impl OwnerTrust {
+    pub fn level(&self) -> OwnerTrustLevel {
+        self.level
+    }
+
+    pub fn disabled(&self) -> bool {
+        self.disabled
+    }
+}
+
 impl fmt::Display for OwnerTrust {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        use OwnerTrust::*;
+        use OwnerTrustLevel::*;
 
         if f.alternate() {
             // Machine-readable.
-            match self {
+            match self.level {
                 Undefined => f.write_str("-"),
                 Never => f.write_str("n"),
                 Marginal => f.write_str("m"),
@@ -324,7 +349,7 @@ impl fmt::Display for OwnerTrust {
             }
         } else {
             // Human-readable.
-            match self {
+            match self.level {
                 Undefined => f.write_str("undefined"),
                 Never => f.write_str("never"),
                 Marginal => f.write_str("marginal"),
@@ -335,30 +360,57 @@ impl fmt::Display for OwnerTrust {
     }
 }
 
+/// The mask covers the type.
+const OWNERTRUST_MASK: u8 = 15;
+
+/// Not enough information for calculation (q).
+const OWNERTRUST_UNDEFINED: u8 = 2;
+
+/// Never trust this pubkey (n).
+const OWNERTRUST_NEVER: u8 = 3;
+
+/// Marginally trusted (m).
+const OWNERTRUST_MARGINAL: u8 = 4;
+
+/// Fully trusted (f).
+const OWNERTRUST_FULLY: u8 = 5;
+
+/// Ultimately trusted (u).
+const OWNERTRUST_ULTIMATE: u8 = 6;
+
+/// Key/uid disabled (d).
+const OWNERTRUST_FLAG_DISABLED: u8 = 128;
+
 impl TryFrom<u8> for OwnerTrust {
     type Error = anyhow::Error;
     fn try_from(v: u8) -> Result<Self> {
-        use OwnerTrust::*;
-        match v {
-            2 => Ok(Undefined), // == TRUST_UNDEFINED
-            3 => Ok(Never),     // == TRUST_NEVER
-            4 => Ok(Marginal),  // == TRUST_MARGINAL
-            5 => Ok(Fully),     // == TRUST_FULLY
-            6 => Ok(Ultimate),  // == TRUST_ULTIMATE
+        use OwnerTrustLevel::*;
+        let level = match v & OWNERTRUST_MASK {
+            OWNERTRUST_UNDEFINED => Ok(Undefined),
+            OWNERTRUST_NEVER     => Ok(Never),
+            OWNERTRUST_MARGINAL  => Ok(Marginal),
+            OWNERTRUST_FULLY     => Ok(Fully),
+            OWNERTRUST_ULTIMATE  => Ok(Ultimate),
             n => Err(anyhow::anyhow!("Bad ownertrust value {}", n)),
-        }
+        }?;
+        Ok(OwnerTrust {
+            level,
+            disabled: v & OWNERTRUST_FLAG_DISABLED > 0,
+        })
     }
 }
 
 impl From<OwnerTrust> for u8 {
     fn from(ot: OwnerTrust) -> u8 {
-        use OwnerTrust::*;
-        match ot {
-            Undefined => 2, // == TRUST_UNDEFINED
-            Never => 3,     // == TRUST_NEVER
-            Marginal => 4,  // == TRUST_MARGINAL
-            Fully => 5,     // == TRUST_FULLY
-            Ultimate => 6,  // == TRUST_ULTIMATE
-        }
+        use OwnerTrustLevel::*;
+        let level = match ot.level {
+            Undefined => OWNERTRUST_UNDEFINED,
+            Never =>     OWNERTRUST_NEVER,
+            Marginal =>  OWNERTRUST_MARGINAL,
+            Fully =>     OWNERTRUST_FULLY,
+            Ultimate =>  OWNERTRUST_ULTIMATE,
+        };
+
+        level | if ot.disabled { OWNERTRUST_FLAG_DISABLED } else { 0 }
     }
 }

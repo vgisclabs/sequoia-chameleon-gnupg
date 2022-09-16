@@ -168,7 +168,8 @@ impl<'a> DHelper<'a> {
                     Status::DecryptionKey {
                         fp: decryptor.0.public().fingerprint(),
                         cert_fp: cert.fingerprint(),
-                        owner_trust: crate::trust::OwnerTrust::Ultimate, // XXX
+                        owner_trust:
+                        crate::trust::OwnerTrustLevel::Ultimate.into(), // XXX
                     })?;
 
                 self.emit_session_key(algo, sk)?;

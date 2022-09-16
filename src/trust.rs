@@ -15,6 +15,7 @@ pub const DEFAULT_MAX_CERT_DEPTH: u8 = 5;
 pub use crate::common::{
     cert,
     OwnerTrust,
+    OwnerTrustLevel,
     Query,
     TrustModel,
     Validity,

@@ -143,7 +143,7 @@ impl Record {
 
                 if mr {
                     writeln!(w,
-                             "{}:{}:{}:{}:{:X}:{}:{}::{:#}:::{}{}:::{}::{}:::0:",
+                             "{}:{}:{}:{}:{:X}:{}:{}::{:#}:::{}{}{}:::{}::{}:::0:",
                              record_type,
                              validity,
                              key_length,
@@ -155,6 +155,7 @@ impl Record {
                              ownertrust,
                              babel::Fish(primary_key_flags),
                              babel::Fish(sum_key_flags).to_string().to_uppercase(),
+                             if ownertrust.disabled() { "D" } else { "" },
                              token_sn.as_ref().map(ToString::to_string)
                              .unwrap_or_default(),
                              curve.as_ref().map(|c| babel::Fish(c).to_string())

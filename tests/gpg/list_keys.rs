@@ -68,7 +68,7 @@ fn valid() -> Result<()> {
         .add_signing_subkey()
         .generate()?;
 
-    test_key(cert)
+    test_key(cert, None)
 }
 
 #[test]
@@ -79,7 +79,7 @@ fn revoked() -> Result<()> {
         .generate()?;
     let cert = cert.insert_packets(vec![rev])?;
 
-    test_key(cert)
+    test_key(cert, None)
 }
 
 #[test]
@@ -97,15 +97,16 @@ fn expired() -> Result<()> {
             KeyFlags::empty().set_signing().set_certification())
         .generate()?;
 
-    test_key(cert)
+    test_key(cert, None)
 }
 
-/// Allows `errors` for every (sub)key in `cert`.
-fn per_subkey(cert: &Cert, errors: usize) -> usize {
-    cert.keys().count() * errors
-}
+#[test]
+fn disabled() -> Result<()> {
+    let (cert, _) = CertBuilder::new()
+        .add_userid("Alice Lovelace <alice@lovelace.name>")
+        .add_signing_subkey()
+        .generate()?;
 
-fn test_key(cert: Cert) -> Result<()> {
     let experiment = Experiment::new()?;
 
     eprintln!("Importing cert...");
@@ -114,7 +115,60 @@ fn test_key(cert: Cert) -> Result<()> {
         &experiment.store("cert", &cert.to_vec()?)?,
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(0, 120);
+    diff.assert_equal_up_to(0, 140);
+
+    let diff = experiment.invoke(&[
+        "--import-ownertrust",
+        &experiment.store("ownertrust",
+                          format!("{}:134:\n", cert.fingerprint()).as_bytes())?,
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(0, 33);
+
+    let diff = experiment.invoke(&[
+        "--check-trustdb",
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(0, 150);
+
+    test_key_cert_imported(cert, experiment)
+}
+
+/// Allows `errors` for every (sub)key in `cert`.
+fn per_subkey(cert: &Cert, errors: usize) -> usize {
+    cert.keys().count() * errors
+}
+
+fn test_key<E>(cert: Cert, experiment: E) -> Result<()>
+where
+    E: Into<Option<Experiment>>,
+{
+    let experiment = if let Some(e) = experiment.into() {
+        e
+    } else {
+        Experiment::new()?
+    };
+
+    eprintln!("Importing cert...");
+    let diff = experiment.invoke(&[
+        "--import",
+        &experiment.store("cert", &cert.to_vec()?)?,
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(0, 140);
+
+    test_key_cert_imported(cert, experiment)
+}
+
+fn test_key_cert_imported<E>(cert: Cert, experiment: E) -> Result<()>
+where
+    E: Into<Option<Experiment>>,
+{
+    let experiment = if let Some(e) = experiment.into() {
+        e
+    } else {
+        Experiment::new()?
+    };
 
     let diff = experiment.invoke(&[
         "--list-keys",

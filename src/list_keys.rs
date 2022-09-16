@@ -98,6 +98,8 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String], list_secret: bool)
         let vcert = cert.with_policy(p, config.now()).ok();
         let cert_fp = cert.fingerprint();
         let have_secret = has_secret.get(&cert_fp).cloned().unwrap_or(false);
+        let ownertrust = config.trustdb.get_ownertrust(&cert_fp)
+            .unwrap_or_else(|| OwnerTrustLevel::Undefined.into());
 
         Record::Key {
             have_secret: have_secret && list_secret,
@@ -117,7 +119,7 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String], list_secret: bool)
                           } else {
                               None
                           }),
-            ownertrust: OwnerTrust::Undefined,
+            ownertrust,
             primary_key_flags: vcert.as_ref()
                 .and_then(|v| v.keys().next().expect("primary key").key_flags())
                 .unwrap_or_else(|| KeyFlags::empty()),
