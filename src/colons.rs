@@ -5,10 +5,8 @@
 //! output from the same set of data.
 
 use std::{
-    cell::RefCell,
     fmt::{self, Write},
     io,
-    sync::Mutex,
     time::SystemTime,
 };
 
@@ -29,21 +27,6 @@ use crate::{
     babel,
     trust::*,
 };
-
-pub struct Fd(Mutex<RefCell<Box<dyn io::Write + Send + Sync>>>);
-
-impl<S: io::Write + Send + Sync + 'static> From<S> for Fd {
-    fn from(s: S) -> Fd {
-        Fd(Mutex::new(RefCell::new(Box::new(s))))
-    }
-}
-
-impl Fd {
-    #[allow(dead_code)]
-    pub fn emit(&self, record: Record, mr: bool) -> Result<()> {
-        record.emit(&mut *self.0.lock().expect("not poisoned").borrow_mut(), mr)
-    }
-}
 
 #[allow(dead_code)]
 pub enum Record {
@@ -97,7 +80,16 @@ pub enum Record {
 impl Record {
     /// Emits the record to `w`, `mr` indicates whether it should be
     /// machine-readable.
-    pub fn emit(&self, w: &mut impl io::Write, mr: bool) -> Result<()> {
+    pub fn emit(&self, w: &mut (impl io::Write + ?Sized), mr: bool)
+                -> Result<()>
+    {
+        crate::with_invocation_log(|sink| self.do_emit(sink, mr));
+        self.do_emit(w, mr)
+    }
+
+    fn do_emit(&self, w: &mut (impl io::Write + ?Sized), mr: bool)
+                -> Result<()>
+    {
         use Record::*;
 
         // Helper function to format expiration times in
@@ -353,7 +345,7 @@ pub fn escape_bytes(sink: &mut dyn io::Write, s: impl AsRef<[u8]>) -> Result<()>
 {
     e(sink, s.as_ref())
 }
-fn e(sink: &mut dyn io::Write, s: impl AsRef<[u8]>) -> Result<()> {
+fn e<W: io::Write + ?Sized>(sink: &mut W, s: impl AsRef<[u8]>) -> Result<()> {
     let s = s.as_ref();
 
     for c in s {
