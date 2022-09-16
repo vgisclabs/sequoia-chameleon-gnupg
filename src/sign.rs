@@ -9,6 +9,7 @@ use openpgp::{
     Fingerprint,
     KeyHandle,
     armor::Kind,
+    cert::amalgamation::key::PrimaryKey,
     crypto,
     serialize::stream::*,
     types::{PublicKeyAlgorithm, SignatureType},
@@ -147,18 +148,31 @@ pub fn get_signers(config: &crate::Config)
             .context(format!("Key {:X} is not valid", handle))?;
 
         let rt = tokio::runtime::Runtime::new()?;
-        let mut found_one = false;
+        let mut candidates = Vec::new();
         for key in vcert.keys().for_signing() {
             if let Ok(signer) = rt.block_on(config.get_signer(&vcert, &key)) {
-                signers.push(signer);
-                signers_desc.push((key.pk_algo(), key.fingerprint()));
-                found_one = true;
+                candidates.push((key.alive().is_ok(),
+                                 key.creation_time(),
+                                 key.primary(),
+                                 signer,
+                                 key.pk_algo(), key.fingerprint()));
             }
         }
-        if ! found_one {
+        if candidates.is_empty() {
             return Err(anyhow::anyhow!(
                 "Key {:X} is not signing-capable", handle));
         }
+
+        // Prefer keys that are alive, subkeys, newer keys over older
+        // ones, finally sort by fingerprint to make it deterministic.
+        candidates.sort_by_key(
+            |(alive, creation_time, primary, _, _, fp)|
+            (*alive, ! primary, creation_time.clone(), fp.clone()));
+
+        let (_, _, _, signer, algo, fp) =
+            candidates.pop().expect("candidates is not empty");
+        signers.push(signer);
+        signers_desc.push((algo, fp));
     }
 
     if signers.is_empty() {
