@@ -134,8 +134,17 @@ impl<'a> DHelper<'a> {
                             -> Result<Option<Fingerprint>>
         where D: FnMut(SymmetricAlgorithm, &SessionKey) -> bool
     {
-        //let keyid = keypair.public().fingerprint().into();
-        let kek = agent.decrypt(&keypair, pkesk.esk()).await?;
+        let kek = agent.decrypt(&keypair, pkesk.esk()).await
+            .map_err(|e| {
+                // XXX: All errors here likely indicate that the key
+                // is not available.  But, there could be other
+                // failure modes.
+                let _ = self.config.status().emit(
+                    Status::NoSeckey {
+                        issuer: keypair.public().keyid(),
+                    });
+                e
+            })?;
 
         // XXX: This is a bit rough.  We get the raw plaintext from
         // Agent::decrypt, but there is no nice API to decrypt a PKESK
@@ -199,6 +208,15 @@ impl<'a> DHelper<'a> {
         let ctx = self.config.ipc()?;
         let mut agent = self.config.connect_agent().await?;
 
+        let emit_no_seckey = |keyid: &openpgp::KeyID| -> Result<()> {
+            self.config.status().emit(
+                Status::NoSeckey {
+                    issuer: keyid.clone(),
+                })?;
+                Ok(())
+        };
+
+
         // First, try public key encryption.
         for pkesk in pkesks {
             let keyid = pkesk.recipient();
@@ -214,15 +232,21 @@ impl<'a> DHelper<'a> {
                 })?;
 
             // See if we have the recipient cert.
-            let keyid: openpgp::KeyHandle = keyid.into();
-            let cert = match self.config.keydb().by_subkey(&keyid) {
+            let handle: openpgp::KeyHandle = keyid.into();
+            let cert = match self.config.keydb().by_subkey(&handle) {
                 Some(c) => c,
-                None => continue,
+                None => {
+                    emit_no_seckey(keyid)?;
+                    continue;
+                },
             };
             let vcert = match cert.with_policy(self.config.policy(),
                                                self.config.now()) {
                 Ok(c) => c,
-                Err(_) => continue,
+                Err(_) => {
+                    emit_no_seckey(keyid)?;
+                    continue;
+                },
             };
 
             self.config.status().emit(
@@ -233,13 +257,17 @@ impl<'a> DHelper<'a> {
                 })?;
 
             // Get the subkey.
-            let key = match vcert.keys().key_handle(keyid)
+            let key = match vcert.keys().key_handle(handle)
                 .for_transport_encryption()
                 .for_storage_encryption()
                 .next()
             {
                 Some(k) => k,
-                None => continue, // Key was not encryption-capable.
+                None => {
+                    // Key was not encryption-capable.
+                    emit_no_seckey(keyid)?;
+                    continue;
+                },
             };
 
             // And just try to decrypt it using the agent.

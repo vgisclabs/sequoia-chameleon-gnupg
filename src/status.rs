@@ -182,6 +182,10 @@ pub enum Status {
         issuer: KeyID,
     },
 
+    NoSeckey {
+        issuer: KeyID,
+    },
+
     TrustUndefined,
     TrustNever,
     TrustMarginal {
@@ -510,6 +514,12 @@ impl Status {
                 issuer,
             } => {
                 writeln!(w, "NO_PUBKEY {:X}", issuer)?;
+            },
+
+            NoSeckey {
+                issuer,
+            } => {
+                writeln!(w, "NO_SECKEY {:X}", issuer)?;
             },
 
             TrustUndefined => {
