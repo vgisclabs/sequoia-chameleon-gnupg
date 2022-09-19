@@ -65,7 +65,7 @@ async fn real_cmd_encrypt(config: &crate::Config, args: &[String],
                     all_expired_or_revoked: false,
                 })?;
 
-            let vcert = cert.with_policy(policy, None)
+            let vcert = cert.with_policy(policy, config.now())
                 .context(format!("Key {:X} is not valid", cert.key_handle()))?;
 
             let mut found_one_subkey = false;

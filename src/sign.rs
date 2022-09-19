@@ -144,7 +144,7 @@ pub fn get_signers(config: &crate::Config)
                 all_expired_or_revoked: false,
             })?;
 
-        let vcert = cert.with_policy(config.policy(), None)
+        let vcert = cert.with_policy(config.policy(), config.now())
             .context(format!("Key {:X} is not valid", handle))?;
 
         let rt = tokio::runtime::Runtime::new()?;

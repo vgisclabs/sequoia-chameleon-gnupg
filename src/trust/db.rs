@@ -148,7 +148,7 @@ impl TrustDB {
             min_cert_level: v.as_ref().map(|v| v.min_cert_level)
                 .unwrap_or_default(),
             creation_time: v.as_ref().map(|v| v.creation_time)
-                .unwrap_or_else(std::time::SystemTime::now),
+                .unwrap_or_else(|| config.now()),
             expiration_time: v.as_ref().and_then(|v| v.expiration_time.clone()),
             first_free: v.as_ref().map(|v| v.first_free)
                 .unwrap_or(0.into()),

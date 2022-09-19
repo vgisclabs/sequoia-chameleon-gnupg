@@ -33,6 +33,7 @@ pub mod agent;
 pub mod argparse;
 use argparse::{Argument, Opt, flags::*};
 pub mod babel;
+pub mod clock;
 pub mod common;
 use common::{Common, Query};
 mod interactive;
@@ -920,6 +921,7 @@ const OPTIONS: &[Opt<CmdOrOpt>] = &[
 #[allow(dead_code)]
 pub struct Config {
     // Runtime.
+    clock: clock::Clock,
     fail: std::cell::Cell<bool>,
     policy: GPGPolicy,
     trustdb: trust::db::TrustDB,
@@ -1034,6 +1036,7 @@ impl Default for Config {
     fn default() -> Self {
         Config {
             // Runtime.
+            clock: Default::default(),
             fail: Default::default(),
             policy: Default::default(),
             trustdb: Default::default(),
@@ -1292,7 +1295,7 @@ impl Config {
     /// configured trust model.
     pub fn lookup_certs(&self, query: &Query) -> Result<Vec<&Cert>> {
         self.lookup_certs_with(
-            self.trust_model_impl.with_policy(self, None)?.as_ref(),
+            self.trust_model_impl.with_policy(self, Some(self.now()))?.as_ref(),
             query)
     }
 
@@ -1377,6 +1380,10 @@ impl common::Common for Config {
 
     fn trust_model_impl(&self) -> &dyn trust::model::Model {
         self.trust_model_impl.as_ref()
+    }
+
+    fn now(&self) -> std::time::SystemTime {
+        self.clock.now()
     }
 }
 
@@ -2550,7 +2557,16 @@ fn real_main() -> anyhow::Result<()> {
             oNoGroups => {
                 opt.groups.clear();
             },
-
+            oFakedSystemTime => {
+                opt.clock = value.as_str().unwrap().parse()?;
+                // XXX: GnuPG prints this warning later.
+                use chrono::{DateTime, Utc};
+                opt.warn(format_args!(
+                    "WARNING: running with faked system time: {}",
+                    // 2022-09-19 10:37:42
+                    DateTime::<Utc>::from(opt.now())
+                        .format("%Y-%m-%d %H:%M:%S")));
+            },
             _ => (),
         }
     }

@@ -88,6 +88,11 @@ pub trait Common {
 
     /// Returns the active trust model.
     fn trust_model_impl(&self) -> &dyn Model;
+
+    /// Returns the current (fake) time.
+    fn now(&self) -> SystemTime {
+        SystemTime::now()
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

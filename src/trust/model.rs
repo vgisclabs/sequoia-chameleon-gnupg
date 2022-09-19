@@ -137,7 +137,7 @@ impl Model for Always {
     {
         Ok(Box::new(AlwaysViewAt {
             config,
-            time: time.unwrap_or_else(SystemTime::now),
+            time: time.unwrap_or_else(|| config.now()),
         }))
     }
 }

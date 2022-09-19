@@ -62,7 +62,7 @@ pub fn cmd_decrypt(config: &crate::Config, args: &[String])
     let transaction = || -> Result<DHelper> {
         let helper = DHelper::new(config, VHelper::new(config, 1));
         let mut d = DecryptorBuilder::from_reader(message)?
-            .with_policy(policy, None, helper)?;
+            .with_policy(policy, config.now(), helper)?;
         io::copy(&mut d, &mut sink)?;
         let helper = d.into_helper();
 
@@ -218,7 +218,8 @@ impl<'a> DHelper<'a> {
                 Some(c) => c,
                 None => continue,
             };
-            let vcert = match cert.with_policy(self.config.policy(), None) {
+            let vcert = match cert.with_policy(self.config.policy(),
+                                               self.config.now()) {
                 Ok(c) => c,
                 Err(_) => continue,
             };

@@ -26,7 +26,7 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String], list_secret: bool)
                      -> Result<()>
 {
     let mut sink = io::stdout(); // XXX
-    let vtm = config.trust_model_impl.with_policy(config, None)?;
+    let vtm = config.trust_model_impl.with_policy(config, Some(config.now()))?;
     let p = vtm.policy();
 
     // First, emit a header on --list-keys --with-colons.
@@ -95,7 +95,7 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String], list_secret: bool)
         }
 
         let acert = AuthenticatedCert::new(vtm.as_ref(), &cert)?;
-        let vcert = cert.with_policy(p, None).ok();
+        let vcert = cert.with_policy(p, config.now()).ok();
         let cert_fp = cert.fingerprint();
         let have_secret = has_secret.get(&cert_fp).cloned().unwrap_or(false);
 
@@ -161,7 +161,7 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String], list_secret: bool)
         }
 
         for (validity, uid) in acert.userids() {
-            let vuid = uid.clone().with_policy(p, None).ok();
+            let vuid = uid.clone().with_policy(p, config.now()).ok();
 
             Record::UserID {
                 validity,
@@ -186,7 +186,7 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String], list_secret: bool)
                 continue;
             }
 
-            let vsubkey = subkey.clone().with_policy(p, None).ok();
+            let vsubkey = subkey.clone().with_policy(p, config.now()).ok();
             let subkey_fp = subkey.fingerprint();
             let have_secret =
                 has_secret.get(&subkey_fp).cloned().unwrap_or(false);

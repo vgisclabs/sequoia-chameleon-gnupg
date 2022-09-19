@@ -75,7 +75,7 @@ pub fn cmd_verify(control: &crate::Config, args: &[String])
             let data = utils::open_multiple(control, &args[1..]);
             let helper = VHelper::new(control, 1);
             let mut v = DetachedVerifierBuilder::from_reader(sig)?
-                .with_policy(policy, None, helper)?;
+                .with_policy(policy, control.now(), helper)?;
             v.verify_reader(data)?;
             Ok(())
         } else {
@@ -86,7 +86,7 @@ pub fn cmd_verify(control: &crate::Config, args: &[String])
             };
             let helper = VHelper::new(control, 1);
             let mut v = VerifierBuilder::from_reader(sig)?
-                .with_policy(policy, None, helper)?;
+                .with_policy(policy, control.now(), helper)?;
             io::copy(&mut v, &mut sink)?;
             Ok(())
         }
@@ -379,7 +379,7 @@ impl<'a> VHelper<'a> {
             not_selected,
             all_expired_or_revoked:
             false && // XXX: I haven't seen GnuPG set that.
-            cert.with_policy(self.control.policy(), None)
+            cert.with_policy(self.control.policy(), self.control.now())
                 .map(|vcert| vcert.keys().subkeys().revoked(false)
                      .all(|ka| ka.alive().is_err()))
                 .unwrap_or(true),

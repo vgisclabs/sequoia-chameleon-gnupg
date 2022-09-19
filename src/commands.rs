@@ -208,7 +208,7 @@ pub fn cmd_generate_revocation(config: &crate::Config, args: &[String])
 
     let q = Query::from(args[0].as_str());
     let always = model::Always::default();
-    let vtm = always.with_policy(config, None)?;
+    let vtm = always.with_policy(config, Some(config.now()))?;
     let certs = config.lookup_certs_with(vtm.as_ref(), &q)?;
 
     if certs.is_empty() {
@@ -227,7 +227,7 @@ pub fn cmd_generate_revocation(config: &crate::Config, args: &[String])
     // Get the primary signer.  To that end, we need a valid cert
     // first to make password prompts more helpful for the user.
     let null_policy = NullPolicy::new();
-    let vcert = cert.with_policy(config.policy(), None)
+    let vcert = cert.with_policy(config.policy(), config.now())
         .or_else(|_| cert.with_policy(
             config.policy(), cert.primary_key().creation_time()))
         .or_else(|_| cert.with_policy(
