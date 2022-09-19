@@ -3,6 +3,7 @@ use std::{
     fmt,
     fs,
     process::*,
+    time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
 use anyhow::Result;
@@ -233,6 +234,7 @@ impl Output {
 /// the differences.
 pub struct Experiment {
     wd: tempfile::TempDir,
+    faketime: Option<SystemTime>,
     oracle: Context<'static>,
     us: Context<'static>,
 }
@@ -242,6 +244,11 @@ impl Experiment {
     pub fn new() -> Result<Self> {
         Ok(Experiment {
             wd: tempfile::tempdir()?,
+            faketime: Some(SystemTime::now()
+                           // Don't use the current time, that makes
+                           // setting the timemode in GnuPG unreliable
+                           // (see gnupg_set_time).
+                           .checked_sub(Duration::new(1, 0)).unwrap()),
             oracle: Context::gnupg()?,
             us: Context::chameleon()?,
         })
@@ -249,8 +256,20 @@ impl Experiment {
 
     /// Invokes the given command on both implementations.
     pub fn invoke(&self, args: &[&str]) -> Result<Diff> {
-        let oracle = self.oracle.invoke(args)?;
-        let us = self.us.invoke(args)?;
+        // Implicitly add --faked-system-time if we have
+        // self.faketime.
+        let mut faked_system_time = Vec::new();
+        if let Some(faketime) = self.faketime {
+            faked_system_time.push(format!(
+                "--faked-system-time={}!",
+                faketime.duration_since(UNIX_EPOCH)?.as_secs()));
+        }
+        let args = faked_system_time.iter().map(|s| s.as_str())
+            .chain(args.iter().cloned())
+            .collect::<Vec<&str>>();
+
+        let oracle = self.oracle.invoke(&args)?;
+        let us = self.us.invoke(&args)?;
         Ok(Diff {
             args: args.iter().map(ToString::to_string).collect(),
             oracle,

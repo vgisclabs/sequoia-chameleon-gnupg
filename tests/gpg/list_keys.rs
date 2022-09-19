@@ -100,6 +100,11 @@ fn expired() -> Result<()> {
     test_key(cert)
 }
 
+/// Allows `errors` for every (sub)key in `cert`.
+fn per_subkey(cert: &Cert, errors: usize) -> usize {
+    cert.keys().count() * errors
+}
+
 fn test_key(cert: Cert) -> Result<()> {
     let experiment = Experiment::new()?;
 
@@ -122,7 +127,7 @@ fn test_key(cert: Cert) -> Result<()> {
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(5, 0);
+    diff.assert_equal_up_to(per_subkey(&cert, 1), 0);
 
     let diff = experiment.invoke(&[
         "--list-keys",
@@ -137,7 +142,7 @@ fn test_key(cert: Cert) -> Result<()> {
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(5, 0);
+    diff.assert_equal_up_to(per_subkey(&cert, 1), 0);
 
     let diff = experiment.invoke(&[
         "--list-secret-keys",
@@ -150,7 +155,7 @@ fn test_key(cert: Cert) -> Result<()> {
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(5, 0);
+    diff.assert_equal_up_to(per_subkey(&cert, 1), 0);
 
     eprintln!("Importing TSK...");
     let diff = experiment.invoke(&[
@@ -171,7 +176,7 @@ fn test_key(cert: Cert) -> Result<()> {
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(5, 0);
+    diff.assert_equal_up_to(per_subkey(&cert, 1), 0);
 
     let diff = experiment.invoke(&[
         "--list-keys",
@@ -186,7 +191,7 @@ fn test_key(cert: Cert) -> Result<()> {
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(4, 0);
+    diff.assert_equal_up_to(per_subkey(&cert, 1), 0);
 
     let diff = experiment.invoke(&[
         "--list-secret-keys",
@@ -199,7 +204,7 @@ fn test_key(cert: Cert) -> Result<()> {
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(5, 0);
+    diff.assert_equal_up_to(per_subkey(&cert, 1), 0);
 
     Ok(())
 }
@@ -266,7 +271,7 @@ fn general_purpose(cs: CipherSuite) -> Result<()> {
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(15, 0);
+    diff.assert_equal_up_to(per_subkey(&cert, 2), 0);
 
     eprintln!("Importing TSK...");
     let diff = experiment.invoke(&[
@@ -287,7 +292,7 @@ fn general_purpose(cs: CipherSuite) -> Result<()> {
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(15, 0);
+    diff.assert_equal_up_to(per_subkey(&cert, 2), 0);
 
     Ok(())
 }
