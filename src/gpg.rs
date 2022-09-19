@@ -2,7 +2,7 @@ use std::{
     collections::{BTreeMap, HashSet},
     fmt,
     fs,
-    io,
+    io::{self, Write},
     path::{Path, PathBuf},
     time,
 };
@@ -2645,6 +2645,12 @@ fn real_main() -> anyhow::Result<()> {
         Some(c) => Err(anyhow::anyhow!("Command {:?} is not implemented.", c)),
     };
 
+    // When we emit data to stdout, which is line-buffered by default,
+    // some of the data may still be in the buffer.  Instead of doing
+    // that in every command, we do it here once, in the hope that
+    // this is more robust.
+    io::stdout().flush()?;
+
     match result {
         Ok(()) => {
             if opt.fail.get() {
@@ -2694,7 +2700,6 @@ where
         if let Some(p) =
             std::env::var_os("SEQUOIA_GPG_CHAMELEON_LOG_INVOCATIONS")
         {
-            use std::io::Write;
             let mut message = Vec::new();
             let _ = write!(&mut message, "{}: ", unsafe { libc::getpid() });
             if let Ok(()) = fun(&mut message) {
