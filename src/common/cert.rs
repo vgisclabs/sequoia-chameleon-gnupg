@@ -94,14 +94,19 @@ impl<'a> AuthenticatedCert<'a> {
             || uid_validities.iter().max().cloned().unwrap_or(Validity::Unknown));
 
         let subkey_validities: Vec<_> = cert.keys().subkeys()
-            .map(|skb| if let Some(RevocationStatus::Revoked(_)) = skb
-                 .with_policy(vtm.policy(), vtm.time()).ok()
-                 .map(|vskb| vskb.revocation_status())
-                 {
-                     Validity::Revoked
-                 } else {
-                     cert_validity
-                 })
+            .map(|skb| {
+                if let Ok(vskb) = skb.with_policy(vtm.policy(), vtm.time()) {
+                    if let RevocationStatus::Revoked(_) = vskb.revocation_status() {
+                        Validity::Revoked
+                    } else if vskb.alive().is_err() {
+                        Validity::Expired
+                    } else {
+                        cert_validity
+                    }
+                } else {
+                    Validity::Expired
+                }
+            })
             .collect();
 
         Ok(AuthenticatedCert {

@@ -7,8 +7,9 @@ use anyhow::Result;
 use sequoia_openpgp as openpgp;
 use openpgp::{
     cert::prelude::*,
+    packet::{prelude::*, key::*},
     serialize::SerializeInto,
-    types::KeyFlags,
+    types::{Curve, KeyFlags, SignatureType},
 };
 
 use super::super::*;
@@ -96,6 +97,41 @@ fn expired() -> Result<()> {
         .set_primary_key_flags(
             KeyFlags::empty().set_signing().set_certification())
         .generate()?;
+
+    test_key(cert, None)
+}
+
+#[test]
+fn expired_subkey() -> Result<()> {
+    let a_week = Duration::new(7 * 24 * 3600, 0);
+    let the_past = SystemTime::now()
+        .checked_sub(2 * a_week)
+        .unwrap();
+    let (cert, _) = CertBuilder::new()
+        .set_creation_time(the_past)
+        .add_userid("Alice Lovelace <alice@lovelace.name>")
+        .set_primary_key_flags(
+            KeyFlags::empty().set_signing().set_certification())
+        .generate()?;
+
+    let primary = cert.primary_key().key().clone();
+    let mut primary_signer =
+        primary.clone().parts_into_secret()?.into_keypair()?;
+
+    let mut subkey: Key<_, SubordinateRole> =
+        Key4::generate_ecc(false, Curve::Cv25519)?.into();
+    subkey.set_creation_time(the_past)?;
+    let builder =
+        SignatureBuilder::new(SignatureType::SubkeyBinding)
+        .set_key_flags(KeyFlags::empty()
+                       .set_transport_encryption()
+                       .set_storage_encryption())?
+        .set_signature_creation_time(the_past)?
+        .set_key_validity_period(a_week)?;
+    let binding =
+        subkey.bind(&mut primary_signer, &cert, builder)?;
+
+    let cert = cert.insert_packets(vec![Packet::from(subkey), binding.into()])?;
 
     test_key(cert, None)
 }

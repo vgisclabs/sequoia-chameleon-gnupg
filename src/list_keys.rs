@@ -130,19 +130,19 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String], list_secret: bool)
                 } else if acert.cert_validity() == Validity::Revoked {
                     // Revoked certs don't list their subkeys' flags.
                 } else if let Some(vcert) = vcert.as_ref() {
-                    if vcert.keys().for_signing().next().is_some() {
+                    if vcert.keys().alive().for_signing().next().is_some() {
                         kf = kf.set_signing();
                     }
-                    if vcert.keys().for_certification().next().is_some() {
+                    if vcert.keys().alive().for_certification().next().is_some() {
                         kf = kf.set_certification();
                     }
-                    if vcert.keys().for_authentication().next().is_some() {
+                    if vcert.keys().alive().for_authentication().next().is_some() {
                         kf = kf.set_authentication();
                     }
-                    if vcert.keys().for_transport_encryption().next().is_some() {
+                    if vcert.keys().alive().for_transport_encryption().next().is_some() {
                         kf = kf.set_transport_encryption();
                     }
-                    if vcert.keys().for_storage_encryption().next().is_some() {
+                    if vcert.keys().alive().for_storage_encryption().next().is_some() {
                         kf = kf.set_storage_encryption();
                     }
                 }
