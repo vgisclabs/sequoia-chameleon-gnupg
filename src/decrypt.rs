@@ -96,8 +96,8 @@ impl<'a> DHelper<'a> {
         }
     }
 
-    fn emit_session_key(&self, algo: SymmetricAlgorithm, sk: SessionKey)
-                        -> Result<()>
+    fn decryption_successful(&self, algo: SymmetricAlgorithm, sk: SessionKey)
+                             -> Result<()>
     {
         self.config.status().emit(Status::BeginDecryption)?;
 
@@ -172,7 +172,7 @@ impl<'a> DHelper<'a> {
                         crate::trust::OwnerTrustLevel::Ultimate.into(), // XXX
                     })?;
 
-                self.emit_session_key(algo, sk)?;
+                self.decryption_successful(algo, sk)?;
                 Ok(Some(cert.fingerprint()))
             },
             None => Ok(None),
@@ -190,7 +190,7 @@ impl<'a> DHelper<'a> {
         // key.
         if let Some(sk) = &self.config.override_session_key {
             if decrypt(sk.cipher(), sk.key()) {
-                self.emit_session_key(sk.cipher(), sk.key().clone())?;
+                self.decryption_successful(sk.cipher(), sk.key().clone())?;
                 return Ok(None);
             }
             // XXX: Does GnuPG keep trying if this fails?
@@ -297,7 +297,7 @@ impl<'a> DHelper<'a> {
                         None
                     }})
                 {
-                    self.emit_session_key(algo, sk)?;
+                    self.decryption_successful(algo, sk)?;
                     return Ok(None);
                 }
             }
