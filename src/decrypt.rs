@@ -8,6 +8,7 @@ use sequoia_openpgp as openpgp;
 use openpgp::{
     Cert,
     Fingerprint,
+    KeyHandle,
     crypto::{
         self,
         Decryptor as _,
@@ -28,6 +29,7 @@ use ipc::gnupg::{
     KeyPair,
 };
 use crate::{
+    babel,
     common::Common,
     status::Status,
     utils,
@@ -224,6 +226,26 @@ impl<'a> DHelper<'a> {
                 continue; // XXX
             }
 
+            let handle = KeyHandle::from(keyid);
+            if let Some(cert) = self.config.keydb().get(&handle) {
+                let key = cert.keys().key_handle(handle.clone())
+                    .next().expect("the indices to be consistent");
+                let creation_time =
+                    chrono::DateTime::<chrono::Utc>::from(key.creation_time());
+
+                self.config.warn(format_args!(
+                    "encrypted with {}-bit {} key, ID {}, created {}\n      {:?}",
+                    key.mpis().bits().unwrap_or(0),
+                    babel::Fish(pkesk.pk_algo()),
+                    pkesk.recipient(),
+                    creation_time.format("%Y-%m-%d"),
+                    utils::best_effort_primary_uid(self.config.policy(), &cert)));
+            } else {
+                self.config.warn(format_args!(
+                    "encrypted with {} key, ID {}",
+                    babel::Fish(pkesk.pk_algo()), pkesk.recipient()));
+            }
+
             self.config.status().emit(
                 Status::EncTo {
                     keyid: keyid.clone(),
@@ -232,7 +254,6 @@ impl<'a> DHelper<'a> {
                 })?;
 
             // See if we have the recipient cert.
-            let handle: openpgp::KeyHandle = keyid.into();
             let cert = match self.config.keydb().by_subkey(&handle) {
                 Some(c) => c,
                 None => {
