@@ -2662,8 +2662,8 @@ fn real_main() -> anyhow::Result<()> {
             Err(e)
         } else {
             with_invocation_log(|w| write_error_chain_into(w, &e));
-            eprintln!("Error: {}", e);
-            std::process::exit(1);
+            eprintln!("gpg: {}", e);
+            std::process::exit(2);
         }
     }
 }
