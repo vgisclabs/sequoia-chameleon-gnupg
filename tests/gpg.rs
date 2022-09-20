@@ -10,6 +10,7 @@ use std::{
 use anyhow::Result;
 
 mod gpg {
+    mod decrypt;
     mod list_keys;
 }
 
