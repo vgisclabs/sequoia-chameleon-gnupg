@@ -11,6 +11,7 @@ use anyhow::Result;
 
 mod gpg {
     mod decrypt;
+    mod encrypt;
     mod list_keys;
 }
 
@@ -238,9 +239,9 @@ impl Output {
     }
 
     /// Invokes a callback with the working directory.
-    pub fn with_working_dir<F>(&self, fun: &mut F) -> Result<()>
+    pub fn with_working_dir<F, T>(&self, fun: &mut F) -> Result<T>
     where
-        F: FnMut(&Path) -> Result<()>,
+        F: FnMut(&Path) -> Result<T>,
     {
         fun(self.workdir.path())
     }
@@ -367,13 +368,12 @@ impl Diff {
     }
 
     /// Invokes a callback with the working directory.
-    pub fn with_working_dir<F>(&self, mut fun: F) -> Result<()>
+    pub fn with_working_dir<F, T>(&self, mut fun: F) -> Result<Vec<T>>
     where
-        F: FnMut(&Path) -> Result<()>,
+        F: FnMut(&Path) -> Result<T>,
     {
-        self.oracle.with_working_dir(&mut fun)?;
-        self.us.with_working_dir(&mut fun)?;
-        Ok(())
+        Ok(vec![self.oracle.with_working_dir(&mut fun)?,
+                self.us.with_working_dir(&mut fun)?])
     }
 }
 
