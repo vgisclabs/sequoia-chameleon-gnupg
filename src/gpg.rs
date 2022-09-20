@@ -970,6 +970,7 @@ pub struct Config {
     keydb: keydb::KeyDB,
     keyserver: KeyserverURL,
     keyserver_options: KeyserverOptions,
+    list_only: bool,
     list_options: u32,
     list_sigs: bool,
     local_user: Vec<Sender>,
@@ -1089,6 +1090,7 @@ impl Default for Config {
             keydb: keydb::KeyDB::for_gpg(),
             keyserver: Default::default(),
             keyserver_options: Default::default(),
+            list_only: false,
             list_options: Default::default(),
             list_sigs: false,
             local_user: vec![],
@@ -2536,6 +2538,7 @@ fn real_main() -> anyhow::Result<()> {
                 // XXX: We don't really support KeyIDs here.
                 opt.trusted_keys.push(value.as_str().unwrap().parse()?);
             },
+            oListOnly => opt.list_only = true,
 	    oEnableSpecialFilenames => {
                 opt.special_filenames = true;
             },

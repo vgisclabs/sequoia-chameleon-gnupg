@@ -61,18 +61,30 @@ pub fn cmd_decrypt(config: &crate::Config, args: &[String])
         Box::new(io::stdout())
     };
 
-    let transaction = || -> Result<DHelper> {
+    let transaction = || -> Result<()> {
         let helper = DHelper::new(config, VHelper::new(config, 1));
-        let mut d = DecryptorBuilder::from_reader(message)?
-            .with_policy(policy, config.now(), helper)?;
-        io::copy(&mut d, &mut sink)?;
+        let message = DecryptorBuilder::from_reader(message)?;
+        let mut d = match message.with_policy(policy, config.now(), helper) {
+            Ok(d) => d,
+            Err(e) => if config.list_only {
+                return Ok(());
+            } else {
+                return Err(e);
+            },
+        };
+
+        if ! config.list_only {
+            io::copy(&mut d, &mut sink)?;
+        }
         let helper = d.into_helper();
 
-        helper.config.status().emit(Status::DecryptionOkay)?;
-        // For compatibility reasons we issue GOODMDC also for AEAD messages.
-        helper.config.status().emit(Status::GoodMDC)?;
+        if ! config.list_only {
+            helper.config.status().emit(Status::DecryptionOkay)?;
+            // For compatibility reasons we issue GOODMDC also for AEAD messages.
+            helper.config.status().emit(Status::GoodMDC)?;
+        }
 
-        Ok(helper)
+        Ok(())
     };
 
     let r = transaction();
@@ -103,12 +115,14 @@ impl<'a> DHelper<'a> {
     {
         self.config.status().emit(Status::BeginDecryption)?;
 
-        self.config.status().emit(
-            Status::DecryptionInfo {
-                use_mdc: self.used_mdc,
-                sym_algo: algo,
-                aead_algo: None, // XXX
-            })?;
+        if ! self.config.list_only {
+            self.config.status().emit(
+                Status::DecryptionInfo {
+                    use_mdc: self.used_mdc,
+                    sym_algo: algo,
+                    aead_algo: None, // XXX
+                })?;
+        }
 
         if self.config.show_session_key {
             self.config.warn(format_args!(
@@ -175,13 +189,15 @@ impl<'a> DHelper<'a> {
             })
         {
             Some((algo, sk)) => {
-                self.config.status().emit(
-                    Status::DecryptionKey {
-                        fp: decryptor.0.public().fingerprint(),
-                        cert_fp: cert.fingerprint(),
-                        owner_trust:
-                        crate::trust::OwnerTrustLevel::Ultimate.into(), // XXX
-                    })?;
+                if ! self.config.list_only {
+                    self.config.status().emit(
+                        Status::DecryptionKey {
+                            fp: decryptor.0.public().fingerprint(),
+                            cert_fp: cert.fingerprint(),
+                            owner_trust:
+                            crate::trust::OwnerTrustLevel::Ultimate.into(), // XXX
+                        })?;
+                }
 
                 self.decryption_successful(algo, sk)?;
                 Ok(Some(cert.fingerprint()))
@@ -379,7 +395,7 @@ impl<'a> DecryptionHelper for DHelper<'a> {
         let r =
             rt.block_on(self.async_decrypt(pkesks, skesks, sym_algo, decrypt));
 
-        if r.is_err() {
+        if r.is_err() && ! self.config.list_only {
             self.config.status().emit(Status::DecryptionFailed)?;
         }
 
@@ -391,7 +407,7 @@ impl<'a> VerificationHelper for DHelper<'a> {
     fn inspect(&mut self, pp: &openpgp::parse::PacketParser) -> Result<()> {
         match &pp.packet {
             Packet::SEIP(p) => self.used_mdc = p.version() == 1,
-            Packet::Literal(p) => {
+            Packet::Literal(p) if ! self.config.list_only => {
                 self.config.status().emit(
                     Status::Plaintext {
                         format: p.format(),
