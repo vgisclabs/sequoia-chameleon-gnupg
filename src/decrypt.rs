@@ -305,6 +305,7 @@ impl<'a> DHelper<'a> {
 
         // Then, try password-based encryption.
         if skesks.is_empty() {
+            self.config.status().emit(Status::BeginDecryption)?;
             return Err(anyhow::anyhow!("decryption failed: No secret key"));
         }
 
