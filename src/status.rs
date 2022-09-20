@@ -158,6 +158,7 @@ pub enum Status {
         data: Box<[u8]>,
     },
 
+    EncryptionComplianceMode(Compliance), // XXX: In GnuPG, it is a Vec<_>
     DecryptionComplianceMode(Compliance), // XXX: In GnuPG, it is a Vec<_>
 
     Plaintext {
@@ -491,6 +492,12 @@ impl Status {
             },
 
             PlaintextLength(l) => writeln!(w, "PLAINTEXT_LENGTH {}", l)?,
+
+            EncryptionComplianceMode(mode) => {
+                if let Some(flag) = mode.to_flag() {
+                    writeln!(w, "ENCRYPTION_COMPLIANCE_MODE {}", flag)?;
+                }
+            },
 
             DecryptionComplianceMode(mode) => {
                 if let Some(flag) = mode.to_flag() {

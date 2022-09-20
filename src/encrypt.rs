@@ -8,6 +8,7 @@ use sequoia_openpgp as openpgp;
 use openpgp::{
     crypto::{S2K, SessionKey},
     packet::skesk::SKESK4,
+    policy::Policy,
     serialize::{Serialize, stream::*},
     types::SignatureType,
 };
@@ -15,6 +16,7 @@ use sequoia_ipc as ipc;
 
 use crate::{
     common::Common,
+    compliance::Compliance,
     status::{self, Status},
     utils,
 };
@@ -38,6 +40,7 @@ async fn real_cmd_encrypt(config: &crate::Config, args: &[String],
     let policy = config.policy();
     let filenames =
         if args.is_empty() { vec!["-".into()] } else { args.to_vec() };
+    let mut de_vs_compliant = true;
 
     if filenames.len() != 1 {
         return Err(anyhow::anyhow!("Only a single file name is allowed"));
@@ -88,6 +91,7 @@ async fn real_cmd_encrypt(config: &crate::Config, args: &[String],
             for key in key_query.alive().revoked(false).supported() {
                 recipients.push(key.key().into());
                 found_one_subkey = true;
+                de_vs_compliant &= config.de_vs_producer.key(&key).is_ok();
             }
 
             if ! found_one_subkey {
@@ -121,6 +125,8 @@ async fn real_cmd_encrypt(config: &crate::Config, args: &[String],
     // cipher and session key here.
     let cipher = config.def_cipher;
     let sk = SessionKey::new(cipher.key_size()?);
+    de_vs_compliant &=
+        config.de_vs_producer.symmetric_algorithm(cipher).is_ok();
 
     // Now do our trick, maybe.
     if symmetric {
@@ -156,6 +162,9 @@ async fn real_cmd_encrypt(config: &crate::Config, args: &[String],
         // conditional.
         let skesk = SKESK4::with_password(cipher, cipher, s2k, &sk, &p)?;
         openpgp::Packet::from(skesk).serialize(&mut message)?;
+
+        // Symmetric and asymmetric encryption voids compliance.
+        de_vs_compliant &= recipients.is_empty();
     }
 
     let encryptor = Encryptor::with_session_key(message, cipher, sk)?
@@ -202,6 +211,10 @@ async fn real_cmd_encrypt(config: &crate::Config, args: &[String],
         message = LiteralWriter::new(message).build()?;
     }
 
+    if de_vs_compliant {
+        config.status().emit(
+            Status::EncryptionComplianceMode(Compliance::DeVs))?;
+    }
     config.status().emit(Status::BeginEncryption {
         mdc_method: status::MDCMethod::SEIPDv1,
         cipher,
