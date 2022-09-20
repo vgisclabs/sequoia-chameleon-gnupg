@@ -35,7 +35,8 @@ use argparse::{Argument, Opt, flags::*};
 pub mod babel;
 pub mod clock;
 pub mod common;
-use common::{Common, Query};
+use common::{Common, Query, Compliance};
+pub mod compliance;
 mod interactive;
 pub mod keydb;
 #[allow(dead_code)]
@@ -226,6 +227,7 @@ pub enum CmdOrOpt {
     oPGP7,
     oPGP8,
     oDE_VS,
+    oMinRSALength,
     oRFC2440Text,
     oNoRFC2440Text,
     oCipherAlgo,
@@ -732,6 +734,7 @@ const OPTIONS: &[Opt<CmdOrOpt>] = &[
     Opt { short_opt: oNoSkipHiddenRecipients, long_opt: "no-skip-hidden-recipients", flags: TYPE_NONE, description: "@", },
     Opt { short_opt: oDefCertLevel, long_opt: "default-cert-check-level", flags: TYPE_INT, description: "@", },
 
+    Opt { short_opt: oMinRSALength, long_opt: "min-rsa-length", flags: TYPE_INT, description: "@", },
     Opt { short_opt: oAlwaysTrust, long_opt: "always-trust", flags: TYPE_NONE, description: "@", },
 
     Opt { short_opt: oTrustModel, long_opt: "trust-model", flags: TYPE_STRING, description: "@", },
@@ -926,6 +929,7 @@ pub struct Config {
     policy: GPGPolicy,
     trustdb: trust::db::TrustDB,
     trust_model_impl: Box<dyn trust::model::Model>,
+    de_vs_producer: compliance::DeVSProducer,
 
     // Configuration.
     answer_no: bool,
@@ -1042,6 +1046,7 @@ impl Default for Config {
             policy: Default::default(),
             trustdb: Default::default(),
             trust_model_impl: common::null_model(),
+            de_vs_producer: compliance::DeVSProducer::default(),
 
             // Configuration.
             answer_no: false,
@@ -1448,44 +1453,6 @@ struct Flags {
     force_sign_key: bool,
     include_key_block: bool,
     use_embedded_filename: bool,
-}
-
-enum Compliance {
-    OpenPGP,
-    RFC2440,
-    RFC4880,
-    RFC4880bis,
-    PGP6,
-    PGP7,
-    PGP8,
-    GnuPG,
-    DeVs,
-}
-
-impl Default for Compliance {
-    fn default() -> Self {
-        Compliance::GnuPG
-    }
-}
-
-impl std::str::FromStr for Compliance {
-    type Err = anyhow::Error;
-
-    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
-        match s.to_lowercase().as_str() {
-            "gnupg" => Ok(Compliance::GnuPG),
-            "openpgp" => Ok(Compliance::OpenPGP),
-            "rfc4880bis" => Ok(Compliance::RFC4880bis),
-            "rfc4880" => Ok(Compliance::RFC4880),
-            "rfc2440" => Ok(Compliance::RFC2440),
-            "pgp6" => Ok(Compliance::PGP6),
-            "pgp7" => Ok(Compliance::PGP7),
-            "pgp8" => Ok(Compliance::PGP8),
-            "de-vs" => Ok(Compliance::DeVs),
-            _ => Err(anyhow::anyhow!("Invalid value for option '--compliance': \
-                                      {:?}", s)),
-        }
-    }
 }
 
 #[derive(Clone)]
@@ -2209,6 +2176,11 @@ fn real_main() -> anyhow::Result<()> {
             oPGP7 => opt.compliance = Compliance::PGP7,
             oPGP8 => opt.compliance = Compliance::PGP8,
             oGnuPG => opt.compliance = Compliance::GnuPG,
+
+	    oMinRSALength => {
+                opt.de_vs_producer = compliance::DeVSProducer::new(
+                    value.as_int().unwrap().try_into()?);
+            },
 
             oRFC2440Text => {
                 opt.rfc2440_text = true;

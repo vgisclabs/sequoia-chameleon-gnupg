@@ -22,7 +22,7 @@ use openpgp::{
 };
 
 use crate::{
-    common::{TrustModel, OwnerTrust},
+    common::{TrustModel, OwnerTrust, Compliance},
 };
 
 /// Match GnuPG's behavior more strictly.
@@ -157,6 +157,8 @@ pub enum Status {
     NotationData {
         data: Box<[u8]>,
     },
+
+    DecryptionComplianceMode(Compliance), // XXX: In GnuPG, it is a Vec<_>
 
     Plaintext {
         format: DataFormat,
@@ -383,7 +385,7 @@ impl Status {
                 cert_fp,
                 owner_trust,
             } => {
-                writeln!(w, "DECRYPTION_KEY {:X} {:X} {}",
+                writeln!(w, "DECRYPTION_KEY {:X} {:X} {:#}",
                          fp,
                          cert_fp,
                          owner_trust)?;
@@ -489,6 +491,12 @@ impl Status {
             },
 
             PlaintextLength(l) => writeln!(w, "PLAINTEXT_LENGTH {}", l)?,
+
+            DecryptionComplianceMode(mode) => {
+                if let Some(flag) = mode.to_flag() {
+                    writeln!(w, "DECRYPTION_COMPLIANCE_MODE {}", flag)?;
+                }
+            },
 
             KeyConsidered {
                 fingerprint,

@@ -17,6 +17,7 @@ use openpgp::{
     fmt::hex,
     packet::prelude::*,
     packet::header::BodyLength,
+    policy::Policy,
     types::*,
     packet::key::*,
     parse::{
@@ -31,7 +32,9 @@ use ipc::gnupg::{
 use crate::{
     babel,
     common::Common,
+    compliance::Compliance,
     status::Status,
+    trust::OwnerTrustLevel,
     utils,
     verify::*,
 };
@@ -98,6 +101,9 @@ struct DHelper<'a> {
     config: &'a crate::Config,
     vhelper: VHelper<'a>,
     used_mdc: bool,
+
+    // We compute compliance with compliance::DeVSProducer.
+    de_vs_compliant: bool,
 }
 
 impl<'a> DHelper<'a> {
@@ -107,6 +113,7 @@ impl<'a> DHelper<'a> {
             config,
             vhelper,
             used_mdc: false,
+            de_vs_compliant: true,
         }
     }
 
@@ -116,6 +123,13 @@ impl<'a> DHelper<'a> {
         self.config.status().emit(Status::BeginDecryption)?;
 
         if ! self.config.list_only {
+            if self.de_vs_compliant
+                && self.config.de_vs_producer.symmetric_algorithm(algo).is_ok()
+            {
+                self.config.status().emit(
+                    Status::DecryptionComplianceMode(Compliance::DeVs))?;
+            }
+
             self.config.status().emit(
                 Status::DecryptionInfo {
                     use_mdc: self.used_mdc,
@@ -392,6 +406,27 @@ impl<'a> DecryptionHelper for DHelper<'a> {
                   decrypt: D) -> Result<Option<openpgp::Fingerprint>>
         where D: FnMut(SymmetricAlgorithm, &SessionKey) -> bool
     {
+        // Compute decryption compliance with DeVS.
+        self.de_vs_compliant &=
+            self.config.override_session_key.is_none() // Voids compliance.
+            && (pkesks.is_empty() || skesks.is_empty()) // Both => void.
+            && pkesks.iter().all(|pkesk| { // Check all recipients.
+                if let Some(cert) = self.config.keydb()
+                    .get(&pkesk.recipient().into())
+                {
+                    if let Some(key) = cert.keys()
+                        .with_policy(&self.config.de_vs_producer, None)
+                        .key_handle(pkesk.recipient()).next()
+                    {
+                        self.config.de_vs_producer.key(&key).is_ok()
+                    } else {
+                        false // Shouldn't happen.
+                    }
+                } else {
+                    false // If we don't know the recipient, void.
+                }
+            });
+
         let rt = tokio::runtime::Runtime::new()?;
         let r =
             rt.block_on(self.async_decrypt(pkesks, skesks, sym_algo, decrypt));

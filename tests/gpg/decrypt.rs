@@ -27,8 +27,65 @@ fn simple() -> Result<()> {
         .add_transport_encryption_subkey()
         .generate()?;
     let ciphertext = encrypt_for(&[&cert])?;
-
     let experiment = Experiment::new()?;
+    test_key(cert, ciphertext, experiment)
+}
+
+#[test]
+fn general_purpose_cv25519() -> Result<()> {
+    general_purpose(CipherSuite::Cv25519)
+}
+
+#[test]
+fn general_purpose_rsa2k() -> Result<()> {
+    general_purpose(CipherSuite::RSA2k)
+}
+
+#[test]
+fn general_purpose_rsa3k() -> Result<()> {
+    general_purpose(CipherSuite::RSA3k)
+}
+
+#[test]
+fn general_purpose_rsa4k() -> Result<()> {
+    general_purpose(CipherSuite::RSA4k)
+}
+
+#[test]
+fn general_purpose_p256() -> Result<()> {
+    general_purpose(CipherSuite::P256)
+}
+
+#[test]
+fn general_purpose_p384() -> Result<()> {
+    general_purpose(CipherSuite::P384)
+}
+
+#[test]
+fn general_purpose_p521() -> Result<()> {
+    general_purpose(CipherSuite::P521)
+}
+
+fn general_purpose(cs: CipherSuite) -> Result<()> {
+    let (cert, _) =
+        CertBuilder::general_purpose(cs,
+                                     Some("Alice Lovelace <alice@lovelace.name>"))
+        .generate()?;
+    let ciphertext = encrypt_for(&[&cert])?;
+
+    test_key(cert, ciphertext, None)
+}
+
+fn test_key<E>(cert: Cert, ciphertext: Vec<u8>, experiment: E) -> Result<()>
+where
+    E: Into<Option<Experiment>>,
+{
+    let experiment = if let Some(e) = experiment.into() {
+        e
+    } else {
+        Experiment::new()?
+    };
+
     let diff = experiment.invoke(&[
         "--status-fd=1",
         "--decrypt",

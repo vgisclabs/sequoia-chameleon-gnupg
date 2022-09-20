@@ -414,3 +414,52 @@ impl From<OwnerTrust> for u8 {
         level | if ot.disabled { OWNERTRUST_FLAG_DISABLED } else { 0 }
     }
 }
+
+pub enum Compliance {
+    OpenPGP,
+    RFC2440,
+    RFC4880,
+    RFC4880bis,
+    PGP6,
+    PGP7,
+    PGP8,
+    GnuPG,
+    DeVs,
+}
+
+impl Default for Compliance {
+    fn default() -> Self {
+        Compliance::GnuPG
+    }
+}
+
+impl std::str::FromStr for Compliance {
+    type Err = anyhow::Error;
+
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        match s.to_lowercase().as_str() {
+            "gnupg" => Ok(Compliance::GnuPG),
+            "openpgp" => Ok(Compliance::OpenPGP),
+            "rfc4880bis" => Ok(Compliance::RFC4880bis),
+            "rfc4880" => Ok(Compliance::RFC4880),
+            "rfc2440" => Ok(Compliance::RFC2440),
+            "pgp6" => Ok(Compliance::PGP6),
+            "pgp7" => Ok(Compliance::PGP7),
+            "pgp8" => Ok(Compliance::PGP8),
+            "de-vs" => Ok(Compliance::DeVs),
+            _ => Err(anyhow::anyhow!("Invalid value for option '--compliance': \
+                                      {:?}", s)),
+        }
+    }
+}
+
+impl Compliance {
+    /// Returns a flag usable for the status-fd interface.
+    pub fn to_flag(&self) -> Option<usize> {
+        match self {
+            Compliance::GnuPG => Some(8),
+            Compliance::DeVs => Some(23),
+            _ => None,
+        }
+    }
+}
