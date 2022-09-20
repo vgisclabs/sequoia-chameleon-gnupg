@@ -2,6 +2,7 @@ use std::{
     collections::BTreeSet,
     fmt,
     fs,
+    path::Path,
     process::*,
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
@@ -108,6 +109,8 @@ impl Context {
     /// Invokes the GnuPG implementation with the given arguments.
     pub fn invoke(&self, args: &[&str]) -> Result<Output> {
         let mut c = Command::new(&self.executable[0]);
+        let workdir = tempfile::TempDir::new()?;
+        c.current_dir(workdir.path());
         for arg in &self.executable[1..] {
             c.arg(arg);
         }
@@ -138,6 +141,7 @@ impl Context {
         };
 
         Ok(Output {
+            workdir,
             stdout: canonicalize(out.stdout),
             stderr: canonicalize(out.stderr),
             status_fd: Default::default(), // XXX
@@ -146,8 +150,9 @@ impl Context {
     }
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug)]
 pub struct Output {
+    workdir: tempfile::TempDir,
     stderr: Vec<u8>,
     stdout: Vec<u8>,
     status_fd: Vec<Box<[u8]>>,
@@ -229,6 +234,14 @@ impl Output {
         edit_distance::edit_distance(
             &String::from_utf8_lossy(&self.stderr).to_string(),
             &String::from_utf8_lossy(&to.stderr).to_string())
+    }
+
+    /// Invokes a callback with the working directory.
+    pub fn with_working_dir<F>(&self, fun: &mut F) -> Result<()>
+    where
+        F: FnMut(&Path) -> Result<()>,
+    {
+        fun(self.workdir.path())
     }
 }
 
@@ -350,6 +363,16 @@ impl Diff {
             eprintln!("\n{}", self);
             panic!();
         }
+    }
+
+    /// Invokes a callback with the working directory.
+    pub fn with_working_dir<F>(&self, mut fun: F) -> Result<()>
+    where
+        F: FnMut(&Path) -> Result<()>,
+    {
+        self.oracle.with_working_dir(&mut fun)?;
+        self.us.with_working_dir(&mut fun)?;
+        Ok(())
     }
 }
 
