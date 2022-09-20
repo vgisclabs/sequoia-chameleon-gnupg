@@ -13,14 +13,18 @@ mod gpg {
 }
 
 lazy_static::lazy_static! {
-    static ref GPG: [&'static str; 1] =
-        [std::env::var("REAL_GPG_BIN")
-          .map(|s| &*Box::leak(s.into_boxed_str()))
-          .unwrap_or("/usr/bin/gpg")];
+    static ref GPG: Vec<String> =
+        vec![std::env::var("REAL_GPG_BIN")
+             .unwrap_or("/usr/bin/gpg".into())];
 }
 
-const GPG_CHAMELEON: &[&str] =
-    &["cargo", "run", "--quiet", "--bin", "sequoia-chameleon-gpg", "--"];
+lazy_static::lazy_static! {
+    static ref GPG_CHAMELEON: Vec<String> =
+        vec![std::env::current_dir().unwrap()
+             .join("target/debug/sequoia-chameleon-gpg")
+             .display().to_string()];
+}
+
 const GPG_CHAMELEON_BUILD: &[&str] =
     &["cargo", "run", "--quiet", "--bin", "sequoia-chameleon-gpg"];
 
@@ -66,25 +70,25 @@ fn build() {
 /// A context for GnuPG.
 ///
 /// Creates a temporary directory and cleans up on Drop.
-pub struct Context<'a> {
-    executable: &'a [&'a str],
+pub struct Context {
+    executable: Vec<String>,
     home: tempfile::TempDir,
 }
 
-impl<'a> Context<'a> {
+impl Context {
     /// Returns a context for the reference GnuPG implementation.
     pub fn gnupg() -> Result<Self> {
-        Context::new(&GPG[..])
+        Context::new(GPG.clone())
     }
 
     /// Returns a context for the chameleon.
     pub fn chameleon() -> Result<Self> {
         setup();
-        Context::new(GPG_CHAMELEON)
+        Context::new(GPG_CHAMELEON.clone())
     }
 
     /// Returns a custom context for the given GnuPG-like executable.
-    pub fn new(executable: &'a [&'a str]) -> Result<Self> {
+    pub fn new(executable: Vec<String>) -> Result<Self> {
         Ok(Context {
             executable,
             home: tempfile::tempdir()?,
@@ -235,8 +239,8 @@ impl Output {
 pub struct Experiment {
     wd: tempfile::TempDir,
     faketime: Option<SystemTime>,
-    oracle: Context<'static>,
-    us: Context<'static>,
+    oracle: Context,
+    us: Context,
 }
 
 impl Experiment {
