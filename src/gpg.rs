@@ -2633,11 +2633,13 @@ fn real_main() -> anyhow::Result<()> {
             }
             Ok(())
         },
-        Err(e) => if opt.verbose > 0 {
-            Err(e)
-        } else {
+        Err(e) => {
             with_invocation_log(|w| write_error_chain_into(w, &e));
-            eprintln!("gpg: {}", e);
+            if opt.verbose > 1 {
+                print_error_chain(&e);
+            } else {
+                eprintln!("gpg: {}", e);
+            }
             std::process::exit(2);
         }
     }

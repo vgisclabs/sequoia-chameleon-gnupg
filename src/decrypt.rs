@@ -101,6 +101,7 @@ struct DHelper<'a> {
     config: &'a crate::Config,
     vhelper: VHelper<'a>,
     used_mdc: bool,
+    filename: String,
 
     // We compute compliance with compliance::DeVSProducer.
     de_vs_compliant: bool,
@@ -113,6 +114,7 @@ impl<'a> DHelper<'a> {
             config,
             vhelper,
             used_mdc: false,
+            filename: Default::default(),
             de_vs_compliant: true,
         }
     }
@@ -120,6 +122,13 @@ impl<'a> DHelper<'a> {
     fn decryption_successful(&self, algo: SymmetricAlgorithm, sk: SessionKey)
                              -> Result<()>
     {
+        if self.config.verbose > 0 && ! self.config.list_only {
+            self.config.warn(format_args!("{} encrypted data",
+                                          babel::Fish(algo)));
+            self.config.warn(format_args!("original file name='{}'",
+                                          self.filename));
+        }
+
         self.config.status().emit(Status::BeginDecryption)?;
 
         if ! self.config.list_only {
@@ -249,8 +258,8 @@ impl<'a> DHelper<'a> {
                 Ok(())
         };
 
-
         // First, try public key encryption.
+        let mut success = None;
         for pkesk in pkesks {
             let keyid = pkesk.recipient();
             if keyid.is_wildcard() {
@@ -258,7 +267,18 @@ impl<'a> DHelper<'a> {
             }
 
             let handle = KeyHandle::from(keyid);
+            if self.config.verbose > 0 {
+                self.config.warn(format_args!(
+                    "public key is {}", handle));
+            }
+
             if let Some(cert) = self.config.keydb().get(&handle) {
+                if self.config.verbose > 0 {
+                    self.config.warn(format_args!(
+                        "using subkey {} instead of primary key {}", handle,
+                        cert.keyid()));
+                }
+
                 let key = cert.keys().key_handle(handle.clone())
                     .next().expect("the indices to be consistent");
                 let creation_time =
@@ -283,6 +303,10 @@ impl<'a> DHelper<'a> {
                     pk_algo: Some(pkesk.pk_algo()),
                     pk_len: None,
                 })?;
+
+            if success.is_some() {
+                continue; // No further processing necessary.
+            }
 
             // See if we have the recipient cert.
             let cert = match self.config.keydb().by_subkey(&handle) {
@@ -325,13 +349,19 @@ impl<'a> DHelper<'a> {
             // And just try to decrypt it using the agent.
             let keypair = KeyPair::new(&ctx, &key)?
                 .with_cert(&vcert);
-            if let Ok(fp) = self.try_decrypt(
+            if let Ok(maybe_fp) = self.try_decrypt(
                 &mut agent, &cert, pkesk, sym_algo, keypair, &mut decrypt)
                 .await
             {
                 // Success!
-                return Ok(fp);
+                success = Some(maybe_fp);
+                // But, we continue the loop for the benefit of
+                // printing recipients and related status codes.
             }
+        }
+
+        if let Some(maybe_fp) = success {
+            return Ok(maybe_fp);
         }
 
         // Then, try password-based encryption.
@@ -444,6 +474,8 @@ impl<'a> VerificationHelper for DHelper<'a> {
         match &pp.packet {
             Packet::SEIP(p) => self.used_mdc = p.version() == 1,
             Packet::Literal(p) if ! self.config.list_only => {
+                self.filename = String::from_utf8_lossy(
+                    p.filename().unwrap_or_default()).into();
                 self.config.status().emit(
                     Status::Plaintext {
                         format: p.format(),

@@ -93,14 +93,30 @@ where
     ])?;
     diff.assert_equal_up_to(0, 60);
 
-    let experiment = Experiment::new()?;
+    let diff = experiment.invoke(&[
+        "--status-fd=1",
+        "--decrypt",
+        "--verbose",
+        &experiment.store("ciphertext", &ciphertext)?,
+    ])?;
+    diff.assert_equal_up_to(0, 0);
+
     let diff = experiment.invoke(&[
         "--status-fd=1",
         "--decrypt",
         "--list-only",
         &experiment.store("ciphertext", &ciphertext)?,
     ])?;
-    diff.assert_equal_up_to(0, 60);
+    diff.assert_equal_up_to(0, 0);
+
+    let diff = experiment.invoke(&[
+        "--status-fd=1",
+        "--decrypt",
+        "--list-only",
+        "--verbose",
+        &experiment.store("ciphertext", &ciphertext)?,
+    ])?;
+    diff.assert_equal_up_to(0, 0);
 
     eprintln!("Importing cert...");
     let diff = experiment.invoke(&[
@@ -113,6 +129,31 @@ where
     let diff = experiment.invoke(&[
         "--status-fd=1",
         "--decrypt",
+        &experiment.store("ciphertext", &ciphertext)?,
+    ])?;
+    diff.assert_equal_up_to(0, 1);
+
+    let diff = experiment.invoke(&[
+        "--status-fd=1",
+        "--decrypt",
+        "--verbose",
+        &experiment.store("ciphertext", &ciphertext)?,
+    ])?;
+    diff.assert_equal_up_to(0, 1);
+
+    let diff = experiment.invoke(&[
+        "--status-fd=1",
+        "--decrypt",
+        "--list-only",
+        &experiment.store("ciphertext", &ciphertext)?,
+    ])?;
+    diff.assert_equal_up_to(0, 1);
+
+    let diff = experiment.invoke(&[
+        "--status-fd=1",
+        "--decrypt",
+        "--list-only",
+        "--verbose",
         &experiment.store("ciphertext", &ciphertext)?,
     ])?;
     diff.assert_equal_up_to(0, 1);
@@ -143,8 +184,42 @@ where
     let diff = experiment.invoke(&[
         "--status-fd=1",
         "--decrypt",
+        "--output", "decrypted-plaintext",
+        "--verbose",
+        &experiment.store("ciphertext", &ciphertext)?,
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(140, 110);
+    diff.with_working_dir(|p| {
+        let plaintext = p.join("decrypted-plaintext");
+        assert!(plaintext.exists());
+        assert_eq!(std::fs::read(plaintext)?, PLAINTEXT);
+        Ok(())
+    })?;
+
+    let diff = experiment.invoke(&[
+        "--status-fd=1",
+        "--decrypt",
         "--list-only",
         "--output", "nothing",
+        &experiment.store("ciphertext", &ciphertext)?,
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(0, 1);
+    diff.with_working_dir(|p| {
+        let plaintext = p.join("nothing");
+        if plaintext.exists() {
+            assert_eq!(std::fs::read(plaintext)?, b"");
+        }
+        Ok(())
+    })?;
+
+    let diff = experiment.invoke(&[
+        "--status-fd=1",
+        "--decrypt",
+        "--list-only",
+        "--output", "nothing",
+        "--verbose",
         &experiment.store("ciphertext", &ciphertext)?,
     ])?;
     diff.assert_success();
