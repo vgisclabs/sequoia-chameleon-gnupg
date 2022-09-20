@@ -194,8 +194,9 @@ impl<'a> DHelper<'a> {
                         Status::DecryptionKey {
                             fp: decryptor.0.public().fingerprint(),
                             cert_fp: cert.fingerprint(),
-                            owner_trust:
-                            crate::trust::OwnerTrustLevel::Ultimate.into(), // XXX
+                            owner_trust: self.config.trustdb
+                                .get_ownertrust(&cert.fingerprint())
+                                .unwrap_or(OwnerTrustLevel::Undefined.into()),
                         })?;
                 }
 
