@@ -262,14 +262,20 @@ fn real_main() -> anyhow::Result<()> {
         "gpgv",
         "Check signatures against known trusted keys",
         &OPTIONS);
+
+    let mut opt = Config::default();
+    let mut args = Vec::new();
+    let mut keyrings = Vec::<String>::new();
+
+    // First pass: execute implicit commands.
     for rarg in parser.parse_command_line().quietly() {
         let arg =
             rarg.context("Error parsing command-line arguments")?;
         match arg {
             Argument::Option(aHelp, _) =>
-                return Ok(parser.help()),
+                return Ok(parser.help(&opt)),
             Argument::Option(aVersion, _) =>
-                return Ok(parser.version()),
+                return Ok(parser.version(&opt)),
             Argument::Option(aWarranty, _) =>
                 return Ok(parser.warranty()),
             Argument::Option(aDumpOptions, _) =>
@@ -279,10 +285,6 @@ fn real_main() -> anyhow::Result<()> {
             _ => (),
         }
     }
-
-    let mut opt = Config::default();
-    let mut args = Vec::new();
-    let mut keyrings = Vec::<String>::new();
 
     // Parse the command line again.
     for rarg in parser.parse_command_line()

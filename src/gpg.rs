@@ -1183,29 +1183,72 @@ impl std::str::FromStr for SessionKey {
     }
 }
 
+fn print_additional_version(config: &Config) {
+    println!();
+    println!("Home: {}", config.homedir.display());
+
+    println!("Supported algorithms:");
+
+    print!("Pubkey: ");
+    for (i, a) in (0..0xff).into_iter()
+        .filter(|a| *a != 2 && *a != 3) // Skip single-use RSA
+        .map(PublicKeyAlgorithm::from)
+        .filter(|a| a.is_supported()).enumerate()
+    {
+        if i > 0 {
+            print!(", ");
+        }
+        print!("{}", babel::Fish(a));
+    }
+    println!();
+
+    print!("Cipher: ");
+    for (i, a) in (0..0xff).into_iter()
+        .map(SymmetricAlgorithm::from)
+        .filter(|a| a.is_supported()).enumerate()
+    {
+        if i == 7 {
+            print!(",\n        ");
+        } else if i > 0 {
+            print!(", ");
+        }
+        print!("{}", babel::Fish(a));
+    }
+    println!();
+
+    print!("Hash: ");
+    for (i, a) in (0..0xff).into_iter()
+        .map(HashAlgorithm::from)
+        .filter(|a| *a != HashAlgorithm::MD5)
+        .filter(|a| a.is_supported()).enumerate()
+    {
+        if i > 0 {
+            print!(", ");
+        }
+        print!("{}", babel::Fish(a));
+    }
+    println!();
+
+    print!("Compression: ");
+    for (i, a) in (0..0xff).into_iter()
+        .map(CompressionAlgorithm::from)
+        .filter(|a| a.is_supported()).enumerate()
+    {
+        if i > 0 {
+            print!(", ");
+        }
+        print!("{}", babel::Fish(a));
+    }
+    println!();
+}
+
 #[allow(dead_code, unused_variables, unused_assignments)]
 fn real_main() -> anyhow::Result<()> {
     let parser = argparse::Parser::new(
         "gpg",
         "There is no default operation",
-        &OPTIONS);
-    for rarg in parser.parse_command_line().quietly() {
-        let arg =
-            rarg.context("Error parsing command-line arguments")?;
-        match arg {
-            Argument::Option(aHelp, _) =>
-                return Ok(parser.help()),
-            Argument::Option(aVersion, _) =>
-                return Ok(parser.version()),
-            Argument::Option(aWarranty, _) =>
-                return Ok(parser.warranty()),
-            Argument::Option(aDumpOptions, _) =>
-                return Ok(parser.dump_options()),
-            Argument::Option(aDumpOpttbl, _) =>
-                return Ok(parser.dump_options_table()),
-            _ => (),
-        }
-    }
+        &OPTIONS)
+        .with_additional_version_information(print_additional_version);
 
     let mut opt = Config::default();
     let mut args = Vec::new();
@@ -1224,7 +1267,7 @@ fn real_main() -> anyhow::Result<()> {
     let mut s2k_cipher: Option<SymmetricAlgorithm> = None;
     let mut pwfd: Option<Box<dyn io::Read>> = None;
 
-    // Second pass: check special options.
+    // First pass: check special options.
     for rarg in parser.parse_command_line().quietly() {
         let argument =
             rarg.context("Error parsing command-line arguments")?;
@@ -1233,6 +1276,28 @@ fn real_main() -> anyhow::Result<()> {
             Argument::Option(oHomedir, value) =>
                 opt.homedir = value.as_str().unwrap().into(),
             Argument::Option(oNoPermissionWarn, _) => opt.no_perm_warn = true,
+            _ => (),
+        }
+    }
+
+    // Second pass: execute implicit commands.
+    for rarg in parser.parse_command_line().quietly() {
+        let arg =
+            rarg.context("Error parsing command-line arguments")?;
+        match arg {
+            Argument::Option(aHelp, _) =>
+                return Ok(parser.help(&opt)),
+            Argument::Option(aVersion, _) => {
+                // GnuPG emits a warning on --version.
+                opt.check_homedir_permissions()?;
+                return Ok(parser.version(&opt));
+            },
+            Argument::Option(aWarranty, _) =>
+                return Ok(parser.warranty()),
+            Argument::Option(aDumpOptions, _) =>
+                return Ok(parser.dump_options()),
+            Argument::Option(aDumpOpttbl, _) =>
+                return Ok(parser.dump_options_table()),
             _ => (),
         }
     }

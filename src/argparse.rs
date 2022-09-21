@@ -65,6 +65,7 @@ impl Value {
 pub struct Parser<T: Copy + PartialEq + Eq + Into<isize> + 'static> {
     name: &'static str,
     synopsis: &'static str,
+    additional_version: Box<dyn Fn(&crate::Config)>,
     options: &'static [Opt<T>],
 }
 
@@ -76,8 +77,18 @@ impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
         Parser {
             name,
             synopsis,
+            additional_version: Box::new(|_| ()),
             options,
         }
+    }
+
+    /// Registers a callback to print additional version information.
+    pub fn with_additional_version_information<F>(mut self, fun: F) -> Self
+    where
+        F: Fn(&crate::Config) + 'static,
+    {
+        self.additional_version = Box::new(fun);
+        self
     }
 
     /// Parses the command-line arguments.
@@ -167,24 +178,25 @@ impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
     }
 
     /// Displays version information.
-    pub fn version(&self) {
+    pub fn version(&self, config: &crate::Config) {
         println!("{} (GnuPG-compatible Sequoia Chameleon) {}",
                  self.name, crate::gnupg_interface::VERSION);
         println!("Sequoia {} Chameleon {}",
                  self.name, env!("CARGO_PKG_VERSION"));
         println!("sequoia-openpgp {}", sequoia_openpgp::VERSION);
-        println!("Copyright (C) 2021 p≡p foundation");
+        println!("Copyright (C) 2022 p≡p foundation");
         println!("License GNU GPL-3.0-or-later \
                   <https://gnu.org/licenses/gpl.html>");
         println!("This is free software: \
                   you are free to change and redistribute it.");
         println!("There is NO WARRANTY, \
                   to the extent permitted by law.");
+        (self.additional_version)(config);
     }
 
     /// Displays help.
-    pub fn help(&self) {
-        self.version();
+    pub fn help(&self, config: &crate::Config) {
+        self.version(config);
         println!();
         println!("Syntax: {} [options] [files]", self.name);
         println!("{}", self.synopsis);
