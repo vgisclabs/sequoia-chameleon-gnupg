@@ -64,29 +64,34 @@ fn empty() -> Result<()> {
 
 #[test]
 fn valid() -> Result<()> {
+    let experiment = Experiment::new()?;
     let (cert, _) = CertBuilder::new()
+        .set_creation_time(experiment.now())
         .add_userid("Alice Lovelace <alice@lovelace.name>")
         .add_signing_subkey()
         .generate()?;
 
-    test_key(cert, None)
+    test_key(cert, experiment)
 }
 
 #[test]
 fn revoked() -> Result<()> {
+    let experiment = Experiment::new()?;
     let (cert, rev) = CertBuilder::new()
+        .set_creation_time(experiment.now())
         .add_userid("Alice Lovelace <alice@lovelace.name>")
         .add_signing_subkey()
         .generate()?;
     let cert = cert.insert_packets(vec![rev])?;
 
-    test_key(cert, None)
+    test_key(cert, experiment)
 }
 
 #[test]
 fn expired() -> Result<()> {
+    let experiment = Experiment::new()?;
     let a_week = Duration::new(7 * 24 * 3600, 0);
-    let the_past = SystemTime::now()
+    let the_past = experiment.now()
         .checked_sub(2 * a_week)
         .unwrap();
     let (cert, _) = CertBuilder::new()
@@ -98,13 +103,14 @@ fn expired() -> Result<()> {
             KeyFlags::empty().set_signing().set_certification())
         .generate()?;
 
-    test_key(cert, None)
+    test_key(cert, experiment)
 }
 
 #[test]
 fn expired_subkey() -> Result<()> {
+    let experiment = Experiment::new()?;
     let a_week = Duration::new(7 * 24 * 3600, 0);
-    let the_past = SystemTime::now()
+    let the_past = experiment.now()
         .checked_sub(2 * a_week)
         .unwrap();
     let (cert, _) = CertBuilder::new()
@@ -133,17 +139,17 @@ fn expired_subkey() -> Result<()> {
 
     let cert = cert.insert_packets(vec![Packet::from(subkey), binding.into()])?;
 
-    test_key(cert, None)
+    test_key(cert, experiment)
 }
 
 #[test]
 fn disabled() -> Result<()> {
+    let experiment = Experiment::new()?;
     let (cert, _) = CertBuilder::new()
+        .set_creation_time(experiment.now())
         .add_userid("Alice Lovelace <alice@lovelace.name>")
         .add_signing_subkey()
         .generate()?;
-
-    let experiment = Experiment::new()?;
 
     eprintln!("Importing cert...");
     let diff = experiment.invoke(&[
@@ -335,12 +341,12 @@ fn general_purpose_p521() -> Result<()> {
 }
 
 fn general_purpose(cs: CipherSuite) -> Result<()> {
+    let experiment = Experiment::new()?;
     let (cert, _) =
         CertBuilder::general_purpose(cs,
                                      Some("Alice Lovelace <alice@lovelace.name>"))
+        .set_creation_time(experiment.now())
         .generate()?;
-
-    let experiment = Experiment::new()?;
 
     eprintln!("Importing cert...");
     let diff = experiment.invoke(&[

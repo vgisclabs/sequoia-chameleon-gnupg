@@ -22,12 +22,13 @@ const PLAINTEXT: &[u8] = b"plaintext";
 
 #[test]
 fn simple() -> Result<()> {
+    let experiment = Experiment::new()?;
     let (cert, _) = CertBuilder::new()
+        .set_creation_time(experiment.now())
         .add_userid("Alice Lovelace <alice@lovelace.name>")
         .add_transport_encryption_subkey()
         .generate()?;
     let ciphertext = encrypt_for(&[&cert])?;
-    let experiment = Experiment::new()?;
     test_key(cert, ciphertext, experiment)
 }
 
@@ -67,13 +68,15 @@ fn general_purpose_p521() -> Result<()> {
 }
 
 fn general_purpose(cs: CipherSuite) -> Result<()> {
+    let experiment = Experiment::new()?;
     let (cert, _) =
         CertBuilder::general_purpose(cs,
                                      Some("Alice Lovelace <alice@lovelace.name>"))
+        .set_creation_time(experiment.now())
         .generate()?;
     let ciphertext = encrypt_for(&[&cert])?;
 
-    test_key(cert, ciphertext, None)
+    test_key(cert, ciphertext, experiment)
 }
 
 fn test_key<E>(cert: Cert, ciphertext: Vec<u8>, experiment: E) -> Result<()>

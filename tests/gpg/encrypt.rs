@@ -48,12 +48,14 @@ fn general_purpose_p521() -> Result<()> {
 }
 
 fn general_purpose(cs: CipherSuite) -> Result<()> {
+    let experiment = Experiment::new()?;
     let (cert, _) =
         CertBuilder::general_purpose(cs,
                                      Some("Alice Lovelace <alice@lovelace.name>"))
+        .set_creation_time(experiment.now())
         .generate()?;
 
-    test_key(cert, None)
+    test_key(cert, experiment)
 }
 
 fn test_key<E>(cert: Cert, experiment: E) -> Result<()>

@@ -277,10 +277,15 @@ impl Experiment {
                            // Don't use the current time, that makes
                            // setting the timemode in GnuPG unreliable
                            // (see gnupg_set_time).
-                           .checked_sub(Duration::new(1, 0)).unwrap()),
+                           .checked_sub(Duration::new(3600, 0)).unwrap()),
             oracle: Context::gnupg()?,
             us: Context::chameleon()?,
         })
+    }
+
+    /// Returns the reference time of this experiment.
+    pub fn now(&self) -> SystemTime {
+        self.faketime.unwrap_or_else(SystemTime::now)
     }
 
     /// Invokes the given command on both implementations.
