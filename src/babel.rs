@@ -129,7 +129,7 @@ impl fmt::Display for Fish<SymmetricAlgorithm> {
             TripleDES => f.write_str("3DES"),
             CAST5 => f.write_str("CAST5"),
             Blowfish => f.write_str("BLOWFISH"),
-            AES128 => f.write_str("AES128"),
+            AES128 => f.write_str("AES"),
             AES192 => f.write_str("AES192"),
             AES256 => f.write_str("AES256"),
             Twofish => f.write_str("TWOFISH"),
