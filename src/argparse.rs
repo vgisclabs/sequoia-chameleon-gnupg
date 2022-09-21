@@ -292,7 +292,7 @@ GNU General Public License for more details.");
     /// Displays all options.
     pub fn dump_options(&self) {
         for o in self.options {
-            if ! o.long_opt.is_empty() {
+            if ! o.long_opt.is_empty() && o.flags & OPT_IGNORE == 0 {
                 println!("--{}", o.long_opt);
             }
         }
