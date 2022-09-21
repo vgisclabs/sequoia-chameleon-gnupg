@@ -2,12 +2,15 @@ use std::{
     collections::BTreeSet,
     fmt,
     fs,
-    path::Path,
+    io,
+    path::{Path, PathBuf},
     process::*,
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
 use anyhow::Result;
+
+use sequoia_openpgp as openpgp;
 
 mod gpg {
     mod decrypt;
@@ -253,9 +256,15 @@ impl Output {
 /// the differences.
 pub struct Experiment {
     wd: tempfile::TempDir,
+    log: std::cell::RefCell<Vec<Action>>,
     faketime: Option<SystemTime>,
     oracle: Context,
     us: Context,
+}
+
+enum Action {
+    Store(PathBuf),
+    Invoke(Vec<String>),
 }
 
 impl Experiment {
@@ -263,6 +272,7 @@ impl Experiment {
     pub fn new() -> Result<Self> {
         Ok(Experiment {
             wd: tempfile::tempdir()?,
+            log: Default::default(),
             faketime: Some(SystemTime::now()
                            // Don't use the current time, that makes
                            // setting the timemode in GnuPG unreliable
@@ -287,9 +297,12 @@ impl Experiment {
             .chain(args.iter().cloned())
             .collect::<Vec<&str>>();
 
+        self.log.borrow_mut().push(
+            Action::Invoke(args.iter().map(ToString::to_string).collect()));
         let oracle = self.oracle.invoke(&args)?;
         let us = self.us.invoke(&args)?;
         Ok(Diff {
+            experiment: &self,
             args: args.iter().map(ToString::to_string).collect(),
             oracle,
             us,
@@ -300,22 +313,56 @@ impl Experiment {
     /// to that file.
     ///
     /// Useful for building up invocations.
-    pub fn store(&self, name: &str, data: impl AsRef<[u8]>) -> Result<String> {
+    pub fn store(&self, name: &str, data: impl AsRef<[u8]>)
+                 -> Result<String> {
         let path = self.wd.path().join(name);
+        self.log.borrow_mut().push(Action::Store(path.clone()));
         fs::write(&path, data)?;
         Ok(path.to_str().unwrap().into())
+    }
+
+    /// Writes a reproducer to `sink`.
+    pub fn reproducer(&self, mut sink: &mut dyn io::Write) -> Result<()> {
+        writeln!(&mut sink, "export GNUPGHOME=$(mktemp -d)")?;
+        writeln!(&mut sink, "mkdir -p {}", self.wd.path().display())?;
+        for a in self.log.borrow().iter() {
+            writeln!(&mut sink)?;
+            match a {
+                Action::Invoke(args) => {
+                    write!(&mut sink, "gpg")?;
+                    for a in args {
+                        write!(&mut sink, " {}", a)?;
+                    }
+                    writeln!(&mut sink)?;
+                },
+                Action::Store(path) => {
+                    writeln!(&mut sink, "gpg --dearmor >{} <<EOF",
+                             path.display())?;
+                    use openpgp::armor::*;
+                    let mut w = Writer::new(&mut sink, Kind::File)?;
+                    let mut s = fs::File::open(path)?;
+                    io::copy(&mut s, &mut w)?;
+                    w.finalize()?;
+                    writeln!(&mut sink, "EOF")?;
+                },
+            }
+        }
+        writeln!(&mut sink)?;
+        writeln!(&mut sink, "# end of reproducer")?;
+        Ok(())
     }
 }
 
 /// The difference between invoking the reference GnuPG and the
 /// Chameleon.
-pub struct Diff {
+pub struct Diff<'a> {
+    experiment: &'a Experiment,
     args: Vec<String>,
     oracle: Output,
     us: Output,
 }
 
-impl Diff {
+impl Diff<'_> {
     /// Asserts that both implementations returned success.
     ///
     /// Panics otherwise.
@@ -377,7 +424,7 @@ impl Diff {
     }
 }
 
-impl fmt::Display for Diff {
+impl fmt::Display for Diff<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         writeln!(f, "args:\n {:?}\n", self.args)?;
 
@@ -398,6 +445,11 @@ impl fmt::Display for Diff {
 
         writeln!(f, "status:")?;
         udiff(f, &self.oracle.status.to_string(), &self.us.status.to_string())?;
+
+        let mut r = Vec::new();
+        self.experiment.reproducer(&mut r).unwrap();
+        writeln!(f, "reproducer:\n")?;
+        writeln!(f, "{}", String::from_utf8_lossy(&r))?;
         Ok(())
     }
 }
