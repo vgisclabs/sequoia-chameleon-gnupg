@@ -247,7 +247,7 @@ impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
                         format!("{}", o.short_opt.into() as u8 as char)
                     };
 
-                    println!(" -{:<26} {}",
+                    println!(" -{:<33} {}",
                              short_opt,
                              description);
                 } else {
@@ -258,12 +258,12 @@ impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
                     };
 
                     if o.short_opt.into() <= 0x7f {
-                        println!(" -{}, --{:<21} {}",
+                        println!(" -{}, --{:<28} {}",
                                  o.short_opt.into() as u8 as char,
                                  long_opt,
                                  description);
                     } else {
-                        println!("     --{:<21} {}",
+                        println!("     --{:<28} {}",
                                  long_opt,
                                  description);
                     }
