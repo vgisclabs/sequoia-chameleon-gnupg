@@ -117,7 +117,8 @@ pub fn cmd_list_config(config: &crate::Config, args: &[String])
     if all || items.iter().any(|i| *i == "digest" || *i == "hash") {
         print!("cfg:digest:");
         for (i, a) in (0..0xff).into_iter()
-            .map(SymmetricAlgorithm::from)
+            .map(HashAlgorithm::from)
+            .filter(|a| *a != HashAlgorithm::MD5)
             .filter(|a| a.is_supported()).enumerate()
         {
             if i > 0 {
@@ -131,7 +132,8 @@ pub fn cmd_list_config(config: &crate::Config, args: &[String])
     if all || items.iter().any(|i| *i == "digestname" || *i == "hashname") {
         print!("cfg:digestname:");
         for (i, a) in (0..0xff).into_iter()
-            .map(SymmetricAlgorithm::from)
+            .map(HashAlgorithm::from)
+            .filter(|a| *a != HashAlgorithm::MD5)
             .filter(|a| a.is_supported()).enumerate()
         {
             if i > 0 {
