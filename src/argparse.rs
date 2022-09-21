@@ -202,10 +202,26 @@ impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
         println!("{}", self.synopsis);
         println!();
 
+        let mut current_group = None;
         for o in self.options {
+            if o.flags & OPT_HEADER > 0 {
+                // This is a header, but we only emit the header if we
+                // display any options from this group.
+                current_group =
+                    (!o.description.is_empty()).then(|| o.description);
+                continue;
+            }
+
             if o.description == "@" {
                 // Hidden from the help.
                 continue;
+            }
+
+            if let Some(group) = current_group.take() {
+                // We are displaying an option from this group,
+                // display the group header!
+                println!();
+                println!("{}:", group);
             }
 
             if o.description == "@\n" {
