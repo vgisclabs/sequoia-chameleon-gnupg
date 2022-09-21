@@ -134,6 +134,7 @@ impl<'a> DHelper<'a> {
         if ! self.config.list_only {
             if self.de_vs_compliant
                 && self.config.de_vs_producer.symmetric_algorithm(algo).is_ok()
+                && crate::gnupg_interface::EMIT_DECRYPTION_COMPLIANCE
             {
                 self.config.status().emit(
                     Status::DecryptionComplianceMode(Compliance::DeVs))?;

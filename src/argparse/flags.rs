@@ -16,15 +16,17 @@ pub const OPT_OPTIONAL : u32 = 1<< 3;
 /// Allow 0x etc. prefixed values.
 pub const OPT_PREFIX   : u32 = 1<< 4;
 
+/// Ignore command or option.
+pub const OPT_IGNORE   : u32 = 1<< 6;
 /// The argument is a command.
 pub const OPT_COMMAND  : u32 = 1<< 7;
 /// The value is a conffile.
 pub const OPT_CONFFILE : u32 = 1<< 8;
+/// The value is printed as a header.
+pub const OPT_HEADER   : u32 = 1<< 9;
 
 // Unused flags:
 
-//pub const OPT_IGNORE   : u32 = 1<< 6; // Ignore command or option.
-//pub const OPT_HEADER   : u32 = 1<< 9; // The value is printed as a header.
 //pub const OPT_VERBATIM : u32 = 1<<10; // The value is printed verbatim.
 //pub const ATTR_FORCE   : u32 = 1<<14; // Attribute force is set.
 //pub const ATTR_IGNORE  : u32 = 1<<15; // Attribute ignore is set.

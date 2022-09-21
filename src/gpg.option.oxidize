@@ -1,0 +1,92 @@
+#define N_(X) X
+
+/* A set of macros to make option definitions easier to read.  */
+#define ARGPARSE_x(s,l,t,f,d) \
+      Opt { short_opt: s, long_opt: l, flags: ARGPARSE_TYPE_ ## t | (f), description: d, }
+
+#define ARGPARSE_s(s,l,t,d) \
+      Opt { short_opt: s, long_opt: l, flags: ARGPARSE_TYPE_ ## t, description: d, }
+#define ARGPARSE_s_n(s,l,d) \
+      Opt { short_opt: s, long_opt: l, flags: ARGPARSE_TYPE_NONE, description: d, }
+#define ARGPARSE_s_i(s,l,d) \
+      Opt { short_opt: s, long_opt: l, flags: ARGPARSE_TYPE_INT, description: d, }
+#define ARGPARSE_s_s(s,l,d) \
+      Opt { short_opt: s, long_opt: l, flags: ARGPARSE_TYPE_STRING, description: d, }
+#define ARGPARSE_s_l(s,l,d) \
+      Opt { short_opt: s, long_opt: l, flags: ARGPARSE_TYPE_LONG, description: d, }
+#define ARGPARSE_s_u(s,l,d) \
+      Opt { short_opt: s, long_opt: l, flags: ARGPARSE_TYPE_ULONG, description: d, }
+
+#define ARGPARSE_o(s,l,t,d) \
+      Opt { short_opt: s, long_opt: l, flags: (ARGPARSE_TYPE_ ## t  | ARGPARSE_OPT_OPTIONAL), description: d, }
+#define ARGPARSE_o_n(s,l,d) \
+      Opt { short_opt: s, long_opt: l, flags: (ARGPARSE_TYPE_NONE   | ARGPARSE_OPT_OPTIONAL), description: d, }
+#define ARGPARSE_o_i(s,l,d) \
+      Opt { short_opt: s, long_opt: l, flags: (ARGPARSE_TYPE_INT    | ARGPARSE_OPT_OPTIONAL), description: d, }
+#define ARGPARSE_o_s(s,l,d) \
+      Opt { short_opt: s, long_opt: l, flags: (ARGPARSE_TYPE_STRING | ARGPARSE_OPT_OPTIONAL), description: d, }
+#define ARGPARSE_o_l(s,l,d) \
+      Opt { short_opt: s, long_opt: l, flags: (ARGPARSE_TYPE_LONG   | ARGPARSE_OPT_OPTIONAL), description: d, }
+#define ARGPARSE_o_u(s,l,d) \
+      Opt { short_opt: s, long_opt: l, flags: (ARGPARSE_TYPE_ULONG  | ARGPARSE_OPT_OPTIONAL), description: d, }
+
+#define ARGPARSE_p(s,l,t,d) \
+      Opt { short_opt: s, long_opt: l, flags: (ARGPARSE_TYPE_ ## t  | ARGPARSE_OPT_PREFIX), description: d, }
+#define ARGPARSE_p_n(s,l,d) \
+      Opt { short_opt: s, long_opt: l, flags: (ARGPARSE_TYPE_NONE   | ARGPARSE_OPT_PREFIX), description: d, }
+#define ARGPARSE_p_i(s,l,d) \
+      Opt { short_opt: s, long_opt: l, flags: (ARGPARSE_TYPE_INT    | ARGPARSE_OPT_PREFIX), description: d, }
+#define ARGPARSE_p_s(s,l,d) \
+      Opt { short_opt: s, long_opt: l, flags: (ARGPARSE_TYPE_STRING | ARGPARSE_OPT_PREFIX), description: d, }
+#define ARGPARSE_p_l(s,l,d) \
+      Opt { short_opt: s, long_opt: l, flags: (ARGPARSE_TYPE_LONG   | ARGPARSE_OPT_PREFIX), description: d, }
+#define ARGPARSE_p_u(s,l,d) \
+      Opt { short_opt: s, long_opt: l, flags: (ARGPARSE_TYPE_ULONG  | ARGPARSE_OPT_PREFIX), description: d, }
+
+#define ARGPARSE_op(s,l,t,d) \
+      Opt { short_opt: s, long_opt: l, flags: (ARGPARSE_TYPE_ ## t \
+                  | ARGPARSE_OPT_OPTIONAL | ARGPARSE_OPT_PREFIX), description: d, }
+#define ARGPARSE_op_n(s,l,d) \
+      Opt { short_opt: s, long_opt: l, flags: (ARGPARSE_TYPE_NONE \
+                  | ARGPARSE_OPT_OPTIONAL | ARGPARSE_OPT_PREFIX), description: d, }
+#define ARGPARSE_op_i(s,l,d) \
+      Opt { short_opt: s, long_opt: l, flags: (ARGPARSE_TYPE_INT \
+                  | ARGPARSE_OPT_OPTIONAL | ARGPARSE_OPT_PREFIX), description: d, }
+#define ARGPARSE_op_s(s,l,d) \
+      Opt { short_opt: s, long_opt: l, flags: (ARGPARSE_TYPE_STRING \
+                  | ARGPARSE_OPT_OPTIONAL | ARGPARSE_OPT_PREFIX), description: d, }
+#define ARGPARSE_op_l(s,l,d) \
+      Opt { short_opt: s, long_opt: l, flags: (ARGPARSE_TYPE_LONG \
+                  | ARGPARSE_OPT_OPTIONAL | ARGPARSE_OPT_PREFIX), description: d, }
+#define ARGPARSE_op_u(s,l,d) \
+      Opt { short_opt: s, long_opt: l, flags: (ARGPARSE_TYPE_ULONG \
+                  | ARGPARSE_OPT_OPTIONAL | ARGPARSE_OPT_PREFIX), description: d, }
+
+#define ARGPARSE_c(s,l,d) \
+      Opt { short_opt: s, long_opt: l, flags: (ARGPARSE_TYPE_NONE | ARGPARSE_OPT_COMMAND), description: d, }
+
+#define ARGPARSE_conffile(s,l,d) \
+   Opt { short_opt: s, long_opt: l, flags: (ARGPARSE_TYPE_STRING|ARGPARSE_OPT_CONFFILE), description: d, }
+
+#define ARGPARSE_noconffile(s,l,d) \
+   Opt { short_opt: s, long_opt: l, flags: (ARGPARSE_TYPE_NONE|ARGPARSE_OPT_CONFFILE), description: d, }
+
+#define ARGPARSE_ignore(s,l) \
+      Opt { short_opt: s, long_opt: l, flags: (ARGPARSE_OPT_IGNORE), description: "@", }
+
+#define ARGPARSE_group(s,d) \
+   Opt { short_opt: s, long_opt: "", flags: 0, description: d, }
+
+/* Verbatim print the string D in the help output.  It does not make
+ * use of the "@" hack as ARGPARSE_group does.  */
+#define ARGPARSE_verbatimdescription(d), \
+   Opt { short_opt: o1, long_opt: "", flags: (ARGPARSE_OPT_VERBATIM), description: d, }
+
+/* Same as ARGPARSE_verbatim but also print a colon and a LF.  N can
+ * be used give a symbolic name to the header.  Nothing is printed if
+ * D is the empty string.  */
+#define ARGPARSE_header(n,d) \
+   Opt { short_opt: o1, long_opt: n, flags: (ARGPARSE_OPT_HEADER), description: d, }
+
+/* Mark the end of the list (mandatory).  */
+#define ARGPARSE_end() 

@@ -211,7 +211,9 @@ async fn real_cmd_encrypt(config: &crate::Config, args: &[String],
         message = LiteralWriter::new(message).build()?;
     }
 
-    if de_vs_compliant {
+    if de_vs_compliant
+        && crate::gnupg_interface::EMIT_ENCRYPTION_COMPLIANCE
+    {
         config.status().emit(
             Status::EncryptionComplianceMode(Compliance::DeVs))?;
     }
