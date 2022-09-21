@@ -2098,15 +2098,18 @@ fn real_main() -> anyhow::Result<()> {
             },
             oGroup => {
                 let g = value.as_str().unwrap().splitn(2, "=")
+                    .map(|s| s.trim())
                     .collect::<Vec<_>>();
                 if g.len() == 1 {
                     return Err(anyhow::anyhow!(
                         "Expected name=value pair, got: {}", g[0]));
                 }
                 let name = g[0].to_string();
-                let fp = g[1].parse()
-                    .context("Error parsing value as fingerprint")?;
-                opt.groups.entry(name).or_default().push(fp);
+                for value in g[1].split(" ") {
+                    let fp = value.parse()
+                        .context("Error parsing value as fingerprint")?;
+                    opt.groups.entry(name.clone()).or_default().push(fp);
+                }
             },
             oUnGroup => {
                 opt.groups.remove(value.as_str().unwrap());
