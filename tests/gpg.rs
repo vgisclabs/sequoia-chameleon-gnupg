@@ -16,6 +16,7 @@ mod gpg {
     mod decrypt;
     mod encrypt;
     mod list_keys;
+    mod version;
 }
 
 lazy_static::lazy_static! {
