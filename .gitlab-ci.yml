@@ -6,6 +6,8 @@ test:
     - if [ -d cargo ]; then find cargo | wc --lines; du -sh cargo; fi
     - rustc --version
     - cargo --version
+    - apt-cache policy libgcrypt20 gnupg
+    - gpg --version
     - mkdir -p /run/user/$UID # For GnuPG's socket directories
     - cargo test
 
