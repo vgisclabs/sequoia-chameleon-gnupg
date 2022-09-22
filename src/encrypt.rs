@@ -6,7 +6,7 @@ use anyhow::{Context, Result};
 
 use sequoia_openpgp as openpgp;
 use openpgp::{
-    crypto::{S2K, SessionKey},
+    crypto::{Password, S2K, SessionKey},
     packet::skesk::SKESK4,
     policy::Policy,
     serialize::{Serialize, stream::*},
@@ -30,13 +30,7 @@ pub fn cmd_encrypt(config: &crate::Config, args: &[String],
                    -> Result<()>
 {
     let rt = tokio::runtime::Runtime::new()?;
-    rt.block_on(real_cmd_encrypt(config, args, symmetric, sign))
-}
 
-async fn real_cmd_encrypt(config: &crate::Config, args: &[String],
-                          symmetric: bool, sign: bool)
-                          -> Result<()>
-{
     let policy = config.policy();
     let filenames =
         if args.is_empty() { vec!["-".into()] } else { args.to_vec() };
@@ -114,6 +108,11 @@ async fn real_cmd_encrypt(config: &crate::Config, args: &[String],
         Box::new(io::stdout())
     };
 
+    // Note: we use crypto::Signers backed by the gpg-agent.
+    // Currently, it is not safe to use these from async contexts,
+    // because they evaluate futures using a runtime, which may not be
+    // nested.  Therefore, the following code may not be run in an
+    // async context.
     let mut message = Message::new(&mut sink);
     if config.armor {
         message = Armorer::new(message).build()?;
@@ -132,29 +131,8 @@ async fn real_cmd_encrypt(config: &crate::Config, args: &[String],
     if symmetric {
         let s2k = S2K::default();
         let cacheid = crate::agent::cacheid_of(&s2k);
-        let mut agent = config.connect_agent().await?;
-        let p =
-            crate::agent::get_passphrase(
-                &mut agent,
-                &cacheid, &None, None, None, false, 0, false,
-                |_agent, response| if let ipc::assuan::Response::Inquire {
-                    keyword, parameters } = response
-                {
-                    match keyword.as_str() {
-                        "PINENTRY_LAUNCHED" => {
-                            let p = parameters.unwrap_or_default();
-                            let info = String::from_utf8_lossy(&p);
-                            let _ = config.status().emit(
-                                Status::PinentryLaunched(info.into()));
-                            None
-                        },
-                        _ => None,
-                    }
-                } else {
-                    None
-                }
-            ).await?;
 
+        let p = rt.block_on(ask_password(config, cacheid))?;
         // XXX: We emit the SKESK first.  Naive consumers may
         // therefore ask for a password even if they could use a PKESK
         // to decrypt the message.  If that turns out to be the case,
@@ -178,7 +156,8 @@ async fn real_cmd_encrypt(config: &crate::Config, args: &[String],
 
     if sign {
         // First, get the signers.
-        let (mut signers, signers_desc) = crate::sign::get_signers(config)?;
+        let (mut signers, signers_desc) =
+            rt.block_on(crate::sign::get_signers(config))?;
 
         let timestamp = openpgp::types::Timestamp::now();
         let hash_algo = config.def_digest;
@@ -228,4 +207,29 @@ async fn real_cmd_encrypt(config: &crate::Config, args: &[String],
     config.status().emit(Status::EndEncryption)?;
 
     Ok(())
+}
+
+async fn ask_password(config: &crate::Config, cacheid: Option<String>)
+                      -> Result<Password> {
+    let mut agent = config.connect_agent().await?;
+    Ok(crate::agent::get_passphrase(
+        &mut agent,
+        &cacheid, &None, None, None, false, 0, false,
+        |_agent, response| if let ipc::assuan::Response::Inquire {
+            keyword, parameters } = response
+        {
+            match keyword.as_str() {
+                "PINENTRY_LAUNCHED" => {
+                    let p = parameters.unwrap_or_default();
+                    let info = String::from_utf8_lossy(&p);
+                    let _ = config.status().emit(
+                        Status::PinentryLaunched(info.into()));
+                    None
+                },
+                _ => None,
+            }
+        } else {
+            None
+        }
+    ).await?)
 }

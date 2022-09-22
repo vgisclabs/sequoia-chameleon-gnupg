@@ -64,6 +64,11 @@ pub fn cmd_decrypt(config: &crate::Config, args: &[String])
         Box::new(io::stdout())
     };
 
+    // Note: we use crypto::Decryptors backed by the gpg-agent.
+    // Currently, it is not safe to use these from async contexts,
+    // because they evaluate futures using a runtime, which may not be
+    // nested.  Therefore, the following code may not be run in an
+    // async context.
     let transaction = || -> Result<()> {
         let helper = DHelper::new(config, VHelper::new(config, 1));
         let message = DecryptorBuilder::from_reader(message)?;

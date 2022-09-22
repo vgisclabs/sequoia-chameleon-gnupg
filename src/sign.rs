@@ -43,7 +43,8 @@ pub fn cmd_sign(config: &crate::Config, args: &[String],
     }
 
     // First, get the signers.
-    let (mut signers, signers_desc) = get_signers(config)?;
+    let rt = tokio::runtime::Runtime::new()?;
+    let (mut signers, signers_desc) = rt.block_on(get_signers(config))?;
 
     let mut sink = if let Some(name) = config.outfile() {
         utils::create(config, name)?
@@ -51,6 +52,11 @@ pub fn cmd_sign(config: &crate::Config, args: &[String],
         Box::new(io::stdout())
     };
 
+    // Note: we use crypto::Signers backed by the gpg-agent.
+    // Currently, it is not safe to use these from async contexts,
+    // because they evaluate futures using a runtime, which may not be
+    // nested.  Therefore, the following code may not be run in an
+    // async context.
     let mut message = Message::new(&mut sink);
     if config.armor && ! cleartext {
         message = Armorer::new(message)
@@ -124,9 +130,9 @@ pub fn cmd_sign(config: &crate::Config, args: &[String],
     Ok(())
 }
 
-pub fn get_signers(config: &crate::Config)
-                   -> Result<(Vec<Box<dyn crypto::Signer + Send + Sync>>,
-                              Vec<(PublicKeyAlgorithm, Fingerprint)>)> {
+pub async fn get_signers(config: &crate::Config)
+                         -> Result<(Vec<Box<dyn crypto::Signer + Send + Sync>>,
+                                    Vec<(PublicKeyAlgorithm, Fingerprint)>)> {
     let mut signers = vec![];
     let mut signers_desc = vec![];
     for local_user in config.local_users()? {
@@ -147,10 +153,9 @@ pub fn get_signers(config: &crate::Config)
         let vcert = cert.with_policy(config.policy(), config.now())
             .context(format!("Key {:X} is not valid", handle))?;
 
-        let rt = tokio::runtime::Runtime::new()?;
         let mut candidates = Vec::new();
         for key in vcert.keys().for_signing() {
-            if let Ok(signer) = rt.block_on(config.get_signer(&vcert, &key)) {
+            if let Ok(signer) = config.get_signer(&vcert, &key).await {
                 candidates.push((key.alive().is_ok(),
                                  key.creation_time(),
                                  key.primary(),
