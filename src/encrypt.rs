@@ -96,7 +96,7 @@ async fn real_cmd_encrypt(config: &crate::Config, args: &[String],
 
             if ! found_one_subkey {
                 return Err(anyhow::anyhow!(
-                    "Key {:X} is not encrypting-capable", cert.key_handle()))?;
+                    "Key {:X} is not encryption-capable", cert.key_handle()))?;
             }
 
             found_one = true;
@@ -104,7 +104,7 @@ async fn real_cmd_encrypt(config: &crate::Config, args: &[String],
 
         if ! found_one {
             return Err(anyhow::anyhow!(
-                "No encrypting-capable key found for {}", query))?;
+                "No encryption-capable key found for {}", query))?;
         }
     }
 
