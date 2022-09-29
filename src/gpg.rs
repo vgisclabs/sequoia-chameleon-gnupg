@@ -1246,7 +1246,8 @@ fn print_additional_version(config: &Config) {
 fn real_main() -> anyhow::Result<()> {
     let parser = argparse::Parser::new(
         "gpg",
-        "There is no default operation",
+        "Sign, check, encrypt or decrypt\n\
+         Default operation depends on the input data",
         &OPTIONS)
         .with_additional_version_information(print_additional_version);
 
@@ -2201,7 +2202,7 @@ fn real_main() -> anyhow::Result<()> {
             trust::db::cmd_export_ownertrust(&opt, &args),
         Some(aListConfig) => commands::cmd_list_config(&opt, &args),
         Some(aGenRevoke) => commands::cmd_generate_revocation(&opt, &args),
-        None => Err(anyhow::anyhow!("There is no implicit command.")),
+        None => commands::cmd_implicit(&opt, &args),
         Some(c) => Err(anyhow::anyhow!("Command {:?} is not implemented.", c)),
     };
 

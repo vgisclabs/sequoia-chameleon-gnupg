@@ -1,16 +1,25 @@
 //! Miscellaneous commands.
 
 use std::{
-    io,
+    io::{self, Read},
 };
 
 use anyhow::{Context, Result};
 
 use sequoia_openpgp as openpgp;
 use openpgp::{
-    cert::CertRevocationBuilder,
+    cert::{
+        CertParser,
+        CertRevocationBuilder,
+    },
     policy::NullPolicy,
     types::*,
+    Packet,
+    parse::{
+        Parse,
+        PacketParser,
+        PacketParserResult,
+    },
     serialize::{
         Serialize,
         stream::{Message, Armorer},
@@ -21,8 +30,99 @@ use crate::{
     babel,
     colons,
     common::Common,
+    status::{Status, NoDataReason},
     utils,
 };
+
+/// Dispatches the implicit command.
+pub fn cmd_implicit(config: &crate::Config, args: &[String])
+                    -> Result<()>
+{
+    config.warn(format_args!("WARNING: no command supplied.  \
+                              Trying to guess what you mean ..."));
+
+    #[derive(Debug)]
+    enum Action {
+        ListKeys,
+        Decrypt,
+        DetachVerify,
+        InlineVerify,
+    }
+
+    if args.len() > 1 {
+        return Err(anyhow::anyhow!("Expected only one argument, got more"));
+    }
+
+    let filename = args.get(0).cloned().unwrap_or_else(|| "-".into());
+    let mut input = utils::open(config, &filename)?;
+
+    // Peek at the data to decide what to do.
+    const PEEK: usize = 4096;
+    let mut buf = Vec::with_capacity(PEEK);
+    input.by_ref().take(PEEK.try_into().unwrap()).read_to_end(&mut buf)?;
+
+    let mut action = None;
+    {
+        let mut ppr = match
+            PacketParser::from_reader(io::Cursor::new(&buf[..])) {
+                Ok(ppr) => ppr,
+                Err(e) => {
+                    config.status().emit(Status::NoData(
+                        NoDataReason::ExpectedPacket))?;
+                    config.status().emit(Status::NoData(
+                        NoDataReason::InvalidPacket))?;
+                    return Err(e);
+                },
+            };
+
+        while let PacketParserResult::Some(pp) = ppr {
+            match pp.packet {
+                Packet::PublicKey(_) | Packet::SecretKey(_) => {
+                    action = Some(Action::ListKeys);
+                    break;
+                },
+                Packet::OnePassSig(_) => {
+                    action = Some(Action::InlineVerify);
+                    break;
+                },
+                Packet::Signature(_) => {
+                    action = Some(Action::DetachVerify);
+                    break;
+                },
+                Packet::PKESK(_) | Packet::SKESK(_) => {
+                    action = Some(Action::Decrypt);
+                    break;
+                },
+                _ => (),
+            }
+            let (_packet, ppr_) = pp.next()?;
+            ppr = ppr_;
+        }
+    }
+
+    // We took up to PEEK bytes from input, now we need to put it
+    // back.
+    let input: Box<dyn io::Read + Send + Sync> = if buf.len() < PEEK {
+        // input is exhausted, we don't need to worry about that.
+        Box::new(io::Cursor::new(buf))
+    } else {
+        // Prepend buf to input.
+        Box::new(io::Cursor::new(buf).chain(input))
+    };
+
+    use Action::*;
+    match action {
+        None =>
+            Err(anyhow::anyhow!("I don't know what to do with this data")),
+        Some(ListKeys) => {
+            let certs =
+                CertParser::from_reader(input)?.collect::<Result<Vec<_>>>()?;
+            crate::list_keys::list_keys(
+                config, certs.iter(), vec![], false, false, io::stdout())
+        },
+        a => Err(anyhow::anyhow!("Implicit action on {:?} not implemented", a)),
+    }
+}
 
 /// Dispatches the --list-config command.
 pub fn cmd_list_config(config: &crate::Config, args: &[String])

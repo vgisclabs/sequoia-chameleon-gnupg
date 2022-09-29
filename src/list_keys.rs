@@ -26,8 +26,6 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String], list_secret: bool)
                      -> Result<()>
 {
     let mut sink = io::stdout(); // XXX
-    let vtm = config.trust_model_impl.with_policy(config, Some(config.now()))?;
-    let p = vtm.policy();
 
     // First, emit a header on --list-keys --with-colons.
     if config.with_colons && ! list_secret {
@@ -48,6 +46,23 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String], list_secret: bool)
         .map(|a| Query::from(&a[..]))
         .collect::<Vec<_>>();
 
+    list_keys(config, config.keydb().iter(), filter, list_secret, true, sink)
+}
+
+pub fn list_keys<C, S>(config: &crate::Config,
+                       certs: impl Iterator<Item = C>,
+                       filter: Vec<Query>,
+                       list_secret: bool,
+                       emit_header: bool,
+                       mut sink: S)
+                       -> Result<()>
+where
+    C: std::borrow::Borrow<openpgp::Cert>,
+    S: Write,
+{
+    let vtm = config.trust_model_impl.with_policy(config, Some(config.now()))?;
+    let p = vtm.policy();
+
     let rt = tokio::runtime::Runtime::new()?;
     let mut agent =
         if list_secret || (config.with_secret && config.with_colons) {
@@ -60,7 +75,9 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String], list_secret: bool)
     // at least one key.
     let mut emitted_header = false;
 
-    for cert in config.keydb().iter() {
+    for cert in certs {
+        let cert = cert.borrow();
+
         // Filter out certs that the user is not interested in.
         if ! filter.is_empty() && ! filter.iter().any(|q| q.matches(&cert)) {
             continue;
@@ -84,7 +101,7 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String], list_secret: bool)
 
         // For humans, we print the location of the store if we list
         // at least one key.
-        if ! emitted_header && ! config.with_colons {
+        if emit_header && ! emitted_header && ! config.with_colons {
             emitted_header = true;
 
             let path =
