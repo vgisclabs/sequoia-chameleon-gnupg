@@ -19,6 +19,7 @@ use openpgp::{
         Parse,
         PacketParser,
         PacketParserResult,
+        stream::*,
     },
     serialize::{
         Serialize,
@@ -119,6 +120,18 @@ pub fn cmd_implicit(config: &crate::Config, args: &[String])
                 CertParser::from_reader(input)?.collect::<Result<Vec<_>>>()?;
             crate::list_keys::list_keys(
                 config, certs.iter(), vec![], false, false, io::stdout())
+        },
+        Some(InlineVerify) => {
+            let mut sink = if let Some(name) = config.outfile() {
+                utils::create(config, name)?
+            } else {
+                Box::new(io::sink())
+            };
+            let helper = crate::verify::VHelper::new(config, 1);
+            let mut v = VerifierBuilder::from_reader(input)?
+                .with_policy(config.policy(), config.now(), helper)?;
+            io::copy(&mut v, &mut sink)?;
+            Ok(())
         },
         a => Err(anyhow::anyhow!("Implicit action on {:?} not implemented", a)),
     }
