@@ -27,9 +27,16 @@ lazy_static::lazy_static! {
 
 lazy_static::lazy_static! {
     static ref GPG_CHAMELEON: Vec<String> =
-        vec![std::env::current_dir().unwrap()
-             .join("target/debug/sequoia-chameleon-gpg")
-             .display().to_string()];
+        vec![
+            if let Ok(target) = std::env::var("CARGO_TARGET_DIR") {
+                PathBuf::from(target)
+            } else {
+                std::env::current_dir().unwrap()
+                    .join("target")
+            }
+            .join("debug/sequoia-chameleon-gpg")
+            .display().to_string()
+        ];
 }
 
 const GPG_CHAMELEON_BUILD: &[&str] =
