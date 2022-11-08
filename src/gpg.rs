@@ -1314,7 +1314,14 @@ fn real_main() -> anyhow::Result<()> {
                .map(|rarg| (None, rarg)))
     {
         let argument =
-            rarg.context("Error parsing command-line arguments")?;
+            rarg.with_context(|| {
+                if let Some(f) = &config_file {
+                    format!("Error parsing config file {}",
+                            f.display())
+                } else {
+                    "Error parsing command-line arguments".into()
+                }
+            })?;
 
         let (cmd, value) = match argument {
             Argument::Option(cmd, value) => (cmd, value),
