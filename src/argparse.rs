@@ -321,7 +321,7 @@ pub struct Iter<T: Copy + PartialEq + Eq + Into<isize> + 'static> {
     /// Did we see --enable-special-filenames?
     special_filenames: bool,
 
-    // Whether to emit warnings on stderr.
+    /// Whether to emit warnings on stderr.
     quiet: bool,
 }
 
