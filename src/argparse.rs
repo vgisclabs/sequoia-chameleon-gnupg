@@ -486,9 +486,13 @@ impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Iterator for Iter<T> {
 
         let m = if long {
             // See if we have a value in this argument.
-            let mut split = a.splitn(2, "=");
-            a = split.next().unwrap();
-            let value = split.next();
+            let value;
+            (a, value) = if self.cmdline {
+                let mut split = a.splitn(2, "=");
+                (split.next().unwrap(), split.next().map(|s| s.to_string()))
+            } else {
+                (a, self.current.as_mut().and_then(|c| c.next()))
+            };
 
             let matches = self.options.iter().filter(|o| o.long_opt.starts_with(a))
                 .collect::<Vec<_>>();
@@ -782,8 +786,7 @@ mod tests {
         assert!(i.next().is_none());
 
         let mut i = parse(&parser, |f| Ok(writeln!(f, "output=foo")?))?;
-        assert_eq!(i.next().unwrap().unwrap(),
-                   Argument::Option(oOutput, Value::String("foo".into())));
+        assert!(i.next().unwrap().is_err());
         assert!(i.next().is_none());
 
         let mut i = parse(&parser, |f| Ok(writeln!(f, "status-fd")?))?;
@@ -804,8 +807,7 @@ mod tests {
         assert!(i.next().is_none());
 
         let mut i = parse(&parser, |f| Ok(writeln!(f, "status-fd=3")?))?;
-        assert_eq!(i.next().unwrap().unwrap(),
-                   Argument::Option(oStatusFD, Value::Int(3)));
+        assert!(i.next().unwrap().is_err());
         assert!(i.next().is_none());
 
         Ok(())
