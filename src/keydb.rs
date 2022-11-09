@@ -1,7 +1,7 @@
 //! Manages keyrings and keyboxes.
 
 use std::{
-    collections::HashMap,
+    collections::BTreeMap,
     fs,
     io::Read,
     path::{Path, PathBuf},
@@ -39,12 +39,12 @@ pub struct KeyDB {
     overlay: Option<Overlay>,
 
     initialized: bool,
-    by_fp: HashMap<Fingerprint, Rc<Cert>>,
-    by_id: HashMap<KeyID, Rc<Cert>>,
-    by_subkey_fp: HashMap<Fingerprint, Rc<Cert>>,
-    by_subkey_id: HashMap<KeyID, Rc<Cert>>,
-    by_userid: HashMap<UserID, Vec<Rc<Cert>>>,
-    by_email: HashMap<String, Vec<Rc<Cert>>>,
+    by_fp: BTreeMap<Fingerprint, Rc<Cert>>,
+    by_id: BTreeMap<KeyID, Rc<Cert>>,
+    by_subkey_fp: BTreeMap<Fingerprint, Rc<Cert>>,
+    by_subkey_id: BTreeMap<KeyID, Rc<Cert>>,
+    by_userid: BTreeMap<UserID, Vec<Rc<Cert>>>,
+    by_email: BTreeMap<String, Vec<Rc<Cert>>>,
 }
 
 #[derive(Clone)]
