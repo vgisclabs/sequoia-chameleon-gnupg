@@ -1,6 +1,7 @@
 //! A re-implementation of GnuPG's command-line parser.
 
 use std::{
+    collections::BTreeSet,
     io::{self, BufRead, BufReader},
     path::Path,
 };
@@ -174,6 +175,7 @@ impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
             seen_positional: false,
             special_filenames: false,
             quiet: false,
+            ignore_arguments: Default::default(),
         }
     }
 
@@ -323,6 +325,9 @@ pub struct Iter<T: Copy + PartialEq + Eq + Into<isize> + 'static> {
 
     /// Whether to emit warnings on stderr.
     quiet: bool,
+
+    /// The list of ignored arguments.
+    ignore_arguments: BTreeSet<String>,
 }
 
 impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Iter<T> {
@@ -493,6 +498,23 @@ impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Iterator for Iter<T> {
             } else {
                 (a, self.current.as_mut().and_then(|c| c.next()))
             };
+
+            if ! self.cmdline {
+                if a == "ignore-invalid-option" {
+                    if let Some(v) = value {
+                        for name in v.split(char::is_whitespace)
+                            .map(str::trim).filter(|s| ! s.is_empty())
+                        {
+                            self.ignore_arguments.insert(name.into());
+                        }
+                    }
+                    return self.next();
+                }
+
+                if self.ignore_arguments.contains(a) {
+                    return self.next();
+                }
+            }
 
             let matches = self.options.iter().filter(|o| o.long_opt.starts_with(a))
                 .collect::<Vec<_>>();
