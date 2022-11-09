@@ -1330,7 +1330,7 @@ fn real_main() -> anyhow::Result<()> {
                 continue;
             },
         };
-
+      let mut handle_argument = || -> Result<()> {
         use CmdOrOpt::*;
         match cmd {
 	    aListConfig
@@ -2137,6 +2137,24 @@ fn real_main() -> anyhow::Result<()> {
             },
             _ => (),
         }
+        Ok(())
+      };
+
+        handle_argument().with_context(|| {
+            if let Some(f) = &config_file {
+                if let Some(arg) = parser.argument_name(cmd) {
+                    format!("Error parsing option {} in {}", arg, f.display())
+                } else {
+                    format!("Error parsing unknown option in {}", f.display())
+                }
+            } else {
+                if let Some(arg) = parser.argument_name(cmd) {
+                    format!("Error parsing --{}", arg)
+                } else {
+                    "Error parsing unknown option".into()
+                }
+            }
+        })?;
     }
 
     if greeting && ! no_greeting {

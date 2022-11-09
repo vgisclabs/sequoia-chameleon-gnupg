@@ -83,6 +83,13 @@ impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
         }
     }
 
+    /// Returns the command's long argument name.
+    pub fn argument_name(&self, cmd: T) -> Option<&'static str> {
+        self.options.iter()
+            .find(|o| o.short_opt == cmd && ! o.long_opt.is_empty())
+            .map(|o| o.long_opt)
+    }
+
     /// Registers a callback to print additional version information.
     pub fn with_additional_version_information<F>(mut self, fun: F) -> Self
     where
