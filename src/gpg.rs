@@ -14,7 +14,6 @@ use sequoia_ipc as ipc;
 use openpgp::{
     cert::prelude::*,
     crypto::Password,
-    KeyHandle,
     packet::{
         prelude::*,
         key::{PublicParts, UnspecifiedRole},
@@ -483,7 +482,7 @@ pub struct Config {
     fingerprint: usize,
     flags: Flags,
     force_ownertrust: bool,
-    groups: BTreeMap<String, Vec<KeyHandle>>,
+    groups: BTreeMap<String, Vec<String>>,
     homedir: PathBuf,
     import_options: u32,
     input_size_hint: Option<u64>,
@@ -820,29 +819,45 @@ impl Config {
     pub fn lookup_certs(&self, query: &Query) -> Result<Vec<&Cert>> {
         self.lookup_certs_with(
             self.trust_model_impl.with_policy(self, Some(self.now()))?.as_ref(),
-            query)
+            query, true)
     }
 
     /// Returns certs matching a given query using groups and the
     /// given trust model.
     pub fn lookup_certs_with<'a>(&'a self,
                                  vtm: &dyn trust::model::ModelViewAt<'a>,
-                                 query: &Query)
+                                 query: &Query,
+                                 expand_groups: bool)
                                  -> Result<Vec<&'a Cert>> {
-        // First, try to map using groups.
         match query {
             Query::Key(h) | Query::ExactKey(h) =>
                 return Ok(self.keydb.get(h).into_iter().collect()),
-            Query::Email(e) => {
-                if let Some(handles) = self.groups.get(e.as_str()) {
-                    return self.keydb.by_primaries(handles);
+            // Try to map using groups if `expand_groups` is true.  We
+            // don't want to lookup expanded names again, as we may
+            // walk into loops.  GnuPG also doesn't do that.
+            Query::Email(e) => if expand_groups {
+                if let Some(queries) = self.groups.get(e.as_str()) {
+                    let mut acc = Vec::new();
+                    for query in queries {
+                        let q = query.as_str().into();
+                        acc.append(
+                            &mut self.lookup_certs_with(vtm, &q, false)?);
+                    }
+                    return Ok(acc);
                 }
             },
-            Query::UserIDFragment(f) => {
+            // Maybe expand groups.  See comment above.
+            Query::UserIDFragment(f) => if expand_groups {
                 let e = std::str::from_utf8(f.needle())
                     .expect("was a String before");
-                if let Some(handles) = self.groups.get(e) {
-                    return self.keydb.by_primaries(handles);
+                if let Some(queries) = self.groups.get(e) {
+                    let mut acc = Vec::new();
+                    for query in queries {
+                        let q = query.as_str().into();
+                        acc.append(
+                            &mut self.lookup_certs_with(vtm, &q, false)?);
+                    }
+                    return Ok(acc);
                 }
             },
         }
@@ -2114,9 +2129,8 @@ fn real_main() -> anyhow::Result<()> {
                 }
                 let name = g[0].to_string();
                 for value in g[1].split(" ") {
-                    let fp = value.parse()
-                        .context("Error parsing value as fingerprint")?;
-                    opt.groups.entry(name.clone()).or_default().push(fp);
+                    opt.groups.entry(name.clone()).or_default()
+                        .push(value.into());
                 }
             },
             oUnGroup => {

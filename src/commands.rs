@@ -324,7 +324,7 @@ pub fn cmd_generate_revocation(config: &crate::Config, args: &[String])
     let q = Query::from(args[0].as_str());
     let always = model::Always::default();
     let vtm = always.with_policy(config, Some(config.now()))?;
-    let certs = config.lookup_certs_with(vtm.as_ref(), &q)?;
+    let certs = config.lookup_certs_with(vtm.as_ref(), &q, true)?;
 
     if certs.is_empty() {
         return Err(anyhow::anyhow!("secret key \"{}\" not found", q));
