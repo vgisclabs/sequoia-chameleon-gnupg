@@ -531,8 +531,6 @@ impl Output {
         // > not used.  To check whether a key used to sign a message has
         // > expired, the EXPKEYSIG status line is to be used.
             .filter(|l| l != "KEYEXPIRED 0")
-        // XXX: For now, exclude compliance messages.
-            .filter(|l| ! l.contains("_COMPLIANCE_MODE "))
             .map(|l| {
                 if l.starts_with("GOODSIG")
                     || l.starts_with("EXPSIG")
