@@ -444,7 +444,7 @@ pub struct Config {
     fail: std::cell::Cell<bool>,
     policy: GPGPolicy,
     trustdb: trust::db::TrustDB,
-    trust_model_impl: Box<dyn trust::model::Model>,
+    trust_model_impl: Box<dyn trust::Model>,
     de_vs_producer: compliance::DeVSProducer,
 
     // Configuration.
@@ -825,7 +825,7 @@ impl Config {
     /// Returns certs matching a given query using groups and the
     /// given trust model.
     pub fn lookup_certs_with<'a>(&'a self,
-                                 vtm: &dyn trust::model::ModelViewAt<'a>,
+                                 vtm: &dyn trust::ModelViewAt<'a>,
                                  query: &Query,
                                  expand_groups: bool)
                                  -> Result<Vec<&'a Cert>> {
@@ -917,7 +917,7 @@ impl common::Common for Config {
         &self.status_fd
     }
 
-    fn trust_model_impl(&self) -> &dyn trust::model::Model {
+    fn trust_model_impl(&self) -> &dyn trust::Model {
         self.trust_model_impl.as_ref()
     }
 

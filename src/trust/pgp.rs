@@ -26,22 +26,11 @@ use crate::{
 pub use crate::common::Model;
 pub use crate::common::ModelViewAt;
 
-impl TrustModel {
-    pub fn build(&self, config: &Config) -> Result<Box<dyn Model>> {
-        use TrustModel::*;
-        match self {
-            PGP | TofuPGP | Auto => WoT::new(config),
-            Always => Ok(Box::new(self::Always::default())),
-            _ => Err(anyhow::anyhow!("Trust model {:?} not implemented", self))
-        }
-    }
-}
-
-struct WoT {
+pub struct WoT {
 }
 
 impl WoT {
-    fn new(_config: &Config) -> Result<Box<dyn Model>> {
+    pub fn new(_config: &Config) -> Result<Box<dyn Model>> {
         Ok(Box::new(WoT {}))
     }
 }

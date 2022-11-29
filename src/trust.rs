@@ -1,7 +1,10 @@
 //! Trust models and associated machinery.
 
 pub mod db;
-pub mod model;
+mod pgp;
+pub use pgp::WoT;
+mod always;
+pub use always::Always;
 
 /// The default value for the --marginals-needed option.
 pub const DEFAULT_MARGINALS_NEEDED: u8 = 3;
@@ -14,12 +17,26 @@ pub const DEFAULT_MAX_CERT_DEPTH: u8 = 5;
 
 pub use crate::common::{
     cert,
+    Model,
+    ModelViewAt,
     OwnerTrust,
     OwnerTrustLevel,
     Query,
     TrustModel,
     Validity,
 };
+
+impl TrustModel {
+    pub fn build(&self, config: &crate::Config) -> crate::Result<Box<dyn Model>>
+    {
+        use TrustModel::*;
+        match self {
+            PGP | TofuPGP | Auto => WoT::new(config),
+            Always => Ok(Box::new(always::Always::default())),
+            _ => Err(anyhow::anyhow!("Trust model {:?} not implemented", self))
+        }
+    }
+}
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum TofuPolicy {
