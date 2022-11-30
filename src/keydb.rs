@@ -592,6 +592,12 @@ impl Overlay {
 
     fn set_cached_mtime(&self, of: &Resource, new: SystemTime)
                         -> Result<()> {
+        // Make sure the overlay exists.  If we fail to create the
+        // directory, caching the mtime would fail anyway, and callers
+        // of this function expect a side-effect, so this seems like
+        // an okay place to do that.
+        std::fs::create_dir_all(&self.path)?;
+
         let p = self.mtime_cache_path(&of);
         let f = tempfile::NamedTempFile::new_in(&self.path)?;
         filetime::set_file_mtime(f.path(), new.into())?;
