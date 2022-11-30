@@ -215,6 +215,11 @@ pub enum Status {
     },
     ImportRes(ImportResult),
 
+    Exported {
+        fingerprint: Fingerprint,
+    },
+    ExportRes(ExportResult),
+
     PinentryLaunched(String),
 
     NoData(NoDataReason),
@@ -616,6 +621,24 @@ impl Status {
                 )?;
             },
 
+            Exported {
+                fingerprint,
+            } => {
+                writeln!(w, "EXPORTED {:X}", fingerprint)?;
+            },
+
+            ExportRes(ExportResult {
+                count,
+                secret_count,
+                exported,
+            }) => {
+                writeln!(w, "EXPORT_RES {} {} {}",
+                         count,
+                         secret_count,
+                         exported,
+                )?;
+            },
+
             PinentryLaunched(i) => writeln!(w, "PINENTRY_LAUNCHED {}", i)?,
 
             NoData(reason) => {
@@ -780,6 +803,13 @@ impl From<ImportProblem> for u8 {
             ErrorStoringCert => 4,
         }
     }
+}
+
+#[derive(Clone, Default, Debug)]
+pub struct ExportResult {
+    pub count: usize,
+    pub secret_count: usize,
+    pub exported: usize,
 }
 
 #[derive(Copy, Clone, Debug)]

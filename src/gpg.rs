@@ -48,6 +48,7 @@ pub mod utils;
 pub mod commands;
 pub mod verify;
 pub mod decrypt;
+pub mod export;
 pub mod import;
 pub mod sign;
 pub mod encrypt;
@@ -2230,6 +2231,7 @@ fn real_main() -> anyhow::Result<()> {
     let result = match command {
         Some(aVerify) => verify::cmd_verify(&opt, &args),
         Some(aDecrypt) => decrypt::cmd_decrypt(&opt, &args),
+        Some(aExport) => export::cmd_export(&mut opt, &args, false),
         Some(aImport) => import::cmd_import(&mut opt, &args),
         Some(aSign) => sign::cmd_sign(&mut opt, &args, detached_sig, false),
         Some(aClearsign) => sign::cmd_sign(&mut opt, &args, detached_sig, true),
