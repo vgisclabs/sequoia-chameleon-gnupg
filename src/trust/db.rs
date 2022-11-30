@@ -233,6 +233,7 @@ impl From<u32> for Index {
 }
 
 /// A TrustDB record.
+#[derive(Debug)]
 pub enum Record {
     Version(Version),
 
@@ -246,10 +247,12 @@ pub enum Record {
     },
 
     Unknown {
+        typ: u8,
         data: [u8; 40],
     },
 }
 
+#[derive(Debug)]
 pub struct Version {
     pub version: u8,
     pub marginals_needed: u8,
@@ -311,6 +314,7 @@ impl Record {
                 let mut data = [0u8; 40];
                 data.copy_from_slice(b);
                 Ok(Record::Unknown {
+                    typ,
                     data,
                 })
             },
