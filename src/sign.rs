@@ -7,7 +7,6 @@ use anyhow::{Context, Result};
 use sequoia_openpgp as openpgp;
 use openpgp::{
     Fingerprint,
-    KeyHandle,
     armor::Kind,
     cert::amalgamation::key::PrimaryKey,
     crypto,
@@ -136,12 +135,23 @@ pub async fn get_signers(config: &crate::Config)
     let mut signers = vec![];
     let mut signers_desc = vec![];
     for local_user in config.local_users()? {
-        // XXX: currently, this only works with keyids and fingerprints
-        let handle: KeyHandle = local_user.parse()
-            .context("Local users and default keys must be key handles")?;
+        let query = crate::trust::Query::from(local_user.as_str());
+        let certs = config.lookup_certs(&query)?;
 
-        let cert = config.keydb().get(&handle)
-            .ok_or_else(|| anyhow::anyhow!("Key {:X} not found", handle))?;
+        // Cowardly refuse any queries that resolve to multiple keys.
+        // In my mind, using queries other than fingerprints in
+        // --default-key and --local-user is fragile and should be
+        // avoided.  We expand groups and use our trust model for the
+        // lookup.  It is not clear what exactly GnuPG does, likely
+        // first hit wins.
+        let cert = match certs.len() {
+            0 => return Err(anyhow::anyhow!("Signing key {} not found", query)),
+            1 => certs[0],
+            n => return Err(anyhow::anyhow!(
+                "Signing key {} maps to {} different keys: {:?}", query, n,
+                certs.iter().map(|c| c.fingerprint().to_string())
+                    .collect::<Vec<_>>())),
+        };
 
         config.status().emit(
             Status::KeyConsidered {
@@ -151,7 +161,7 @@ pub async fn get_signers(config: &crate::Config)
             })?;
 
         let vcert = cert.with_policy(config.policy(), config.now())
-            .context(format!("Key {:X} is not valid", handle))?;
+            .context(format!("Key {} is not valid", query))?;
 
         let mut candidates = Vec::new();
         for key in vcert.keys().for_signing() {
@@ -165,7 +175,7 @@ pub async fn get_signers(config: &crate::Config)
         }
         if candidates.is_empty() {
             return Err(anyhow::anyhow!(
-                "Key {:X} is not signing-capable", handle));
+                "Key {} is not signing-capable", query));
         }
 
         // Prefer keys that are alive, subkeys, newer keys over older

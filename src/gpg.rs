@@ -1683,6 +1683,7 @@ fn real_main() -> anyhow::Result<()> {
             },
 
 	    oDefaultKey => {
+                // XXX: Maybe warn about non-fingerprint queries here.
                 opt.def_secret_key.push(value.as_str().unwrap().into());
                 // XXX:
                 // sl->flags = (pargs.r_opt << PK_LIST_SHIFT);
@@ -1997,7 +1998,7 @@ fn real_main() -> anyhow::Result<()> {
                 opt.ask_cert_level = false;
             },
 	    oLocalUser => {
-                // store the local users */
+                // XXX: Maybe warn about non-fingerprint queries here.
                 opt.local_user.push(Sender {
                     name: value.as_str().unwrap().into(),
                     config: config_file.is_some(),
