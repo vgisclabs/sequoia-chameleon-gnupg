@@ -2194,7 +2194,7 @@ fn real_main() -> anyhow::Result<()> {
     opt.keydb.initialize()?;
     opt.trust_model_impl =
         opt.trust_model.unwrap_or_default().build(&opt)?;
-    let _ = opt.trustdb.read_ownertrust(opt.trustdb.path(&opt));
+    opt.trustdb.read_ownertrust(opt.trustdb.path(&opt))?;
 
     // Read the owner-trusts from our DB.
     // XXX: Currently, this is a plain text file.

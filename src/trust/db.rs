@@ -141,7 +141,7 @@ impl TrustDB {
     fn read_version(&self, config: &Config) -> Result<Version> {
         let mut reader = File::open(config.make_filename(&self.path))?;
         let version_record = Record::from_buffered_reader(&mut reader)?;
-        if let Record::Version(v) = version_record {
+        if let Some(Record::Version(v)) = version_record {
             Ok(v)
         } else {
             Err(anyhow::anyhow!(
@@ -151,9 +151,17 @@ impl TrustDB {
     }
 
     pub fn read_ownertrust(&mut self, path: PathBuf) -> Result<()> {
-        let mut reader = File::open(path)?;
+        let mut reader = match File::open(path) {
+            Ok(r) => r,
+            Err(e) =>
+                return if e.kind() == std::io::ErrorKind::NotFound {
+                    Ok(())
+                } else {
+                    Err(e.into())
+                },
+        };
 
-        while let Ok(record) = Record::from_buffered_reader(&mut reader) {
+        while let Some(record) = Record::from_buffered_reader(&mut reader)? {
             match record {
                 Record::Trust { fingerprint, ownertrust, .. } =>
                     self.set_ownertrust(fingerprint.clone(), ownertrust),
@@ -268,9 +276,17 @@ pub struct Version {
 
 impl Record {
     pub fn from_buffered_reader(r: &mut dyn BufferedReader<()>)
-                                -> Result<Self>
+                                -> Result<Option<Self>>
     {
-        let b = &r.data_consume_hard(40)?[..40];
+        let b = match r.data_consume_hard(40) {
+            Ok(v) => &v[..40],
+            Err(e) =>
+                return if e.kind() == std::io::ErrorKind::UnexpectedEof {
+                    Ok(None)
+                } else {
+                    Err(e.into())
+                },
+        };
         let typ = b[0];
 
         let read_be_u32 = |v: &[u8]| -> u32 {
@@ -288,7 +304,7 @@ impl Record {
         };
 
         match typ {
-            1 => Ok(Record::Version(Version {
+            1 => Ok(Some(Record::Version(Version {
                 version:          b[4],
                 marginals_needed: b[5],
                 completes_needed: b[6],
@@ -299,24 +315,24 @@ impl Record {
                 expiration_time:  read_maybe_time(&b[16..20]),
                 first_free:       read_be_u32(&b[28..32]).into(),
                 hash_table:       read_be_u32(&b[36..40]).into(),
-            })),
+            }))),
 
-            12 => Ok(Record::Trust {
+            12 => Ok(Some(Record::Trust {
                 fingerprint: Fingerprint::from_bytes(&b[2..22]),
                 ownertrust:     b[22].try_into()?,
                 depth:          b[23],
                 min_ownertrust: b[24],
                 flags:          b[25],
                 valid_list:     read_be_u32(&b[26..30]).into(),
-            }),
+            })),
 
             _ => {
                 let mut data = [0u8; 40];
                 data.copy_from_slice(b);
-                Ok(Record::Unknown {
+                Ok(Some(Record::Unknown {
                     typ,
                     data,
-                })
+                }))
             },
         }
     }
