@@ -1,7 +1,9 @@
 macro_rules! trace {
     ( $TRACE:expr, $fmt:expr, $($pargs:expr),* ) => {
         if $TRACE {
-            eprintln!($fmt, $($pargs),*);
+            let m = format!($fmt, $($pargs),*);
+            eprintln!("{}", m);
+            crate::with_invocation_log(|w| Ok(writeln!(w, "{}", m)?));
         }
     };
     ( $TRACE:expr, $fmt:expr ) => {
