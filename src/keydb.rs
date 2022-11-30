@@ -1,7 +1,7 @@
 //! Manages keyrings and keyboxes.
 
 use std::{
-    collections::BTreeMap,
+    collections::{BTreeMap, BTreeSet},
     fs,
     io::Read,
     path::{Path, PathBuf},
@@ -43,8 +43,8 @@ pub struct KeyDB {
     by_id: BTreeMap<KeyID, Rc<Cert>>,
     by_subkey_fp: BTreeMap<Fingerprint, Rc<Cert>>,
     by_subkey_id: BTreeMap<KeyID, Rc<Cert>>,
-    by_userid: BTreeMap<UserID, Vec<Rc<Cert>>>,
-    by_email: BTreeMap<String, Vec<Rc<Cert>>>,
+    by_userid: BTreeMap<UserID, BTreeSet<Fingerprint>>,
+    by_email: BTreeMap<String, BTreeSet<Fingerprint>>,
 }
 
 #[derive(Clone)]
@@ -329,13 +329,15 @@ impl KeyDB {
             Query::Key(_) | Query::ExactKey(_) => Ok(vec![]),
             Query::Email(e) =>
                 Ok(self.by_email.get(e)
-                   .map(|certs| certs.iter().map(AsRef::as_ref).collect())
+                   .map(|fps| fps.iter().filter_map(
+                       |fp| self.by_fp.get(fp).map(AsRef::as_ref)).collect())
                    .unwrap_or_default()),
             Query::UserIDFragment(f) =>
                 Ok(self.by_userid.iter()
                    .filter(|(k, _)| f.find(k.value()).is_some())
-                   .flat_map(|(_, v)| v.iter().map(AsRef::as_ref))
-                   .collect())
+                   .flat_map(|(_, fps)| fps.iter().filter_map(
+                       |fp| self.by_fp.get(fp).map(AsRef::as_ref)))
+                   .collect()),
         }
     }
 
@@ -484,18 +486,18 @@ impl KeyDB {
 
         let fp = rccert.fingerprint();
         let keyid = KeyID::from(&fp);
-        self.by_fp.insert(fp, rccert.clone());
+        self.by_fp.insert(fp.clone(), rccert.clone());
         self.by_id.insert(keyid, rccert.clone());
 
         for uidb in rccert.userids() {
             self.by_userid.entry(uidb.userid().clone())
                 .or_default()
-                .push(rccert.clone());
+                .insert(fp.clone());
 
             if let Ok(Some(email)) = uidb.email() {
                 self.by_email.entry(email)
                     .or_default()
-                    .push(rccert.clone());
+                    .insert(fp.clone());
             }
         }
 
