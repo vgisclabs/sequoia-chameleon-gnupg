@@ -202,6 +202,11 @@ impl TrustDB {
     pub fn export_ownertrust(&self, sink: &mut dyn io::Write)
                              -> Result<()> {
         for (fp, ownertrust) in self.ownertrust.iter() {
+            // Skip unknown ownertrust values, like GnuPG.
+            if ownertrust.level() == OwnerTrustLevel::Unknown {
+                continue;
+            }
+
             writeln!(sink, "{:X}:{}:", fp, u8::from(*ownertrust))?;
         }
 

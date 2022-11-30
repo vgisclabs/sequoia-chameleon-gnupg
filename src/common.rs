@@ -308,6 +308,7 @@ pub struct OwnerTrust {
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum OwnerTrustLevel {
+    Unknown,
     Undefined,
     Never,
     Marginal,
@@ -341,6 +342,7 @@ impl fmt::Display for OwnerTrust {
         if f.alternate() {
             // Machine-readable.
             match self.level {
+                Unknown => f.write_str("-"), // XXX
                 Undefined => f.write_str("-"),
                 Never => f.write_str("n"),
                 Marginal => f.write_str("m"),
@@ -350,6 +352,7 @@ impl fmt::Display for OwnerTrust {
         } else {
             // Human-readable.
             match self.level {
+                Unknown => f.write_str("unknown"), // XXX
                 Undefined => f.write_str("undefined"),
                 Never => f.write_str("never"),
                 Marginal => f.write_str("marginal"),
@@ -362,6 +365,9 @@ impl fmt::Display for OwnerTrust {
 
 /// The mask covers the type.
 const OWNERTRUST_MASK: u8 = 15;
+
+/// Not yet assigned.
+const OWNERTRUST_UNKNOWN: u8 = 0;
 
 /// Not enough information for calculation (q).
 const OWNERTRUST_UNDEFINED: u8 = 2;
@@ -386,6 +392,7 @@ impl TryFrom<u8> for OwnerTrust {
     fn try_from(v: u8) -> Result<Self> {
         use OwnerTrustLevel::*;
         let level = match v & OWNERTRUST_MASK {
+            OWNERTRUST_UNKNOWN   => Ok(Unknown),
             OWNERTRUST_UNDEFINED => Ok(Undefined),
             OWNERTRUST_NEVER     => Ok(Never),
             OWNERTRUST_MARGINAL  => Ok(Marginal),
@@ -404,6 +411,7 @@ impl From<OwnerTrust> for u8 {
     fn from(ot: OwnerTrust) -> u8 {
         use OwnerTrustLevel::*;
         let level = match ot.level {
+            Unknown =>   OWNERTRUST_UNKNOWN,
             Undefined => OWNERTRUST_UNDEFINED,
             Never =>     OWNERTRUST_NEVER,
             Marginal =>  OWNERTRUST_MARGINAL,
