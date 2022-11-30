@@ -1618,6 +1618,8 @@ fn real_main() -> anyhow::Result<()> {
             },
 	    oFingerprint => {
                 opt.fingerprint += 1;
+                opt.with_fingerprint = opt.fingerprint > 0;
+                opt.with_subkey_fingerprint = opt.fingerprint > 1;
                 fpr_maybe_cmd = true;
             },
 
@@ -2174,6 +2176,12 @@ fn real_main() -> anyhow::Result<()> {
 
     if greeting && ! no_greeting {
         eprintln!("Greetings from the people of earth!");
+    }
+
+    // If there is no command but the --fingerprint is given, default
+    // to the --list-keys command.
+    if command.is_none() && fpr_maybe_cmd {
+        command = Some(aListKeys);
     }
 
     // XXX: More option frobbing.
