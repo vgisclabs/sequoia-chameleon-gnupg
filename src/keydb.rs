@@ -78,8 +78,14 @@ impl Kind {
             return Ok(Some(Kind::CertD));
         }
 
-        let mut magic = [0; 4];
         let mut f = fs::File::open(path)?;
+
+        // If the file is empty, GnuPG always returns keyring.
+        if f.metadata()?.len() == 0 {
+            return Ok(Some(Kind::Keyring));
+        }
+
+        let mut magic = [0; 4];
         f.read_exact(&mut magic)?;
 
         if magic == [0x13, 0x57, 0x9a, 0xce]
