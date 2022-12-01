@@ -557,13 +557,68 @@ fn lazy_iter<'c>(c: &'c openpgp_cert_d::CertD, base: &'c Path)
 
 pub struct Overlay {
     path: PathBuf,
+    certd: openpgp_cert_d::CertD,
+    #[allow(dead_code)]
+    trust_root: Cert,
 }
 
 impl Overlay {
     fn new(p: &Path) -> Result<Overlay> {
+        let certd = openpgp_cert_d::CertD::with_base_dir(p)?;
+
+        // Fabricate a dummy packet header to appease the check in
+        // CertD::insert_special.
+        use openpgp::{
+            packet::{Tag, header::*},
+            serialize::Marshal,
+        };
+        let mut dummy = Vec::with_capacity(32 + 2);
+        let h = Header::new(CTB::new(Tag::PublicKey),
+                            BodyLength::Full(32));
+        h.serialize(&mut dummy).unwrap();
+        dummy.extend_from_slice(&[0, 0, 0, 0, 0, 0, 0, 0,
+                                  0, 0, 0, 0, 0, 0, 0, 0,
+                                  0, 0, 0, 0, 0, 0, 0, 0,
+                                  0, 0, 0, 0, 0, 0, 0, 0]);
+
+        let (_, trust_root) = certd.insert_special(
+            openpgp_cert_d::TRUST_ROOT,
+            dummy.into(),
+            |_, existing| {
+                if let Some(trust_root) = existing {
+                    Ok(trust_root)
+                } else {
+                    Self::generate_trust_root().map_err(Into::into)
+                }
+            })?;
+
         Ok(Overlay {
             path: p.into(),
+            certd,
+            trust_root: Cert::from_bytes(&trust_root)?,
         })
+    }
+
+    fn generate_trust_root() -> Result<openpgp_cert_d::Data> {
+        use openpgp::{
+            cert::CertBuilder,
+            packet::signature::SignatureBuilder,
+            types::SignatureType,
+        };
+
+        // XXX: It would be nice if the direct key signature would
+        // also be non-exportable, but Sequoia doesn't have a way to
+        // do that yet with the CertBuilder.
+        let (root, _) =
+            CertBuilder::new()
+            .add_userid_with(
+                "trust-root",
+                SignatureBuilder::new(SignatureType::PositiveCertification)
+                    .set_exportable_certification(false)?)?
+            .generate()?;
+
+        let tsk = root.as_tsk();
+        Ok(tsk.to_vec()?.into())
     }
 
     pub fn path(&self) -> &Path {
