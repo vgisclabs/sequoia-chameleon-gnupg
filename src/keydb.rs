@@ -481,7 +481,7 @@ impl KeyDB {
     /// Inserts the given cert into the in-memory database.
     fn index(&mut self, cert: Cert, _tag: Option<openpgp_cert_d::Tag>) {
         tracer!(TRACE, "KeyDB::index");
-        t!("Inserting {}", cert.fingerprint());
+        t!("Inserting {} into the in-core caches", cert.fingerprint());
         let rccert = Rc::new(cert);
 
         let fp = rccert.fingerprint();
@@ -511,12 +511,14 @@ impl KeyDB {
 
     /// Inserts the given cert into the database.
     ///
-    /// The cert is written to the first writable resource, and the
-    /// in-memory database is updated.
+    /// The cert is written to the overlay resource if it exists,
+    /// otherwise the cert is inserted into the in-memory database.
     pub fn insert(&mut self, cert: Cert) -> Result<()> {
+        tracer!(TRACE, "KeyDB::insert");
+
         if let Some(overlay) = &self.overlay {
-            let certd = openpgp_cert_d::CertD::with_base_dir(&overlay.path)?;
-            let (tag, merged) = certd.insert(cert.to_vec()?.into(), |new, old| {
+            t!("Inserting {} into the overlay", cert.fingerprint());
+            overlay.certd.insert(cert.to_vec()?.into(), |new, old| {
                 if let Some(old) = old {
                     Ok(Cert::from_bytes(&old)?
                        .merge_public(Cert::from_bytes(&new)?)?
@@ -526,8 +528,10 @@ impl KeyDB {
                 }
             })?;
 
-            self.index(Cert::from_bytes(&merged)?, Some(tag));
+            // We don't index the cert, we rely on KeyDB::initialize
+            // to do that when it reads in the overlay.
         } else {
+            // No overlay, just index.
             self.index(cert, None);
         }
         Ok(())
