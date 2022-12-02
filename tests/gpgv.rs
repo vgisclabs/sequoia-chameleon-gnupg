@@ -29,7 +29,7 @@ lazy_static::lazy_static! {
 const GPGV_CHAMELEON: &[&str] =
     &["cargo", "run", "--quiet", "--bin", "sequoia-chameleon-gpgv", "--"];
 const GPGV_CHAMELEON_BUILD: &[&str] =
-    &["cargo", "run", "--quiet", "--bin", "sequoia-chameleon-gpgv"];
+    &["cargo", "build", "--quiet", "--bin", "sequoia-chameleon-gpgv"];
 
 const STDERR_EDIT_DISTANCE_THRESHOLD: usize = 20;
 

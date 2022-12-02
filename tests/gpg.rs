@@ -40,7 +40,7 @@ lazy_static::lazy_static! {
 }
 
 const GPG_CHAMELEON_BUILD: &[&str] =
-    &["cargo", "run", "--quiet", "--bin", "sequoia-chameleon-gpg"];
+    &["cargo", "build", "--quiet", "--bin", "sequoia-chameleon-gpg"];
 
 pub const STDOUT_EDIT_DISTANCE_THRESHOLD: usize = 20;
 pub const STDERR_EDIT_DISTANCE_THRESHOLD: usize = 20;
