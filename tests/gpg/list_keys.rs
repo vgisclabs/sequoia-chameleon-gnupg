@@ -226,6 +226,26 @@ where
     diff.assert_equal_up_to(per_subkey(&cert, 1), 0);
 
     let diff = experiment.invoke(&[
+        "--fingerprint",
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(9, 0);
+
+    let diff = experiment.invoke(&[
+        "--fingerprint",
+        "--fingerprint",
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(9, 0);
+
+    let diff = experiment.invoke(&[
+        "--fingerprint",
+        "--with-colons",
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(per_subkey(&cert, 1), 0);
+
+    let diff = experiment.invoke(&[
         "--list-keys",
         "--with-secret",
     ])?;

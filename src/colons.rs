@@ -82,14 +82,24 @@ pub enum Record {
 impl Record {
     /// Emits the record to `w`, `mr` indicates whether it should be
     /// machine-readable.
-    pub fn emit(&self, w: &mut (impl io::Write + ?Sized), mr: bool)
+    pub fn emit(&self, config: &crate::Config,
+                w: &mut (impl io::Write + ?Sized))
                 -> Result<()>
     {
-        crate::with_invocation_log(|sink| self.do_emit(sink, mr));
-        self.do_emit(w, mr)
+        crate::with_invocation_log(
+            |sink| self.do_emit(
+                sink,
+                config.with_colons,
+                config.fingerprint > 0));
+        self.do_emit(w,
+                     config.with_colons,
+                     config.fingerprint > 0)
     }
 
-    fn do_emit(&self, w: &mut (impl io::Write + ?Sized), mr: bool)
+    fn do_emit(&self,
+               w: &mut (impl io::Write + ?Sized),
+               mr: bool,
+               prettyprint: bool)
                 -> Result<()>
     {
         use chrono::{DateTime, Utc};
@@ -235,7 +245,11 @@ impl Record {
                 if mr {
                     writeln!(w, "fpr:::::::::{:X}:", fp)?;
                 } else {
-                    writeln!(w, "      {:X}", fp)?;
+                    if prettyprint {
+                        writeln!(w, "      {}", fp.to_spaced_hex())?;
+                    } else {
+                        writeln!(w, "      {:X}", fp)?;
+                    }
                 }
             },
 

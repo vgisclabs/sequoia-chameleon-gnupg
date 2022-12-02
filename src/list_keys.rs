@@ -37,7 +37,7 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String], list_secret: bool)
             marginals_needed: v.marginals_needed,
             completes_needed: v.completes_needed,
             max_cert_depth: v.max_cert_depth,
-        }.emit(&mut sink, config.with_colons)?;
+        }.emit(config, &mut sink)?;
     }
 
     let filter: Vec<Query> = args.iter()
@@ -158,15 +158,15 @@ where
             },
             token_sn: have_secret.then(|| TokenSN::SecretAvaliable),
             curve: get_curve(cert.primary_key().mpis()),
-        }.emit(&mut sink, config.with_colons)?;
+        }.emit(config, &mut sink)?;
 
         Record::Fingerprint(cert_fp)
-            .emit(&mut sink, config.with_colons)?;
+            .emit(config, &mut sink)?;
         if config.with_keygrip
             || (config.with_colons && (list_secret || have_secret))
         {
             if let Ok(grip) = Keygrip::of(cert.primary_key().mpis()) {
-                Record::Keygrip(grip).emit(&mut sink, config.with_colons)?;
+                Record::Keygrip(grip).emit(config, &mut sink)?;
             }
         }
 
@@ -185,7 +185,7 @@ where
                 expiration_date:  vuid.as_ref()
                     .and_then(|v| v.binding_signature().signature_expiration_time()),
                 userid: uid.userid().clone(),
-            }.emit(&mut sink, config.with_colons)?;
+            }.emit(config, &mut sink)?;
         }
 
         for (validity, subkey) in acert.subkeys() {
@@ -222,17 +222,17 @@ where
                     .unwrap_or_else(|| KeyFlags::empty()),
                 token_sn: have_secret.then(|| TokenSN::SecretAvaliable),
                 curve: get_curve(subkey.mpis()),
-            }.emit(&mut sink, config.with_colons)?;
+            }.emit(config, &mut sink)?;
 
             if config.with_colons || config.with_subkey_fingerprint {
                 Record::Fingerprint(subkey_fp)
-                    .emit(&mut sink, config.with_colons)?;
+                    .emit(config, &mut sink)?;
             }
             if config.with_keygrip
                 || (config.with_colons && (list_secret || have_secret))
             {
                 if let Ok(grip) = Keygrip::of(subkey.mpis()) {
-                    Record::Keygrip(grip).emit(&mut sink, config.with_colons)?;
+                    Record::Keygrip(grip).emit(config, &mut sink)?;
                 }
             }
         }
