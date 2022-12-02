@@ -78,8 +78,7 @@ use openpgp::types::RevocationStatus;
 use openpgp::packet::prelude::*;
 
 use sequoia_cert_store as cert_store;
-use cert_store::Store;
-use cert_store::StoreUpdate;
+use cert_store::{Store, StoreUpdate};
 
 use sequoia_net as net;
 

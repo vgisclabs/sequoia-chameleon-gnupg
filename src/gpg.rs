@@ -71,6 +71,7 @@ pub mod parcimonie;
 pub mod dirmngr;
 pub mod migrate;
 pub mod generate_key;
+pub mod delete_keys;
 
 /// Commands and options.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -2732,6 +2733,8 @@ fn real_main() -> anyhow::Result<()> {
         },
         Some(aListSecretKeys) =>
             list_keys::cmd_list_keys(&mut opt, &args, true),
+        Some(aDeleteKeys) =>
+            delete_keys::cmd_delete_keys(&mut opt, &args, false, false),
         Some(aCheckTrustDB) => Ok(()), // This is a NOP for us.
         Some(aImportOwnerTrust) =>
             trust::db::cmd_import_ownertrust(&mut opt, &args),

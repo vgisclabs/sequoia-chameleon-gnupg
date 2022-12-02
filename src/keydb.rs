@@ -12,14 +12,26 @@ use anyhow::{anyhow, Context, Result};
 
 use sequoia_openpgp as openpgp;
 use openpgp::{
-    Fingerprint,
-    Cert,
-    cert::raw::RawCertParser,
+    cert::{
+        Cert,
+        raw::RawCertParser,
+        CertRevocationBuilder,
+    },
     crypto::hash::Digest,
+    Fingerprint,
     KeyHandle,
+    packet::Any,
+    packet::key,
+    packet::Key,
     packet::UserID,
+    packet::Signature,
+    Packet,
     parse::Parse,
-    types::HashAlgorithm,
+    types::{
+        HashAlgorithm,
+        ReasonForRevocation,
+        SignatureType,
+    },
 };
 
 use sequoia_cert_store as cert_store;
@@ -38,6 +50,55 @@ use crate::{
 };
 
 trace_module!(TRACE);
+
+/// Returns the Cert's tombstone record, if any.
+///
+/// In order to delete certs, we make a revocation using the trust
+/// root.  Then, we store the bare primary key with that
+/// revocation forming a tombstone record.
+///
+/// If this cert is a tombstone, then this function returns the
+/// evidence.
+pub fn as_tombstone_record(cert: &LazyCert)
+                           -> Option<(Key<key::PublicParts, key::PrimaryRole>,
+                                      Signature)>
+{
+    // A tombstone has exactly two packets...
+    let min_len = if let Some(raw) = cert.raw_cert().as_ref() {
+        raw.packets().count()
+    } else {
+        let cert = cert.to_cert().ok()?;
+        // This underestimates the packet count.
+        cert.primary_key().signatures().count()
+            + cert.keys().count()
+            + cert.userids().count()
+            + cert.user_attributes().count()
+    };
+
+    if min_len > 2 {
+        return None;
+    }
+
+    // ... a primary key and a revocation certificate.
+    let primary_key = cert.primary_key().clone();
+    let revocation = if let Some(raw) = cert.raw_cert().as_ref() {
+        let r = Packet::try_from(raw.packets().nth(1)?).ok()?;
+        let r: Signature = r.downcast().ok()?;
+        if r.typ() != SignatureType::KeyRevocation {
+            return None;
+        }
+        r
+    } else {
+        let cert = cert.to_cert().ok()?;
+        let r = cert.primary_key().other_revocations().next()?;
+        if r.typ() != SignatureType::KeyRevocation {
+            return None;
+        }
+        r.clone()
+    };
+
+    Some((primary_key, revocation))
+}
 
 #[allow(dead_code)]
 pub struct KeyDB<'a> {
@@ -331,7 +392,7 @@ impl<'store> KeyDB<'store> {
             }
         };
 
-        let result = if lazy {
+        let mut result: Vec<_> = if lazy {
             items.into_iter().filter_map(Result::ok).filter_map(|fp| {
                 // XXX: Once we have a cached tag, avoid the
                 // work if tags match.
@@ -396,6 +457,20 @@ impl<'store> KeyDB<'store> {
                 })
                 .collect()
         };
+
+        // Drop tombstones.
+        result.retain(|(_tag, cert)| {
+            if let Ok(overlay) = self.overlay.as_ref() {
+                if Overlay::is_cert_tombstone(overlay.trust_root().ok(), cert) {
+                    t!("skipping {}: this is a tombstone", cert.fingerprint());
+                    false
+                } else {
+                    true
+                }
+            } else {
+                true
+            }
+        });
 
         Ok(result)
     }
@@ -621,6 +696,146 @@ impl<'store> KeyDB<'store> {
 
         Ok(())
     }
+
+    /// Inserts the given cert into the database.
+    ///
+    /// The cert is written to the overlay resource if it exists,
+    /// otherwise the cert is inserted into the in-memory database.
+    pub fn insert<C>(&mut self, cert: C, override_tombstones: bool)
+                     -> Result<()>
+        where C: Into<LazyCert<'store>>
+    {
+        tracer!(TRACE, "KeyDB::insert");
+        let cert = cert.into();
+        t!("Inserting {} into the overlay", cert.fingerprint());
+
+        struct Merge<'store> {
+            trust_root: Option<Arc<LazyCert<'store>>>,
+            override_tombstones: bool,
+        }
+
+        impl<'a> sequoia_cert_store::store::MergeCerts<'a>
+            for Merge<'_>
+        {
+            fn merge_public<'b>(
+                &self,
+                new: Arc<LazyCert<'a>>,
+                old: Option<Arc<LazyCert<'b>>>
+            ) -> Result<Arc<LazyCert<'a>>> {
+                if let Some(old) = old {
+                    // If the cert is a tombstone, and
+                    // `override_tombstones` is given, strip the
+                    // tombstone away.
+                    if Overlay::is_cert_tombstone(
+                        self.trust_root.clone(), &old)
+                    {
+                        if self.override_tombstones {
+                            // Replace the tombstone.
+                            Ok(new)
+                        } else {
+                            // Keep the tombstone.
+                            Ok(Arc::new(old.to_cert()?.clone().into()))
+                        }
+                    } else {
+                        // Not a tombstone.
+                        Ok(Arc::new(old.to_cert()?.clone().merge_public(
+                            new.to_cert()?.clone())?.into()))
+                    }
+                } else {
+                    // No existing copy of this cert.
+                    Ok(new)
+                }
+            }
+        }
+
+        // We only have a trust root if we have an overlay.
+        let trust_root =
+            self.overlay.as_ref().ok()
+            .and_then(|o| o.trust_root().ok())
+            .clone();
+        let mut merge = Merge {
+            trust_root,
+            override_tombstones,
+        };
+        self.update_by(Arc::new(cert), &mut merge)?;
+
+        Ok(())
+    }
+
+    /// Imports the given cert into the database.
+    ///
+    /// Using this function signals intent: if a previously a cert has
+    /// been removed using [`KeyDB::remove`], and it is later imported
+    /// using this function, then the key is expected to be available
+    /// later on.  This is related to how re tombstone certs in the
+    /// overlay, see the implementation of [`KeyDB::remove`].
+    ///
+    /// The cert is written to the first writable resource, and the
+    /// in-memory database is updated.
+    pub fn import(&mut self, cert: Cert) -> Result<()> {
+        self.insert(cert, true)
+    }
+
+    /// Removes the given cert or subkey from the overlay and caches.
+    ///
+    /// The cert or subkey is removed from the overlay and the
+    /// in-core caches.
+    pub fn remove(&mut self, fp: Fingerprint) -> Result<()> {
+        tracer!(TRACE, "KeyDB::remove");
+        t!("Removing {} from the overlay", fp);
+        let fp = fp.into();
+
+        let trust_root =
+            match self.overlay.as_ref().ok().and_then(|o| o.trust_root().ok())
+        {
+            Some(t) => t,
+            None => {
+                t!("No trust root, cannot delete anything.");
+                return Ok(());
+            },
+        };
+
+
+        // Handle cert with fingerprint fp.
+        if let Ok(cert) = self.lookup_by_cert(&fp).map(|lc| lc.iter().next().unwrap().clone()) {
+            // We cannot simply remove a cert or subkey, because any
+            // update from the original keyring will add it back.
+            // Instead, we place tombstones in the form of revocations
+            // from the trust root.
+            let mut signer = trust_root.primary_key().clone()
+                .parts_into_secret()?.into_keypair()?;
+
+            // To tombstone a cert, remove all components, remove
+            // the primary secret, and revoke the cert.
+            let sig = CertRevocationBuilder::new()
+                .set_reason_for_revocation(
+                    ReasonForRevocation::Unspecified,
+                    b"Certificate deleted from cert.d")?
+                .build(&mut signer, cert.to_cert()?, None)?;
+            let tombstone = Cert::from_packets(vec![
+                cert.primary_key().clone().into(),
+                sig.into(),
+            ].into_iter())?;
+
+            struct TombstoneCert();
+            impl<'a> sequoia_cert_store::store::MergeCerts<'a>
+                for TombstoneCert
+            {
+                fn merge_public<'b>(
+                    &self,
+                    new: Arc<LazyCert<'a>>,
+                    _disk: Option<Arc<LazyCert<'b>>>
+                ) -> Result<Arc<LazyCert<'a>>> {
+                    Ok(new)
+                }
+            }
+            self.update_by(Arc::new(tombstone.into()), &mut TombstoneCert())?;
+        }
+
+        // XXX: handle subkey removals.
+
+        Ok(())
+    }
 }
 
 pub struct Overlay<'store> {
@@ -713,6 +928,27 @@ impl<'store> Overlay<'store> {
         filetime::set_file_mtime(f.path(), new.into())?;
         f.persist(p)?;
         Ok(())
+    }
+
+    /// Returns true if `cert` is a tombstone.
+    fn is_cert_tombstone(trust_root: Option<Arc<LazyCert<'store>>>,
+                         cert: &LazyCert) -> bool {
+        if let Some((primary, mut revocation)) = as_tombstone_record(cert)
+        {
+            let trust_root = if let Some(t) = trust_root {
+                t
+            } else {
+                return false;
+            };
+
+            revocation
+                .verify_primary_key_revocation(
+                    &trust_root.primary_key(),
+                    &primary)
+                .is_ok()
+        } else {
+            false
+        }
     }
 }
 
