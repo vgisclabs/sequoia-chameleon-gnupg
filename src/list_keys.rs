@@ -1,5 +1,4 @@
 use std::{
-    collections::BTreeMap,
     io::{self, Write},
 };
 
@@ -9,7 +8,6 @@ use sequoia_openpgp as openpgp;
 use openpgp::{
     cert::amalgamation::{ValidateAmalgamation, ValidAmalgamation},
     crypto::mpi::PublicKey,
-    Fingerprint,
     types::*,
 };
 use sequoia_ipc as ipc;
@@ -83,16 +81,9 @@ where
             continue;
         }
 
-        let mut has_secret: BTreeMap<Fingerprint, bool> = Default::default();
-        if let Some(agent) = &mut agent {
-            // Check for which keys we have a secret.
-            for k in cert.keys().filter(|k| {
-                rt.block_on(crate::agent::has_key(agent, &k))
-                    .unwrap_or(false)
-            }) {
-                has_secret.insert(k.fingerprint(), true);
-            }
-        }
+        let has_secret = agent.as_mut()
+            .map(|a| rt.block_on(crate::agent::has_keys(a, cert))).transpose()?
+            .unwrap_or_default();
 
         if list_secret && has_secret.is_empty() {
             // No secret (sub)key, don't list this key in --list-secret-keys.
@@ -114,7 +105,7 @@ where
         let acert = AuthenticatedCert::new(vtm.as_ref(), &cert)?;
         let vcert = cert.with_policy(p, config.now()).ok();
         let cert_fp = cert.fingerprint();
-        let have_secret = has_secret.get(&cert_fp).cloned().unwrap_or(false);
+        let have_secret = has_secret.contains(&cert_fp);
         let ownertrust = config.trustdb.get_ownertrust(&cert_fp)
             .unwrap_or_else(|| OwnerTrustLevel::Undefined.into());
 
@@ -207,8 +198,7 @@ where
 
             let vsubkey = subkey.clone().with_policy(p, config.now()).ok();
             let subkey_fp = subkey.fingerprint();
-            let have_secret =
-                has_secret.get(&subkey_fp).cloned().unwrap_or(false);
+            let have_secret = has_secret.contains(&subkey_fp);
 
             Record::Subkey {
                 have_secret: have_secret && list_secret,

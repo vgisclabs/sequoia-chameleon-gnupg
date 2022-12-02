@@ -1,11 +1,14 @@
-use std::convert::TryFrom;
-
+use std::{
+    convert::TryFrom,
+    collections::BTreeSet,
+};
 use anyhow::Result;
 
 use sequoia_openpgp as openpgp;
 use sequoia_ipc as ipc;
 use openpgp::{
     Cert,
+    Fingerprint,
     crypto::{
         Password,
         S2K,
@@ -294,6 +297,23 @@ pub async fn has_key(agent: &mut Agent,
 {
     let grip = Keygrip::of(key.mpis())?;
     Ok(send_simple(agent, format!("HAVEKEY {}", grip)).await.is_ok())
+}
+
+/// Returns the (sub)keys of the given cert that have a secret in the
+/// agent.
+pub async fn has_keys(agent: &mut Agent,
+                      cert: &Cert)
+                      -> Result<BTreeSet<Fingerprint>>
+{
+    let mut result = BTreeSet::default();
+
+    for k in cert.keys() {
+        if has_key(agent, &k).await.unwrap_or(false) {
+            result.insert(k.fingerprint());
+        }
+    }
+
+    Ok(result)
 }
 
 /// Imports a secret key into the agent.
