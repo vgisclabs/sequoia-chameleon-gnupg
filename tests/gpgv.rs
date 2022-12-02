@@ -2,6 +2,7 @@ use std::{
     collections::BTreeSet,
     fmt,
     fs,
+    path::PathBuf,
     process::*,
     time::{SystemTime, Duration},
 };
@@ -26,8 +27,21 @@ lazy_static::lazy_static! {
           .unwrap_or("/usr/bin/gpgv")];
 }
 
-const GPGV_CHAMELEON: &[&str] =
-    &["cargo", "run", "--quiet", "--bin", "sequoia-chameleon-gpgv", "--"];
+lazy_static::lazy_static! {
+    static ref GPGV_CHAMELEON: [&'static str; 1] =
+        [&*Box::leak(
+            if let Ok(target) = std::env::var("CARGO_TARGET_DIR") {
+                PathBuf::from(target)
+            } else {
+                std::env::current_dir().unwrap()
+                    .join("target")
+            }
+            .join("debug/sequoia-chameleon-gpgv")
+            .display().to_string()
+            .into_boxed_str()
+        )];
+}
+
 const GPGV_CHAMELEON_BUILD: &[&str] =
     &["cargo", "build", "--quiet", "--bin", "sequoia-chameleon-gpgv"];
 
@@ -50,7 +64,7 @@ fn basic() -> Result<()> {
         .sign_message(&mut subkey_signer, MSG)?;
 
     let oracle = invoke(&cert, &sig, &GPGV[..])?;
-    let us = invoke(&cert, &sig, GPGV_CHAMELEON)?;
+    let us = invoke(&cert, &sig, &GPGV_CHAMELEON[..])?;
 
     eprintln!("oracle: {}", oracle);
     eprintln!("us: {}", us);
@@ -91,7 +105,7 @@ fn cipher_suites() -> Result<()> {
             .sign_message(&mut subkey_signer, MSG)?;
 
         let oracle = invoke(&cert, &sig, &GPGV[..])?;
-        let us = invoke(&cert, &sig, GPGV_CHAMELEON)?;
+        let us = invoke(&cert, &sig, &GPGV_CHAMELEON[..])?;
 
         eprintln!("oracle: {}", oracle);
         eprintln!("us: {}", us);
@@ -136,7 +150,7 @@ fn hash_algos() -> Result<()> {
             .sign_message(&mut subkey_signer, MSG)?;
 
         let oracle = invoke(&cert, &sig, &GPGV[..])?;
-        let us = invoke(&cert, &sig, GPGV_CHAMELEON)?;
+        let us = invoke(&cert, &sig, &GPGV_CHAMELEON[..])?;
 
         eprintln!("oracle: {}", oracle);
         eprintln!("us: {}", us);
@@ -181,7 +195,7 @@ fn weak_hash_algos() -> Result<()> {
 
         let weak = ["--weak-digest", &algo.to_string()];
         let oracle = invoke_with(&cert, &sig, &GPGV[..], &weak)?;
-        let us = invoke_with(&cert, &sig, GPGV_CHAMELEON, &weak)?;
+        let us = invoke_with(&cert, &sig, &GPGV_CHAMELEON[..], &weak)?;
 
         eprintln!("oracle: {}", oracle);
         eprintln!("us: {}", us);
@@ -234,7 +248,7 @@ fn signature_types() -> Result<()> {
             .sign_message(&mut subkey_signer, MSG)?;
 
         let oracle = invoke(&cert, &sig, &GPGV[..])?;
-        let us = invoke(&cert, &sig, GPGV_CHAMELEON)?;
+        let us = invoke(&cert, &sig, &GPGV_CHAMELEON[..])?;
 
         eprintln!("oracle: {}", oracle);
         eprintln!("us: {}", us);
@@ -347,7 +361,7 @@ fn extended() -> Result<()> {
                                 if good { MSG } else { MSG_BAD })?;
 
                         let oracle = invoke(&cert, &sig, &GPGV[..])?;
-                        let us = invoke(&cert, &sig, GPGV_CHAMELEON)?;
+                        let us = invoke(&cert, &sig, &GPGV_CHAMELEON[..])?;
 
                         eprintln!("oracle: {}", oracle);
                         eprintln!("us: {}", us);
@@ -397,7 +411,7 @@ fn wrong_key() -> Result<()> {
                     if good { MSG } else { MSG_BAD })?;
 
             let oracle = invoke(&cert, &sig, &GPGV[..])?;
-            let us = invoke(&cert, &sig, GPGV_CHAMELEON)?;
+            let us = invoke(&cert, &sig, &GPGV_CHAMELEON[..])?;
 
             if false {
                 std::fs::write("/tmp/key", cert.to_vec()?)?;
