@@ -6,6 +6,7 @@ use std::{
     collections::BTreeMap,
     io::{self, BufRead},
     path::{Path, PathBuf},
+    sync::Mutex,
     time::*,
 };
 
@@ -86,7 +87,7 @@ pub fn cmd_export_ownertrust(config: &crate::Config, args: &[String])
 
 pub struct TrustDB {
     path: PathBuf,
-    ownertrust: BTreeMap<Fingerprint, OwnerTrust>,
+    ownertrust: Mutex<BTreeMap<Fingerprint, OwnerTrust>>,
 }
 
 impl Default for TrustDB {
@@ -150,7 +151,7 @@ impl TrustDB {
         }
     }
 
-    pub fn read_ownertrust(&mut self, path: PathBuf) -> Result<()> {
+    pub fn read_ownertrust(&self, path: PathBuf) -> Result<()> {
         let mut reader = match File::open(path) {
             Ok(r) => r,
             Err(e) =>
@@ -172,7 +173,7 @@ impl TrustDB {
         Ok(())
     }
 
-    pub fn import_ownertrust(&mut self, source: &mut dyn io::Read)
+    pub fn import_ownertrust(&self, source: &mut dyn io::Read)
                              -> Result<()> {
         for (i, line) in io::BufReader::new(source).lines().enumerate() {
             let l = line?;
@@ -201,7 +202,7 @@ impl TrustDB {
 
     pub fn export_ownertrust(&self, sink: &mut dyn io::Write)
                              -> Result<()> {
-        for (fp, ownertrust) in self.ownertrust.iter() {
+        for (fp, ownertrust) in self.ownertrust.lock().unwrap().iter() {
             // Skip unknown ownertrust values, like GnuPG.
             if ownertrust.level() == OwnerTrustLevel::Unknown {
                 continue;
@@ -214,21 +215,21 @@ impl TrustDB {
     }
 
     pub fn get_ownertrust(&self, fp: &Fingerprint) -> Option<OwnerTrust> {
-        self.ownertrust.get(fp).cloned()
+        self.ownertrust.lock().unwrap().get(fp).cloned()
     }
 
-    pub fn set_ownertrust(&mut self, fp: Fingerprint, ownertrust: OwnerTrust) {
-        self.ownertrust.insert(fp, ownertrust);
+    pub fn set_ownertrust(&self, fp: Fingerprint, ownertrust: OwnerTrust) {
+        self.ownertrust.lock().unwrap().insert(fp, ownertrust);
     }
 
-    pub fn ultimately_trusted_keys(&self) -> impl Iterator<Item = &Fingerprint>
-    {
-        self.ownertrust.iter()
+    pub fn ultimately_trusted_keys(&self) -> Vec<Fingerprint> {
+        self.ownertrust.lock().unwrap().iter()
             .filter_map(|(fp, ot)| if ot.level() == OwnerTrustLevel::Ultimate {
-                Some(fp)
+                Some(fp.clone())
             } else {
                 None
             })
+            .collect()
     }
 }
 

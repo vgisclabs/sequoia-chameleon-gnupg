@@ -40,9 +40,7 @@ impl Model for WoT {
                       -> Result<Box<dyn ModelViewAt + 'a>>
     {
         // Start with the roots from the trust database.
-        let mut roots = config.trustdb.ultimately_trusted_keys()
-            .cloned()
-            .collect::<Vec<_>>();
+        let mut roots = config.trustdb.ultimately_trusted_keys();
 
         // Now we add any roots from the configuration and command line.
         roots.extend_from_slice(&config.trusted_keys);
