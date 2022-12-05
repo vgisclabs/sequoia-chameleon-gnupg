@@ -30,6 +30,14 @@ pub trait Common {
     /// Returns the name of the program.
     fn argv0(&self) -> &'static str;
 
+    /// Prints an informative message to stderr if we are not in quiet
+    /// operation.
+    fn info(&self, msg: fmt::Arguments) {
+        if ! self.quiet() {
+            self.warn(msg);
+        }
+    }
+
     /// Prints a warning to stderr.
     fn warn(&self, msg: fmt::Arguments) {
         crate::with_invocation_log(

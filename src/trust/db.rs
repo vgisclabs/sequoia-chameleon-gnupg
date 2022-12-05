@@ -55,7 +55,7 @@ pub fn cmd_import_ownertrust(config: &mut crate::Config, args: &[String])
 
     let filename = args.get(0).cloned().unwrap_or_else(|| "-".into());
     let mut source = crate::utils::open(config, &filename)?;
-    config.trustdb.import_ownertrust(&mut source)?;
+    config.trustdb.import_ownertrust(config, &mut source)?;
 
     // Write the owner-trusts to our DB.
     // XXX: Currently, this is a plain text file.
@@ -173,7 +173,9 @@ impl TrustDB {
         Ok(())
     }
 
-    pub fn import_ownertrust(&self, source: &mut dyn io::Read)
+    pub fn import_ownertrust(&self,
+                             config: &crate::Config,
+                             source: &mut dyn io::Read)
                              -> Result<()> {
         for (i, line) in io::BufReader::new(source).lines().enumerate() {
             let l = line?;
@@ -194,6 +196,8 @@ impl TrustDB {
                 .with_context(|| format!("Malformed ownertrust line {}: {}",
                                          i, l))?;
 
+            config.info(format_args!("inserting ownertrust of {}",
+                                     ownertrust));
             self.set_ownertrust(fp, ownertrust);
         }
 

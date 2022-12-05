@@ -2212,7 +2212,12 @@ fn real_main() -> anyhow::Result<()> {
     let ownertrust_overlay =
         overlay.path().join("_sequoia_gpg_chameleon_ownertrust");
     if let Ok(mut f) = fs::File::open(ownertrust_overlay) {
-        opt.trustdb.import_ownertrust(&mut f)?;
+        // Suppress info messages while importing the ownertrust from
+        // our simple store.
+        let quiet = opt.quiet;
+        opt.quiet = true;
+        opt.trustdb.import_ownertrust(&opt, &mut f)?;
+        opt.quiet = quiet;
     }
 
     if let agent::PinentryMode::Loopback = opt.pinentry_mode {

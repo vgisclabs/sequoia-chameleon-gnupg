@@ -165,7 +165,7 @@ fn disabled() -> Result<()> {
                           format!("{}:134:\n", cert.fingerprint()).as_bytes())?,
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(0, 33);
+    diff.assert_equal_up_to(0, 9);
 
     let diff = experiment.invoke(&[
         "--check-trustdb",
