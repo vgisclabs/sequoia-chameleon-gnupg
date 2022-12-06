@@ -825,11 +825,11 @@ impl Config {
 
     /// Returns certs matching a given query using groups and the
     /// given trust model.
-    pub fn lookup_certs_with<'a>(&'a self,
-                                 vtm: &dyn trust::ModelViewAt<'a>,
-                                 query: &Query,
-                                 expand_groups: bool)
-                                 -> Result<Vec<&'a Cert>> {
+    pub fn lookup_certs_with<'a: 't, 't>(&'a self,
+                                         vtm: &dyn trust::ModelViewAt<'t>,
+                                         query: &Query,
+                                         expand_groups: bool)
+                                         -> Result<Vec<&'t Cert>> {
         match query {
             Query::Key(h) | Query::ExactKey(h) =>
                 return Ok(self.keydb.get(h).into_iter().collect()),

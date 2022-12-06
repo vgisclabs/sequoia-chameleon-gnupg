@@ -172,15 +172,15 @@ impl fmt::Display for TrustModel {
 }
 
 pub trait Model {
-    fn with_policy<'a>(&'a self, config: &'a crate::Config, at: Option<SystemTime>)
-                      -> Result<Box<dyn ModelViewAt + 'a>>;
+    fn with_policy<'a>(&self, config: &'a crate::Config, at: Option<SystemTime>)
+                      -> Result<Box<dyn ModelViewAt<'a> + 'a>>;
 }
 
 pub fn null_model() -> Box<dyn Model> {
     struct Null(());
     impl Model for Null {
-        fn with_policy<'a>(&'a self, _: &'a crate::Config, _: Option<SystemTime>)
-                           -> Result<Box<dyn ModelViewAt + 'a>>
+        fn with_policy<'a>(&self, _: &'a crate::Config, _: Option<SystemTime>)
+                           -> Result<Box<dyn ModelViewAt<'a> + 'a>>
         {
             Err(anyhow::anyhow!("Cannot instantiate null model"))
         }

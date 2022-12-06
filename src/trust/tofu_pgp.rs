@@ -40,8 +40,8 @@ impl TofuPGP {
 }
 
 impl Model for TofuPGP {
-    fn with_policy<'a>(&'a self, config: &'a Config, time: Option<SystemTime>)
-                      -> Result<Box<dyn ModelViewAt + 'a>>
+    fn with_policy<'a>(&self, config: &'a Config, time: Option<SystemTime>)
+                      -> Result<Box<dyn ModelViewAt<'a> + 'a>>
     {
         Ok(Box::new(TofuPGPViewAt {
             pgp: self.pgp.with_policy(config, time)?,

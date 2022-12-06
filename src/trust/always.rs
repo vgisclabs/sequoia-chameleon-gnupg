@@ -31,12 +31,12 @@ use crate::{
 pub struct Always(());
 
 impl Model for Always {
-    fn with_policy<'a>(&'a self, config: &'a Config, time: Option<SystemTime>)
-                      -> Result<Box<dyn ModelViewAt + 'a>>
+    fn with_policy<'a>(&self, config: &'a Config, time: Option<SystemTime>)
+                      -> Result<Box<dyn ModelViewAt<'a> + 'a>>
     {
         Ok(Box::new(AlwaysViewAt {
             config,
-            time: time.unwrap_or_else(|| config.now()),
+            time: time.unwrap_or_else(move || config.now()),
         }))
     }
 }

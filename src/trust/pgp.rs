@@ -36,8 +36,8 @@ impl WoT {
 }
 
 impl Model for WoT {
-    fn with_policy<'a>(&'a self, config: &'a Config, at: Option<SystemTime>)
-                      -> Result<Box<dyn ModelViewAt + 'a>>
+    fn with_policy<'a>(&self, config: &'a Config, at: Option<SystemTime>)
+                      -> Result<Box<dyn ModelViewAt<'a> + 'a>>
     {
         // Start with the roots from the trust database.
         let mut roots = config.trustdb.ultimately_trusted_keys();
