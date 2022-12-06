@@ -17,7 +17,7 @@ use sequoia_ipc as ipc;
 use crate::{
     common::Common,
     compliance::Compliance,
-    status::{self, Status},
+    status::{self, Status, InvalidKeyReason},
     utils,
 };
 
@@ -28,6 +28,19 @@ use crate::{
 pub fn cmd_encrypt(config: &crate::Config, args: &[String],
                    symmetric: bool, sign: bool)
                    -> Result<()>
+{
+    if let Err(e) = do_encrypt(config, args, symmetric, sign) {
+        config.error(format_args!(
+            "{}: encryption failed: {}",
+            args.get(0).map(String::as_str).unwrap_or("-"),
+            e));
+    }
+    Ok(())
+}
+
+fn do_encrypt(config: &crate::Config, args: &[String],
+              symmetric: bool, sign: bool)
+              -> Result<()>
 {
     let rt = tokio::runtime::Runtime::new()?;
 
@@ -52,16 +65,8 @@ pub fn cmd_encrypt(config: &crate::Config, args: &[String],
         // --always-trust, expanding to multiple recipients is a
         // problem.  We should be more diligent here.
         let mut found_one = false;
-        for cert in config.lookup_certs(&query)? {
-            // GnuPG always reports the cert fingerprint even if a
-            // subkey has been given as recipient.
-            config.status().emit(
-                Status::KeyConsidered {
-                    fingerprint: cert.fingerprint(),
-                    not_selected: false,
-                    all_expired_or_revoked: false,
-                })?;
 
+        for cert in config.lookup_certs(&query)? {
             let vcert = cert.with_policy(policy, config.now())
                 .context(format!("Key {:X} is not valid", cert.key_handle()))?;
 
@@ -88,17 +93,32 @@ pub fn cmd_encrypt(config: &crate::Config, args: &[String],
                 de_vs_compliant &= config.de_vs_producer.key(&key).is_ok();
             }
 
-            if ! found_one_subkey {
-                return Err(anyhow::anyhow!(
-                    "Key {:X} is not encryption-capable", cert.key_handle()))?;
-            }
+            // GnuPG always reports the cert fingerprint even if a
+            // subkey has been given as recipient.
+            config.status().emit(
+                Status::KeyConsidered {
+                    fingerprint: cert.fingerprint(),
+                    not_selected: ! found_one_subkey,
+                    all_expired_or_revoked: ! found_one_subkey, // XXX: not quite
+                })?;
 
-            found_one = true;
+            found_one |= found_one_subkey;
         }
 
         if ! found_one {
-            return Err(anyhow::anyhow!(
-                "No encryption-capable key found for {}", query))?;
+            config.status().emit(
+                Status::InvalidRecipient {
+                    reason: InvalidKeyReason::Unspecified,
+                    query: &query,
+                })?;
+            let error = crate::error_codes::Error::GPG_ERR_UNUSABLE_PUBKEY;
+            config.warn(format_args!("{}: skipped: {}", query, error));
+            config.status().emit(
+                Status::Failure {
+                    location: "encrypt",
+                    error,
+                })?;
+            return Err(error)?;
         }
     }
 

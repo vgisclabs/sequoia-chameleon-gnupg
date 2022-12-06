@@ -55,10 +55,22 @@ fn general_purpose(cs: CipherSuite) -> Result<()> {
         .set_creation_time(experiment.now())
         .generate()?;
 
-    test_key(cert, experiment)
+    test_key(cert, experiment, true)
 }
 
-fn test_key<E>(cert: Cert, experiment: E) -> Result<()>
+#[test]
+fn no_encryption_subkey() -> Result<()> {
+    let experiment = Experiment::new()?;
+    let (cert, _) =
+        CertBuilder::new()
+        .add_userid("Alice Lovelace <alice@lovelace.name>")
+        .set_creation_time(experiment.now())
+        .generate()?;
+
+    test_key(cert, experiment, false)
+}
+
+fn test_key<E>(cert: Cert, experiment: E, expect_success: bool) -> Result<()>
 where
     E: Into<Option<Experiment>>,
 {
@@ -78,39 +90,48 @@ where
 
     let diff = experiment.invoke(&[
         "--status-fd=1",
+        "--no-auto-key-locate",
         "--always-trust",
         "--encrypt",
         "--recipient", "<alice@lovelace.name>",
         "--output", "ciphertext",
         &experiment.store("plaintext", PLAINTEXT)?,
     ])?;
-    diff.assert_success();
-    diff.assert_equal_up_to(70, 0);
-    let ciphertexts =
-        diff.with_working_dir(|p| Ok(std::fs::read(p.join("ciphertext"))?))?;
+    if expect_success {
+        diff.assert_success();
+        diff.assert_equal_up_to(70, 0);
+        let ciphertexts =
+            diff.with_working_dir(|p| Ok(std::fs::read(p.join("ciphertext"))?))?;
 
-    eprintln!("Importing key...");
-    let diff = experiment.invoke(&[
-        "--import",
-        &experiment.store("key", &cert.as_tsk().to_vec()?)?,
-    ])?;
-    diff.assert_success();
-    diff.assert_equal_up_to(0, 0);
-
-    for ciphertext in ciphertexts {
+        eprintln!("Importing key...");
         let diff = experiment.invoke(&[
-            "--status-fd=1",
-            "--decrypt",
-            "--output", "plaintext",
-            &experiment.store("ciphertext", &ciphertext)?,
+            "--import",
+            &experiment.store("key", &cert.as_tsk().to_vec()?)?,
         ])?;
         diff.assert_success();
-        diff.assert_equal_up_to(140, 1);
-        diff.with_working_dir(|p| {
-            assert_eq!(&std::fs::read(p.join("plaintext"))?,
-                       PLAINTEXT);
-            Ok(())
-        })?;
+        diff.assert_equal_up_to(0, 0);
+
+        for ciphertext in ciphertexts {
+            let diff = experiment.invoke(&[
+                "--status-fd=1",
+                "--decrypt",
+                "--output", "plaintext",
+                &experiment.store("ciphertext", &ciphertext)?,
+            ])?;
+            diff.assert_success();
+            diff.assert_equal_up_to(140, 1);
+            diff.with_working_dir(|p| {
+                assert_eq!(&std::fs::read(p.join("plaintext"))?,
+                           PLAINTEXT);
+                Ok(())
+            })?;
+        }
+    } else {
+        diff.assert_failure();
+        diff.assert_equal_up_to(67, 0);
+        assert!(diff.with_working_dir(
+            |p| Ok(p.join("ciphertext").exists()))?
+                .iter().all(|&exists| exists == false));
     }
 
     Ok(())

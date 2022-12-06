@@ -22,7 +22,12 @@ use openpgp::{
 };
 
 use crate::{
-    common::{TrustModel, OwnerTrust, Compliance},
+    common::{
+        Compliance,
+        OwnerTrust,
+        Query,
+        TrustModel,
+    },
 };
 
 /// Match GnuPG's behavior more strictly.
@@ -45,14 +50,14 @@ impl<S: io::Write + Send + Sync + 'static> From<S> for Fd {
 
 impl Fd {
     #[allow(dead_code)]
-    pub fn emit(&self, status: Status) -> Result<()> {
+    pub fn emit(&self, status: Status<'_>) -> Result<()> {
         crate::with_invocation_log(|sink| status.emit(sink));
         status.emit(&mut *self.0.lock().expect("not poisoned").borrow_mut())
     }
 }
 
 #[allow(dead_code)]
-pub enum Status {
+pub enum Status<'a> {
     // Signature related.
 
     NewSig {
@@ -171,6 +176,16 @@ pub enum Status {
 
     // Key related.
 
+    InvalidRecipient {
+        reason: InvalidKeyReason,
+        query: &'a Query<'a>,
+    },
+
+    InvalidSigner {
+        reason: InvalidKeyReason,
+        query: &'a Query<'a>,
+    },
+
     KeyConsidered {
         fingerprint: Fingerprint,
         not_selected: bool,
@@ -223,9 +238,14 @@ pub enum Status {
     PinentryLaunched(String),
 
     NoData(NoDataReason),
+
+    Failure {
+        location: &'a str,
+        error: crate::error_codes::Error,
+    },
 }
 
-impl Status {
+impl Status<'_> {
     #[allow(dead_code)]
     fn emit(&self, w: &mut (impl io::Write + ?Sized)) -> Result<()> {
         w.write_all(b"[GNUPG:] ")?;
@@ -510,6 +530,16 @@ impl Status {
                 }
             },
 
+            InvalidRecipient {
+                reason,
+                query,
+            } => writeln!(w, "INV_RECP {} {}", u8::from(*reason), query)?,
+
+            InvalidSigner {
+                reason,
+                query,
+            } => writeln!(w, "INV_SGNR {} {}", u8::from(*reason), query)?,
+
             KeyConsidered {
                 fingerprint,
                 not_selected,
@@ -650,6 +680,13 @@ impl Status {
                              InvalidPacket => 3,
                              ExpectedSignature => 4,
                          })?;
+            },
+
+            Failure {
+                location,
+                error,
+            } => {
+                writeln!(w, "FAILURE {} {}", location, *error as isize)?;
             },
         }
 
@@ -850,4 +887,65 @@ pub enum NoDataReason {
     ExpectedPacket,
     InvalidPacket,
     ExpectedSignature,
+}
+
+/// Reasons why a key is unsuitable.
+///
+/// Used in [`Status::InvalidRecipient`] and
+/// [`Status::InvalidSigner`].
+#[derive(Copy, Clone, Debug)]
+pub enum InvalidKeyReason {
+    /// No specific reason given.
+    Unspecified,
+    /// Not Found.
+    NotFound,
+    /// Ambigious specification.
+    AmbigiousQuery,
+    /// Wrong key usage.
+    WrongKeyUseage,
+    /// Key revoked.
+    KeyRevoked,
+    /// Key expired.
+    KeyExpired,
+    /// No CRL known.
+    NoCRLKnown,
+    /// CRL too old.
+    CRLTooOld,
+    /// Policy mismatch.
+    PolicyMismatch,
+    /// Not a secret key.
+    NotASecretKey,
+    /// Key not trusted.
+    NotTrusted,
+    /// Missing certificate.
+    MissingCertificate,
+    /// Missing issuer certificate.
+    MissingIssuerCertificate,
+    /// Key disabled.
+    KeyDisabled,
+    /// Syntax error in specification.
+    SyntaxError,
+}
+
+impl From<InvalidKeyReason> for u8 {
+    fn from(v: InvalidKeyReason) -> u8 {
+        use InvalidKeyReason::*;
+        match v {
+            Unspecified => 0,
+            NotFound => 1,
+            AmbigiousQuery => 2,
+            WrongKeyUseage => 3,
+            KeyRevoked => 4,
+            KeyExpired => 5,
+            NoCRLKnown => 6,
+            CRLTooOld => 7,
+            PolicyMismatch => 8,
+            NotASecretKey => 9,
+            NotTrusted => 10,
+            MissingCertificate => 11,
+            MissingIssuerCertificate => 12,
+            KeyDisabled => 13,
+            SyntaxError => 14,
+        }
+    }
 }

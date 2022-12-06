@@ -388,6 +388,18 @@ impl Diff<'_> {
         }
     }
 
+    /// Asserts that both implementations returned failure.
+    ///
+    /// Panics otherwise.
+    pub fn assert_failure(&self) {
+        let pass = !self.oracle.status.success()
+            && !self.us.status.success();
+        if ! pass {
+            eprintln!("Invocation did not fail.\n\n{}", self);
+            panic!();
+        }
+    }
+
     /// Asserts that both implementations wrote the same output up to
     /// a limit.
     ///
