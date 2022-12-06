@@ -344,7 +344,7 @@ impl Experiment {
                 Action::Invoke(args) => {
                     write!(&mut sink, "gpg")?;
                     for a in args {
-                        write!(&mut sink, " {}", a)?;
+                        write!(&mut sink, " {:?}", a)?;
                     }
                     writeln!(&mut sink)?;
                 },
