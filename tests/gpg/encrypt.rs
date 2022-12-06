@@ -82,7 +82,7 @@ where
         "--encrypt",
         "--recipient", "<alice@lovelace.name>",
         "--output", "ciphertext",
-        &experiment.store("ciphertext", PLAINTEXT)?,
+        &experiment.store("plaintext", PLAINTEXT)?,
     ])?;
     diff.assert_success();
     diff.assert_equal_up_to(70, 0);
