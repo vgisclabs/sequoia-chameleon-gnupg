@@ -41,6 +41,7 @@ pub mod keydb;
 #[allow(dead_code)]
 pub mod flags;
 use flags::*;
+pub mod error_codes;
 pub mod status;
 pub mod trust;
 pub mod colons;

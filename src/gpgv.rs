@@ -29,6 +29,7 @@ pub mod argparse;
 use argparse::{Argument, Opt, flags::*};
 pub mod babel;
 pub mod common;
+pub mod error_codes;
 pub mod keydb;
 pub mod status;
 pub mod utils;
