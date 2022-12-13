@@ -336,7 +336,7 @@ pub fn cmd_generate_revocation(config: &crate::Config, args: &[String])
     if certs.len() > 1 {
         return Err(anyhow::anyhow!("query \"{}\" matched multiple keys", q));
     }
-    let cert = certs[0];
+    let cert = certs[0].1;
     let primary = cert.primary_key().key();
 
     // Get the primary signer.  To that end, we need a valid cert

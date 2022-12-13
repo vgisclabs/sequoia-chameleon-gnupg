@@ -71,7 +71,7 @@ impl<'a> ModelViewAt<'a> for TofuPGPViewAt<'a> {
         self.pgp.validity(userid, fingerprint)
     }
 
-    fn lookup(&self, query: &Query) -> Result<Vec<&'a Cert>> {
+    fn lookup(&self, query: &Query) -> Result<Vec<(Validity, &'a Cert)>> {
         self.pgp.lookup(query)
     }
 }

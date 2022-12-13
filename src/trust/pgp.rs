@@ -97,19 +97,37 @@ impl<'a> ModelViewAt<'a> for WoTViewAt<'a> {
         }
     }
 
-    fn lookup(&self, query: &Query) -> Result<Vec<&'a Cert>> {
-        let mut certs = self.config.keydb.candidates_by_userid(&query)?;
-        certs.retain(|c| {
-            let fp = c.fingerprint();
-            let validity = c.userids()
-                .filter(|uid| query.matches_userid(uid))
-                .map(|uid| self.validity(&uid, &fp)
-                     .unwrap_or(Validity::Unknown))
-                .max()
-                .unwrap_or(Validity::Unknown);
-
-            validity >= Validity::Fully // XXX what is the threshold?
-        });
-        Ok(certs)
+    fn lookup(&self, query: &Query) -> Result<Vec<(Validity, &'a Cert)>> {
+        let certs = self.config.keydb.candidates_by_userid(&query)?;
+        Ok(certs.into_iter()
+           .map(|c| {
+               let validity = match query {
+                   Query::Key(_) | Query::ExactKey(_) => {
+                       // GnuPG computes the maximum validity of all user
+                       // ids.
+                       let fp = c.fingerprint();
+                       c.userids()
+                           .map(|uid| self.validity(&uid, &fp)
+                                .unwrap_or(Validity::Unknown))
+                           .max()
+                           .unwrap_or(Validity::Unknown)
+                   },
+                   Query::Email(_) | Query::UserIDFragment(_) => {
+                       // GnuPG only matches on one userid, but a
+                       // query could match more than one.  Computes
+                       // the maximum validity of all matching user
+                       // ids.
+                       let fp = c.fingerprint();
+                       c.userids()
+                           .filter(|uid| query.matches_userid(uid))
+                           .map(|uid| self.validity(&uid, &fp)
+                                .unwrap_or(Validity::Unknown))
+                           .max()
+                           .unwrap_or(Validity::Unknown)
+                   },
+               };
+               (validity, c)
+           })
+           .collect())
     }
 }

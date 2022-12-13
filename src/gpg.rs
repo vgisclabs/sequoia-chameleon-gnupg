@@ -34,7 +34,7 @@ use argparse::{Argument, Opt, flags::*};
 pub mod babel;
 pub mod clock;
 pub mod common;
-use common::{Common, Query, Compliance};
+use common::{Common, Compliance, Query, Validity};
 pub mod compliance;
 mod interactive;
 pub mod keydb;
@@ -818,7 +818,7 @@ impl Config {
 
     /// Returns certs matching a given query using groups and the
     /// configured trust model.
-    pub fn lookup_certs(&self, query: &Query) -> Result<Vec<&Cert>> {
+    pub fn lookup_certs(&self, query: &Query) -> Result<Vec<(Validity, &Cert)>> {
         self.lookup_certs_with(
             self.trust_model_impl.with_policy(self, Some(self.now()))?.as_ref(),
             query, true)
@@ -830,10 +830,11 @@ impl Config {
                                          vtm: &dyn trust::ModelViewAt<'t>,
                                          query: &Query,
                                          expand_groups: bool)
-                                         -> Result<Vec<&'t Cert>> {
+                                         -> Result<Vec<(Validity, &'t Cert)>> {
         match query {
-            Query::Key(h) | Query::ExactKey(h) =>
-                return Ok(self.keydb.get(h).into_iter().collect()),
+            Query::Key(_) | Query::ExactKey(_) =>
+                (), // Let the trust model do the lookup.
+
             // Try to map using groups if `expand_groups` is true.  We
             // don't want to lookup expanded names again, as we may
             // walk into loops.  GnuPG also doesn't do that.

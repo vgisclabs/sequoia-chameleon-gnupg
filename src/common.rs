@@ -195,7 +195,7 @@ pub trait ModelViewAt<'a> {
     fn validity(&self, userid: &UserID, fingerprint: &Fingerprint)
                 -> Result<Validity>;
 
-    fn lookup(&self, query: &Query) -> Result<Vec<&'a Cert>>;
+    fn lookup(&self, query: &Query) -> Result<Vec<(Validity, &'a Cert)>>;
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]

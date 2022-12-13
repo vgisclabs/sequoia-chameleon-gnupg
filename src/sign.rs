@@ -146,10 +146,10 @@ pub async fn get_signers(config: &crate::Config)
         // first hit wins.
         let cert = match certs.len() {
             0 => return Err(anyhow::anyhow!("Signing key {} not found", query)),
-            1 => certs[0],
+            1 => certs[0].1,
             n => return Err(anyhow::anyhow!(
                 "Signing key {} maps to {} different keys: {:?}", query, n,
-                certs.iter().map(|c| c.fingerprint().to_string())
+                certs.iter().map(|c| c.1.fingerprint().to_string())
                     .collect::<Vec<_>>())),
         };
 

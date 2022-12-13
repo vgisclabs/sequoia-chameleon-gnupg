@@ -15,7 +15,7 @@ use openpgp::{
 use sequoia_ipc as ipc;
 
 use crate::{
-    common::Common,
+    common::{Common, TrustModel, Validity},
     compliance::Compliance,
     status::{self, Status, InvalidKeyReason},
     utils,
@@ -66,7 +66,17 @@ fn do_encrypt(config: &crate::Config, args: &[String],
         // problem.  We should be more diligent here.
         let mut found_one = false;
 
-        for cert in config.lookup_certs(&query)? {
+        // Get the candidates, and sort by descending validity.
+        let mut candidates = config.lookup_certs(&query)?;
+        candidates.sort_by(|a, b| a.0.cmp(&b.0).reverse());
+
+        for (validity, cert) in candidates {
+            if config.trust_model != Some(TrustModel::Always)
+                && validity < Validity::Fully // XXX what is the threshold?
+            {
+                continue;
+            }
+
             let vcert = cert.with_policy(policy, config.now())
                 .context(format!("Key {:X} is not valid", cert.key_handle()))?;
 

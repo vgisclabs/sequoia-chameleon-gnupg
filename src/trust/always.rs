@@ -65,7 +65,10 @@ impl<'a> ModelViewAt<'a> for AlwaysViewAt<'a> {
         Ok(Validity::Unknown)
     }
 
-    fn lookup(&self, query: &Query) -> Result<Vec<&'a Cert>> {
-        self.config.keydb.candidates_by_userid(query)
+    fn lookup(&self, query: &Query) -> Result<Vec<(Validity, &'a Cert)>> {
+        Ok(self.config.keydb.candidates_by_userid(query)?
+           .into_iter()
+           .map(|c| (Validity::Unknown, c))
+           .collect())
     }
 }
