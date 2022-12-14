@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+if [ "$1" = "--list-components" -o "$#" = 0 ]
+then
+    BASEDIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+    CHAMELEON="$BASEDIR/gpg"
+
+    if "$CHAMELEON" --version >/dev/null
+    then
+	/usr/bin/gpgconf "$@" | sed -e "s|/usr/bin/gpg2\\?\$|$CHAMELEON|"
+	exit "${PIPESTATUS[0]}"
+    fi
+fi
+exec /usr/bin/gpgconf "$@"
