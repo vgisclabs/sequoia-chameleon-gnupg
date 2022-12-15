@@ -451,3 +451,42 @@ your machine might store the data and make it available to others!");
         return Ok(());
     }
 }
+
+/// Dispatches the --enarmor command.
+pub fn cmd_enarmor(config: &crate::Config, args: &[String])
+                   -> Result<()>
+{
+    use openpgp::armor::{Writer, Kind};
+
+    let filename = args.get(0).cloned().unwrap_or_else(|| "-".into());
+    let mut source = utils::open(config, &filename)?;
+    let sink = if let Some(name) = config.outfile() {
+        utils::create(config, name)?
+    } else {
+        Box::new(io::stdout())
+    };
+
+    let mut sink = Writer::new(sink, Kind::File)?;
+    std::io::copy(&mut source, &mut sink)?;
+    sink.finalize()?;
+    Ok(())
+}
+
+/// Dispatches the --dearmor command.
+pub fn cmd_dearmor(config: &crate::Config, args: &[String])
+                   -> Result<()>
+{
+    use openpgp::armor::{Reader, ReaderMode};
+
+    let filename = args.get(0).cloned().unwrap_or_else(|| "-".into());
+    let source = utils::open(config, &filename)?;
+    let mut sink = if let Some(name) = config.outfile() {
+        utils::create(config, name)?
+    } else {
+        Box::new(io::stdout())
+    };
+
+    let mut source = Reader::from_reader(source, ReaderMode::Tolerant(None));
+    std::io::copy(&mut source, &mut sink)?;
+    Ok(())
+}

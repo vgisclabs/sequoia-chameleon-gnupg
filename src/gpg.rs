@@ -2259,6 +2259,8 @@ fn real_main() -> anyhow::Result<()> {
             trust::db::cmd_export_ownertrust(&opt, &args),
         Some(aListConfig) => commands::cmd_list_config(&opt, &args),
         Some(aGenRevoke) => commands::cmd_generate_revocation(&opt, &args),
+        Some(aEnArmor) => commands::cmd_enarmor(&opt, &args),
+        Some(aDeArmor) => commands::cmd_dearmor(&opt, &args),
         None => commands::cmd_implicit(&opt, &args),
         Some(c) => Err(anyhow::anyhow!("Command {:?} is not implemented.", c)),
     };
