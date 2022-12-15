@@ -98,7 +98,7 @@ impl<'a> ModelViewAt<'a> for WoTViewAt<'a> {
     }
 
     fn lookup(&self, query: &Query) -> Result<Vec<(Validity, &'a Cert)>> {
-        let certs = self.config.keydb.candidates_by_userid(&query)?;
+        let certs = self.config.keydb.lookup_candidates(&query)?;
         Ok(certs.into_iter()
            .map(|c| {
                let validity = match query {

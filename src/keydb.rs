@@ -318,15 +318,16 @@ impl KeyDB {
         }
     }
 
-    /// Looks up a cert by UserID queries.
+    /// Looks up cert candidates matching the given query.
     ///
     /// Note: The returned certs have to be validated using a trust
     /// model!
-    pub fn candidates_by_userid(&self, query: &Query) -> Result<Vec<&Cert>> {
-        tracer!(TRACE, "KeyDB::candidates_by_userid");
+    pub fn lookup_candidates(&self, query: &Query) -> Result<Vec<&Cert>> {
+        tracer!(TRACE, "KeyDB::lookup_candidates");
         t!("{}", query);
         match query {
-            Query::Key(_) | Query::ExactKey(_) => Ok(vec![]),
+            Query::Key(h) | Query::ExactKey(h) =>
+                Ok(self.get(h).into_iter().collect()),
             Query::Email(e) =>
                 Ok(self.by_email.get(e)
                    .map(|fps| fps.iter().filter_map(
