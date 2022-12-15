@@ -1329,9 +1329,9 @@ dependencies = [
 
 [[package]]
 name = "sequoia-wot"
-version = "0.2.0"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d3e8b932f7bf92f5a541e9fc5747a85c995742fe5f378e07a3bb89bba4e4db0c"
+checksum = "cc858bb937b1f1c3949b5a14e707ff2f01399409e1e0cd7701ce22bcbe5ce3d4"
 dependencies = [
  "anyhow",
  "chrono",
