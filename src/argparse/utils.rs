@@ -87,7 +87,7 @@ pub fn parse_expiration(s: &str) -> Result<Option<time::Duration>> {
             if let Ok(d) = chrono::NaiveDate::parse_from_str(s, "%Y-%m-%d")
             {
                 // At noon, or, as GnuPG would say, 86400/2.
-                let dt = d.and_time(chrono::NaiveTime::from_hms(0, 0, 0));
+                let dt = d.and_time(chrono::NaiveTime::from_hms(12, 0, 0));
                 let dtu = chrono::DateTime::from_utc(dt, chrono::Utc);
                 if dtu > now {
                     let duration = dtu - now;
