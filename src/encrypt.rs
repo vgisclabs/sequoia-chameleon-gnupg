@@ -6,8 +6,14 @@ use anyhow::{Context, Result};
 
 use sequoia_openpgp as openpgp;
 use openpgp::{
+    cert::ValidCert,
     crypto::{Password, S2K, SessionKey},
-    packet::skesk::SKESK4,
+    KeyID,
+    packet::{
+        key,
+        Key,
+        skesk::SKESK4,
+    },
     policy::Policy,
     serialize::{Serialize, stream::*},
     types::SignatureType,
@@ -15,7 +21,8 @@ use openpgp::{
 use sequoia_ipc as ipc;
 
 use crate::{
-    common::{Common, TrustModel, Validity},
+    babel,
+    common::{Common, Query, TrustModel, Validity},
     compliance::Compliance,
     status::{self, Status, InvalidKeyReason},
     utils,
@@ -65,18 +72,13 @@ fn do_encrypt(config: &crate::Config, args: &[String],
         // --always-trust, expanding to multiple recipients is a
         // problem.  We should be more diligent here.
         let mut found_one = false;
+        let mut invalid_key_reason = InvalidKeyReason::Unspecified;
 
         // Get the candidates, and sort by descending validity.
         let mut candidates = config.lookup_certs(&query)?;
         candidates.sort_by(|a, b| a.0.cmp(&b.0).reverse());
 
         for (validity, cert) in candidates {
-            if config.trust_model != Some(TrustModel::Always)
-                && validity < Validity::Fully // XXX what is the threshold?
-            {
-                continue;
-            }
-
             let vcert = cert.with_policy(policy, config.now())
                 .context(format!("Key {:X} is not valid", cert.key_handle()))?;
 
@@ -98,6 +100,11 @@ fn do_encrypt(config: &crate::Config, args: &[String],
             // alive? Revoked? What if the algorithm is not supported?
 
             for key in key_query.alive().revoked(false).supported() {
+                if ! do_we_trust(config, &query, &vcert, key.key(), validity)? {
+                    invalid_key_reason = InvalidKeyReason::NotTrusted;
+                    continue;
+                }
+
                 recipients.push(key.key().into());
                 found_one_subkey = true;
                 de_vs_compliant &= config.de_vs_producer.key(&key).is_ok();
@@ -108,21 +115,41 @@ fn do_encrypt(config: &crate::Config, args: &[String],
             config.status().emit(
                 Status::KeyConsidered {
                     fingerprint: cert.fingerprint(),
-                    not_selected: ! found_one_subkey,
-                    all_expired_or_revoked: ! found_one_subkey, // XXX: not quite
+                    not_selected:
+                    if let InvalidKeyReason::NotTrusted = invalid_key_reason {
+                        // If the key is not trusted, GnuPG doesn't
+                        // set the flags.
+                        false
+                    } else {
+                        found_one_subkey
+                    },
+                    all_expired_or_revoked:
+                    if let InvalidKeyReason::NotTrusted = invalid_key_reason {
+                        // If the key is not trusted, GnuPG doesn't
+                        // set the flags.
+                        false
+                    } else {
+                        found_one_subkey // XXX: not quite
+                    },
                 })?;
 
             found_one |= found_one_subkey;
+            if found_one {
+                break;
+            }
         }
 
         if ! found_one {
             config.status().emit(
                 Status::InvalidRecipient {
-                    reason: InvalidKeyReason::Unspecified,
+                    reason: invalid_key_reason,
                     query: &query,
                 })?;
+
             let error = crate::error_codes::Error::GPG_ERR_UNUSABLE_PUBKEY;
-            config.warn(format_args!("{}: skipped: {}", query, error));
+            if let InvalidKeyReason::Unspecified = invalid_key_reason {
+                config.warn(format_args!("{}: skipped: {}", query, error));
+            }
             config.status().emit(
                 Status::Failure {
                     location: "encrypt",
@@ -262,4 +289,114 @@ async fn ask_password(config: &crate::Config, cacheid: Option<String>)
             None
         }
     ).await?)
+}
+
+fn do_we_trust(config: &crate::Config,
+               query: &Query,
+               cert: &ValidCert,
+               key: &Key<key::PublicParts, key::UnspecifiedRole>,
+               validity: Validity)
+               -> Result<bool>
+{
+    let ok = match validity {
+        _ if config.trust_model == Some(TrustModel::Always) => {
+            if config.verbose > 0 {
+                config.info(format_args!(
+                    "No trust check due to '--trust-model always' option"));
+            }
+            true
+        },
+
+        Validity::Marginal => {
+            config.info(format_args!(
+                "{}: There is limited assurance this key belongs \
+                 to the named user",
+                key.keyid()));
+            true
+        },
+
+        Validity::Fully => {
+            if config.verbose > 0 {
+                config.info(format_args!(
+                    "This key probably belongs to the named user"));
+            }
+            true
+        },
+
+        Validity::Ultimate => {
+            if config.verbose > 0 {
+                config.info(format_args!("This key belongs to us"));
+            }
+            true
+        },
+
+        Validity::Never => {
+            config.info(format_args!(
+                "{}: This key is bad!  It has been marked as untrusted!",
+                key.keyid()));
+            false
+        },
+
+        Validity::Unknown | Validity::Undefined
+        // XXX these are flags in GnuPG
+            | Validity::Revoked | Validity::Expired =>
+        {
+            config.info(format_args!(
+                "{}: There is no assurance this key belongs to the named user",
+                key.keyid()));
+            false
+        },
+    };
+
+    if ! ok && ! config.batch {
+        let fp = key.fingerprint();
+        let cert_fp = cert.fingerprint();
+        let primary = fp == cert_fp;
+
+        eprintln!();
+        eprintln!("{}  {}/{} {} {}",
+                  if primary { "pub" } else { "sub" },
+                  babel::Fish((key.pk_algo(),
+                               key.mpis().bits().unwrap_or_default(),
+                               &crate::list_keys::get_curve(key.mpis()))),
+                  KeyID::from(&fp),
+                  {
+                      let creation_date =
+                          chrono::DateTime::<chrono::Utc>::from(
+                              key.creation_time());
+                      creation_date.format("%Y-%m-%d")
+                  },
+                  utils::best_effort_uid_for_query(config.policy(), cert, query));
+
+        eprintln!(" Primary key fingerprint: {}", cert_fp.to_spaced_hex());
+        if ! primary {
+            eprintln!("      Subkey fingerprint: {}", fp.to_spaced_hex());
+        }
+        eprintln!();
+
+        if validity == Validity::Never {
+            eprintln!(
+                "This key is bad!  It has been marked as untrusted!  If you\n\
+                 *really* know what you are doing, you may answer the next\n\
+                 question with yes.");
+        } else {
+            eprintln!(
+                "It is NOT certain that the key belongs to the person named\n\
+                 in the user ID.  If you *really* know what you are doing,\n\
+                 you may answer the next question with yes.");
+        }
+        eprintln!();
+
+        config.status().emit(
+            Status::UserIdHint {
+                keyid: key.keyid(),
+                userid: cert.primary_userid().ok().map(|u| u.userid()),
+            })?;
+
+        if config.prompt_yN(format_args!("Use this key anyway?"))? {
+            return Ok(true);
+        }
+    }
+
+    Ok(ok)
 }

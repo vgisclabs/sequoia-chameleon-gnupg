@@ -18,6 +18,7 @@ use openpgp::{
     KeyID,
     crypto::SessionKey,
     fmt::hex,
+    packet::UserID,
     types::*,
 };
 
@@ -214,6 +215,11 @@ pub enum Status<'a> {
     },
     TrustUltimate {
         model: TrustModel,
+    },
+
+    UserIdHint {
+        keyid: KeyID,
+        userid: Option<&'a UserID>,
     },
 
     Imported {
@@ -586,6 +592,16 @@ impl Status<'_> {
             },
             TrustUltimate { model } => {
                 writeln!(w, "TRUST_ULTIMATE 0 {}", model)?;
+            },
+
+            UserIdHint {
+                keyid,
+                userid,
+            } => {
+                writeln!(w, "USERID_HINT {:X} {}", keyid,
+                         userid
+                         .map(|u| String::from_utf8_lossy(u.value()).to_string())
+                         .unwrap_or_else(|| "[?]".into()))?;
             },
 
             Imported {

@@ -266,6 +266,7 @@ where
     Ok(())
 }
 
+/// Returns the elliptic curve of the given key, if any.
 pub fn get_curve(mpis: &PublicKey) -> Option<Curve> {
     match mpis {
         PublicKey::EdDSA { curve, .. }
