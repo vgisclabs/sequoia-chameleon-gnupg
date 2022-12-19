@@ -1,10 +1,17 @@
 [package]
 name = "sequoia-chameleon-gnupg"
+description = "Sequoia's reimplementation of the GnuPG interface"
 version = "0.1.0"
 authors = ["Justus Winter <justus@sequoia-pgp.org>"]
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+keywords = ["cryptography", "openpgp", "pgp", "encryption", "signing"]
+categories = ["cryptography", "authentication", "command-line-utilities"]
+license = "GPL-3.0-or-later"
+documentation = "https://docs.rs/sequoia-chameleon-gnupg"
+homepage = "https://sequoia-pgp.org/"
+repository = "https://gitlab.com/sequoia-pgp/sequoia-chameleon-gnupg"
+readme = "README.md"
+include = ["src", "tests", "AUTHORS.GnuPG", "!/integration/**"]
 
 [dependencies]
 anyhow = "1"
