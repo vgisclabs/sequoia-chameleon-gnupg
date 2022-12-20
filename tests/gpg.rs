@@ -1,5 +1,4 @@
 use std::{
-    collections::BTreeSet,
     fmt,
     fs,
     io,
@@ -149,7 +148,6 @@ impl Context {
             workdir,
             stdout: canonicalize(out.stdout),
             stderr: canonicalize(out.stderr),
-            status_fd: Default::default(), // XXX
             status: out.status,
         })
     }
@@ -160,73 +158,19 @@ pub struct Output {
     workdir: tempfile::TempDir,
     stderr: Vec<u8>,
     stdout: Vec<u8>,
-    status_fd: Vec<Box<[u8]>>,
     status: ExitStatus,
 }
 
 impl fmt::Display for Output {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let status_lines =
-            self.status_fd.iter().map(|l| String::from_utf8_lossy(l))
-            .collect::<Vec<_>>();
-
-        write!(f, "stdout:\n{}\n\nstderr:\n{}\n\nstatus_fd:\n{}\n\nstatus: {}",
+        write!(f, "stdout:\n{}\n\nstderr:\n{}\n\nstatus: {}",
                String::from_utf8_lossy(&self.stdout),
                String::from_utf8_lossy(&self.stderr),
-               status_lines.join("\n"),
                self.status)
     }
 }
 
 impl Output {
-    /// Returns all status messages.
-    pub fn status_messages(&self) -> impl Iterator<Item = &[u8]> {
-        self.status_fd.iter()
-            .filter(|l| l.starts_with(b"[GNUPG:]"))
-            .map(|l| &l[9..])
-    }
-
-    /// Returns all status messages, normalized and sorted.
-    pub fn normalized_status_messages(&self) -> BTreeSet<String> {
-        self.status_messages()
-            .filter(|l| ! l.starts_with(b"NOTATION_DATA")) // GnuPG bug 5667
-            .map(|l| String::from_utf8_lossy(l).to_string())
-        // GnuPG emits those if primary key is expired but the subkey
-        // is not.  Filter it out, because even the DETAILS admits
-        // that this status line is not helpful:
-        //
-        // > This status line is not very useful because
-        // > it will also be emitted for expired subkeys even if this subkey is
-        // > not used.  To check whether a key used to sign a message has
-        // > expired, the EXPKEYSIG status line is to be used.
-            .filter(|l| l != "KEYEXPIRED 0")
-        // XXX: For now, exclude compliance messages.
-            .filter(|l| ! l.contains("_COMPLIANCE_MODE "))
-            .map(|l| {
-                if l.starts_with("GOODSIG")
-                    || l.starts_with("EXPSIG")
-                    || l.starts_with("EXPSIG")
-                    || l.starts_with("EXPKEYSIG")
-                    || l.starts_with("REVKEYSIG")
-                    || l.starts_with("BADSIG")
-                {
-                    // Normalize to keyid.
-                    let mut s = l.splitn(3, " ");
-                    let status = s.next().unwrap();
-                    let fp = s.next().unwrap();
-                    let rest = s.next().unwrap();
-                    if fp.len() == 40 {
-                        format!("{} {} {}", status, &fp[24..], rest)
-                    } else {
-                        l
-                    }
-                } else {
-                    l
-                }
-            })
-            .collect()
-    }
-
     /// Returns the edit distance of run's stdout with the given one.
     pub fn stdout_edit_distance(&self, to: &Self) -> usize {
         edit_distance::edit_distance(
