@@ -139,19 +139,10 @@ impl Context {
         let out = c.output()?;
 
         // Canonicalizes the path to the state directory.
-        let canonicalize = |mut d: Vec<u8>| -> Vec<u8> {
-            let p = self.home.path().to_str().unwrap().as_bytes();
-            let mut r = p.to_vec();
-            for i in r.len() - 6..r.len() {
-                r[i] = 'X' as _;
-            }
-
-            for i in 0..d.len() {
-                if d[i..].starts_with(p) {
-                    d[i..i + r.len()].copy_from_slice(&r);
-                }
-            }
-            d
+        let canonicalize = |d: Vec<u8>| -> Vec<u8> {
+            let p = self.home.path().to_str().unwrap();
+            let r = regex::bytes::Regex::new(p).unwrap();
+            r.replace_all(&d, &b"/HOMEDIR/"[..]).into()
         };
 
         Ok(Output {

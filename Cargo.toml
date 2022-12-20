@@ -38,6 +38,7 @@ tokio = { version = "1.19", features = [ "rt-multi-thread", "io-util", "net" ] }
 diff = "0.1"
 edit-distance = "2"
 lazy_static = "1"
+regex = "1"
 tempfile = "3"
 
 [[bin]]
