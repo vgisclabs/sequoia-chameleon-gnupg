@@ -40,6 +40,8 @@ diff = "0.1"
 edit-distance = "2"
 lazy_static = "1"
 regex = "1"
+serde = { version = "1", features = ["derive"] }
+serde_cbor = "0.11"
 tempfile = "3"
 
 [[bin]]

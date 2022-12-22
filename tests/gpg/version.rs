@@ -4,7 +4,7 @@ use super::super::*;
 
 #[test]
 fn version() -> Result<()> {
-    let experiment = Experiment::new()?;
+    let mut experiment = make_experiment!()?;
     let diff = experiment.invoke(&[
         "--version",
     ])?;
@@ -15,7 +15,7 @@ fn version() -> Result<()> {
 
 #[test]
 fn help() -> Result<()> {
-    let experiment = Experiment::new()?;
+    let mut experiment = make_experiment!()?;
     let diff = experiment.invoke(&[
         "--help",
     ])?;
@@ -26,7 +26,7 @@ fn help() -> Result<()> {
 
 #[test]
 fn dump_options() -> Result<()> {
-    let experiment = Experiment::new()?;
+    let mut experiment = make_experiment!()?;
     let diff = experiment.invoke(&[
         "--dump-options",
     ])?;

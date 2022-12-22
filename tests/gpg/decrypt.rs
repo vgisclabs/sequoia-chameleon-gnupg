@@ -8,7 +8,9 @@ use sequoia_openpgp as openpgp;
 use openpgp::{
     cert::prelude::*,
     policy::StandardPolicy,
+    parse::Parse,
     serialize::{
+        Serialize,
         SerializeInto,
         stream::{
             Message, Encryptor, LiteralWriter,
@@ -22,12 +24,18 @@ const PLAINTEXT: &[u8] = b"plaintext";
 
 #[test]
 fn simple() -> Result<()> {
-    let experiment = Experiment::new()?;
-    let (cert, _) = CertBuilder::new()
-        .set_creation_time(experiment.now())
-        .add_userid("Alice Lovelace <alice@lovelace.name>")
-        .add_transport_encryption_subkey()
-        .generate()?;
+    let mut experiment = make_experiment!()?;
+    let cert = experiment.artifact(
+        "cert",
+        ||  CertBuilder::new()
+            .set_creation_time(Experiment::now())
+            .add_userid("Alice Lovelace <alice@lovelace.name>")
+            .add_transport_encryption_subkey()
+            .generate()
+            .map(|(cert, _rev)| cert),
+        |a, f| a.as_tsk().serialize(f),
+        |b| Cert::from_bytes(&b))?;
+
     let ciphertext = encrypt_for(&[&cert])?;
     test_key(cert, ciphertext, experiment)
 }
@@ -68,27 +76,24 @@ fn general_purpose_p521() -> Result<()> {
 }
 
 fn general_purpose(cs: CipherSuite) -> Result<()> {
-    let experiment = Experiment::new()?;
-    let (cert, _) =
-        CertBuilder::general_purpose(cs,
-                                     Some("Alice Lovelace <alice@lovelace.name>"))
-        .set_creation_time(experiment.now())
-        .generate()?;
-    let ciphertext = encrypt_for(&[&cert])?;
+    let mut experiment = make_experiment!(format!("{:?}", cs))?;
+    let cert = experiment.artifact(
+        "cert",
+        || CertBuilder::general_purpose(
+            cs, Some("Alice Lovelace <alice@lovelace.name>"))
+            .set_creation_time(Experiment::now())
+            .generate()
+            .map(|(cert, _rev)| cert),
+        |a, f| a.as_tsk().serialize(f),
+        |b| Cert::from_bytes(&b))?;
 
+    let ciphertext = encrypt_for(&[&cert])?;
     test_key(cert, ciphertext, experiment)
 }
 
-fn test_key<E>(cert: Cert, ciphertext: Vec<u8>, experiment: E) -> Result<()>
-where
-    E: Into<Option<Experiment>>,
+fn test_key(cert: Cert, ciphertext: Vec<u8>, mut experiment: Experiment)
+            -> Result<()>
 {
-    let experiment = if let Some(e) = experiment.into() {
-        e
-    } else {
-        Experiment::new()?
-    };
-
     let diff = experiment.invoke(&[
         "--status-fd=1",
         "--decrypt",
@@ -178,9 +183,7 @@ where
     diff.assert_success();
     diff.assert_equal_up_to(140, 1);
     diff.with_working_dir(|p| {
-        let plaintext = p.join("decrypted-plaintext");
-        assert!(plaintext.exists());
-        assert_eq!(std::fs::read(plaintext)?, PLAINTEXT);
+        assert_eq!(p.get("decrypted-plaintext").expect("no output"), PLAINTEXT);
         Ok(())
     })?;
 
@@ -194,9 +197,7 @@ where
     diff.assert_success();
     diff.assert_equal_up_to(140, 110);
     diff.with_working_dir(|p| {
-        let plaintext = p.join("decrypted-plaintext");
-        assert!(plaintext.exists());
-        assert_eq!(std::fs::read(plaintext)?, PLAINTEXT);
+        assert_eq!(p.get("decrypted-plaintext").expect("no output"), PLAINTEXT);
         Ok(())
     })?;
 
@@ -210,9 +211,8 @@ where
     diff.assert_success();
     diff.assert_equal_up_to(0, 1);
     diff.with_working_dir(|p| {
-        let plaintext = p.join("nothing");
-        if plaintext.exists() {
-            assert_eq!(std::fs::read(plaintext)?, b"");
+        if let Some(o) = p.get("nothing") {
+            assert_eq!(o, b"");
         }
         Ok(())
     })?;
@@ -228,9 +228,8 @@ where
     diff.assert_success();
     diff.assert_equal_up_to(0, 1);
     diff.with_working_dir(|p| {
-        let plaintext = p.join("nothing");
-        if plaintext.exists() {
-            assert_eq!(std::fs::read(plaintext)?, b"");
+        if let Some(o) = p.get("nothing") {
+            assert_eq!(o, b"");
         }
         Ok(())
     })?;

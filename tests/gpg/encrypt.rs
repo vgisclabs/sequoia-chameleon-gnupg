@@ -3,7 +3,9 @@ use anyhow::Result;
 use sequoia_openpgp as openpgp;
 use openpgp::{
     cert::prelude::*,
+    parse::Parse,
     serialize::{
+        Serialize,
         SerializeInto,
     },
 };
@@ -48,38 +50,39 @@ fn general_purpose_p521() -> Result<()> {
 }
 
 fn general_purpose(cs: CipherSuite) -> Result<()> {
-    let experiment = Experiment::new()?;
-    let (cert, _) =
-        CertBuilder::general_purpose(cs,
-                                     Some("Alice Lovelace <alice@lovelace.name>"))
-        .set_creation_time(experiment.now())
-        .generate()?;
+    let mut experiment = make_experiment!(format!("{:?}", cs))?;
+    let cert = experiment.artifact(
+        "cert",
+        || CertBuilder::general_purpose(
+            cs, Some("Alice Lovelace <alice@lovelace.name>"))
+            .set_creation_time(Experiment::now())
+            .generate()
+            .map(|(cert, _rev)| cert),
+        |a, f| a.as_tsk().serialize(f),
+        |b| Cert::from_bytes(&b))?;
 
     test_key(cert, experiment, true)
 }
 
 #[test]
 fn no_encryption_subkey() -> Result<()> {
-    let experiment = Experiment::new()?;
-    let (cert, _) =
-        CertBuilder::new()
-        .add_userid("Alice Lovelace <alice@lovelace.name>")
-        .set_creation_time(experiment.now())
-        .generate()?;
+    let mut experiment = make_experiment!()?;
+    let cert = experiment.artifact(
+        "cert",
+        || CertBuilder::new()
+            .add_userid("Alice Lovelace <alice@lovelace.name>")
+            .set_creation_time(Experiment::now())
+            .generate()
+            .map(|(cert, _rev)| cert),
+        |a, f| a.as_tsk().serialize(f),
+        |b| Cert::from_bytes(&b))?;
 
     test_key(cert, experiment, false)
 }
 
-fn test_key<E>(cert: Cert, experiment: E, expect_success: bool) -> Result<()>
-where
-    E: Into<Option<Experiment>>,
+fn test_key(cert: Cert, mut experiment: Experiment, expect_success: bool)
+            -> Result<()>
 {
-    let experiment = if let Some(e) = experiment.into() {
-        e
-    } else {
-        Experiment::new()?
-    };
-
     eprintln!("Importing cert...");
     let diff = experiment.invoke(&[
         "--import",
@@ -101,7 +104,8 @@ where
         diff.assert_success();
         diff.assert_equal_up_to(70, 0);
         let ciphertexts =
-            diff.with_working_dir(|p| Ok(std::fs::read(p.join("ciphertext"))?))?;
+            diff.with_working_dir(|p| p.get("ciphertext").cloned().ok_or_else(
+                || anyhow::anyhow!("no ciphertext produced")))?;
 
         eprintln!("Importing key...");
         let diff = experiment.invoke(&[
@@ -121,8 +125,7 @@ where
             diff.assert_success();
             diff.assert_equal_up_to(140, 1);
             diff.with_working_dir(|p| {
-                assert_eq!(&std::fs::read(p.join("plaintext"))?,
-                           PLAINTEXT);
+                assert_eq!(p.get("plaintext").expect("no output"), PLAINTEXT);
                 Ok(())
             })?;
         }
@@ -130,7 +133,7 @@ where
         diff.assert_failure();
         diff.assert_equal_up_to(67, 0);
         assert!(diff.with_working_dir(
-            |p| Ok(p.join("ciphertext").exists()))?
+            |p| Ok(p.get("ciphertext").is_some()))?
                 .iter().all(|&exists| exists == false));
     }
 

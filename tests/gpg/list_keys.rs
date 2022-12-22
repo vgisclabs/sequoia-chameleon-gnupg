@@ -8,7 +8,8 @@ use sequoia_openpgp as openpgp;
 use openpgp::{
     cert::prelude::*,
     packet::{prelude::*, key::*},
-    serialize::SerializeInto,
+    parse::Parse,
+    serialize::{Serialize, SerializeInto},
     types::{Curve, KeyFlags, SignatureType},
 };
 
@@ -16,7 +17,7 @@ use super::super::*;
 
 #[test]
 fn empty() -> Result<()> {
-    let experiment = Experiment::new()?;
+    let mut experiment = make_experiment!()?;
 
     let diff = experiment.invoke(&[
         "--list-keys",
@@ -64,92 +65,119 @@ fn empty() -> Result<()> {
 
 #[test]
 fn valid() -> Result<()> {
-    let experiment = Experiment::new()?;
-    let (cert, _) = CertBuilder::new()
-        .set_creation_time(experiment.now())
-        .add_userid("Alice Lovelace <alice@lovelace.name>")
-        .add_signing_subkey()
-        .generate()?;
+    let mut experiment = make_experiment!()?;
+    let cert = experiment.artifact(
+        "cert",
+        ||  CertBuilder::new()
+            .set_creation_time(Experiment::now())
+            .add_userid("Alice Lovelace <alice@lovelace.name>")
+            .add_signing_subkey()
+            .generate()
+            .map(|(cert, _rev)| cert),
+        |a, f| a.as_tsk().serialize(f),
+        |b| Cert::from_bytes(&b))?;
 
     test_key(cert, experiment)
 }
 
 #[test]
 fn revoked() -> Result<()> {
-    let experiment = Experiment::new()?;
-    let (cert, rev) = CertBuilder::new()
-        .set_creation_time(experiment.now())
-        .add_userid("Alice Lovelace <alice@lovelace.name>")
-        .add_signing_subkey()
-        .generate()?;
-    let cert = cert.insert_packets(vec![rev])?;
+    let mut experiment = make_experiment!()?;
+    let cert = experiment.artifact(
+        "cert",
+        ||  {
+            let (cert, rev) = CertBuilder::new()
+                .set_creation_time(Experiment::now())
+                .add_userid("Alice Lovelace <alice@lovelace.name>")
+                .add_signing_subkey()
+                .generate()?;
+            cert.insert_packets(vec![rev])
+        },
+        |a, f| a.as_tsk().serialize(f),
+        |b| Cert::from_bytes(&b))?;
 
     test_key(cert, experiment)
 }
 
 #[test]
 fn expired() -> Result<()> {
-    let experiment = Experiment::new()?;
+    let mut experiment = make_experiment!()?;
     let a_week = Duration::new(7 * 24 * 3600, 0);
-    let the_past = experiment.now()
+    let the_past = Experiment::now()
         .checked_sub(2 * a_week)
         .unwrap();
-    let (cert, _) = CertBuilder::new()
-        .set_creation_time(the_past)
-        .set_validity_period(a_week)
-        .add_userid("Alice Lovelace <alice@lovelace.name>")
-        .add_signing_subkey()
-        .set_primary_key_flags(
-            KeyFlags::empty().set_signing().set_certification())
-        .generate()?;
+    let cert = experiment.artifact(
+        "cert",
+        || CertBuilder::new()
+            .set_creation_time(the_past)
+            .set_validity_period(a_week)
+            .add_userid("Alice Lovelace <alice@lovelace.name>")
+            .add_signing_subkey()
+            .set_primary_key_flags(
+                KeyFlags::empty().set_signing().set_certification())
+            .generate()
+            .map(|(cert, _rev)| cert),
+        |a, f| a.as_tsk().serialize(f),
+        |b| Cert::from_bytes(&b))?;
 
     test_key(cert, experiment)
 }
 
 #[test]
 fn expired_subkey() -> Result<()> {
-    let experiment = Experiment::new()?;
+    let mut experiment = make_experiment!()?;
     let a_week = Duration::new(7 * 24 * 3600, 0);
-    let the_past = experiment.now()
+    let the_past = Experiment::now()
         .checked_sub(2 * a_week)
         .unwrap();
-    let (cert, _) = CertBuilder::new()
-        .set_creation_time(the_past)
-        .add_userid("Alice Lovelace <alice@lovelace.name>")
-        .set_primary_key_flags(
-            KeyFlags::empty().set_signing().set_certification())
-        .generate()?;
+    let cert = experiment.artifact(
+        "cert",
+        || {
+            let (cert, _rev) = CertBuilder::new()
+                .set_creation_time(the_past)
+                .add_userid("Alice Lovelace <alice@lovelace.name>")
+                .set_primary_key_flags(
+                    KeyFlags::empty().set_signing().set_certification())
+                .generate()?;
 
-    let primary = cert.primary_key().key().clone();
-    let mut primary_signer =
-        primary.clone().parts_into_secret()?.into_keypair()?;
+            let primary = cert.primary_key().key().clone();
+            let mut primary_signer =
+                primary.clone().parts_into_secret()?.into_keypair()?;
 
-    let mut subkey: Key<_, SubordinateRole> =
-        Key4::generate_ecc(false, Curve::Cv25519)?.into();
-    subkey.set_creation_time(the_past)?;
-    let builder =
-        SignatureBuilder::new(SignatureType::SubkeyBinding)
-        .set_key_flags(KeyFlags::empty()
-                       .set_transport_encryption()
-                       .set_storage_encryption())?
-        .set_signature_creation_time(the_past)?
-        .set_key_validity_period(a_week)?;
-    let binding =
-        subkey.bind(&mut primary_signer, &cert, builder)?;
+            let mut subkey: Key<_, SubordinateRole> =
+                Key4::generate_ecc(false, Curve::Cv25519)?.into();
+            subkey.set_creation_time(the_past)?;
+            let builder =
+                SignatureBuilder::new(SignatureType::SubkeyBinding)
+                .set_key_flags(KeyFlags::empty()
+                               .set_transport_encryption()
+                               .set_storage_encryption())?
+                .set_signature_creation_time(the_past)?
+                .set_key_validity_period(a_week)?;
+            let binding =
+                subkey.bind(&mut primary_signer, &cert, builder)?;
 
-    let cert = cert.insert_packets(vec![Packet::from(subkey), binding.into()])?;
+            cert.insert_packets(vec![Packet::from(subkey), binding.into()])
+        },
+        |a, f| a.as_tsk().serialize(f),
+        |b| Cert::from_bytes(&b))?;
 
     test_key(cert, experiment)
 }
 
 #[test]
 fn disabled() -> Result<()> {
-    let experiment = Experiment::new()?;
-    let (cert, _) = CertBuilder::new()
-        .set_creation_time(experiment.now())
-        .add_userid("Alice Lovelace <alice@lovelace.name>")
-        .add_signing_subkey()
-        .generate()?;
+    let mut experiment = make_experiment!()?;
+    let cert = experiment.artifact(
+        "cert",
+        ||  CertBuilder::new()
+            .set_creation_time(Experiment::now())
+            .add_userid("Alice Lovelace <alice@lovelace.name>")
+            .add_signing_subkey()
+            .generate()
+            .map(|(cert, _rev)| cert),
+        |a, f| a.as_tsk().serialize(f),
+        |b| Cert::from_bytes(&b))?;
 
     eprintln!("Importing cert...");
     let diff = experiment.invoke(&[
@@ -181,16 +209,8 @@ fn per_subkey(cert: &Cert, errors: usize) -> usize {
     cert.keys().count() * errors
 }
 
-fn test_key<E>(cert: Cert, experiment: E) -> Result<()>
-where
-    E: Into<Option<Experiment>>,
+fn test_key(cert: Cert, mut experiment: Experiment) -> Result<()>
 {
-    let experiment = if let Some(e) = experiment.into() {
-        e
-    } else {
-        Experiment::new()?
-    };
-
     eprintln!("Importing cert...");
     let diff = experiment.invoke(&[
         "--import",
@@ -202,16 +222,8 @@ where
     test_key_cert_imported(cert, experiment)
 }
 
-fn test_key_cert_imported<E>(cert: Cert, experiment: E) -> Result<()>
-where
-    E: Into<Option<Experiment>>,
+fn test_key_cert_imported(cert: Cert, mut experiment: Experiment) -> Result<()>
 {
-    let experiment = if let Some(e) = experiment.into() {
-        e
-    } else {
-        Experiment::new()?
-    };
-
     let diff = experiment.invoke(&[
         "--list-keys",
     ])?;
@@ -361,12 +373,16 @@ fn general_purpose_p521() -> Result<()> {
 }
 
 fn general_purpose(cs: CipherSuite) -> Result<()> {
-    let experiment = Experiment::new()?;
-    let (cert, _) =
-        CertBuilder::general_purpose(cs,
-                                     Some("Alice Lovelace <alice@lovelace.name>"))
-        .set_creation_time(experiment.now())
-        .generate()?;
+    let mut experiment = make_experiment!(format!("{:?}", cs))?;
+    let cert = experiment.artifact(
+        "cert",
+        || CertBuilder::general_purpose(
+            cs, Some("Alice Lovelace <alice@lovelace.name>"))
+            .set_creation_time(Experiment::now())
+            .generate()
+            .map(|(cert, _rev)| cert),
+        |a, f| a.as_tsk().serialize(f),
+        |b| Cert::from_bytes(&b))?;
 
     eprintln!("Importing cert...");
     let diff = experiment.invoke(&[

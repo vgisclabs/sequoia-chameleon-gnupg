@@ -1,4 +1,5 @@
 use std::{
+    collections::BTreeMap,
     fmt,
     fs,
     io,
@@ -8,8 +9,27 @@ use std::{
 };
 
 use anyhow::Result;
+use serde::{Serialize, Deserialize};
 
 use sequoia_openpgp as openpgp;
+
+/// Produces the fully qualified function name.
+macro_rules! function {
+    () => {{
+        fn f() {}
+        fn type_name_of<T>(_: T) -> &'static str {
+            std::any::type_name::<T>()
+        }
+        let name = type_name_of(f);
+        &name[..name.len() - 3]
+    }}
+}
+
+macro_rules! make_experiment {
+    ($($i: expr),*) => {{
+        Experiment::new(function!(), vec![$($i.to_string()),*])
+    }}
+}
 
 mod gpg {
     mod decrypt;
@@ -137,28 +157,30 @@ impl Context {
         }
         let out = c.output()?;
 
-        // Canonicalizes the path to the state directory.
-        let canonicalize = |d: Vec<u8>| -> Vec<u8> {
-            let p = self.home.path().to_str().unwrap();
-            let r = regex::bytes::Regex::new(p).unwrap();
-            r.replace_all(&d, &b"/HOMEDIR/"[..]).into()
-        };
+        let mut files = BTreeMap::default();
+        for entry in fs::read_dir(&workdir)? {
+            let path = entry?.path();
+            files.insert(path.file_name().unwrap().to_str().unwrap().into(),
+                         fs::read(&path)?);
+        }
 
         Ok(Output {
-            workdir,
-            stdout: canonicalize(out.stdout),
-            stderr: canonicalize(out.stderr),
-            status: out.status,
+            args: args.into_iter().map(ToString::to_string).collect(),
+            stdout: out.stdout,
+            stderr: out.stderr,
+            status: out.status.to_string(),
+            files,
         })
     }
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Output {
-    workdir: tempfile::TempDir,
+    args: Vec<String>,
     stderr: Vec<u8>,
     stdout: Vec<u8>,
-    status: ExitStatus,
+    status: String,
+    files: BTreeMap<String, Vec<u8>>,
 }
 
 impl fmt::Display for Output {
@@ -171,6 +193,26 @@ impl fmt::Display for Output {
 }
 
 impl Output {
+    /// Returns whether the invocation was successful.
+    fn success(&self) -> bool {
+        self.status == "exit status: 0"
+    }
+
+    /// Canonicalizes the paths in the output.
+    fn canonicalize(mut self, homedir: &Path, experiment: &Path) -> Self {
+        let h = regex::bytes::Regex::new(homedir.to_str().unwrap()).unwrap();
+        let e = regex::bytes::Regex::new(experiment.to_str().unwrap()).unwrap();
+        self.stdout =
+            e.replace_all(&h.replace_all(&self.stdout, &b"/HOMEDIR"[..]),
+                          &b"/EXPERIMENT"[..])
+            .into();
+        self.stderr =
+            e.replace_all(&h.replace_all(&self.stderr, &b"/HOMEDIR"[..]),
+                          &b"/EXPERIMENT"[..])
+            .into();
+        self
+    }
+
     /// Returns the edit distance of run's stdout with the given one.
     pub fn stdout_edit_distance(&self, to: &Self) -> usize {
         edit_distance::edit_distance(
@@ -188,9 +230,29 @@ impl Output {
     /// Invokes a callback with the working directory.
     pub fn with_working_dir<F, T>(&self, fun: &mut F) -> Result<T>
     where
-        F: FnMut(&Path) -> Result<T>,
+        F: FnMut(&BTreeMap<String, Vec<u8>>) -> Result<T>,
     {
-        fun(self.workdir.path())
+        fun(&self.files)
+    }
+}
+
+#[derive(Debug, Default, Serialize, Deserialize)]
+struct ArtifactStore {
+    outputs: Vec<Output>,
+    artifacts: BTreeMap<String, Vec<u8>>,
+}
+
+impl ArtifactStore {
+    fn load(path: &Path) -> Result<Self> {
+        let mut f = fs::File::open(&path)?;
+        Ok(serde_cbor::from_reader(&mut f)?)
+    }
+
+    fn store(&self, path: &Path) -> Result<()> {
+        fs::create_dir_all(path.parent().unwrap())?;
+        let mut f = fs::File::create(path)?;
+        serde_cbor::to_writer(&mut f, self)?;
+        Ok(())
     }
 }
 
@@ -201,9 +263,18 @@ impl Output {
 pub struct Experiment {
     wd: tempfile::TempDir,
     log: std::cell::RefCell<Vec<Action>>,
-    faketime: Option<SystemTime>,
+    /// We store the output of GnuPG so that we don't build-depend on
+    /// it.
+    artifacts: ArtifactStore,
+    artifacts_store: PathBuf,
     oracle: Context,
     us: Context,
+}
+
+impl Drop for Experiment {
+    fn drop(&mut self) {
+        let _ = self.artifacts.store(&self.artifacts_store);
+    }
 }
 
 enum Action {
@@ -213,45 +284,106 @@ enum Action {
 
 impl Experiment {
     /// Creates a new experiment with empty state directories.
-    pub fn new() -> Result<Self> {
+    pub fn new(function: &str, parameters: Vec<String>) -> Result<Self> {
+        let mut path: PathBuf =
+            PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("tests")
+            .join(function[5..] // Drop the extra "gpg::".
+                  // Turn it into a relative path.
+                  .replace("::", &std::path::MAIN_SEPARATOR.to_string()));
+        for parameter in parameters {
+            path.push(parameter);
+        }
+        let artifacts_store = path.with_extension("cbor");
+
+        // Load the stored artifacts, if any.
+        let artifacts =
+            ArtifactStore::load(&artifacts_store).unwrap_or_default();
+
         Ok(Experiment {
             wd: tempfile::tempdir()?,
             log: Default::default(),
-            faketime: Some(SystemTime::now()
-                           // Don't use the current time, that makes
-                           // setting the timemode in GnuPG unreliable
-                           // (see gnupg_set_time).
-                           .checked_sub(Duration::new(3600, 0)).unwrap()),
+            artifacts,
+            artifacts_store,
             oracle: Context::gnupg()?,
             us: Context::chameleon()?,
         })
     }
 
+    /// Creates or loads an artifact for the experiment.
+    pub fn artifact<C, S, L, T>(&mut self, name: &str,
+                                create: C, store: S, load: L)
+                                -> Result<T>
+    where
+        C: Fn() -> Result<T>,
+        S: Fn(&T, &mut Vec<u8>) -> Result<()>,
+        L: Fn(&Vec<u8>) -> Result<T>,
+    {
+        self.artifacts.artifacts.get(name)
+            .ok_or_else(|| anyhow::anyhow!("Not found, need to create it"))
+            .and_then(load)
+            .or_else(|_| {
+                let a = create()?;
+                let mut b = Vec::new();
+                store(&a, &mut b)?;
+                self.artifacts.artifacts.insert(name.into(), b);
+                Ok(a)
+            })
+    }
+
     /// Returns the reference time of this experiment.
-    pub fn now(&self) -> SystemTime {
-        self.faketime.unwrap_or_else(SystemTime::now)
+    pub fn now() -> SystemTime {
+        UNIX_EPOCH + Duration::new(1671553073, 0)
     }
 
     /// Invokes the given command on both implementations.
-    pub fn invoke(&self, args: &[&str]) -> Result<Diff> {
-        // Implicitly add --faked-system-time if we have
-        // self.faketime.
-        let mut faked_system_time = Vec::new();
-        if let Some(faketime) = self.faketime {
-            faked_system_time.push(format!(
-                "--faked-system-time={}!",
-                faketime.duration_since(UNIX_EPOCH)?.as_secs()));
-        }
+    pub fn invoke(&mut self, args: &[&str]) -> Result<Diff> {
+        // Get the number of commands invoked in this experiment.  We
+        // use this to enumerate the stored artifacts.
+        let n = self.log.borrow().iter()
+            .filter(|a| if let Action::Invoke(_) = a { true } else { false })
+            .count();
+
+        // Implicitly add --faked-system-time.
+        let faked_system_time = vec![
+            format!("--faked-system-time={}!",
+                    Self::now().duration_since(UNIX_EPOCH)?.as_secs()),
+        ];
         let args = faked_system_time.iter().map(|s| s.as_str())
             .chain(args.iter().cloned())
             .collect::<Vec<&str>>();
 
         self.log.borrow_mut().push(
             Action::Invoke(args.iter().map(ToString::to_string).collect()));
-        let oracle = self.oracle.invoke(&args)?;
-        let us = self.us.invoke(&args)?;
+
+        // See if we have a stored artifact and whether it matches our
+        // arguments.
+        let normalized_args: Vec<String> =
+            args.iter().map(|a| {
+                // Normalize the experiment's working directory.
+                format!("{:?}", a)
+                    .replace(&self.wd.path().display().to_string(),
+                             "/EXPERIMENT")
+            })
+            .collect();
+
+        let oracle = if let Some(o) = self.artifacts.outputs.get(n)
+            .filter(|v| v.args == normalized_args)
+        {
+            o.clone()
+        } else {
+            // Cache miss or the arguments changed.
+            let mut output = self.oracle.invoke(&args)?
+                .canonicalize(self.oracle.home.path(), self.wd.path());
+            output.args = normalized_args;
+            self.artifacts.outputs.push(output.clone());
+            output
+        };
+
+        let us = self.us.invoke(&args)?
+            .canonicalize(self.us.home.path(), self.wd.path());
         Ok(Diff {
-            experiment: &self,
+            experiment: &*self,
             args: args.iter().map(ToString::to_string).collect(),
             oracle,
             us,
@@ -316,8 +448,8 @@ impl Diff<'_> {
     ///
     /// Panics otherwise.
     pub fn assert_success(&self) {
-        let pass = self.oracle.status.success()
-            && self.us.status.success();
+        let pass = self.oracle.success()
+            && self.us.success();
         if ! pass {
             eprintln!("Invocation not successful.\n\n{}", self);
             panic!();
@@ -328,8 +460,8 @@ impl Diff<'_> {
     ///
     /// Panics otherwise.
     pub fn assert_failure(&self) {
-        let pass = !self.oracle.status.success()
-            && !self.us.status.success();
+        let pass = !self.oracle.success()
+            && !self.us.success();
         if ! pass {
             eprintln!("Invocation did not fail.\n\n{}", self);
             panic!();
@@ -378,7 +510,7 @@ impl Diff<'_> {
     /// Invokes a callback with the working directory.
     pub fn with_working_dir<F, T>(&self, mut fun: F) -> Result<Vec<T>>
     where
-        F: FnMut(&Path) -> Result<T>,
+        F: FnMut(&BTreeMap<String, Vec<u8>>) -> Result<T>,
     {
         Ok(vec![self.oracle.with_working_dir(&mut fun)?,
                 self.us.with_working_dir(&mut fun)?])
