@@ -1,0 +1,160 @@
+¢goutputs¥dargs„x!"--faked-system-time=1671553073!"o"--status-fd=1"k"--decrypt"x"/EXPERIMENT/ciphertext"fstderr˜ügpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: keybox '/HOMEDIR/pubring.kbx' created
+gpg: encrypted with ECDH key, ID 9B65706F37DDAB2D
+gpg: decryption failed: No secret key
+fstdout˜—[GNUPG:] ENC_TO 9B65706F37DDAB2D 18 0
+[GNUPG:] NO_SECKEY 9B65706F37DDAB2D
+[GNUPG:] BEGIN_DECRYPTION
+[GNUPG:] DECRYPTION_FAILED
+[GNUPG:] END_DECRYPTION
+fstatusnexit status: 2efiles ¥dargs…x!"--faked-system-time=1671553073!"o"--status-fd=1"k"--decrypt"k"--verbose"x"/EXPERIMENT/ciphertext"fstderr˜õgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: public key is 9B65706F37DDAB2D
+gpg: encrypted with ECDH key, ID 9B65706F37DDAB2D
+gpg: decryption failed: No secret key
+fstdout˜—[GNUPG:] ENC_TO 9B65706F37DDAB2D 18 0
+[GNUPG:] NO_SECKEY 9B65706F37DDAB2D
+[GNUPG:] BEGIN_DECRYPTION
+[GNUPG:] DECRYPTION_FAILED
+[GNUPG:] END_DECRYPTION
+fstatusnexit status: 2efiles ¥dargs…x!"--faked-system-time=1671553073!"o"--status-fd=1"k"--decrypt"m"--list-only"x"/EXPERIMENT/ciphertext"fstderr˜«gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: encrypted with ECDH key, ID 9B65706F37DDAB2D
+fstdout˜|[GNUPG:] ENC_TO 9B65706F37DDAB2D 18 0
+[GNUPG:] NO_SECKEY 9B65706F37DDAB2D
+[GNUPG:] BEGIN_DECRYPTION
+[GNUPG:] END_DECRYPTION
+fstatusnexit status: 0efiles ¥dargs†x!"--faked-system-time=1671553073!"o"--status-fd=1"k"--decrypt"m"--list-only"k"--verbose"x"/EXPERIMENT/ciphertext"fstderr˜Ïgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: public key is 9B65706F37DDAB2D
+gpg: encrypted with ECDH key, ID 9B65706F37DDAB2D
+fstdout˜|[GNUPG:] ENC_TO 9B65706F37DDAB2D 18 0
+[GNUPG:] NO_SECKEY 9B65706F37DDAB2D
+[GNUPG:] BEGIN_DECRYPTION
+[GNUPG:] END_DECRYPTION
+fstatusnexit status: 0efiles ¥dargsƒx!"--faked-system-time=1671553073!"j"--import"r"/EXPERIMENT/cert"fstderr™8gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: /HOMEDIR/trustdb.gpg: trustdb created
+gpg: key C747679511E0B174: public key "Alice Lovelace <alice@lovelace.name>" imported
+gpg: Total number processed: 1
+gpg:               imported: 1
+fstdout€fstatusnexit status: 0efiles ¥dargs„x!"--faked-system-time=1671553073!"o"--status-fd=1"k"--decrypt"x"/EXPERIMENT/ciphertext"fstderr™gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: encrypted with 255-bit ECDH key, ID 9B65706F37DDAB2D, created 2022-12-20
+      "Alice Lovelace <alice@lovelace.name>"
+gpg: decryption failed: No secret key
+fstdout˜Ú[GNUPG:] ENC_TO 9B65706F37DDAB2D 18 0
+[GNUPG:] KEY_CONSIDERED CA82A7127EE817886DDF63B9C747679511E0B174 0
+[GNUPG:] NO_SECKEY 9B65706F37DDAB2D
+[GNUPG:] BEGIN_DECRYPTION
+[GNUPG:] DECRYPTION_FAILED
+[GNUPG:] END_DECRYPTION
+fstatusnexit status: 2efiles ¥dargs…x!"--faked-system-time=1671553073!"o"--status-fd=1"k"--decrypt"k"--verbose"x"/EXPERIMENT/ciphertext"fstderr™‰gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: public key is 9B65706F37DDAB2D
+gpg: using subkey 9B65706F37DDAB2D instead of primary key C747679511E0B174
+gpg: encrypted with 255-bit ECDH key, ID 9B65706F37DDAB2D, created 2022-12-20
+      "Alice Lovelace <alice@lovelace.name>"
+gpg: decryption failed: No secret key
+fstdout˜Ú[GNUPG:] ENC_TO 9B65706F37DDAB2D 18 0
+[GNUPG:] KEY_CONSIDERED CA82A7127EE817886DDF63B9C747679511E0B174 0
+[GNUPG:] NO_SECKEY 9B65706F37DDAB2D
+[GNUPG:] BEGIN_DECRYPTION
+[GNUPG:] DECRYPTION_FAILED
+[GNUPG:] END_DECRYPTION
+fstatusnexit status: 2efiles ¥dargs…x!"--faked-system-time=1671553073!"o"--status-fd=1"k"--decrypt"m"--list-only"x"/EXPERIMENT/ciphertext"fstderr˜ôgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: encrypted with 255-bit ECDH key, ID 9B65706F37DDAB2D, created 2022-12-20
+      "Alice Lovelace <alice@lovelace.name>"
+fstdout˜¿[GNUPG:] ENC_TO 9B65706F37DDAB2D 18 0
+[GNUPG:] KEY_CONSIDERED CA82A7127EE817886DDF63B9C747679511E0B174 0
+[GNUPG:] NO_SECKEY 9B65706F37DDAB2D
+[GNUPG:] BEGIN_DECRYPTION
+[GNUPG:] END_DECRYPTION
+fstatusnexit status: 0efiles ¥dargs†x!"--faked-system-time=1671553073!"o"--status-fd=1"k"--decrypt"m"--list-only"k"--verbose"x"/EXPERIMENT/ciphertext"fstderr™cgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: public key is 9B65706F37DDAB2D
+gpg: using subkey 9B65706F37DDAB2D instead of primary key C747679511E0B174
+gpg: encrypted with 255-bit ECDH key, ID 9B65706F37DDAB2D, created 2022-12-20
+      "Alice Lovelace <alice@lovelace.name>"
+fstdout˜¿[GNUPG:] ENC_TO 9B65706F37DDAB2D 18 0
+[GNUPG:] KEY_CONSIDERED CA82A7127EE817886DDF63B9C747679511E0B174 0
+[GNUPG:] NO_SECKEY 9B65706F37DDAB2D
+[GNUPG:] BEGIN_DECRYPTION
+[GNUPG:] END_DECRYPTION
+fstatusnexit status: 0efiles ¥dargsƒx!"--faked-system-time=1671553073!"j"--import"q"/EXPERIMENT/key"fstderr™rgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: key C747679511E0B174: "Alice Lovelace <alice@lovelace.name>" not changed
+gpg: key C747679511E0B174: secret key imported
+gpg: Total number processed: 1
+gpg:              unchanged: 1
+gpg:       secret keys read: 1
+gpg:   secret keys imported: 1
+fstdout€fstatusnexit status: 0efiles ¥dargs†x!"--faked-system-time=1671553073!"o"--status-fd=1"k"--decrypt"j"--output"u"decrypted-plaintext"x"/EXPERIMENT/ciphertext"fstderr˜ôgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: encrypted with 255-bit ECDH key, ID 9B65706F37DDAB2D, created 2022-12-20
+      "Alice Lovelace <alice@lovelace.name>"
+fstdout™[GNUPG:] ENC_TO 9B65706F37DDAB2D 18 0
+[GNUPG:] KEY_CONSIDERED CA82A7127EE817886DDF63B9C747679511E0B174 0
+[GNUPG:] KEY_CONSIDERED CA82A7127EE817886DDF63B9C747679511E0B174 0
+[GNUPG:] DECRYPTION_KEY 6C29BE2B328421E866160D429B65706F37DDAB2D CA82A7127EE817886DDF63B9C747679511E0B174 -
+[GNUPG:] KEY_CONSIDERED CA82A7127EE817886DDF63B9C747679511E0B174 0
+[GNUPG:] BEGIN_DECRYPTION
+[GNUPG:] DECRYPTION_INFO 2 9 0
+[GNUPG:] PLAINTEXT 62 0 
+[GNUPG:] PLAINTEXT_LENGTH 9
+[GNUPG:] DECRYPTION_OKAY
+[GNUPG:] GOODMDC
+[GNUPG:] END_DECRYPTION
+fstatusnexit status: 0efiles¡sdecrypted-plaintext‰plaintext¥dargs‡x!"--faked-system-time=1671553073!"o"--status-fd=1"k"--decrypt"j"--output"u"decrypted-plaintext"k"--verbose"x"/EXPERIMENT/ciphertext"fstderr™ÿgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: public key is 9B65706F37DDAB2D
+gpg: using subkey 9B65706F37DDAB2D instead of primary key C747679511E0B174
+gpg: using pgp trust model
+gpg: using subkey 9B65706F37DDAB2D instead of primary key C747679511E0B174
+gpg: encrypted with 255-bit ECDH key, ID 9B65706F37DDAB2D, created 2022-12-20
+      "Alice Lovelace <alice@lovelace.name>"
+gpg: AES256 encrypted data
+gpg: original file name=''
+fstdout™[GNUPG:] ENC_TO 9B65706F37DDAB2D 18 0
+[GNUPG:] KEY_CONSIDERED CA82A7127EE817886DDF63B9C747679511E0B174 0
+[GNUPG:] KEY_CONSIDERED CA82A7127EE817886DDF63B9C747679511E0B174 0
+[GNUPG:] DECRYPTION_KEY 6C29BE2B328421E866160D429B65706F37DDAB2D CA82A7127EE817886DDF63B9C747679511E0B174 -
+[GNUPG:] KEY_CONSIDERED CA82A7127EE817886DDF63B9C747679511E0B174 0
+[GNUPG:] BEGIN_DECRYPTION
+[GNUPG:] DECRYPTION_INFO 2 9 0
+[GNUPG:] PLAINTEXT 62 0 
+[GNUPG:] PLAINTEXT_LENGTH 9
+[GNUPG:] DECRYPTION_OKAY
+[GNUPG:] GOODMDC
+[GNUPG:] END_DECRYPTION
+fstatusnexit status: 0efiles¡sdecrypted-plaintext‰plaintext¥dargs‡x!"--faked-system-time=1671553073!"o"--status-fd=1"k"--decrypt"m"--list-only"j"--output"i"nothing"x"/EXPERIMENT/ciphertext"fstderr˜ôgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: encrypted with 255-bit ECDH key, ID 9B65706F37DDAB2D, created 2022-12-20
+      "Alice Lovelace <alice@lovelace.name>"
+fstdout˜›[GNUPG:] ENC_TO 9B65706F37DDAB2D 18 0
+[GNUPG:] KEY_CONSIDERED CA82A7127EE817886DDF63B9C747679511E0B174 0
+[GNUPG:] BEGIN_DECRYPTION
+[GNUPG:] END_DECRYPTION
+fstatusnexit status: 0efiles ¥dargsˆx!"--faked-system-time=1671553073!"o"--status-fd=1"k"--decrypt"m"--list-only"j"--output"i"nothing"k"--verbose"x"/EXPERIMENT/ciphertext"fstderr™cgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: public key is 9B65706F37DDAB2D
+gpg: using subkey 9B65706F37DDAB2D instead of primary key C747679511E0B174
+gpg: encrypted with 255-bit ECDH key, ID 9B65706F37DDAB2D, created 2022-12-20
+      "Alice Lovelace <alice@lovelace.name>"
+fstdout˜›[GNUPG:] ENC_TO 9B65706F37DDAB2D 18 0
+[GNUPG:] KEY_CONSIDERED CA82A7127EE817886DDF63B9C747679511E0B174 0
+[GNUPG:] BEGIN_DECRYPTION
+[GNUPG:] END_DECRYPTION
+fstatusnexit status: 0efiles iartifacts¡dcert™5ÅXc¡à1	+ÚG@ÅZjä-ËgMÕÙÑ+eNšg
+3?¸/Sgë†®C·@â  ÿPpAx‘	åg¼Y?’4ëÉÒ= ßß‰€¹¨'|½¶ÂÀ
+ ƒ‚c¡à1‰Ÿ¦ 		ÇGg•à±tG       salt@notations.sequoia-pgp.orgúµo;–C˜3Ü3ˆè¸À@“•T kb]"é†jü*³ï
+›!Ê‚§~èˆmßc¹ÇGg•à±t  ¬  ÿ]òB"*hÓ%D\‚pcÇÎ¤ÁŞ[?ˆèTW†‹1ÿ ı‹·#ÇŠu5¯Ôõó¿Ü‘m"™¹GÕ¼Ex+Í$Alice Lovelace <alice@lovelace.name>ÂÀ
+ †‚c¡à1‰Ÿ¦ 		ÇGg•à±tG       salt@notations.sequoia-pgp.orgyxÔ·_*óF±)¦#$€F0'cšôÂ?–ÔRK@{~
+™›!Ê‚§~èˆmßc¹ÇGg•à±t  pÊ ÿmß•÷÷ %Ÿ–4ôBÈØ¦÷à2¬ï-xK5º~ï ÿU+%©ÅLÀ…/=¸âOh¢æKî£×ßæØ”g¶òÇXc¡à1	+ÚG@EƒàÛˆEVäv`[®’xÙ3Vµè`£^›[õSO  ş³*¢Ía¾¨eşùf‰d jÛ‘Ud# `ßì‰nÂÀÅ
+7‚c¡à1‰Ÿ¦ 	ÇGg•à±tG       salt@notations.sequoia-pgp.org|H¤×È•§8#»˜ÂÊ#6¿ƒÆ½’÷ál3×ğÅÁ~›¾ 
+ o‚c¡à1	à€ÅPòº›–G       salt@notations.sequoia-pgp.org’ÖG;
+ò/2´^´Èı?1ñöpÓ›Nx,+	,ıH!A)zÕ±yÆÆº<à€ÅPòº›–  Oì ıŠu	¾Ø1RYY#ª“Xñ!Û°Á·V®Nn*cN$ ı´d°ò)Â9´ağäÔñÓ¨Ç®p*á¦ ÈúH5!Ê‚§~èˆmßc¹ÇGg•à±t  1˜ ’âÑ4g	…œ”}\äõ qK‘ÈÂÕUwû{.?BiÓß ÿ[Å®\Omy3Æô¾³f&£úÚïñ™ÇÇOo~Äx¬Ç]c¡à1
++—U@—}šs‚Â1Õ şY®-š™Ú¼û*¼XñºtJ`o  ÿaè7ÁàãT²;8Ä¯±â2ó[VÍÛÔ:#ÛMË=*ÂÀ
+ x‚c¡à1‰Ÿ¦ 	ÇGg•à±tG       salt@notations.sequoia-pgp.orgù;Tg›ã,O”Â?I¤ëíÚ&Äöìå³ƒÈÜV®ëô›!Ê‚§~èˆmßc¹ÇGg•à±t  	 Å|–ÜBˆã:İï4#~MF÷l`ºjPâB—|fÂ¿ğªk ”µÿK¿#!ƒõ”œª˜ªıBŒpÏ½âj¤Åû5

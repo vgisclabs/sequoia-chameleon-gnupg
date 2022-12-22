@@ -1,0 +1,17 @@
+¢goutputs†¥dargs‚x!"--faked-system-time=1671553073!"m"--list-keys"fstderr˜Ïgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: keybox '/HOMEDIR/pubring.kbx' created
+gpg: /HOMEDIR/trustdb.gpg: trustdb created
+fstdout€fstatusnexit status: 0efiles ¥dargsƒx!"--faked-system-time=1671553073!"m"--list-keys"o"--with-colons"fstderr˜ygpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+fstdout˜tru::1:1671553073:0:3:1:5
+fstatusnexit status: 0efiles ¥dargsƒx!"--faked-system-time=1671553073!"m"--list-keys"o"--with-secret"fstderr˜ygpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+fstdout€fstatusnexit status: 0efiles ¥dargs„x!"--faked-system-time=1671553073!"m"--list-keys"o"--with-secret"o"--with-colons"fstderr˜ygpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+fstdout˜tru::1:1671553073:0:3:1:5
+fstatusnexit status: 0efiles ¥dargs‚x!"--faked-system-time=1671553073!"t"--list-secret-keys"fstderr˜ygpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+fstdout€fstatusnexit status: 0efiles ¥dargsƒx!"--faked-system-time=1671553073!"t"--list-secret-keys"o"--with-colons"fstderr˜ygpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+fstdout€fstatusnexit status: 0efiles iartifacts 

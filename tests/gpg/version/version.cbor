@@ -1,0 +1,16 @@
+¢goutputs¥dargs‚x!"--faked-system-time=1671553073!"k"--version"fstderr˜7gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+fstdout™"gpg (GnuPG) 2.2.40
+libgcrypt 1.10.1
+Copyright (C) 2022 g10 Code GmbH
+License GNU GPL-3.0-or-later <https://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+
+Home: /HOMEDIR
+Supported algorithms:
+Pubkey: RSA, ELG, DSA, ECDH, ECDSA, EDDSA
+Cipher: IDEA, 3DES, CAST5, BLOWFISH, AES, AES192, AES256, TWOFISH,
+        CAMELLIA128, CAMELLIA192, CAMELLIA256
+Hash: SHA1, RIPEMD160, SHA256, SHA384, SHA512, SHA224
+Compression: Uncompressed, ZIP, ZLIB, BZIP2
+fstatusnexit status: 0efiles iartifacts 
