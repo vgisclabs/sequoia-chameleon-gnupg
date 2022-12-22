@@ -10,7 +10,7 @@
 // - Implement changes, to taste
 
 /// The GnuPG version we re-implement.
-pub const VERSION: &str = "2.2.39";
+pub const VERSION: &str = "2.2.40";
 
 /// Controls emitting of decryption compliance information.
 ///
