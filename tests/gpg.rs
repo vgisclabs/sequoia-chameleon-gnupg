@@ -47,6 +47,12 @@ lazy_static::lazy_static! {
 }
 
 lazy_static::lazy_static! {
+    static ref GPGV: Vec<String> =
+        vec![std::env::var("REAL_GPGV_BIN")
+             .unwrap_or("/usr/bin/gpgv".into())];
+}
+
+lazy_static::lazy_static! {
     static ref GPG_CHAMELEON: Vec<String> =
         vec![
             if let Ok(target) = std::env::var("CARGO_TARGET_DIR") {
@@ -60,8 +66,21 @@ lazy_static::lazy_static! {
         ];
 }
 
-const GPG_CHAMELEON_BUILD: &[&str] =
-    &["cargo", "build", "--quiet", "--bin", "sequoia-chameleon-gpg"];
+lazy_static::lazy_static! {
+    static ref GPGV_CHAMELEON: Vec<String> =
+        vec![
+            if let Ok(target) = std::env::var("CARGO_TARGET_DIR") {
+                PathBuf::from(target)
+            } else {
+                std::env::current_dir().unwrap()
+                    .join("target")
+            }
+            .join("debug/sequoia-chameleon-gpgv")
+            .display().to_string()
+        ];
+}
+
+const GPG_CHAMELEON_BUILD: &[&str] = &["cargo", "build", "--quiet"];
 
 pub const STDOUT_EDIT_DISTANCE_THRESHOLD: usize = 20;
 pub const STDERR_EDIT_DISTANCE_THRESHOLD: usize = 20;
@@ -83,6 +102,13 @@ fn check_gpg_oracle() {
         if String::from_utf8_lossy(&o.stdout).contains("equoia") {
             panic!("The oracle {:?} is Sequoia-based, please provide the \
                     stock gpg in REAL_GPG_BIN", GPG[0]);
+        }
+
+        let o = Command::new(&GPGV[0])
+            .arg("--version").output().unwrap();
+        if String::from_utf8_lossy(&o.stdout).contains("equoia") {
+            panic!("The oracle {:?} is Sequoia-based, please provide the \
+                    stock gpg in REAL_GPGV_BIN", GPGV[0]);
         }
     });
 }
@@ -106,26 +132,28 @@ fn build() {
 ///
 /// Creates a temporary directory and cleans up on Drop.
 pub struct Context {
-    executable: Vec<String>,
+    gpg: Vec<String>,
+    gpgv: Vec<String>,
     home: tempfile::TempDir,
 }
 
 impl Context {
     /// Returns a context for the reference GnuPG implementation.
     pub fn gnupg() -> Result<Self> {
-        Context::new(GPG.clone())
+        Context::new(GPG.clone(), GPGV.clone())
     }
 
     /// Returns a context for the chameleon.
     pub fn chameleon() -> Result<Self> {
         setup();
-        Context::new(GPG_CHAMELEON.clone())
+        Context::new(GPG_CHAMELEON.clone(), GPGV_CHAMELEON.clone())
     }
 
     /// Returns a custom context for the given GnuPG-like executable.
-    pub fn new(executable: Vec<String>) -> Result<Self> {
+    pub fn new(gpg: Vec<String>, gpgv: Vec<String>) -> Result<Self> {
         Ok(Context {
-            executable,
+            gpg,
+            gpgv,
             home: tempfile::tempdir()?,
         })
     }
@@ -142,10 +170,21 @@ impl Context {
 
     /// Invokes the GnuPG implementation with the given arguments.
     pub fn invoke(&self, args: &[&str]) -> Result<Output> {
-        let mut c = Command::new(&self.executable[0]);
+        // See if the user wants gpg or gpgv.
+        let (executable, args) =
+            if args[0] == "gpgv" {
+                (&self.gpgv, &args[1..])
+            } else if args[0] == "gpg" {
+                (&self.gpg, &args[1..])
+            } else {
+                // Implicitly select gpg.
+                (&self.gpg, &args[..])
+            };
+
+        let mut c = Command::new(&executable[0]);
         let workdir = tempfile::TempDir::new()?;
         c.current_dir(workdir.path());
-        for arg in &self.executable[1..] {
+        for arg in &executable[1..] {
             c.arg(arg);
         }
         c.arg("--homedir").arg(self.home.path());
@@ -350,9 +389,18 @@ impl Experiment {
             format!("--faked-system-time={}!",
                     Self::now().duration_since(UNIX_EPOCH)?.as_secs()),
         ];
-        let args = faked_system_time.iter().map(|s| s.as_str())
-            .chain(args.iter().cloned())
-            .collect::<Vec<&str>>();
+        let args: Vec<&str> = if args[0] == "gpgv" {
+            args.iter().cloned().collect()
+        } else if args[0] == "gpg" {
+            std::iter::once("gpg")
+                .chain(faked_system_time.iter().map(|s| s.as_str()))
+                .chain(args.iter().skip(1).cloned())
+                .collect()
+        } else {
+            faked_system_time.iter().map(|s| s.as_str())
+                .chain(args.iter().cloned())
+                .collect()
+        };
 
         self.log.borrow_mut().push(
             Action::Invoke(args.iter().map(ToString::to_string).collect()));
@@ -368,7 +416,12 @@ impl Experiment {
             })
             .collect();
 
-        eprintln!("Invoking \"gpg\" {}", normalized_args.join(" "));
+        let what = if args[0] == "gpgv" {
+            "gpgv"
+        } else {
+            "gpg"
+        };
+        eprintln!("Invoking {:?} {}", what, normalized_args.join(" "));
 
         let oracle = if let Some(o) = self.artifacts.outputs.get(n)
             .filter(|v| v.args == normalized_args)
