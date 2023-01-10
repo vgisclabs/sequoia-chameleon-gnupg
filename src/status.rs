@@ -717,9 +717,7 @@ fn e<W: io::Write + ?Sized>(sink: &mut W, s: impl AsRef<[u8]>) -> Result<()> {
     for c in s {
         match c {
             b'%' => sink.write_all(b"%25")?,
-            c if c.is_ascii() && *c < 20 =>
-                write!(sink, "%{:02X}", *c)?,
-            c if *c > 0x7e =>
+            c if *c < 0x20 || *c == 127 =>
                 write!(sink, "%{:02X}", *c)?,
             c => sink.write_all(&[*c])?,
         }
