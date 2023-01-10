@@ -174,6 +174,17 @@ impl common::Common for Config {
         &self.keydb
     }
 
+    fn lookup_certs(&self, _query: &common::Query)
+                    -> anyhow::Result<Vec<(common::Validity, &Cert)>> {
+        // The verification code uses this to determine the validity.
+        // Since gpgv doesn't use trust models, its output doesn't
+        // include validity information.  The verification code uses
+        // the fact that this function returns an empty vector to
+        // modify its output accordingly.  This function is not used
+        // for anything else in gpgv.
+        Ok(vec![])
+    }
+
     fn outfile(&self) -> Option<&String> {
         self.outfile.as_ref()
     }
@@ -204,6 +215,10 @@ impl common::Common for Config {
 
     fn trust_model_impl(&self) -> &dyn common::Model {
         self.trust_model_impl.as_ref()
+    }
+
+    fn with_fingerprint(&self) -> bool {
+        false
     }
 }
 

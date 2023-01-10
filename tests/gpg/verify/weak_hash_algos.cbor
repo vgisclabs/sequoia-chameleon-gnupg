@@ -1,0 +1,143 @@
+¢goutputsê•dargsÇx!"--faked-system-time=1671553073!"m"--list-keys"fstderròœgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: keybox '/HOMEDIR/pubring.kbx' created
+gpg: /HOMEDIR/trustdb.gpg: trustdb created
+fstdoutÄfstatusnexit status: 0efiles†•dargsáx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"o"--weak-digest"e"MD5"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrô$gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using ECDSA key CA6E6E977A0D17C92B4C7F04A0B0189167C62BE6
+gpg: Can't check signature: No public key
+fstdoutòì[GNUPG:] NEWSIG
+[GNUPG:] ERRSIG A0B0189167C62BE6 19 1 00 1671553073 9 CA6E6E977A0D17C92B4C7F04A0B0189167C62BE6
+[GNUPG:] NO_PUBKEY A0B0189167C62BE6
+fstatusnexit status: 2efiles†•dargsáx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"o"--weak-digest"e"MD5"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrô$gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using ECDSA key CA6E6E977A0D17C92B4C7F04A0B0189167C62BE6
+gpg: Can't check signature: No public key
+fstdoutòì[GNUPG:] NEWSIG
+[GNUPG:] ERRSIG A0B0189167C62BE6 19 1 00 1671553073 9 CA6E6E977A0D17C92B4C7F04A0B0189167C62BE6
+[GNUPG:] NO_PUBKEY A0B0189167C62BE6
+fstatusnexit status: 2efiles†•dargsÉx!"--faked-system-time=1671553073!"j"--import"r"/EXPERIMENT/cert"fstderrôgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: key 47573F6EE9A284BF: public key "Alice Lovelace <alice@lovelace.name>" imported
+gpg: Total number processed: 1
+gpg:               imported: 1
+fstdoutÄfstatusnexit status: 0efiles†•dargsáx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"o"--weak-digest"e"MD5"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôjgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using ECDSA key CA6E6E977A0D17C92B4C7F04A0B0189167C62BE6
+gpg: Note: signatures using the MD5 algorithm are rejected
+gpg: Can't check signature: Invalid digest algorithm
+fstdoutò≤[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 44AD31A38B32077D93DFD0B747573F6EE9A284BF 0
+[GNUPG:] ERRSIG A0B0189167C62BE6 19 1 00 1671553073 5 CA6E6E977A0D17C92B4C7F04A0B0189167C62BE6
+fstatusnexit status: 2efiles†•dargsáx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"o"--weak-digest"e"MD5"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôjgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using ECDSA key CA6E6E977A0D17C92B4C7F04A0B0189167C62BE6
+gpg: Note: signatures using the MD5 algorithm are rejected
+gpg: Can't check signature: Invalid digest algorithm
+fstdoutò≤[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 44AD31A38B32077D93DFD0B747573F6EE9A284BF 0
+[GNUPG:] ERRSIG A0B0189167C62BE6 19 1 00 1671553073 5 CA6E6E977A0D17C92B4C7F04A0B0189167C62BE6
+fstatusnexit status: 2efiles†•dargsáx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"o"--weak-digest"f"SHA1"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôkgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using ECDSA key CA6E6E977A0D17C92B4C7F04A0B0189167C62BE6
+gpg: Note: signatures using the SHA1 algorithm are rejected
+gpg: Can't check signature: Invalid digest algorithm
+fstdoutò≤[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 44AD31A38B32077D93DFD0B747573F6EE9A284BF 0
+[GNUPG:] ERRSIG A0B0189167C62BE6 19 2 00 1671553073 5 CA6E6E977A0D17C92B4C7F04A0B0189167C62BE6
+fstatusnexit status: 2efiles†•dargsáx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"o"--weak-digest"f"SHA1"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôkgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using ECDSA key CA6E6E977A0D17C92B4C7F04A0B0189167C62BE6
+gpg: Note: signatures using the SHA1 algorithm are rejected
+gpg: Can't check signature: Invalid digest algorithm
+fstdoutò≤[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 44AD31A38B32077D93DFD0B747573F6EE9A284BF 0
+[GNUPG:] ERRSIG A0B0189167C62BE6 19 2 00 1671553073 5 CA6E6E977A0D17C92B4C7F04A0B0189167C62BE6
+fstatusnexit status: 2efiles†•dargsáx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"o"--weak-digest"k"RipeMD160"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôpgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using ECDSA key CA6E6E977A0D17C92B4C7F04A0B0189167C62BE6
+gpg: Note: signatures using the RIPEMD160 algorithm are rejected
+gpg: Can't check signature: Invalid digest algorithm
+fstdoutò≤[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 44AD31A38B32077D93DFD0B747573F6EE9A284BF 0
+[GNUPG:] ERRSIG A0B0189167C62BE6 19 3 00 1671553073 5 CA6E6E977A0D17C92B4C7F04A0B0189167C62BE6
+fstatusnexit status: 2efiles†•dargsáx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"o"--weak-digest"k"RipeMD160"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôpgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using ECDSA key CA6E6E977A0D17C92B4C7F04A0B0189167C62BE6
+gpg: Note: signatures using the RIPEMD160 algorithm are rejected
+gpg: Can't check signature: Invalid digest algorithm
+fstdoutò≤[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 44AD31A38B32077D93DFD0B747573F6EE9A284BF 0
+[GNUPG:] ERRSIG A0B0189167C62BE6 19 3 00 1671553073 5 CA6E6E977A0D17C92B4C7F04A0B0189167C62BE6
+fstatusnexit status: 2efiles†•dargsáx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"o"--weak-digest"h"SHA256"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrômgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using ECDSA key CA6E6E977A0D17C92B4C7F04A0B0189167C62BE6
+gpg: Note: signatures using the SHA256 algorithm are rejected
+gpg: Can't check signature: Invalid digest algorithm
+fstdoutò≤[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 44AD31A38B32077D93DFD0B747573F6EE9A284BF 0
+[GNUPG:] ERRSIG A0B0189167C62BE6 19 8 00 1671553073 5 CA6E6E977A0D17C92B4C7F04A0B0189167C62BE6
+fstatusnexit status: 2efiles†•dargsáx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"o"--weak-digest"h"SHA256"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrômgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using ECDSA key CA6E6E977A0D17C92B4C7F04A0B0189167C62BE6
+gpg: Note: signatures using the SHA256 algorithm are rejected
+gpg: Can't check signature: Invalid digest algorithm
+fstdoutò≤[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 44AD31A38B32077D93DFD0B747573F6EE9A284BF 0
+[GNUPG:] ERRSIG A0B0189167C62BE6 19 8 00 1671553073 5 CA6E6E977A0D17C92B4C7F04A0B0189167C62BE6
+fstatusnexit status: 2efiles†•dargsáx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"o"--weak-digest"h"SHA384"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrômgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using ECDSA key CA6E6E977A0D17C92B4C7F04A0B0189167C62BE6
+gpg: Note: signatures using the SHA384 algorithm are rejected
+gpg: Can't check signature: Invalid digest algorithm
+fstdoutò≤[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 44AD31A38B32077D93DFD0B747573F6EE9A284BF 0
+[GNUPG:] ERRSIG A0B0189167C62BE6 19 9 00 1671553073 5 CA6E6E977A0D17C92B4C7F04A0B0189167C62BE6
+fstatusnexit status: 2efiles†•dargsáx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"o"--weak-digest"h"SHA384"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrômgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using ECDSA key CA6E6E977A0D17C92B4C7F04A0B0189167C62BE6
+gpg: Note: signatures using the SHA384 algorithm are rejected
+gpg: Can't check signature: Invalid digest algorithm
+fstdoutò≤[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 44AD31A38B32077D93DFD0B747573F6EE9A284BF 0
+[GNUPG:] ERRSIG A0B0189167C62BE6 19 9 00 1671553073 5 CA6E6E977A0D17C92B4C7F04A0B0189167C62BE6
+fstatusnexit status: 2efiles†•dargsáx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"o"--weak-digest"h"SHA224"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrômgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using ECDSA key CA6E6E977A0D17C92B4C7F04A0B0189167C62BE6
+gpg: Note: signatures using the SHA224 algorithm are rejected
+gpg: Can't check signature: Invalid digest algorithm
+fstdoutò≥[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 44AD31A38B32077D93DFD0B747573F6EE9A284BF 0
+[GNUPG:] ERRSIG A0B0189167C62BE6 19 11 00 1671553073 5 CA6E6E977A0D17C92B4C7F04A0B0189167C62BE6
+fstatusnexit status: 2efiles†•dargsáx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"o"--weak-digest"h"SHA224"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrômgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using ECDSA key CA6E6E977A0D17C92B4C7F04A0B0189167C62BE6
+gpg: Note: signatures using the SHA224 algorithm are rejected
+gpg: Can't check signature: Invalid digest algorithm
+fstdoutò≥[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 44AD31A38B32077D93DFD0B747573F6EE9A284BF 0
+[GNUPG:] ERRSIG A0B0189167C62BE6 19 11 00 1671553073 5 CA6E6E977A0D17C92B4C7F04A0B0189167C62BE6
+fstatusnexit status: 2efiles†iartifactsßdcertô≈¿c°‡1+Å ##  Ä}ßPyo’YFàQß^Õ€‹dPSõ¬Ò√¬¨Ìãi aÑÉÅÌ»¥‘5%[˙2ÌàÈ€óLyC¯DÙ9&ò¸å› ﬂ:xÛi© 6Ç-È+ÈıîúÏZ≤§	£º7 ¯¬ﬁƒ5î‡øäa¬ì±I0ÏxìÒ|ûz¸_!…2√ËY 	v¶%ª1x$ç√an§]zqd‡XÑ
+–DkŸ¡ßui|2Nw,—{PQäæ
+Ô‰ﬁ8÷mŸa}¸∂œõ¬¿O
+ }Çc°‡1		GW?nÈ¢ÑøG       salt@notations.sequoia-pgp.orgÉ§~Ûk∂GjõÃ˜zıÕÑØ ∏ó¡ÖeÀ"@
+õ!D≠1£ã2}ìﬂ–∑GW?nÈ¢Ñø  C	æÂŸ1óF4!∫Ì√O#Xá„@‹€ªis-u¸ì4(NI⁄˚.V '˚^}^ß`7ÒW§Ü\—‘¯éú¯ôà*	:Õ”he¢Æ„ï¿"y˝†U3”Ÿ≠†©áÁ|x=≈Jdcyéïñ¸d<ù†äJ-”<h RVà-ÂÓùQÁÃÕ$Alice Lovelace <alice@lovelace.name>¬¿Q
+ ÄÇc°‡1		GW?nÈ¢ÑøG       salt@notations.sequoia-pgp.org ÑQ€-j}$±g=GyQ*N0òŸ-_™÷ÙÏDNìØ
+ôõ!D≠1£ã2}ìﬂ–∑GW?nÈ¢Ñø  ?€U©ä3–ÍâŸ† ,Í¶¿{ï\ãEwˆ-ŒÄÍtàmk Êw0ÊÅ2#Ü"÷˙óﬁ Øq˙◊ìñè2ßmÔ	¶©oApPTH›E¥û/vdÃ—–öŒñZ$ΩÏs°…\l≈‹õ3U’@ªß§=≠üHÆæÏúo∫ Zπ«¿c°‡1+Å ## ¿ì\iæÀ¶A‡î*˘Ù7•êÕŒµﬁÁo˜7b.øïà˝ì„éBõ$oW3Jlàk“iôö/‹ï!‰c…˝ ïa∞O∂œk√£åsL≥√î°ß"í“û?–QaÔ∫∆°Ô œ.M0î©/È≤Áæ3wÁ£‘!÷“i¿>SRÁ^W 	#“ ŒÙÍ	∞ÿàVtá‡ÎE√ÚÑs@¡8éØ+ú[sfπØ¶héö$˛ÆoSØñâ8◊Xn‡Û°]$¬¡F
+uÇc°‡1	GW?nÈ¢ÑøG       salt@notations.sequoia-pgp.orgr¡⁄Ü©¡Â~Õ:RufQO‚g‘;∂hÄ‘ı0øﬁGõ¿A†
+ oÇc°‡1	†∞ëg∆+ÊG       salt@notations.sequoia-pgp.org^Ã(’í•û«õ…¸Æ«RæÃI_–˚WgÛÑ*é! nnóz…+L†∞ëg∆+Ê  ¿+	H~”∆<wsÌ¸òg[z¬IFÜ†@R•'!ˆ6Rˆ‡˘÷çÇ#úR£#%ÊÌ≈fé0†™b»¿ôi∑‘1h%9∫:ık4V˘bo∏n±êTËV}∆ÄØkz}zºπ∏ÊÚúøﬂŸKÊa“˛Ãú≠ñOX›ì—DvÂ&!D≠1£ã2}ìﬂ–∑GW?nÈ¢Ñø  º—á“_wV‚ÈM≤BÙ/%q’{tv"g†ÚŒ◊ˆî≤˘\Í¡Ùo•√ îEOLoÕÜèI1$(nh_Ï∫ËﬁÕÇù	Åà‡ú*Ü–ÁèçE@;*EîÑ ç¯á7P÷‰;:S¨7C=ŒÙ°gÑGµ!¬ãØ”≥‰íﬁ≥∏Òh–∑K„4gsig.MD5ô¬¿@  oÇc°‡1	†∞ëg∆+ÊG       salt@notations.sequoia-pgp.orgÜá“¶ûLrqwB@ŒPYX6ªnü˝â≈£L[Fº	! nnóz…+L†∞ëg∆+Ê  ≤	ƒgQèJˇÚÀŒﬁl2p2Sì≥˘±9ÆÖ"µfu*ÉÄh+¸[(qµÑ9Ûñ´Êb˜Ωøèn‘5ÎÔÿsºãìÔAröu˛˙Iv∆]´h,?∏ˇJ÷·µJ*VƒèÿË»·|î»¿ÀÀÂ%OjA9≈"°ˆFÒù¸WÄmsig.RipeMD160ô¬¿@  oÇc°‡1	†∞ëg∆+ÊG       salt@notations.sequoia-pgp.org°1*KBQñÔÃΩ!
+∆xﬁ+˚ëﬁI√)ûﬂ« ÜÓÁ! nnóz…+L†∞ëg∆+Ê  tLA	Ù3/	ÅÎT0÷ãqÌè·GÏâ6[≈m:o'∏ù¸Ynç¡Æº*¡Î"Å¸sû“≈˚LÇSÜH≈Ä`™B˛Wã÷a	x‹*ÀeTvÅ€Óã(æÇ\ùcg‚πK¬K´– öÀzâ¿K ≠i¥w:ÔX∂ÌÂ∞Î˛•hsig.SHA1ô¬¿A  oÇc°‡1	†∞ëg∆+ÊG       salt@notations.sequoia-pgp.org‘FUÊbt±±∫˝+QvQ2˜€√m(êΩg√OˆÙL®ö! nnóz…+L†∞ëg∆+Ê  HT	MÂ¿‹∂ïÇÊµHîoo	l°÷`> ñﬁDÕB∞Üìªπ˝"Àv®õ9>	¢àéWàDIŒ„Òã$Hö¨Ò	⁄˙ˇÙF,á’?›{yR?≤Õ·Ç%;(XÙ¶≤ÔÎè î˚K{NÙV“¢›:CÚ⁄˘ªr•d6ÎO$ØÂ3Ùjsig.SHA224ô¬¿@  oÇc°‡1	†∞ëg∆+ÊG       salt@notations.sequoia-pgp.org≥;*V6[ê`5÷›ù"ıZU7+^æ¡Ee» ‡-d‘! nnóz…+L†∞ëg∆+Ê  Ùs[ò¿êïRwE¥'í\v"˜∑`k+®†é‡ç] èKv>.±µ~õé¨k ›üˇl°≈	ë±…Úú£îÎ.r	~,∑áÆ∆˜C±´K˝bKı‘¡o∂÷•Áñ|◊‘=Îú„ÒÁ∑_Ï5†i^qÔ€ÄµÏáFEΩ(‚nf5˘¶,jsig.SHA256ô¬¿@  oÇc°‡1	†∞ëg∆+ÊG       salt@notations.sequoia-pgp.orgöÃvriï*U~>Y<,¬%J<ò˙Û!Ç¬‹! nnóz…+L†∞ëg∆+Ê  >9	Âã'M£mD#iˆÏÕ˛∆Öá◊$Øs¥ˇñ$/%∆$Ñc?V≤7êíÌª–°o˚8æ{øÏ≠Á∞òØÔE4àU≤Èu.f9Ì2≈•`Å»Û (jÔ"è˝ÎïÛÙKƒXU¥%Ä˙™%ºô¡ØFBƒÌ⁄!3Œ¸!L«S”ãÂ« vjsig.SHA384ô¬¿@ 	 oÇc°‡1	†∞ëg∆+ÊG       salt@notations.sequoia-pgp.org›Ë(M[ﬂŒ„¶§F1m–*'3m3:Ÿ˝pÀ+%Å! nnóz…+L†∞ëg∆+Ê  àø	aúísá5Ï ÔØ!ˇ◊Ã¿“/?©U™åÂÔ!∏KÁ4b∫mîP_öu^US>e€Ûˆg™w‰¨™Ù5ˇn£⁄VÃÄ™òã˘∫tƒn©G‹Ñ™v∂öŒOﬂµó}iÂ≤&ÈzØ^T’_SG^õΩD·X]Rw‚êöêÑæ[˙@—ÿé

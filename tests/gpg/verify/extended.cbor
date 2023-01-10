@@ -1,0 +1,508 @@
+¢goutputsò$•dargsÇx!"--faked-system-time=1671553073!"m"--list-keys"fstderròœgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: keybox '/HOMEDIR/pubring.kbx' created
+gpg: /HOMEDIR/trustdb.gpg: trustdb created
+fstdoutÄfstatusnexit status: 0efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrô$gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using EDDSA key 26FF3780118BC9E42AAF3260F6B8DB421A568E70
+gpg: Can't check signature: No public key
+fstdoutòî[GNUPG:] NEWSIG
+[GNUPG:] ERRSIG F6B8DB421A568E70 22 10 00 1671553073 9 26FF3780118BC9E42AAF3260F6B8DB421A568E70
+[GNUPG:] NO_PUBKEY F6B8DB421A568E70
+fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrô$gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using EDDSA key 26FF3780118BC9E42AAF3260F6B8DB421A568E70
+gpg: Can't check signature: No public key
+fstdoutòî[GNUPG:] NEWSIG
+[GNUPG:] ERRSIG F6B8DB421A568E70 22 10 00 1671553073 9 26FF3780118BC9E42AAF3260F6B8DB421A568E70
+[GNUPG:] NO_PUBKEY F6B8DB421A568E70
+fstatusnexit status: 2efiles†•dargsÉx!"--faked-system-time=1671553073!"j"--import"r"/EXPERIMENT/cert"fstderrôgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: key C9EAF0E9A823DD2E: public key "Alice Lovelace <alice@lovelace.name>" imported
+gpg: Total number processed: 1
+gpg:               imported: 1
+fstdoutÄfstatusnexit status: 0efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôlgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using EDDSA key 26FF3780118BC9E42AAF3260F6B8DB421A568E70
+gpg: Good signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
+gpg: WARNING: This key is not certified with a trusted signature!
+gpg:          There is no indication that the signature belongs to the owner.
+Primary key fingerprint: 9097 B347 ACE8 C1C8 01BC  F7B4 C9EA F0E9 A823 DD2E
+     Subkey fingerprint: 26FF 3780 118B C9E4 2AAF  3260 F6B8 DB42 1A56 8E70
+fstdoutôÀ[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] SIG_ID taf/wNp4mDgHJg3PsBz0BkHRod8 2022-12-20 1671553073
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] GOODSIG F6B8DB421A568E70 Alice Lovelace <alice@lovelace.name>
+[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org
+[GNUPG:] NOTATION_DATA t%1B1&hÁC%07%1B%0FûµC`ªùOqm7i%14%17Ú%1AS∂l¶ı%01}
+[GNUPG:] VALIDSIG 26FF3780118BC9E42AAF3260F6B8DB421A568E70 2022-12-20 1671553073 0 4 0 22 10 00 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] TRUST_UNDEFINED 0 pgp
+fstatusnexit status: 0efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôCgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using EDDSA key 26FF3780118BC9E42AAF3260F6B8DB421A568E70
+gpg: BAD signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
+fstdoutò‹[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] BADSIG F6B8DB421A568E70 Alice Lovelace <alice@lovelace.name>
+fstatusnexit status: 1efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôlgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using EDDSA key 26FF3780118BC9E42AAF3260F6B8DB421A568E70
+gpg: Good signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
+gpg: WARNING: This key is not certified with a trusted signature!
+gpg:          There is no indication that the signature belongs to the owner.
+Primary key fingerprint: 9097 B347 ACE8 C1C8 01BC  F7B4 C9EA F0E9 A823 DD2E
+     Subkey fingerprint: 26FF 3780 118B C9E4 2AAF  3260 F6B8 DB42 1A56 8E70
+fstdoutôÀ[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] SIG_ID taf/wNp4mDgHJg3PsBz0BkHRod8 2022-12-20 1671553073
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] GOODSIG F6B8DB421A568E70 Alice Lovelace <alice@lovelace.name>
+[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org
+[GNUPG:] NOTATION_DATA t%1B1&hÁC%07%1B%0FûµC`ªùOqm7i%14%17Ú%1AS∂l¶ı%01}
+[GNUPG:] VALIDSIG 26FF3780118BC9E42AAF3260F6B8DB421A568E70 2022-12-20 1671553073 0 4 0 22 10 00 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] TRUST_UNDEFINED 0 pgp
+fstatusnexit status: 0efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôCgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using EDDSA key 26FF3780118BC9E42AAF3260F6B8DB421A568E70
+gpg: BAD signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
+fstdoutò‹[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] BADSIG F6B8DB421A568E70 Alice Lovelace <alice@lovelace.name>
+fstatusnexit status: 1efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôlgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using EDDSA key 26FF3780118BC9E42AAF3260F6B8DB421A568E70
+gpg: Good signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
+gpg: WARNING: This key is not certified with a trusted signature!
+gpg:          There is no indication that the signature belongs to the owner.
+Primary key fingerprint: 9097 B347 ACE8 C1C8 01BC  F7B4 C9EA F0E9 A823 DD2E
+     Subkey fingerprint: 26FF 3780 118B C9E4 2AAF  3260 F6B8 DB42 1A56 8E70
+fstdoutôÀ[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] SIG_ID taf/wNp4mDgHJg3PsBz0BkHRod8 2022-12-20 1671553073
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] GOODSIG F6B8DB421A568E70 Alice Lovelace <alice@lovelace.name>
+[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org
+[GNUPG:] NOTATION_DATA t%1B1&hÁC%07%1B%0FûµC`ªùOqm7i%14%17Ú%1AS∂l¶ı%01}
+[GNUPG:] VALIDSIG 26FF3780118BC9E42AAF3260F6B8DB421A568E70 2022-12-20 1671553073 0 4 0 22 10 00 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] TRUST_UNDEFINED 0 pgp
+fstatusnexit status: 0efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôCgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using EDDSA key 26FF3780118BC9E42AAF3260F6B8DB421A568E70
+gpg: BAD signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
+fstdoutò‹[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] BADSIG F6B8DB421A568E70 Alice Lovelace <alice@lovelace.name>
+fstatusnexit status: 1efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôlgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using EDDSA key 26FF3780118BC9E42AAF3260F6B8DB421A568E70
+gpg: Good signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
+gpg: WARNING: This key is not certified with a trusted signature!
+gpg:          There is no indication that the signature belongs to the owner.
+Primary key fingerprint: 9097 B347 ACE8 C1C8 01BC  F7B4 C9EA F0E9 A823 DD2E
+     Subkey fingerprint: 26FF 3780 118B C9E4 2AAF  3260 F6B8 DB42 1A56 8E70
+fstdoutôÀ[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] SIG_ID taf/wNp4mDgHJg3PsBz0BkHRod8 2022-12-20 1671553073
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] GOODSIG F6B8DB421A568E70 Alice Lovelace <alice@lovelace.name>
+[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org
+[GNUPG:] NOTATION_DATA t%1B1&hÁC%07%1B%0FûµC`ªùOqm7i%14%17Ú%1AS∂l¶ı%01}
+[GNUPG:] VALIDSIG 26FF3780118BC9E42AAF3260F6B8DB421A568E70 2022-12-20 1671553073 0 4 0 22 10 00 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] TRUST_UNDEFINED 0 pgp
+fstatusnexit status: 0efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôCgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using EDDSA key 26FF3780118BC9E42AAF3260F6B8DB421A568E70
+gpg: BAD signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
+fstdoutò‹[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] BADSIG F6B8DB421A568E70 Alice Lovelace <alice@lovelace.name>
+fstatusnexit status: 1efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôlgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using EDDSA key 26FF3780118BC9E42AAF3260F6B8DB421A568E70
+gpg: Good signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
+gpg: WARNING: This key is not certified with a trusted signature!
+gpg:          There is no indication that the signature belongs to the owner.
+Primary key fingerprint: 9097 B347 ACE8 C1C8 01BC  F7B4 C9EA F0E9 A823 DD2E
+     Subkey fingerprint: 26FF 3780 118B C9E4 2AAF  3260 F6B8 DB42 1A56 8E70
+fstdoutôÀ[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] SIG_ID taf/wNp4mDgHJg3PsBz0BkHRod8 2022-12-20 1671553073
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] GOODSIG F6B8DB421A568E70 Alice Lovelace <alice@lovelace.name>
+[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org
+[GNUPG:] NOTATION_DATA t%1B1&hÁC%07%1B%0FûµC`ªùOqm7i%14%17Ú%1AS∂l¶ı%01}
+[GNUPG:] VALIDSIG 26FF3780118BC9E42AAF3260F6B8DB421A568E70 2022-12-20 1671553073 0 4 0 22 10 00 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] TRUST_UNDEFINED 0 pgp
+fstatusnexit status: 0efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôCgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using EDDSA key 26FF3780118BC9E42AAF3260F6B8DB421A568E70
+gpg: BAD signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
+fstdoutò‹[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] BADSIG F6B8DB421A568E70 Alice Lovelace <alice@lovelace.name>
+fstatusnexit status: 1efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôlgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using EDDSA key 26FF3780118BC9E42AAF3260F6B8DB421A568E70
+gpg: Good signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
+gpg: WARNING: This key is not certified with a trusted signature!
+gpg:          There is no indication that the signature belongs to the owner.
+Primary key fingerprint: 9097 B347 ACE8 C1C8 01BC  F7B4 C9EA F0E9 A823 DD2E
+     Subkey fingerprint: 26FF 3780 118B C9E4 2AAF  3260 F6B8 DB42 1A56 8E70
+fstdoutôÀ[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] SIG_ID taf/wNp4mDgHJg3PsBz0BkHRod8 2022-12-20 1671553073
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] GOODSIG F6B8DB421A568E70 Alice Lovelace <alice@lovelace.name>
+[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org
+[GNUPG:] NOTATION_DATA t%1B1&hÁC%07%1B%0FûµC`ªùOqm7i%14%17Ú%1AS∂l¶ı%01}
+[GNUPG:] VALIDSIG 26FF3780118BC9E42AAF3260F6B8DB421A568E70 2022-12-20 1671553073 0 4 0 22 10 00 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] TRUST_UNDEFINED 0 pgp
+fstatusnexit status: 0efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôCgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using EDDSA key 26FF3780118BC9E42AAF3260F6B8DB421A568E70
+gpg: BAD signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
+fstdoutò‹[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] BADSIG F6B8DB421A568E70 Alice Lovelace <alice@lovelace.name>
+fstatusnexit status: 1efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôlgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using EDDSA key 26FF3780118BC9E42AAF3260F6B8DB421A568E70
+gpg: Good signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
+gpg: WARNING: This key is not certified with a trusted signature!
+gpg:          There is no indication that the signature belongs to the owner.
+Primary key fingerprint: 9097 B347 ACE8 C1C8 01BC  F7B4 C9EA F0E9 A823 DD2E
+     Subkey fingerprint: 26FF 3780 118B C9E4 2AAF  3260 F6B8 DB42 1A56 8E70
+fstdoutôÀ[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] SIG_ID taf/wNp4mDgHJg3PsBz0BkHRod8 2022-12-20 1671553073
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] GOODSIG F6B8DB421A568E70 Alice Lovelace <alice@lovelace.name>
+[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org
+[GNUPG:] NOTATION_DATA t%1B1&hÁC%07%1B%0FûµC`ªùOqm7i%14%17Ú%1AS∂l¶ı%01}
+[GNUPG:] VALIDSIG 26FF3780118BC9E42AAF3260F6B8DB421A568E70 2022-12-20 1671553073 0 4 0 22 10 00 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] TRUST_UNDEFINED 0 pgp
+fstatusnexit status: 0efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôCgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using EDDSA key 26FF3780118BC9E42AAF3260F6B8DB421A568E70
+gpg: BAD signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
+fstdoutò‹[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] BADSIG F6B8DB421A568E70 Alice Lovelace <alice@lovelace.name>
+fstatusnexit status: 1efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôlgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using EDDSA key 26FF3780118BC9E42AAF3260F6B8DB421A568E70
+gpg: Good signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
+gpg: WARNING: This key is not certified with a trusted signature!
+gpg:          There is no indication that the signature belongs to the owner.
+Primary key fingerprint: 9097 B347 ACE8 C1C8 01BC  F7B4 C9EA F0E9 A823 DD2E
+     Subkey fingerprint: 26FF 3780 118B C9E4 2AAF  3260 F6B8 DB42 1A56 8E70
+fstdoutôÀ[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] SIG_ID taf/wNp4mDgHJg3PsBz0BkHRod8 2022-12-20 1671553073
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] GOODSIG F6B8DB421A568E70 Alice Lovelace <alice@lovelace.name>
+[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org
+[GNUPG:] NOTATION_DATA t%1B1&hÁC%07%1B%0FûµC`ªùOqm7i%14%17Ú%1AS∂l¶ı%01}
+[GNUPG:] VALIDSIG 26FF3780118BC9E42AAF3260F6B8DB421A568E70 2022-12-20 1671553073 0 4 0 22 10 00 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] TRUST_UNDEFINED 0 pgp
+fstatusnexit status: 0efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôCgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using EDDSA key 26FF3780118BC9E42AAF3260F6B8DB421A568E70
+gpg: BAD signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
+fstdoutò‹[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] BADSIG F6B8DB421A568E70 Alice Lovelace <alice@lovelace.name>
+fstatusnexit status: 1efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôlgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using EDDSA key 26FF3780118BC9E42AAF3260F6B8DB421A568E70
+gpg: Good signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
+gpg: WARNING: This key is not certified with a trusted signature!
+gpg:          There is no indication that the signature belongs to the owner.
+Primary key fingerprint: 9097 B347 ACE8 C1C8 01BC  F7B4 C9EA F0E9 A823 DD2E
+     Subkey fingerprint: 26FF 3780 118B C9E4 2AAF  3260 F6B8 DB42 1A56 8E70
+fstdoutôÀ[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] SIG_ID taf/wNp4mDgHJg3PsBz0BkHRod8 2022-12-20 1671553073
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] GOODSIG F6B8DB421A568E70 Alice Lovelace <alice@lovelace.name>
+[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org
+[GNUPG:] NOTATION_DATA t%1B1&hÁC%07%1B%0FûµC`ªùOqm7i%14%17Ú%1AS∂l¶ı%01}
+[GNUPG:] VALIDSIG 26FF3780118BC9E42AAF3260F6B8DB421A568E70 2022-12-20 1671553073 0 4 0 22 10 00 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] TRUST_UNDEFINED 0 pgp
+fstatusnexit status: 0efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôCgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using EDDSA key 26FF3780118BC9E42AAF3260F6B8DB421A568E70
+gpg: BAD signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
+fstdoutò‹[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] BADSIG F6B8DB421A568E70 Alice Lovelace <alice@lovelace.name>
+fstatusnexit status: 1efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôlgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using EDDSA key 26FF3780118BC9E42AAF3260F6B8DB421A568E70
+gpg: Good signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
+gpg: WARNING: This key is not certified with a trusted signature!
+gpg:          There is no indication that the signature belongs to the owner.
+Primary key fingerprint: 9097 B347 ACE8 C1C8 01BC  F7B4 C9EA F0E9 A823 DD2E
+     Subkey fingerprint: 26FF 3780 118B C9E4 2AAF  3260 F6B8 DB42 1A56 8E70
+fstdoutôÀ[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] SIG_ID taf/wNp4mDgHJg3PsBz0BkHRod8 2022-12-20 1671553073
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] GOODSIG F6B8DB421A568E70 Alice Lovelace <alice@lovelace.name>
+[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org
+[GNUPG:] NOTATION_DATA t%1B1&hÁC%07%1B%0FûµC`ªùOqm7i%14%17Ú%1AS∂l¶ı%01}
+[GNUPG:] VALIDSIG 26FF3780118BC9E42AAF3260F6B8DB421A568E70 2022-12-20 1671553073 0 4 0 22 10 00 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] TRUST_UNDEFINED 0 pgp
+fstatusnexit status: 0efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôCgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using EDDSA key 26FF3780118BC9E42AAF3260F6B8DB421A568E70
+gpg: BAD signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
+fstdoutò‹[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] BADSIG F6B8DB421A568E70 Alice Lovelace <alice@lovelace.name>
+fstatusnexit status: 1efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôlgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using EDDSA key 26FF3780118BC9E42AAF3260F6B8DB421A568E70
+gpg: Good signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
+gpg: WARNING: This key is not certified with a trusted signature!
+gpg:          There is no indication that the signature belongs to the owner.
+Primary key fingerprint: 9097 B347 ACE8 C1C8 01BC  F7B4 C9EA F0E9 A823 DD2E
+     Subkey fingerprint: 26FF 3780 118B C9E4 2AAF  3260 F6B8 DB42 1A56 8E70
+fstdoutôÀ[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] SIG_ID taf/wNp4mDgHJg3PsBz0BkHRod8 2022-12-20 1671553073
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] GOODSIG F6B8DB421A568E70 Alice Lovelace <alice@lovelace.name>
+[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org
+[GNUPG:] NOTATION_DATA t%1B1&hÁC%07%1B%0FûµC`ªùOqm7i%14%17Ú%1AS∂l¶ı%01}
+[GNUPG:] VALIDSIG 26FF3780118BC9E42AAF3260F6B8DB421A568E70 2022-12-20 1671553073 0 4 0 22 10 00 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] TRUST_UNDEFINED 0 pgp
+fstatusnexit status: 0efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôCgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using EDDSA key 26FF3780118BC9E42AAF3260F6B8DB421A568E70
+gpg: BAD signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
+fstdoutò‹[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] BADSIG F6B8DB421A568E70 Alice Lovelace <alice@lovelace.name>
+fstatusnexit status: 1efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôlgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using EDDSA key 26FF3780118BC9E42AAF3260F6B8DB421A568E70
+gpg: Good signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
+gpg: WARNING: This key is not certified with a trusted signature!
+gpg:          There is no indication that the signature belongs to the owner.
+Primary key fingerprint: 9097 B347 ACE8 C1C8 01BC  F7B4 C9EA F0E9 A823 DD2E
+     Subkey fingerprint: 26FF 3780 118B C9E4 2AAF  3260 F6B8 DB42 1A56 8E70
+fstdoutôÀ[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] SIG_ID taf/wNp4mDgHJg3PsBz0BkHRod8 2022-12-20 1671553073
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] GOODSIG F6B8DB421A568E70 Alice Lovelace <alice@lovelace.name>
+[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org
+[GNUPG:] NOTATION_DATA t%1B1&hÁC%07%1B%0FûµC`ªùOqm7i%14%17Ú%1AS∂l¶ı%01}
+[GNUPG:] VALIDSIG 26FF3780118BC9E42AAF3260F6B8DB421A568E70 2022-12-20 1671553073 0 4 0 22 10 00 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] TRUST_UNDEFINED 0 pgp
+fstatusnexit status: 0efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôCgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using EDDSA key 26FF3780118BC9E42AAF3260F6B8DB421A568E70
+gpg: BAD signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
+fstdoutò‹[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] BADSIG F6B8DB421A568E70 Alice Lovelace <alice@lovelace.name>
+fstatusnexit status: 1efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôlgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using EDDSA key 26FF3780118BC9E42AAF3260F6B8DB421A568E70
+gpg: Good signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
+gpg: WARNING: This key is not certified with a trusted signature!
+gpg:          There is no indication that the signature belongs to the owner.
+Primary key fingerprint: 9097 B347 ACE8 C1C8 01BC  F7B4 C9EA F0E9 A823 DD2E
+     Subkey fingerprint: 26FF 3780 118B C9E4 2AAF  3260 F6B8 DB42 1A56 8E70
+fstdoutôÀ[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] SIG_ID taf/wNp4mDgHJg3PsBz0BkHRod8 2022-12-20 1671553073
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] GOODSIG F6B8DB421A568E70 Alice Lovelace <alice@lovelace.name>
+[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org
+[GNUPG:] NOTATION_DATA t%1B1&hÁC%07%1B%0FûµC`ªùOqm7i%14%17Ú%1AS∂l¶ı%01}
+[GNUPG:] VALIDSIG 26FF3780118BC9E42AAF3260F6B8DB421A568E70 2022-12-20 1671553073 0 4 0 22 10 00 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] TRUST_UNDEFINED 0 pgp
+fstatusnexit status: 0efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôCgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using EDDSA key 26FF3780118BC9E42AAF3260F6B8DB421A568E70
+gpg: BAD signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
+fstdoutò‹[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] BADSIG F6B8DB421A568E70 Alice Lovelace <alice@lovelace.name>
+fstatusnexit status: 1efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôlgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using EDDSA key 26FF3780118BC9E42AAF3260F6B8DB421A568E70
+gpg: Good signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
+gpg: WARNING: This key is not certified with a trusted signature!
+gpg:          There is no indication that the signature belongs to the owner.
+Primary key fingerprint: 9097 B347 ACE8 C1C8 01BC  F7B4 C9EA F0E9 A823 DD2E
+     Subkey fingerprint: 26FF 3780 118B C9E4 2AAF  3260 F6B8 DB42 1A56 8E70
+fstdoutôÀ[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] SIG_ID taf/wNp4mDgHJg3PsBz0BkHRod8 2022-12-20 1671553073
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] GOODSIG F6B8DB421A568E70 Alice Lovelace <alice@lovelace.name>
+[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org
+[GNUPG:] NOTATION_DATA t%1B1&hÁC%07%1B%0FûµC`ªùOqm7i%14%17Ú%1AS∂l¶ı%01}
+[GNUPG:] VALIDSIG 26FF3780118BC9E42AAF3260F6B8DB421A568E70 2022-12-20 1671553073 0 4 0 22 10 00 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] TRUST_UNDEFINED 0 pgp
+fstatusnexit status: 0efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôCgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using EDDSA key 26FF3780118BC9E42AAF3260F6B8DB421A568E70
+gpg: BAD signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
+fstdoutò‹[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] BADSIG F6B8DB421A568E70 Alice Lovelace <alice@lovelace.name>
+fstatusnexit status: 1efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôlgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using EDDSA key 26FF3780118BC9E42AAF3260F6B8DB421A568E70
+gpg: Good signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
+gpg: WARNING: This key is not certified with a trusted signature!
+gpg:          There is no indication that the signature belongs to the owner.
+Primary key fingerprint: 9097 B347 ACE8 C1C8 01BC  F7B4 C9EA F0E9 A823 DD2E
+     Subkey fingerprint: 26FF 3780 118B C9E4 2AAF  3260 F6B8 DB42 1A56 8E70
+fstdoutôÀ[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] SIG_ID taf/wNp4mDgHJg3PsBz0BkHRod8 2022-12-20 1671553073
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] GOODSIG F6B8DB421A568E70 Alice Lovelace <alice@lovelace.name>
+[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org
+[GNUPG:] NOTATION_DATA t%1B1&hÁC%07%1B%0FûµC`ªùOqm7i%14%17Ú%1AS∂l¶ı%01}
+[GNUPG:] VALIDSIG 26FF3780118BC9E42AAF3260F6B8DB421A568E70 2022-12-20 1671553073 0 4 0 22 10 00 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] TRUST_UNDEFINED 0 pgp
+fstatusnexit status: 0efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôCgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using EDDSA key 26FF3780118BC9E42AAF3260F6B8DB421A568E70
+gpg: BAD signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
+fstdoutò‹[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] BADSIG F6B8DB421A568E70 Alice Lovelace <alice@lovelace.name>
+fstatusnexit status: 1efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôlgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using EDDSA key 26FF3780118BC9E42AAF3260F6B8DB421A568E70
+gpg: Good signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
+gpg: WARNING: This key is not certified with a trusted signature!
+gpg:          There is no indication that the signature belongs to the owner.
+Primary key fingerprint: 9097 B347 ACE8 C1C8 01BC  F7B4 C9EA F0E9 A823 DD2E
+     Subkey fingerprint: 26FF 3780 118B C9E4 2AAF  3260 F6B8 DB42 1A56 8E70
+fstdoutôÀ[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] SIG_ID taf/wNp4mDgHJg3PsBz0BkHRod8 2022-12-20 1671553073
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] GOODSIG F6B8DB421A568E70 Alice Lovelace <alice@lovelace.name>
+[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org
+[GNUPG:] NOTATION_DATA t%1B1&hÁC%07%1B%0FûµC`ªùOqm7i%14%17Ú%1AS∂l¶ı%01}
+[GNUPG:] VALIDSIG 26FF3780118BC9E42AAF3260F6B8DB421A568E70 2022-12-20 1671553073 0 4 0 22 10 00 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] TRUST_UNDEFINED 0 pgp
+fstatusnexit status: 0efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôCgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
+gpg:                using EDDSA key 26FF3780118BC9E42AAF3260F6B8DB421A568E70
+gpg: BAD signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
+fstdoutò‹[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] KEY_CONSIDERED 9097B347ACE8C1C801BCF7B4C9EAF0E9A823DD2E 0
+[GNUPG:] BADSIG F6B8DB421A568E70 Alice Lovelace <alice@lovelace.name>
+fstatusnexit status: 1efiles†iartifacts¶dcertô˚≈Xc°“!	+⁄G@$t"yjﬁå≥Ùs∆ei±Ë;ÜôV‹†˛;K[1Ü¶  ›q!H^¶Æ…ñ≥óè*BÛ[†Ôõ+äˆa”Ã,©¸≤’¬¿
+ }Çc°“!		…ÍÈ®#›.G       salt@notations.sequoia-pgp.orgßkœTj¬Áî6ÅøÀH≈(ÌÜOìﬁ.lÜñ
+◊≠≠˙
+õ!êó≥G¨Ë¡»º˜¥…ÍÈ®#›.  `  –ıÜÇ?˚6„Ü≤ƒÏ˚ åç¢GH
+¶πt§-˘co∏~• Æ§:~7j˜t}„ó˚ÃÍ>Ç‹®πRÆ∂∏ˆ]È+Õ$Alice Lovelace <alice@lovelace.name>¬¿
+ ÄÇc°“!		…ÍÈ®#›.G       salt@notations.sequoia-pgp.orgoêŸÒ^@€Äôë”',ˆMXèîÕÆËÙów˝=P6/
+ôõ!êó≥G¨Ë¡»º˜¥…ÍÈ®#›.  Ö∆ ˛&∆}ÿV–bF;d¸ªŸ(∏T$><ë<œo∫ &ﬁ è $’`<“¡#I‰‰¸˛.ÌPÜç∂{ÿ¡XdÔéË«Xc°“!	+⁄G@∂N+ü¡÷G√¿¸(.:åëyE# 5ûƒÑU¿Û  ¸
+¡˝ıèpc£’,P§åÛLÜÛ~:æJù2˘o,÷4‹O¬¿ø
+1Çc°“!	…ÍÈ®#›.G       salt@notations.sequoia-pgp.org®H"5ºÛ„%âÎ¶éa6ÇÅ	ˆJ¬Ph…â∂’õæ†
+ oÇc°“!	ˆ∏€BVépG       salt@notations.sequoia-pgp.orgö%à≥ï™wCõKt«ÅèOKt¿óXI3ÙYéxká®!&ˇ7Äã…‰*Ø2`ˆ∏€BVép  Zˇ ÛH>¡¯†âΩê–˝ô8ÿeUJºˆ—∏ƒŒˇnÆ ˇxõ\L@g∑È≠¡€/Ωq–ˆ i_˚Ç5Z”ôkë!êó≥G¨Ë¡»º˜¥…ÍÈ®#›.  =´ ÛÔˆ[âUo?$7€æˆ$S≤$*»MK°È£kô^x ¬*VjNÓ}b8 “<Ê19.VEv 3b≈ãà7özÇrprimary_revocationòı¬¿2 
+ §Çc°“!	…ÍÈ®#›.G       salt@notations.sequoia-pgp.org¢›ÆﬁcJ˚‘Ô˜¬‰4wóÅ“˛MÊx**r(ÙËò<4Revoking due to the recent crypto vulnerabilities.!êó≥G¨Ë¡»º˜¥…ÍÈ®#›.  To °–CóÓBΩÚ¶Ôµ;Iàë0]‘„l8j	ÎâUr≥ul ÿrµnä1HQÜÑx¥$Î∑∞≠‹∞nFw¥ÀC0$&csigòø¬Ω 
+ oÇc°‡1	ˆ∏€BVépG       salt@notations.sequoia-pgp.orgt1&hÁCûµC`ªùOqm7iÚS∂l¶ı}!&ˇ7Äã…‰*Ø2`ˆ∏€BVép  ∆√ Ó˙TNxë˘3K ÈO°‡ã˛∞DÀLÄüÜ<’)Í ”üÛï˙øsH¨≤◊ÛÀÜP\(:>ã‚CGˇ!ÛMaevsubkey_binding_expiredôà¬¿≈
+7Çc°“!â  	…ÍÈ®#›.G       salt@notations.sequoia-pgp.orgNÌÎÿ'ÊÈcÇø(ˇÌ;∞_ àw‰ôˆPÈIêõæ†
+ oÇc°“!	ˆ∏€BVépG       salt@notations.sequoia-pgp.orgö%à≥ï™wCõKt«ÅèOKt¿óXI3ÙYéxká®!&ˇ7Äã…‰*Ø2`ˆ∏€BVép  Zˇ ÛH>¡¯†âΩê–˝ô8ÿeUJºˆ—∏ƒŒˇnÆ ˇxõ\L@g∑È≠¡€/Ωq–ˆ i_˚Ç5Z”ôkë!êó≥G¨Ë¡»º˜¥…ÍÈ®#›.  ≤ ˇu^¿∞Œºœ]≈)wr68 ± `/µ√y+OﬁËIÓ√ ﬁÇÉıp4$Ø∞’\ˇœÍNzN?|@*3B9ìc-qsubkey_revocationòı¬¿2(
+ §Çc°“!	…ÍÈ®#›.G       salt@notations.sequoia-pgp.orgïYë≠ª:EØT,ÇÀ®Œtfı—õ9Íï√'õÖ∫4Revoking due to the recent crypto vulnerabilities.!êó≥G¨Ë¡»º˜¥…ÍÈ®#›.  - ˇGSRŒï$*µê–Åœ*8å	†(ø∑≥À´UQ)zÀ ˇF%ﬂ⁄à;r˙¸É
+„3ü≈ìâh√|S|@≠U}º+suid_binding_expiredò◊¬¿
+ ÜÇc°“!â  		…ÍÈ®#›.G       salt@notations.sequoia-pgp.org®e[à°>SIihÇB4Ÿ;(±ﬁewxI&t`Ωh
+ôõ!êó≥G¨Ë¡»º˜¥…ÍÈ®#›.  ∏› ˇOÊcÀ:Â‚íßnèÃÖjµùÄæM)P˝Õç]Ã©Â úœÙÍXÁï˜)â‘÷≤¯áPòè
+…»˚˜fguÖrI	

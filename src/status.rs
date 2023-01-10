@@ -205,8 +205,12 @@ pub enum Status<'a> {
         issuer: KeyID,
     },
 
-    TrustUndefined,
-    TrustNever,
+    TrustUndefined {
+        model: Option<TrustModel>
+    },
+    TrustNever {
+        model: Option<TrustModel>
+    },
     TrustMarginal {
         model: TrustModel,
     },
@@ -265,7 +269,7 @@ impl Status<'_> {
                 signers_uid: Some(uid),
             } => {
                 write!(w, "NEWSIG ")?;
-                e(w, uid)?;
+                e(w, uid, false)?;
                 writeln!(w)?;
             },
 
@@ -278,7 +282,7 @@ impl Status<'_> {
                 } else {
                     write!(w, "GOODSIG {:X} ", issuer)?;
                 }
-                e(w, primary_uid)?;
+                e(w, primary_uid, false)?;
                 writeln!(w)?;
             },
 
@@ -291,7 +295,7 @@ impl Status<'_> {
                 } else {
                     write!(w, "EXPSIG {:X} ", issuer)?;
                 }
-                e(w, primary_uid)?;
+                e(w, primary_uid, false)?;
                 writeln!(w)?;
             },
 
@@ -304,7 +308,7 @@ impl Status<'_> {
                 } else {
                     write!(w, "EXPKEYSIG {:X} ", issuer)?;
                 }
-                e(w, primary_uid)?;
+                e(w, primary_uid, false)?;
                 writeln!(w)?;
             },
 
@@ -317,7 +321,7 @@ impl Status<'_> {
                 } else {
                     write!(w, "REVKEYSIG {:X} ", issuer)?;
                 }
-                e(w, primary_uid)?;
+                e(w, primary_uid, false)?;
                 writeln!(w)?;
             },
 
@@ -330,7 +334,7 @@ impl Status<'_> {
                 } else {
                     write!(w, "BADSIG {:X} ", issuer)?;
                 }
-                e(w, primary_uid)?;
+                e(w, primary_uid, false)?;
                 writeln!(w)?;
             },
 
@@ -502,7 +506,7 @@ impl Status<'_> {
                 data,
             } => {
                 write!(w, "NOTATION_DATA ")?;
-                e(w, data)?;
+                e(w, data, true)?;
                 writeln!(w)?;
             },
 
@@ -517,7 +521,7 @@ impl Status<'_> {
                        .map(|t| u32::from(t)).unwrap_or(0))?;
                 if let Some(filename) = filename {
                     write!(w, " ")?;
-                    e(w, filename)?;
+                    e(w, filename, true /* XXX: double check */)?;
                 }
                 writeln!(w)?;
             },
@@ -578,11 +582,19 @@ impl Status<'_> {
                 writeln!(w, "NO_SECKEY {:X}", issuer)?;
             },
 
-            TrustUndefined => {
-                writeln!(w, "TRUST_UNDEFINED")?;
+            TrustUndefined { model } => {
+                if let Some(m) = model {
+                    writeln!(w, "TRUST_UNDEFINED 0 {}", m)?;
+                } else {
+                    writeln!(w, "TRUST_UNDEFINED")?;
+                }
             },
-            TrustNever => {
-                writeln!(w, "TRUST_NEVER")?;
+            TrustNever { model } => {
+                if let Some(m) = model {
+                    writeln!(w, "TRUST_NEVER 0 {}", m)?;
+                } else {
+                    writeln!(w, "TRUST_NEVER")?;
+                }
             },
             TrustMarginal { model } => {
                 writeln!(w, "TRUST_MARGINAL 0 {}", model)?;
@@ -711,13 +723,15 @@ impl Status<'_> {
 }
 
 /// Escapes the given byte sequence.
-fn e<W: io::Write + ?Sized>(sink: &mut W, s: impl AsRef<[u8]>) -> Result<()> {
+fn e<W: io::Write + ?Sized>(sink: &mut W, s: impl AsRef<[u8]>,
+                            escape_space: bool) -> Result<()>
+{
     let s = s.as_ref();
 
     for c in s {
         match c {
             b'%' => sink.write_all(b"%25")?,
-            c if *c < 0x20 || *c == 127 =>
+            c if *c < 0x20 || *c == 127 || (escape_space && *c == b' ') =>
                 write!(sink, "%{:02X}", *c)?,
             c => sink.write_all(&[*c])?,
         }
@@ -727,7 +741,7 @@ fn e<W: io::Write + ?Sized>(sink: &mut W, s: impl AsRef<[u8]>) -> Result<()> {
 }
 
 #[allow(dead_code)]
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 pub enum ErrSigStatus {
     UnsupportedAlgorithm,
     MissingKey,

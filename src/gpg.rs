@@ -444,6 +444,7 @@ pub struct Config {
     // Runtime.
     clock: clock::Clock,
     fail: std::cell::Cell<bool>,
+    override_status_code: std::cell::Cell<Option<i32>>,
     policy: GPGPolicy,
     trustdb: trust::db::TrustDB,
     trust_model_impl: Box<dyn trust::Model>,
@@ -561,6 +562,7 @@ impl Default for Config {
             // Runtime.
             clock: Default::default(),
             fail: Default::default(),
+            override_status_code: Default::default(),
             policy: Default::default(),
             trustdb: Default::default(),
             trust_model_impl: common::null_model(),
@@ -880,6 +882,10 @@ impl common::Common for Config {
         self.fail.set(true);
     }
 
+    fn override_status_code(&self, code: i32) {
+        self.override_status_code.set(Some(code));
+    }
+
     fn debug(&self) -> u32 {
         self.debug
     }
@@ -890,6 +896,11 @@ impl common::Common for Config {
 
     fn keydb(&self) -> &keydb::KeyDB {
         &self.keydb
+    }
+
+    fn lookup_certs(&self, query: &Query)
+                    -> anyhow::Result<Vec<(Validity, &Cert)>> {
+        Config::lookup_certs(self, query)
     }
 
     fn outfile(&self) -> Option<&String> {
@@ -926,6 +937,10 @@ impl common::Common for Config {
 
     fn now(&self) -> std::time::SystemTime {
         self.clock.now()
+    }
+
+    fn with_fingerprint(&self) -> bool {
+        self.with_fingerprint
     }
 }
 
@@ -2125,6 +2140,10 @@ fn real_main() -> anyhow::Result<()> {
 	    oEnableSpecialFilenames => {
                 opt.special_filenames = true;
             },
+            oWeakDigest => {
+                opt.policy.weak_digests.insert(
+                    argparse::utils::parse_digest(value.as_str().unwrap())?);
+            },
             oGroup => {
                 let g = value.as_str().unwrap().splitn(2, "=")
                     .map(|s| s.trim())
@@ -2273,6 +2292,9 @@ fn real_main() -> anyhow::Result<()> {
 
     match result {
         Ok(()) => {
+            if let Some(c) = opt.override_status_code.get() {
+                std::process::exit(c);
+            }
             if opt.fail.get() {
                 std::process::exit(2);
             }
@@ -2280,6 +2302,9 @@ fn real_main() -> anyhow::Result<()> {
         },
         Err(e) => {
             with_invocation_log(|w| write_error_chain_into(w, &e));
+            if let Some(c) = opt.override_status_code.get() {
+                std::process::exit(c);
+            }
             if opt.verbose > 1 {
                 print_error_chain(&e);
             } else {

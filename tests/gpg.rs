@@ -34,6 +34,7 @@ macro_rules! make_experiment {
 mod gpg {
     mod decrypt;
     mod encrypt;
+    mod verify;
     mod list_keys;
     mod version;
     mod trust_models;
@@ -312,12 +313,12 @@ impl Experiment {
 
     /// Creates or loads an artifact for the experiment.
     pub fn artifact<C, S, L, T>(&mut self, name: &str,
-                                create: C, store: S, load: L)
+                                mut create: C, mut store: S, load: L)
                                 -> Result<T>
     where
-        C: Fn() -> Result<T>,
-        S: Fn(&T, &mut Vec<u8>) -> Result<()>,
-        L: Fn(&Vec<u8>) -> Result<T>,
+        C: FnMut() -> Result<T>,
+        S: FnMut(&T, &mut Vec<u8>) -> Result<()>,
+        L: FnMut(&Vec<u8>) -> Result<T>,
     {
         self.artifacts.artifacts.get(name)
             .ok_or_else(|| anyhow::anyhow!("Not found, need to create it"))
@@ -366,6 +367,8 @@ impl Experiment {
                              "/EXPERIMENT")
             })
             .collect();
+
+        eprintln!("Invoking \"gpg\" {}", normalized_args.join(" "));
 
         let oracle = if let Some(o) = self.artifacts.outputs.get(n)
             .filter(|v| v.args == normalized_args)

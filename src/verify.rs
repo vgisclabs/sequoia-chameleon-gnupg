@@ -25,7 +25,7 @@ use openpgp::parse::stream::*;
 
 use crate::{
     babel,
-    common::Common,
+    common::{Common, Query, Validity},
     status::{Status, ErrSigStatus, NoDataReason},
     utils,
 };
@@ -93,6 +93,7 @@ pub fn cmd_verify(control: &crate::Config, args: &[String])
     };
 
     if let Err(e) = do_it() {
+        control.override_status_code(1);
         match e.downcast::<openpgp::Error>() {
             Ok(oe) => {
                 // Map our errors to the way GnuPG reports errors.
@@ -275,6 +276,7 @@ impl<'a> VHelper<'a> {
             if let Some(algo) = weak_hash.as_ref().cloned() {
                 if ! self.weak_digest_warning_printed.contains(&algo)
                     && ! self.control.quiet()
+                    && err_sig_status != Some(ErrSigStatus::MissingKey)
                 {
                     self.control.warn(format_args!(
                         "Note: signatures using the {} \
@@ -401,13 +403,13 @@ impl<'a> VHelper<'a> {
             })?;
         }
 
+        let primary_uid = crate::utils::best_effort_primary_uid(
+            self.control.policy(), ka.cert());
         match error {
             None => {
                 self.control.status().emit(Status::GoodSig {
                     issuer: ka.fingerprint().into(),
-                    primary_uid:
-                    ka.cert().primary_userid().map(|u| u.value().into())
-                        .unwrap_or_else(|_| b"unknown"[..].into()),
+                    primary_uid: primary_uid.as_bytes().to_vec().into(),
                 })?;
             },
             Some(openpgp::Error::Expired(at)) => {
@@ -417,34 +419,95 @@ impl<'a> VHelper<'a> {
 
                 self.control.status().emit(Status::ExpKeySig {
                     issuer: ka.fingerprint().into(),
-                    primary_uid:
-                    ka.cert().primary_userid().map(|u| u.value().into())
-                        .unwrap_or_else(|_| b"unknown"[..].into()),
+                    primary_uid: primary_uid.as_bytes().to_vec().into(),
                 })?;
             },
             Some(openpgp::Error::InvalidKey(_)) => {
                 self.control.status().emit(Status::RevKeySig {
                     issuer: ka.fingerprint().into(),
-                    primary_uid:
-                    ka.cert().primary_userid().map(|u| u.value().into())
-                        .unwrap_or_else(|_| b"unknown"[..].into()),
+                    primary_uid: primary_uid.as_bytes().to_vec().into(),
                 })?;
             },
             e => unimplemented!("{:?}", e),
         }
 
-        let primary_uid =
-            ka.cert().primary_userid().map(|u| {
-                String::from_utf8_lossy(u.value()).to_string()
-            })
-            .unwrap_or_else(|_| ka.fingerprint().to_string());
-        self.control.warn(format_args!(
-            "Good signature from {:?}", primary_uid));
+        let validity =
+            self.control.lookup_certs(
+                &Query::ExactKey(ka.cert().key_handle()))?
+            .get(0)
+            .map(|(validity, _cert)| *validity);
+
+        if let Some(v) = &validity {
+            self.control.warn(format_args!(
+                "Good signature from {:?} [{}]", primary_uid, babel::Fish(*v)));
+        } else {
+            self.control.warn(format_args!(
+                "Good signature from {:?}", primary_uid));
+        }
         for uid in ka.cert().userids() {
             let uid = String::from_utf8_lossy(uid.value());
             if uid != primary_uid {
                 self.control.warn(format_args!(
                     "                    {:?}", uid));
+            }
+        }
+
+        let print_fingerprint = match validity {
+            Some(Validity::Revoked) => {
+                // XXX
+                false
+            },
+
+            Some(Validity::Expired) => {
+                self.control.info(format_args!(
+                    "Note: This key has expired!"));
+                true
+            },
+
+            Some(Validity::Unknown) | Some(Validity::Undefined) => {
+                self.control.info(format_args!(
+                    "WARNING: This key is not certified with \
+                     a trusted signature!"));
+                self.control.info(
+                    format_args!("         There is no indication that the \
+                                  signature belongs to the owner."));
+                true
+            },
+
+            Some(Validity::Never) => {
+                self.control.info(format_args!(
+                    "WARNING: We do NOT trust this key!"));
+                self.control.info(format_args!(
+                    "         The signature is probably a FORGERY."));
+                // XXX: rc = gpg_error (GPG_ERR_BAD_SIGNATURE);
+                false
+            },
+
+            Some(Validity::Marginal) => {
+                self.control.info(format_args!(
+                    "WARNING: This key is not certified with \
+                     sufficiently trusted signatures!"));
+                self.control.info(format_args!(
+                    "         It is not certain that the \
+                     signature belongs to the owner."));
+                true
+            },
+
+            Some(Validity::Fully) | Some(Validity::Ultimate) => {
+                false
+            },
+
+            None => false, // For gpgv.
+        };
+
+        if print_fingerprint || self.control.with_fingerprint() {
+            let fp = ka.fingerprint();
+            let cert_fp = ka.cert().fingerprint();
+            let primary = fp == cert_fp;
+
+            eprintln!("Primary key fingerprint: {}", cert_fp.to_spaced_hex());
+            if ! primary {
+                eprintln!("     Subkey fingerprint: {}", fp.to_spaced_hex());
             }
         }
 
@@ -501,9 +564,13 @@ impl<'a> VHelper<'a> {
             match acert.cert_validity() {
                 Revoked | Expired => (),
                 Unknown | Undefined =>
-                    self.control.status().emit(Status::TrustUndefined)?,
+                    self.control.status().emit(Status::TrustUndefined {
+                        model: Some(vtm.kind()),
+                    })?,
                 Never =>
-                    self.control.status().emit(Status::TrustNever)?,
+                    self.control.status().emit(Status::TrustNever {
+                        model: Some(vtm.kind()),
+                    })?,
                 Marginal =>
                     self.control.status().emit(Status::TrustMarginal {
                         model: vtm.kind(),
@@ -535,20 +602,26 @@ impl<'a> VHelper<'a> {
             _ => (),
         }
 
+        let primary_uid = crate::utils::best_effort_primary_uid(
+            self.control.policy(), ka.cert());
         self.control.status().emit(Status::BadSig {
             issuer: ka.fingerprint().into(),
-            primary_uid:
-            ka.cert().primary_userid().map(|u| u.value().into())
-                .unwrap_or_else(|_| b"unknown"[..].into()),
+            primary_uid: primary_uid.as_bytes().to_vec().into(),
         })?;
 
-        self.control.warn(format_args!(
-            "BAD signature from {:?}",
-            ka.cert().primary_userid().map(|u| {
-                String::from_utf8_lossy(u.value()).to_string()
-            })
-                .unwrap_or_else(|_|
-                                ka.fingerprint().to_string())));
+        let validity =
+            self.control.lookup_certs(
+                &Query::ExactKey(ka.cert().key_handle()))?
+            .get(0)
+            .map(|(validity, _cert)| *validity);
+
+        if let Some(v) = &validity {
+            self.control.warn(format_args!(
+                "BAD signature from {:?} [{}]", primary_uid, babel::Fish(*v)));
+        } else {
+            self.control.warn(format_args!(
+                "BAD signature from {:?}", primary_uid));
+        }
 
         self.bad_checksums += 1;
         Ok(())

@@ -51,6 +51,12 @@ pub trait Common {
     /// failure when exiting.
     fn error(&self, msg: fmt::Arguments);
 
+    /// Sets an explicit status code, and prevents the error message
+    /// to be shown at the end of the main function.
+    fn override_status_code(&self, _code: i32) {
+        // Nop for gpgv.
+    }
+
     /// Returns the debug level.
     fn debug(&self) -> u32;
 
@@ -72,6 +78,11 @@ pub trait Common {
 
     /// Returns a reference to the key database.
     fn keydb(&self) -> &KeyDB;
+
+    /// Returns certs matching a given query using groups and the
+    /// configured trust model.
+    fn lookup_certs(&self, query: &Query)
+                    -> anyhow::Result<Vec<(Validity, &Cert)>>;
 
     /// Returns the output file.
     fn outfile(&self) -> Option<&String>;
@@ -101,6 +112,9 @@ pub trait Common {
     fn now(&self) -> SystemTime {
         SystemTime::now()
     }
+
+    /// Returns whether fingerprints should be included in the output.
+    fn with_fingerprint(&self) -> bool;
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
