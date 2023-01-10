@@ -1,376 +1,370 @@
-¢goutputsò&•dargsÇx!"--faked-system-time=1671553073!"m"--list-keys"fstderròœgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+£goutputsò&•dargsÇx!"--faked-system-time=1671553073!"m"--list-keys"fstderròœgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
 gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
 gpg: keybox '/HOMEDIR/pubring.kbx' created
 gpg: /HOMEDIR/trustdb.gpg: trustdb created
-fstdoutÄfstatusnexit status: 0efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrô$gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+fstdoutÄfstatusnexit status: 0efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrô!gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
 gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
-gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
-gpg:                using EDDSA key 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
+gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
+gpg:                using EDDSA key 2A3C200E2159A9909E98061A42773D5293EC386A
 gpg: Can't check signature: No public key
 fstdoutòî[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG 6AC52B32B7DD0B6F 22 10 00 1671553073 9 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
-[GNUPG:] NO_PUBKEY 6AC52B32B7DD0B6F
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrô$gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+[GNUPG:] ERRSIG 42773D5293EC386A 22 10 00 1671553073 9 2A3C200E2159A9909E98061A42773D5293EC386A
+[GNUPG:] NO_PUBKEY 42773D5293EC386A
+fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrô!gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
 gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
-gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
-gpg:                using EDDSA key 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
+gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
+gpg:                using EDDSA key 2A3C200E2159A9909E98061A42773D5293EC386A
 gpg: Can't check signature: No public key
 fstdoutòî[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG 6AC52B32B7DD0B6F 22 10 00 1671553073 9 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
-[GNUPG:] NO_PUBKEY 6AC52B32B7DD0B6F
+[GNUPG:] ERRSIG 42773D5293EC386A 22 10 00 1671553073 9 2A3C200E2159A9909E98061A42773D5293EC386A
+[GNUPG:] NO_PUBKEY 42773D5293EC386A
 fstatusnexit status: 2efiles†•dargsÉx!"--faked-system-time=1671553073!"j"--import"r"/EXPERIMENT/cert"fstderrôgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
 gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
-gpg: key 3236B958EDFDC8D7: public key "Alice Lovelace <alice@lovelace.name>" imported
+gpg: key B573E11DACC6FC10: public key "Alice Lovelace <alice@lovelace.name>" imported
 gpg: Total number processed: 1
 gpg:               imported: 1
-fstdoutÄfstatusnexit status: 0efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôlgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+fstdoutÄfstatusnexit status: 0efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôigpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
 gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
-gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
-gpg:                using EDDSA key 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
+gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
+gpg:                using EDDSA key 2A3C200E2159A9909E98061A42773D5293EC386A
 gpg: Good signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
 gpg: WARNING: This key is not certified with a trusted signature!
 gpg:          There is no indication that the signature belongs to the owner.
-Primary key fingerprint: 1ECE 05AA 39C6 E828 ECFC  C98C 3236 B958 EDFD C8D7
-     Subkey fingerprint: 2DBC 3D3D 3529 021C E915  7A30 6AC5 2B32 B7DD 0B6F
-fstdoutô¡[GNUPG:] NEWSIG
-[GNUPG:] KEY_CONSIDERED 1ECE05AA39C6E828ECFCC98C3236B958EDFDC8D7 0
-[GNUPG:] SIG_ID GrzlRmBLSYZcnZj8CIuWM0+FF60 2022-12-20 1671553073
-[GNUPG:] KEY_CONSIDERED 1ECE05AA39C6E828ECFCC98C3236B958EDFDC8D7 0
-[GNUPG:] GOODSIG 6AC52B32B7DD0B6F Alice Lovelace <alice@lovelace.name>
-[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org
-[GNUPG:] NOTATION_DATA ‘û/Tºæsêg˜ñiGT%02÷Ù¬(C≥ﬂú‰+0æ%1F%00∑ZI
-[GNUPG:] VALIDSIG 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F 2022-12-20 1671553073 0 4 0 22 10 00 1ECE05AA39C6E828ECFCC98C3236B958EDFDC8D7
-[GNUPG:] KEY_CONSIDERED 1ECE05AA39C6E828ECFCC98C3236B958EDFDC8D7 0
-[GNUPG:] KEY_CONSIDERED 1ECE05AA39C6E828ECFCC98C3236B958EDFDC8D7 0
-[GNUPG:] TRUST_UNDEFINED 0 pgp
-fstatusnexit status: 0efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôCgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
-gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
-gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
-gpg:                using EDDSA key 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
-gpg: BAD signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
-fstdoutò‹[GNUPG:] NEWSIG
-[GNUPG:] KEY_CONSIDERED 1ECE05AA39C6E828ECFCC98C3236B958EDFDC8D7 0
-[GNUPG:] KEY_CONSIDERED 1ECE05AA39C6E828ECFCC98C3236B958EDFDC8D7 0
-[GNUPG:] BADSIG 6AC52B32B7DD0B6F Alice Lovelace <alice@lovelace.name>
-fstatusnexit status: 1efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôlgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
-gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
-gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
-gpg:                using EDDSA key 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
-gpg: Good signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
-gpg: WARNING: This key is not certified with a trusted signature!
-gpg:          There is no indication that the signature belongs to the owner.
-Primary key fingerprint: 1ECE 05AA 39C6 E828 ECFC  C98C 3236 B958 EDFD C8D7
-     Subkey fingerprint: 2DBC 3D3D 3529 021C E915  7A30 6AC5 2B32 B7DD 0B6F
+Primary key fingerprint: F23F 3C59 1A3B C2EF 8AB3  D65C B573 E11D ACC6 FC10
+     Subkey fingerprint: 2A3C 200E 2159 A990 9E98  061A 4277 3D52 93EC 386A
 fstdoutô√[GNUPG:] NEWSIG
-[GNUPG:] KEY_CONSIDERED 1ECE05AA39C6E828ECFCC98C3236B958EDFDC8D7 0
-[GNUPG:] SIG_ID HfBnFiaRvKQNaYHm/FCgCuz0yHI 2022-12-20 1671553073
-[GNUPG:] KEY_CONSIDERED 1ECE05AA39C6E828ECFCC98C3236B958EDFDC8D7 0
-[GNUPG:] GOODSIG 6AC52B32B7DD0B6F Alice Lovelace <alice@lovelace.name>
+[GNUPG:] KEY_CONSIDERED F23F3C591A3BC2EF8AB3D65CB573E11DACC6FC10 0
+[GNUPG:] SIG_ID VwB7WRxdRcSH6f5gzXg/ht6WqBo 2022-12-20 1671553073
+[GNUPG:] KEY_CONSIDERED F23F3C591A3BC2EF8AB3D65CB573E11DACC6FC10 0
+[GNUPG:] GOODSIG 42773D5293EC386A Alice Lovelace <alice@lovelace.name>
 [GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org
-[GNUPG:] NOTATION_DATA ûÛñÎsdK%1DZu≤$§%11÷7Ïd%09ñ˛ª∑†∫E&¶‘j%07n
-[GNUPG:] VALIDSIG 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F 2022-12-20 1671553073 0 4 0 22 10 01 1ECE05AA39C6E828ECFCC98C3236B958EDFDC8D7
-[GNUPG:] KEY_CONSIDERED 1ECE05AA39C6E828ECFCC98C3236B958EDFDC8D7 0
-[GNUPG:] KEY_CONSIDERED 1ECE05AA39C6E828ECFCC98C3236B958EDFDC8D7 0
+[GNUPG:] NOTATION_DATA ¬%17.ò%0C‡%14%19^gE!&µÅ^ˇc‚òÍuV∂y!÷Qp¯:
+[GNUPG:] VALIDSIG 2A3C200E2159A9909E98061A42773D5293EC386A 2022-12-20 1671553073 0 4 0 22 10 00 F23F3C591A3BC2EF8AB3D65CB573E11DACC6FC10
+[GNUPG:] KEY_CONSIDERED F23F3C591A3BC2EF8AB3D65CB573E11DACC6FC10 0
+[GNUPG:] KEY_CONSIDERED F23F3C591A3BC2EF8AB3D65CB573E11DACC6FC10 0
 [GNUPG:] TRUST_UNDEFINED 0 pgp
-fstatusnexit status: 0efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôCgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+fstatusnexit status: 0efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrô@gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
 gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
-gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
-gpg:                using EDDSA key 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
+gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
+gpg:                using EDDSA key 2A3C200E2159A9909E98061A42773D5293EC386A
 gpg: BAD signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
 fstdoutò‹[GNUPG:] NEWSIG
-[GNUPG:] KEY_CONSIDERED 1ECE05AA39C6E828ECFCC98C3236B958EDFDC8D7 0
-[GNUPG:] KEY_CONSIDERED 1ECE05AA39C6E828ECFCC98C3236B958EDFDC8D7 0
-[GNUPG:] BADSIG 6AC52B32B7DD0B6F Alice Lovelace <alice@lovelace.name>
-fstatusnexit status: 1efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôVgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+[GNUPG:] KEY_CONSIDERED F23F3C591A3BC2EF8AB3D65CB573E11DACC6FC10 0
+[GNUPG:] KEY_CONSIDERED F23F3C591A3BC2EF8AB3D65CB573E11DACC6FC10 0
+[GNUPG:] BADSIG 42773D5293EC386A Alice Lovelace <alice@lovelace.name>
+fstatusnexit status: 1efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôigpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
+gpg:                using EDDSA key 2A3C200E2159A9909E98061A42773D5293EC386A
+gpg: Good signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
+gpg: WARNING: This key is not certified with a trusted signature!
+gpg:          There is no indication that the signature belongs to the owner.
+Primary key fingerprint: F23F 3C59 1A3B C2EF 8AB3  D65C B573 E11D ACC6 FC10
+     Subkey fingerprint: 2A3C 200E 2159 A990 9E98  061A 4277 3D52 93EC 386A
+fstdoutô«[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED F23F3C591A3BC2EF8AB3D65CB573E11DACC6FC10 0
+[GNUPG:] SIG_ID sla2jOVULoxLo2xDkSa7FC6+k94 2022-12-20 1671553073
+[GNUPG:] KEY_CONSIDERED F23F3C591A3BC2EF8AB3D65CB573E11DACC6FC10 0
+[GNUPG:] GOODSIG 42773D5293EC386A Alice Lovelace <alice@lovelace.name>
+[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org
+[GNUPG:] NOTATION_DATA Œ%03*÷%0D‹<Æ÷˙åœáwé·z%09%1C†I%12ûjﬁ%1D©L˛´T
+[GNUPG:] VALIDSIG 2A3C200E2159A9909E98061A42773D5293EC386A 2022-12-20 1671553073 0 4 0 22 10 01 F23F3C591A3BC2EF8AB3D65CB573E11DACC6FC10
+[GNUPG:] KEY_CONSIDERED F23F3C591A3BC2EF8AB3D65CB573E11DACC6FC10 0
+[GNUPG:] KEY_CONSIDERED F23F3C591A3BC2EF8AB3D65CB573E11DACC6FC10 0
+[GNUPG:] TRUST_UNDEFINED 0 pgp
+fstatusnexit status: 0efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrô@gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
+gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
+gpg:                using EDDSA key 2A3C200E2159A9909E98061A42773D5293EC386A
+gpg: BAD signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
+fstdoutò‹[GNUPG:] NEWSIG
+[GNUPG:] KEY_CONSIDERED F23F3C591A3BC2EF8AB3D65CB573E11DACC6FC10 0
+[GNUPG:] KEY_CONSIDERED F23F3C591A3BC2EF8AB3D65CB573E11DACC6FC10 0
+[GNUPG:] BADSIG 42773D5293EC386A Alice Lovelace <alice@lovelace.name>
+fstatusnexit status: 1efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôSgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
 gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
 gpg: standalone signature of class 0x02
-gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
-gpg:                using EDDSA key 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
+gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
+gpg:                using EDDSA key 2A3C200E2159A9909E98061A42773D5293EC386A
 gpg: Can't check signature: Invalid signature class
 fstdoutòq[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG 6AC52B32B7DD0B6F 22 10 02 1671553073 32 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôVgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+[GNUPG:] ERRSIG 42773D5293EC386A 22 10 02 1671553073 32 2A3C200E2159A9909E98061A42773D5293EC386A
+fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôSgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
 gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
 gpg: standalone signature of class 0x02
-gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
-gpg:                using EDDSA key 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
+gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
+gpg:                using EDDSA key 2A3C200E2159A9909E98061A42773D5293EC386A
 gpg: Can't check signature: Invalid signature class
 fstdoutòq[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG 6AC52B32B7DD0B6F 22 10 02 1671553073 32 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+[GNUPG:] ERRSIG 42773D5293EC386A 22 10 02 1671553073 32 2A3C200E2159A9909E98061A42773D5293EC386A
+fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrô|gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
 gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
 gpg: standalone signature of class 0x10
-gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
-gpg:                using EDDSA key 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
+gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
+gpg:                using EDDSA key 2A3C200E2159A9909E98061A42773D5293EC386A
 gpg: invalid root packet for sigclass 10
 gpg: Can't check signature: Invalid signature class
 fstdoutòq[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG 6AC52B32B7DD0B6F 22 10 10 1671553073 32 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+[GNUPG:] ERRSIG 42773D5293EC386A 22 10 10 1671553073 32 2A3C200E2159A9909E98061A42773D5293EC386A
+fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrô|gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
 gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
 gpg: standalone signature of class 0x10
-gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
-gpg:                using EDDSA key 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
+gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
+gpg:                using EDDSA key 2A3C200E2159A9909E98061A42773D5293EC386A
 gpg: invalid root packet for sigclass 10
 gpg: Can't check signature: Invalid signature class
 fstdoutòq[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG 6AC52B32B7DD0B6F 22 10 10 1671553073 32 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+[GNUPG:] ERRSIG 42773D5293EC386A 22 10 10 1671553073 32 2A3C200E2159A9909E98061A42773D5293EC386A
+fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrô|gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
 gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
 gpg: standalone signature of class 0x11
-gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
-gpg:                using EDDSA key 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
+gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
+gpg:                using EDDSA key 2A3C200E2159A9909E98061A42773D5293EC386A
 gpg: invalid root packet for sigclass 11
 gpg: Can't check signature: Invalid signature class
 fstdoutòq[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG 6AC52B32B7DD0B6F 22 10 11 1671553073 32 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+[GNUPG:] ERRSIG 42773D5293EC386A 22 10 11 1671553073 32 2A3C200E2159A9909E98061A42773D5293EC386A
+fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrô|gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
 gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
 gpg: standalone signature of class 0x11
-gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
-gpg:                using EDDSA key 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
+gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
+gpg:                using EDDSA key 2A3C200E2159A9909E98061A42773D5293EC386A
 gpg: invalid root packet for sigclass 11
 gpg: Can't check signature: Invalid signature class
 fstdoutòq[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG 6AC52B32B7DD0B6F 22 10 11 1671553073 32 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+[GNUPG:] ERRSIG 42773D5293EC386A 22 10 11 1671553073 32 2A3C200E2159A9909E98061A42773D5293EC386A
+fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrô|gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
 gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
 gpg: standalone signature of class 0x12
-gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
-gpg:                using EDDSA key 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
+gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
+gpg:                using EDDSA key 2A3C200E2159A9909E98061A42773D5293EC386A
 gpg: invalid root packet for sigclass 12
 gpg: Can't check signature: Invalid signature class
 fstdoutòq[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG 6AC52B32B7DD0B6F 22 10 12 1671553073 32 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+[GNUPG:] ERRSIG 42773D5293EC386A 22 10 12 1671553073 32 2A3C200E2159A9909E98061A42773D5293EC386A
+fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrô|gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
 gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
 gpg: standalone signature of class 0x12
-gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
-gpg:                using EDDSA key 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
+gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
+gpg:                using EDDSA key 2A3C200E2159A9909E98061A42773D5293EC386A
 gpg: invalid root packet for sigclass 12
 gpg: Can't check signature: Invalid signature class
 fstdoutòq[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG 6AC52B32B7DD0B6F 22 10 12 1671553073 32 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+[GNUPG:] ERRSIG 42773D5293EC386A 22 10 12 1671553073 32 2A3C200E2159A9909E98061A42773D5293EC386A
+fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrô|gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
 gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
 gpg: standalone signature of class 0x13
-gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
-gpg:                using EDDSA key 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
+gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
+gpg:                using EDDSA key 2A3C200E2159A9909E98061A42773D5293EC386A
 gpg: invalid root packet for sigclass 13
 gpg: Can't check signature: Invalid signature class
 fstdoutòq[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG 6AC52B32B7DD0B6F 22 10 13 1671553073 32 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+[GNUPG:] ERRSIG 42773D5293EC386A 22 10 13 1671553073 32 2A3C200E2159A9909E98061A42773D5293EC386A
+fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrô|gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
 gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
 gpg: standalone signature of class 0x13
-gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
-gpg:                using EDDSA key 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
+gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
+gpg:                using EDDSA key 2A3C200E2159A9909E98061A42773D5293EC386A
 gpg: invalid root packet for sigclass 13
 gpg: Can't check signature: Invalid signature class
 fstdoutòq[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG 6AC52B32B7DD0B6F 22 10 13 1671553073 32 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôVgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+[GNUPG:] ERRSIG 42773D5293EC386A 22 10 13 1671553073 32 2A3C200E2159A9909E98061A42773D5293EC386A
+fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôSgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
 gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
 gpg: standalone signature of class 0x16
-gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
-gpg:                using EDDSA key 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
+gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
+gpg:                using EDDSA key 2A3C200E2159A9909E98061A42773D5293EC386A
 gpg: Can't check signature: Invalid signature class
 fstdoutòq[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG 6AC52B32B7DD0B6F 22 10 16 1671553073 32 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôVgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+[GNUPG:] ERRSIG 42773D5293EC386A 22 10 16 1671553073 32 2A3C200E2159A9909E98061A42773D5293EC386A
+fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôSgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
 gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
 gpg: standalone signature of class 0x16
-gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
-gpg:                using EDDSA key 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
+gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
+gpg:                using EDDSA key 2A3C200E2159A9909E98061A42773D5293EC386A
 gpg: Can't check signature: Invalid signature class
 fstdoutòq[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG 6AC52B32B7DD0B6F 22 10 16 1671553073 32 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+[GNUPG:] ERRSIG 42773D5293EC386A 22 10 16 1671553073 32 2A3C200E2159A9909E98061A42773D5293EC386A
+fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrô|gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
 gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
 gpg: standalone signature of class 0x18
-gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
-gpg:                using EDDSA key 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
+gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
+gpg:                using EDDSA key 2A3C200E2159A9909E98061A42773D5293EC386A
 gpg: invalid root packet for sigclass 18
 gpg: Can't check signature: Invalid signature class
 fstdoutòq[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG 6AC52B32B7DD0B6F 22 10 18 1671553073 32 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+[GNUPG:] ERRSIG 42773D5293EC386A 22 10 18 1671553073 32 2A3C200E2159A9909E98061A42773D5293EC386A
+fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrô|gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
 gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
 gpg: standalone signature of class 0x18
-gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
-gpg:                using EDDSA key 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
+gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
+gpg:                using EDDSA key 2A3C200E2159A9909E98061A42773D5293EC386A
 gpg: invalid root packet for sigclass 18
 gpg: Can't check signature: Invalid signature class
 fstdoutòq[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG 6AC52B32B7DD0B6F 22 10 18 1671553073 32 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôVgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+[GNUPG:] ERRSIG 42773D5293EC386A 22 10 18 1671553073 32 2A3C200E2159A9909E98061A42773D5293EC386A
+fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôSgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
 gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
 gpg: standalone signature of class 0x19
-gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
-gpg:                using EDDSA key 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
+gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
+gpg:                using EDDSA key 2A3C200E2159A9909E98061A42773D5293EC386A
 gpg: Can't check signature: Invalid signature class
 fstdoutòq[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG 6AC52B32B7DD0B6F 22 10 19 1671553073 32 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôVgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+[GNUPG:] ERRSIG 42773D5293EC386A 22 10 19 1671553073 32 2A3C200E2159A9909E98061A42773D5293EC386A
+fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôSgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
 gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
 gpg: standalone signature of class 0x19
-gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
-gpg:                using EDDSA key 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
+gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
+gpg:                using EDDSA key 2A3C200E2159A9909E98061A42773D5293EC386A
 gpg: Can't check signature: Invalid signature class
 fstdoutòq[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG 6AC52B32B7DD0B6F 22 10 19 1671553073 32 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+[GNUPG:] ERRSIG 42773D5293EC386A 22 10 19 1671553073 32 2A3C200E2159A9909E98061A42773D5293EC386A
+fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrô|gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
 gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
 gpg: standalone signature of class 0x1f
-gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
-gpg:                using EDDSA key 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
+gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
+gpg:                using EDDSA key 2A3C200E2159A9909E98061A42773D5293EC386A
 gpg: invalid root packet for sigclass 1f
 gpg: Can't check signature: Invalid signature class
 fstdoutòq[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG 6AC52B32B7DD0B6F 22 10 1f 1671553073 32 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+[GNUPG:] ERRSIG 42773D5293EC386A 22 10 1f 1671553073 32 2A3C200E2159A9909E98061A42773D5293EC386A
+fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrô|gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
 gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
 gpg: standalone signature of class 0x1f
-gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
-gpg:                using EDDSA key 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
+gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
+gpg:                using EDDSA key 2A3C200E2159A9909E98061A42773D5293EC386A
 gpg: invalid root packet for sigclass 1f
 gpg: Can't check signature: Invalid signature class
 fstdoutòq[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG 6AC52B32B7DD0B6F 22 10 1f 1671553073 32 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrô[gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+[GNUPG:] ERRSIG 42773D5293EC386A 22 10 1f 1671553073 32 2A3C200E2159A9909E98061A42773D5293EC386A
+fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôXgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
 gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
 gpg: standalone signature of class 0x20
-gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
-gpg:                using EDDSA key 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
+gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
+gpg:                using EDDSA key 2A3C200E2159A9909E98061A42773D5293EC386A
 gpg: standalone revocation - use "gpg --import" to apply
 fstdoutòq[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG 6AC52B32B7DD0B6F 22 10 20 1671553073 52 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrô[gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+[GNUPG:] ERRSIG 42773D5293EC386A 22 10 20 1671553073 52 2A3C200E2159A9909E98061A42773D5293EC386A
+fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôXgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
 gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
 gpg: standalone signature of class 0x20
-gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
-gpg:                using EDDSA key 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
+gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
+gpg:                using EDDSA key 2A3C200E2159A9909E98061A42773D5293EC386A
 gpg: standalone revocation - use "gpg --import" to apply
 fstdoutòq[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG 6AC52B32B7DD0B6F 22 10 20 1671553073 52 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+[GNUPG:] ERRSIG 42773D5293EC386A 22 10 20 1671553073 52 2A3C200E2159A9909E98061A42773D5293EC386A
+fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrô|gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
 gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
 gpg: standalone signature of class 0x28
-gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
-gpg:                using EDDSA key 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
+gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
+gpg:                using EDDSA key 2A3C200E2159A9909E98061A42773D5293EC386A
 gpg: invalid root packet for sigclass 28
 gpg: Can't check signature: Invalid signature class
 fstdoutòq[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG 6AC52B32B7DD0B6F 22 10 28 1671553073 32 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+[GNUPG:] ERRSIG 42773D5293EC386A 22 10 28 1671553073 32 2A3C200E2159A9909E98061A42773D5293EC386A
+fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrô|gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
 gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
 gpg: standalone signature of class 0x28
-gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
-gpg:                using EDDSA key 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
+gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
+gpg:                using EDDSA key 2A3C200E2159A9909E98061A42773D5293EC386A
 gpg: invalid root packet for sigclass 28
 gpg: Can't check signature: Invalid signature class
 fstdoutòq[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG 6AC52B32B7DD0B6F 22 10 28 1671553073 32 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+[GNUPG:] ERRSIG 42773D5293EC386A 22 10 28 1671553073 32 2A3C200E2159A9909E98061A42773D5293EC386A
+fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrô|gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
 gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
 gpg: standalone signature of class 0x30
-gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
-gpg:                using EDDSA key 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
+gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
+gpg:                using EDDSA key 2A3C200E2159A9909E98061A42773D5293EC386A
 gpg: invalid root packet for sigclass 30
 gpg: Can't check signature: Invalid signature class
 fstdoutòq[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG 6AC52B32B7DD0B6F 22 10 30 1671553073 32 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+[GNUPG:] ERRSIG 42773D5293EC386A 22 10 30 1671553073 32 2A3C200E2159A9909E98061A42773D5293EC386A
+fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrô|gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
 gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
 gpg: standalone signature of class 0x30
-gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
-gpg:                using EDDSA key 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
+gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
+gpg:                using EDDSA key 2A3C200E2159A9909E98061A42773D5293EC386A
 gpg: invalid root packet for sigclass 30
 gpg: Can't check signature: Invalid signature class
 fstdoutòq[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG 6AC52B32B7DD0B6F 22 10 30 1671553073 32 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôVgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+[GNUPG:] ERRSIG 42773D5293EC386A 22 10 30 1671553073 32 2A3C200E2159A9909E98061A42773D5293EC386A
+fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôSgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
 gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
 gpg: standalone signature of class 0x40
-gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
-gpg:                using EDDSA key 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
+gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
+gpg:                using EDDSA key 2A3C200E2159A9909E98061A42773D5293EC386A
 gpg: Can't check signature: Invalid signature class
 fstdoutòq[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG 6AC52B32B7DD0B6F 22 10 40 1671553073 32 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôVgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+[GNUPG:] ERRSIG 42773D5293EC386A 22 10 40 1671553073 32 2A3C200E2159A9909E98061A42773D5293EC386A
+fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôSgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
 gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
 gpg: standalone signature of class 0x40
-gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
-gpg:                using EDDSA key 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
+gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
+gpg:                using EDDSA key 2A3C200E2159A9909E98061A42773D5293EC386A
 gpg: Can't check signature: Invalid signature class
 fstdoutòq[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG 6AC52B32B7DD0B6F 22 10 40 1671553073 32 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôVgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+[GNUPG:] ERRSIG 42773D5293EC386A 22 10 40 1671553073 32 2A3C200E2159A9909E98061A42773D5293EC386A
+fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôSgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
 gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
 gpg: standalone signature of class 0x50
-gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
-gpg:                using EDDSA key 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
+gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
+gpg:                using EDDSA key 2A3C200E2159A9909E98061A42773D5293EC386A
 gpg: Can't check signature: Invalid signature class
 fstdoutòq[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG 6AC52B32B7DD0B6F 22 10 50 1671553073 32 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôVgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+[GNUPG:] ERRSIG 42773D5293EC386A 22 10 50 1671553073 32 2A3C200E2159A9909E98061A42773D5293EC386A
+fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôSgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
 gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
 gpg: standalone signature of class 0x50
-gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
-gpg:                using EDDSA key 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
+gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
+gpg:                using EDDSA key 2A3C200E2159A9909E98061A42773D5293EC386A
 gpg: Can't check signature: Invalid signature class
 fstdoutòq[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG 6AC52B32B7DD0B6F 22 10 50 1671553073 32 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôVgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+[GNUPG:] ERRSIG 42773D5293EC386A 22 10 50 1671553073 32 2A3C200E2159A9909E98061A42773D5293EC386A
+fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôSgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
 gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
 gpg: standalone signature of class 0x4d
-gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
-gpg:                using EDDSA key 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
+gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
+gpg:                using EDDSA key 2A3C200E2159A9909E98061A42773D5293EC386A
 gpg: Can't check signature: Invalid signature class
 fstdoutòq[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG 6AC52B32B7DD0B6F 22 10 4d 1671553073 32 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôVgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
+[GNUPG:] ERRSIG 42773D5293EC386A 22 10 4d 1671553073 32 2A3C200E2159A9909E98061A42773D5293EC386A
+fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôSgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
 gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
 gpg: standalone signature of class 0x4d
-gpg: Signature made Tue 20 Dec 2022 05:17:53 PM CET
-gpg:                using EDDSA key 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
+gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
+gpg:                using EDDSA key 2A3C200E2159A9909E98061A42773D5293EC386A
 gpg: Can't check signature: Invalid signature class
 fstdoutòq[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG 6AC52B32B7DD0B6F 22 10 4d 1671553073 32 2DBC3D3D3529021CE9157A306AC52B32B7DD0B6F
-fstatusnexit status: 2efiles†iartifacts≤dcertô˚≈Xc°‡1	+⁄G@çè9≥ÑdYÂLoÏ(JôØd\sÇíâ˚:∆£ãVAû{  Ä‰Ê3≠™°–/ÿ∞ræcœA:Søﬁµ‡–‘ïrY¬¿
- }Çc°‡1		26πXÌ˝»◊G       salt@notations.sequoia-pgp.org˙õ6Œ{ÅFHºây"ùøa¶öirs9Ö3Ê'
-õ!Œ™9∆Ë(Ï¸…å26πXÌ˝»◊  ¸ ∂<d˙ €Ω…GΩ	÷\–¶⁄≥$ê◊‰≈∏©ldıt{Æm ¸	÷Ã&:Ñ-5Ãsã-iÑY«$,U!x‹ÄÂÍ˚‘|Õ$Alice Lovelace <alice@lovelace.name>¬¿
- ÄÇc°‡1		26πXÌ˝»◊G       salt@notations.sequoia-pgp.org÷¶ıM*®™ómK˚À—ã£y √,Œj7∂1À«»g\
-ôõ!Œ™9∆Ë(Ï¸…å26πXÌ˝»◊  xô π‚ñ'∂Grq*ËZÖ¿ÿLqU˙·Á,˜∆◊pˆ¯ﬂ´ ˝h??÷|Ú ≥¶ìl˘†LêÌróŒÜﬂÕbπæ2«Xc°‡1	+⁄G@>hnÁÌmPrœœ=O
-XVπfˆ©"É#Í√J5çZ⁄  ‹oäÂ∏VÇ§Jßå,Eÿp≥>ﬂ›©º∂r˝%¯6™±ˇXn¬¿ø
-1Çc°‡1	26πXÌ˝»◊G       salt@notations.sequoia-pgp.orgÙ–¯Å•2
-˝¸< ‚‡ƒ©9óı¯fÂùî◊Ì–·^∆÷Oõæ†
- oÇc°‡1	j≈+2∑›oG       salt@notations.sequoia-pgp.org+År‡KF™aÔ±`jÈuiìã¨6<ÔPf÷Ô,ë!-º==5)Èz0j≈+2∑›o  Ω‰ ˝åò≤#•fòb1dSFö©NÑ9◊ÏC÷1>ÆÙ'xõ «¨@£∫ŒØyuB\¡E`¸|9&úö §z ŒØ!Œ™9∆Ë(Ï¸…å26πXÌ˝»◊  Gé ˛2gÁqnÅ’F±®≥\‚ò\"ˆ@©i~Ap —n–É% ¶˚p∂”Æ©¸µKNw˚jN}í∞„:∂~+îè§
-esig.0òø¬Ω 
- oÇc°‡1	j≈+2∑›oG       salt@notations.sequoia-pgp.org‘û/Tºæsêg˜ñiGT÷Ù¬(C≥ﬂú‰+0æ ∑ZI!-º==5)Èz0j≈+2∑›o  Ÿ» ˇ@X¯ Û4ˇ›÷Ù£ÕQ9µç©ë#∞^êˇKZÙ˙+¬ ØSî≤é|ÑÓ≥Z˙¶T°º3i_%Åé6Cesig.1òø¬Ω
- oÇc°‡1	j≈+2∑›oG       salt@notations.sequoia-pgp.orgûÛñÎsdKZu≤$§÷7Ïd	ñ˛ª∑†∫E&¶‘jn!-º==5)Èz0j≈+2∑›o  V ˝¿⁄⁄-Ä@Ìá©⁄Fë‘êÀ"B€4n$±]6éˆ{ ˇp°ΩT>Õ∏0,6ÅJ‡ªÅ:\35—ö4´q+U/Q˙∞fsig.16òø¬Ω
- oÇc°‡1	j≈+2∑›oG       salt@notations.sequoia-pgp.orgIö6Céºs3¨+ç¬|=ÕsvEíò‘wüên≤˙k!-º==5)Èz0j≈+2∑›o  ¨Ï ˇ{ÛûÃå§ÃCÿKpËºü˙&:‡G≈W}.ÏgòF∞X ¸(ËÍãwn!¥Ö,÷8‰≈+©i<mFê◊F≤ªsÏËfsig.17òø¬Ω
- oÇc°‡1	j≈+2∑›oG       salt@notations.sequoia-pgp.orgÍw(JY`Hc‡∫Îù™S©‡tüıµs[—ÇwAÄZî™V!-º==5)Èz0j≈+2∑›o  /û ˛(tSª„
-O<ÈÈW5s®‹Wg%elá˝Œﬂ¯i]õ ˙™kxZ9Ñ~%Àf‡ó2jR‰®•Ò^Y˚éì{’Ê¬fsig.18òø¬Ω
- oÇc°‡1	j≈+2∑›oG       salt@notations.sequoia-pgp.orgÔæπ≤ qEÉYzS{L à^Ÿa1≤]∆æê}'îŒ!-º==5)Èz0j≈+2∑›o  |* ˇHÀ˚KŸª∞öπ·#JÄ¯&≠4kÚ¿+thö÷©» ˇl∏Î¸’©◊ó˙*ù<m#?¨–∫Ä˙Ω‹uﬁ,c%fsig.19òø¬Ω
- oÇc°‡1	j≈+2∑›oG       salt@notations.sequoia-pgp.org&ËﬁW"Éº «Zl~ùdF?Î∏eäÜ\Ω÷2*¡!-º==5)Èz0j≈+2∑›o  !Ì ŒH/H∑¥7Ñ˜í}Ò˘Õ=◊r m¯›ÛÙA®Û€‹ÎP ˛/‡óãh¯d@√ˇŒD€Ã”…û◊‹µu˜∂ˆ˘~esig.2òø¬Ω
- oÇc°‡1	j≈+2∑›oG       salt@notations.sequoia-pgp.orgà–ﬂìôC1á€Ä68b◊õ¬ÆÈâÛ0`fÀÆ!-º==5)Èz0j≈+2∑›o  òj ïtﬁV:44l<⁄Lπ&åË¬$∂FYì≤˙Xíâ ˇJ]FÍn'£BÅ&Ï[÷‹ ´Ω
-Ω¯ËË ‰ò“‡
-fsig.22òø¬Ω
- oÇc°‡1	j≈+2∑›oG       salt@notations.sequoia-pgp.orgë>Ì•Œ=è#÷¢›Ì#U}À	úô(…IäËâJú!-º==5)Èz0j≈+2∑›o  @˝ ˛;^g©Ï˜fÆœÄ?q
-Ê!ÒÒ}î·pÒK)‡…ä"b•3 ú/,aKØfÅDù˛	É¸‹_äDZâø—Òà6>ñq∞fsig.24òø¬Ω
- oÇc°‡1	j≈+2∑›oG       salt@notations.sequoia-pgp.orgÒ;b¬îõñdè3È`≤˝ñ¢«s«Ì◊™÷ÊÓ_4}!-º==5)Èz0j≈+2∑›o  …º æË•I[+2 6◊(#Ω¸j1‚3‰˚∞ë#•8©_<]Ï •≤6©∏”s	éÌ¡ÛŸXyxD `ÿû∞™ro2Ÿk fsig.25òø¬Ω
- oÇc°‡1	j≈+2∑›oG       salt@notations.sequoia-pgp.org–‘ü;·œ°QuœyIK√X…PlR∏Öù8Œç◊S!-º==5)Èz0j≈+2∑›o  ‘ ˛/≤óÉSHÓXMKn≈Föcc)à6€zΩàí£|9∑Óñ ˇNCË~í+¯©∞‚ˆÛf~1˘ „Ä‡◊ÏGé—ÑÊI
-fsig.31òø¬Ω
- oÇc°‡1	j≈+2∑›oG       salt@notations.sequoia-pgp.orgÛ°ﬂâ§FÂŸ6¨~3)é[˝zπ>R+ÚFçıÕÎOl˝A!-º==5)Èz0j≈+2∑›o  Çù ≈#~¢‰ˆ≥Rª[iñZ^‚2w'	~–]6ÙfΩxFﬁ  ˇp‚'üµ§π+uÄÙ„»à d¸4xn¡L”ÜHfsig.32òø¬Ω 
- oÇc°‡1	j≈+2∑›oG       salt@notations.sequoia-pgp.orgπöêÏºo¥ûL‚¡MyY¸ÂcÅ˛˘#m>§ó¡∑gG≤!-º==5)Èz0j≈+2∑›o  ß ˇ{€”˘<)û-’;7ÇA˛mÃ5§ˇ 7GVØ∞›2 ÎV≤ç√(MW¿cÁÎ}q€“XÛ1
-î5Ìª-1¶~€fsig.40òø¬Ω(
- oÇc°‡1	j≈+2∑›oG       salt@notations.sequoia-pgp.orgó›p]rØñJÎ(í6úèM£a2/⁄-Œ0ìa;8d!-º==5)Èz0j≈+2∑›o  ï© ˝ ·8.g¿ßﬂOY{I^o“e√„bø
-<ÒÎ‹}ùÍ –à’"≠MﬂÅTΩ÷H ‚«÷Ã¸Ó˙VmUrR çfsig.48òø¬Ω0
- oÇc°‡1	j≈+2∑›oG       salt@notations.sequoia-pgp.org˛⁄¿ÿÜ:[:≠‚ﬁµ[ïTf«.˘¥¯x’∞A∆Ø!-º==5)Èz0j≈+2∑›o  ü∫ ™K¢≈Â>S}v,I∆ÌÙ àM¥¨e÷Ë	+?—, ˇ\/‘Ø—¶Ug=	Û¸vwÁ8¬â,#sû∑jåÚÂÕ	fsig.64òø¬Ω@
- oÇc°‡1	j≈+2∑›oG       salt@notations.sequoia-pgp.org¶!êß® æ™oY·“ßÍ7—,˝”≈∂-M9°ﬁˆat!-º==5)Èz0j≈+2∑›o  [≠ ˇgÔÛëß0~:≠ziﬁGÂâ∏:G˘M“5øΩ‚V^Ü ˛$˘Ø
-Ç<öv˚Ú'∞˚æã·´ JΩ*P∞q,b
-.fsig.77òø¬ΩM
- oÇc°‡1	j≈+2∑›oG       salt@notations.sequoia-pgp.orgHZƒ¯˝^ΩÍNNë¯÷œmÈ¥°ìÅÃ]µkÕ8ÉR◊!-º==5)Èz0j≈+2∑›o  ™ õÓÖ»üO	$hç1∑ò¯Æ|§∆W?ÍvòÂ/ ˇXI^Ûlòü˝∏6Ñ‘Ÿ|ú7Ê£V#KuL„°~Â\fsig.80òø¬ΩP
- oÇc°‡1	j≈+2∑›oG       salt@notations.sequoia-pgp.org8¶≠j<.‹?/∏ a¥qõITåÙ<ÍÿòKgˇ%Å6!-º==5)Èz0j≈+2∑›o  –≠ ˇ@Ô„zq=Fö)ˆ“X"ˇŒû˝; R:Ñ⁄aiÅ‘°HªF ÓñTò◊ÏyQ~†”’íU«ÓÍÉ¬·
-Ú√.¥Ïr4Ü
+[GNUPG:] ERRSIG 42773D5293EC386A 22 10 4d 1671553073 32 2A3C200E2159A9909E98061A42773D5293EC386A
+fstatusnexit status: 2efiles†iartifacts≤dcertô˚≈Xc°‡1	+⁄G@?*z-Ãª‹«∞ß™â'¢àH…ñ≈“Ö·©÷ âÒˆ  ¸…ÔK4∂gG÷€›®<&Å.¯f¢/®iIÎËx¬¿
+ }Çc°‡1		µs·¨∆¸G       salt@notations.sequoia-pgp.org›@`øãÈÓ?ße_ 'BLCö€,`´•áfÄZ≤!ö
+õ!Ú?<Y;¬Ôä≥÷\µs·¨∆¸  ﬁÌ ˝â*Ú˛ı~g”^m˛‡˝ów1¶bªœ* 8ﬂµ ˆõÙ„Ò»¢È/NŒÜ˛Ã*«¬c¶i‚aªcò
+:K¯Õ$Alice Lovelace <alice@lovelace.name>¬¿
+ ÄÇc°‡1		µs·¨∆¸G       salt@notations.sequoia-pgp.orgm∫–?HLä0ÌÁå∆˛çõ¢j7∏é8q8øπ˙›[¨ç
+ôõ!Ú?<Y;¬Ôä≥÷\µs·¨∆¸  ^‰ –Á—Ÿ&3MÇÿòt9ÜÃíqïP∏&çõŸ÷s{ıµ¿‘ §!∑x˝`ÃúŒuT.âr_à¯ùöMgè1ÑÒÍ«Xc°‡1	+⁄G@D$…‹ÿƒÛ∞~À  àæÑ¥‰)]û"Õ¢ìºÊˇ  ÖId«ô#:øÊëgè¥g∂¢øè
+_-Åﬂ¬Á.{”)&b¬¿ø
+1Çc°‡1	µs·¨∆¸G       salt@notations.sequoia-pgp.org©÷˝áÂi3ˇ%ânªß„ÓÑ9‹ı˙ì"U®™·õËçﬂm¿õæ†
+ oÇc°‡1	Bw=RìÏ8jG       salt@notations.sequoia-pgp.org6{J√uœU]A…˝Å— ö“à{ÈæCÿ4}5Ω:!*< !Y©êûòBw=RìÏ8j  ⁄» ˚e⁄@Îñßü#/÷7µÃª∑¢_0ùU[ÂãÕKk Æ9¶àœPã[<àj‚Å"â◊Q8·3Äo%*'!Ú?<Y;¬Ôä≥÷\µs·¨∆¸  t∂ ˝(”™fdøÌáVGπ(w)(ÿ'QGyÿÕ`Rh–¢‘Ø ì…†ﬂ;ˆ¡2s!Üäç›l§jÃΩ	0nÁ¿ê"zY∂⁄esig.0òø¬Ω 
+ oÇc°‡1	Bw=RìÏ8jG       salt@notations.sequoia-pgp.org¬.ò‡^gE!&µÅ^ˇc‚òÍuV∂y!÷Qp¯:!*< !Y©êûòBw=RìÏ8j  ‘Í ¯}áiõN(ô7ﬂ°µCy∆(‚}ßÉIöMÓ&ãe ®-PkıwÉ1cu»ëïó+A]⁄0	√LˇQÓ∑$’˚ esig.1òø¬Ω
+ oÇc°‡1	Bw=RìÏ8jG       salt@notations.sequoia-pgp.orgŒ*÷‹<Æ÷˙åœáwé·z	†Iûjﬁ©L˛´T!*< !Y©êûòBw=RìÏ8j  z ÿ≠5Û?ÁÔ¢h∏Ìèyy|◊◊wÁ2¨)[}$tU‰Á ˛;¸#U˙q_(…$EÑwaáô›G1•ıvŒ›[¶≤fsig.16òø¬Ω
+ oÇc°‡1	Bw=RìÏ8jG       salt@notations.sequoia-pgp.orgê£∫tFm˙zˇKo‡ïGd*Sƒ÷WTT“6-Ñ=	!*< !Y©êûòBw=RìÏ8j  <» ˇ{õ)æ#âùG†¸D/øY;∫9„—ÅƒØ	%ä1˜∞2Ã© ˝^Œ¯¥qœSæc˘èY›ÉÉ÷:_s≤DDûi>fsig.17òø¬Ω
+ oÇc°‡1	Bw=RìÏ8jG       salt@notations.sequoia-pgp.orgr¡Ü◊ÊŒhUD∏µ˜RˆEët«á˙,©∫íÀÈê®!*< !Y©êûòBw=RìÏ8j  pè ‰¬hcw‡…âÆk1⁄=tﬁÑÏàáΩúP¿¨∑‰ ˇx∫f›±ÿd¶°J´—∑/ö]±“Ç.ßœw†≥fsig.18òø¬Ω
+ oÇc°‡1	Bw=RìÏ8jG       salt@notations.sequoia-pgp.orgSòÁiŸ—Hõ¨,∆∫≤mt∆d(ÅåÉ-.JF∑!*< !Y©êûòBw=RìÏ8j  ™ ﬂ®"·∑Ë˝˚‘¥—ˆ†]Lóÿ
+‚Æ∞l·Q˙ ÷Í§ÉŒÆπK˘üÀ’z˛úy™§	PíáÚﬁ´R¢°Ifsig.19òø¬Ω
+ oÇc°‡1	Bw=RìÏ8jG       salt@notations.sequoia-pgp.orgëv1ôÓ†Bí+o∫0}˘•Ö˜Ù‘ÔB%ÛæDﬁ–1ÔN!*< !Y©êûòBw=RìÏ8j  <	 ˝äüt„≈Íû±ˆË™@ôˇ\ñä√e…ΩXø⁄íF`xü ˇj5d◊Z#øC&âÂô∫xÆñ;ôÀS¢oÁòÌƒ≈esig.2òø¬Ω
+ oÇc°‡1	Bw=RìÏ8jG       salt@notations.sequoia-pgp.orgÊÉI¥åì<´ŸÓCG˜Ô<ÁûxP§Q∫‚yaB≈€‰B!*< !Y©êûòBw=RìÏ8j  ©r ˇpxEiwSkÌÀ~-¨’w°[Ã ßƒL˝x!Œˆá{; ˝óâΩÈﬂ: ÇïXc’êºnÉæ %Áôıﬂ`K*ãgfsig.22òø¬Ω
+ oÇc°‡1	Bw=RìÏ8jG       salt@notations.sequoia-pgp.orgâıÏQÇ¨S5ÔëÙ¨u]ıbd”ê;∞G
+πx^cU0ï!*< !Y©êûòBw=RìÏ8j  )4 ì∏a"JIbÚ•N´¯Eπ÷∑iÒ {wgV¥GûMÔ] ä;éËb%)∏*)g»§ÜB«€Õ€e;∂@¯Ù®ßŸ9¥fsig.24òø¬Ω
+ oÇc°‡1	Bw=RìÏ8jG       salt@notations.sequoia-pgp.orgF?üœ¯<hŸ¶îÊX\	3ß›0|N0”Ú†6P!*< !Y©êûòBw=RìÏ8j  %n ˝”ÍH—GG?<Z«dûáŸÁcºì·SbhZ=
+éÈ¯∏ π"∞d$GªÄËœR%àûlçW„®Á]SN¥t+Ùbfsig.25òø¬Ω
+ oÇc°‡1	Bw=RìÏ8jG       salt@notations.sequoia-pgp.org«ò÷Ÿı∏iC∏Ö…EµÎAáá2ájÜËÎ®ó!*< !Y©êûòBw=RìÏ8j  Õ˙ ùbBå™üAn≠h©ﬂÓ*´&⁄…≥À˜ËREB`ú ˇ^ﬂn‡‘ª∞›ú.{hÉN"ú∆ÍtÚ0Øcô>ñ—fsig.31òø¬Ω
+ oÇc°‡1	Bw=RìÏ8jG       salt@notations.sequoia-pgp.orgëV=]¨^oÖH°/≥ÙíO™:˛ƒáÂóOà¿äœõ~!*< !Y©êûòBw=RìÏ8j  b( û/ ^qÓ‰Y∞ßKpåáô Qr‹"ü%∞‚nÚ… T ¸ö≈Ë:ôä3ÑAµ4‘¢¡õ·Rß—Ωè›±{Önfsig.32òø¬Ω 
+ oÇc°‡1	Bw=RìÏ8jG       salt@notations.sequoia-pgp.org“Á{såÂ}Ì>¸Ââ˛˝å∫´* ÂªKVª§'!*< !Y©êûòBw=RìÏ8j  Q⁄ ¨Ê¨XEN,˚ÿ@÷ñ0¡{”ïô[hŸÄÑ~¬Êâu≈ ˛8≥ú‰ß;dÒkº‘XçÈ˙^ŒEH!VÒ{é`zfsig.40òø¬Ω(
+ oÇc°‡1	Bw=RìÏ8jG       salt@notations.sequoia-pgp.org"Z ‡(Œ°œ
+£L[©zˇt{k{eæq≈∆C!*< !Y©êûòBw=RìÏ8j  '≤ ˛1°ˆ∂¥¥¯≥F4˛EƒÉΩ≠€bG~ò.Ùÿ5∫Õ ˝ıÉ∑ÔYc◊› «Jèíâ≠Å}ÜD¥—≤®•É‘fsig.48òø¬Ω0
+ oÇc°‡1	Bw=RìÏ8jG       salt@notations.sequoia-pgp.orgÑä*˛“aRÔƒFé*(ÖóÚ£+œëœ5ñG£Éµ<á!*< !Y©êûòBw=RìÏ8j  ï( ˇyuÛK¯¸ÑMÖÁuÈ_ø „ÙºjQpZkó#€fÉƒh$ Òë±;Ë´€∂ÿN-7Aﬁ±©÷oì˛Ùº&¨âÅ¿	fsig.64òø¬Ω@
+ oÇc°‡1	Bw=RìÏ8jG       salt@notations.sequoia-pgp.org4ó]m˜Ï{ñ5ΩØy’ƒl#@d{Ó}V{º!*< !Y©êûòBw=RìÏ8j  âS ´Â¡?8;lå‹O˙ˆ≤Æˆéœ⁄ı[÷∑t<°E€π ˇYŒ7∫K}Ôwf±7Td‡#Ú'˘}ß–é;©fsig.77òø¬ΩM
+ oÇc°‡1	Bw=RìÏ8jG       salt@notations.sequoia-pgp.org*†3r	¶í¯ÕG∫~Õf‹¿}˜Ç⁄∑’EﬂèÌÛΩj!*< !Y©êûòBw=RìÏ8j  Øµ øh ◊durmh)≥w ßa§Cc/¢'c2sP‚Ê–ø7˝ ˇ]Fh≥ÂL·xéÃŒp–C_YHú¥±Éõ¬â
+fsig.80òø¬ΩP
+ oÇc°‡1	Bw=RìÏ8jG       salt@notations.sequoia-pgp.org’OãwS]øø∂m% ^|:<‚	<=ˆçk¢πI!*< !Y©êûòBw=RìÏ8j  Ñ∂ ˛2ùzç¢!LÚ]◊Vxù]ùu©∂X	¨‹Lπ9™aB™@à  ˛>∂Ó\dgÚã/ÃÅäSuAã-lïrìØ#*ÿÃ@˙dstdynamic_upper_boundsò&Ç VÇ Ç Ç  ÇÜÇCÇÜÇCÇ Ç Ç Ç Ç Ç Ç Ç Ç Ç Ç Ç Ç Ç Ç Ç Ç Ç Ç Ç Ç Ç Ç Ç Ç Ç Ç Ç Ç Ç 
