@@ -718,8 +718,7 @@ fn key_flags_to_usage(f: KeyFlags) -> u8 {
         .clear_storage_encryption()
         .clear_certification()
         .clear_authentication()
-    // XXX: Enable this once we use sequoia-openpgp 1.6.
-    // .clear_group_key()
+        .clear_group_key()
         .clear_split_key()
         .is_empty()                   { GCRY_PK_USAGE_UNKN } else { 0 }
 }
