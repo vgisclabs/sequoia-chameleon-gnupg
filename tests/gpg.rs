@@ -280,6 +280,11 @@ impl Output {
 struct ArtifactStore {
     outputs: Vec<Output>,
     artifacts: BTreeMap<String, Vec<u8>>,
+
+    /// Difference to the Chameleon's stderr and stdout at the time
+    /// this output was recorded.
+    #[serde(default)]
+    dynamic_upper_bounds: Vec<(usize, usize)>,
 }
 
 impl ArtifactStore {
@@ -423,6 +428,11 @@ impl Experiment {
         };
         eprintln!("Invoking {:?} {}", what, normalized_args.join(" "));
 
+        // First, invoke the Chameleon.
+        let us = self.us.invoke(&args)?
+            .canonicalize(self.us.home.path(), self.wd.path());
+
+        // Then, invoke GnuPG if we don't have a cached artifact.
         let oracle = if let Some(o) = self.artifacts.outputs.get(n)
             .filter(|v| v.args == normalized_args)
         {
@@ -432,17 +442,21 @@ impl Experiment {
             let mut output = self.oracle.invoke(&args)?
                 .canonicalize(self.oracle.home.path(), self.wd.path());
             output.args = normalized_args;
+            self.artifacts.outputs.truncate(n);
             self.artifacts.outputs.push(output.clone());
+            self.artifacts.dynamic_upper_bounds.truncate(n);
+            self.artifacts.dynamic_upper_bounds.push(
+                (output.stdout_edit_distance(&us),
+                 output.stderr_edit_distance(&us)));
             output
         };
 
-        let us = self.us.invoke(&args)?
-            .canonicalize(self.us.home.path(), self.wd.path());
         Ok(Diff {
             experiment: &*self,
             args: args.iter().map(ToString::to_string).collect(),
             oracle,
             us,
+            dynamic_upper_bounds: self.artifacts.dynamic_upper_bounds.get(n),
         })
     }
 
@@ -497,6 +511,7 @@ pub struct Diff<'a> {
     args: Vec<String>,
     oracle: Output,
     us: Output,
+    dynamic_upper_bounds: Option<&'a (usize, usize)>,
 }
 
 impl Diff<'_> {
@@ -510,6 +525,7 @@ impl Diff<'_> {
             eprintln!("Invocation not successful.\n\n{}", self);
             panic!();
         }
+        self.assert_dynamic_upper_bounds();
     }
 
     /// Asserts that both implementations returned failure.
@@ -521,6 +537,20 @@ impl Diff<'_> {
         if ! pass {
             eprintln!("Invocation did not fail.\n\n{}", self);
             panic!();
+        }
+        self.assert_dynamic_upper_bounds();
+    }
+
+    /// Asserts that both implementations wrote the same output up to
+    /// a limit recorded when the artifact was recorded.
+    ///
+    /// Assert that the edit distance between the implementations
+    /// output on stdout (stderr) does not exceed the recorded limits.
+    /// Panics otherwise.
+    pub fn assert_dynamic_upper_bounds(&self) {
+        if let Some(&(out_limit, err_limit)) = self.dynamic_upper_bounds {
+            eprintln!("asserting recorded limits of {}, {}", out_limit, err_limit);
+            self.assert_equal_up_to(out_limit, err_limit);
         }
     }
 
