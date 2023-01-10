@@ -3,7 +3,7 @@
 use std::{
     cell::RefCell,
     convert::TryFrom,
-    fmt::{self, Write},
+    fmt,
     io,
     sync::Mutex,
     time::SystemTime,
@@ -708,25 +708,6 @@ impl Status<'_> {
 
         Ok(())
     }
-}
-
-/// Escapes the given string.
-#[allow(dead_code)]
-fn e_str(s: impl AsRef<str>) -> String {
-    let s = s.as_ref();
-    let mut o = String::with_capacity(s.len());
-
-    for c in s.chars() {
-        match c {
-            '%' => o.push_str("%25"),
-            c if c.is_ascii() && (c as u8) < 20 =>
-                write!(o, "%{:02X}", c as u8)
-                .expect("write to string is infallible"),
-            c => o.push(c),
-        }
-    }
-
-    o
 }
 
 /// Escapes the given byte sequence.
