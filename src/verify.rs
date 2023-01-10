@@ -403,6 +403,14 @@ impl<'a> VHelper<'a> {
             })?;
         }
 
+        // First, GnuPG emits a key considered status as a side-effect
+        // of evaluating the trust information.  Emulate that.
+        self.control.status().emit(Status::KeyConsidered {
+            fingerprint: ka.cert().fingerprint(),
+            not_selected: false,
+            all_expired_or_revoked: false // XXX: I haven't seen GnuPG set that.
+        })?;
+
         let primary_uid = crate::utils::best_effort_primary_uid(
             self.control.policy(), ka.cert());
         match error {
@@ -543,14 +551,6 @@ impl<'a> VHelper<'a> {
         })?;
 
         // Compute validity information.
-
-        // First, GnuPG emits a key considered status as a side-effect
-        // of evaluating the trust information.  Emulate that.
-        self.control.status().emit(Status::KeyConsidered {
-            fingerprint: ka.cert().fingerprint(),
-            not_selected: false,
-            all_expired_or_revoked: false // XXX: I haven't seen GnuPG set that.
-        })?;
 
         // If we are gpg, we want to emit the validity of the cert.
         // To that end, get a view on the trust model at the signature

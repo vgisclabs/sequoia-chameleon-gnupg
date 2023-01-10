@@ -140,7 +140,7 @@ fn hash_algos() -> Result<()> {
             |b| Packet::from_bytes(&b))?;
 
         test_detached_sig_with(&mut experiment,
-                               if i == 0 { Some(&cert) } else { None },
+                               i == 0, &cert,
                                sig,
                                vec![],
                                i > 0)?;
@@ -196,7 +196,7 @@ fn weak_hash_algos() -> Result<()> {
             |b| Packet::from_bytes(&b))?;
 
         test_detached_sig_with(&mut experiment,
-                               if i == 0 { Some(&cert) } else { None },
+                               i == 0, &cert,
                                sig,
                                vec!["--weak-digest", &algo.to_string()],
                                false)?;
@@ -256,7 +256,7 @@ fn signature_types() -> Result<()> {
             |b| Packet::from_bytes(&b))?;
 
         test_detached_sig_with(&mut experiment,
-                               if i == 0 { Some(&cert) } else { None },
+                               i == 0, &cert,
                                sig,
                                vec![],
                                i < 2)?;
@@ -411,7 +411,7 @@ fn extended() -> Result<()> {
                     }
 
                     test_detached_sig_with(&mut experiment,
-                                           if i == 0 { Some(&cert) } else { None },
+                                           i == 0, &cert,
                                            sig.clone(), vec![],
                                            true)?;
                     i += 1;
@@ -484,7 +484,7 @@ fn wrong_key() -> Result<()> {
         }
 
         test_detached_sig_with(&mut experiment,
-                               if i == 0 { Some(&cert) } else { None },
+                               i == 0, &cert,
                                sig, vec![],
                                signing_capable)?;
     }
@@ -495,11 +495,12 @@ fn wrong_key() -> Result<()> {
 fn test_detached_sig(experiment: &mut Experiment, cert: &Cert, sig: Packet)
                      -> Result<()>
 {
-    test_detached_sig_with(experiment, Some(cert), sig, vec![], true)
+    test_detached_sig_with(experiment, true, cert, sig, vec![], true)
 }
 
 fn test_detached_sig_with<'a>(experiment: &mut Experiment,
-                              cert: Option<&Cert>,
+                              pristine_experiment: bool,
+                              cert: &Cert,
                               sig: Packet, extra_args: Vec<&'a str>,
                               expect_success: bool)
                               -> Result<()>
@@ -531,7 +532,7 @@ fn test_detached_sig_with<'a>(experiment: &mut Experiment,
     // If we reuse the `experiment` in a loop, we only import the cert
     // once, and we can only test the failures related to the missing
     // key before we import it.
-    if let Some(cert) = cert {
+    if pristine_experiment {
         // Create the keyring stores.  Reduces the noise in the upcoming
         // experiments.
         let diff = experiment.invoke(&["--list-keys"])?;
@@ -542,6 +543,30 @@ fn test_detached_sig_with<'a>(experiment: &mut Experiment,
         diff.assert_failure();
         diff.assert_equal_up_to(0, 20);
 
+        let diff = experiment.invoke(&args_bad)?;
+        diff.assert_failure();
+        diff.assert_equal_up_to(0, 20);
+
+        // Now try gpgv.
+        let empty_keyring = experiment.store("empty", b"")?;
+        let mut args_good = vec![
+            "gpgv",
+            "--keyring", &empty_keyring,
+            "--status-fd=1",
+        ];
+        args_good.extend_from_slice(&extra_args);
+        data_good.iter().for_each(|a| args_good.push(a));
+        let diff = experiment.invoke(&args_good)?;
+        diff.assert_failure();
+        diff.assert_equal_up_to(0, 20);
+
+        let mut args_bad = vec![
+            "gpgv",
+            "--keyring", &empty_keyring,
+            "--status-fd=1",
+        ];
+        args_bad.extend_from_slice(&extra_args);
+        data_bad.iter().for_each(|a| args_bad.push(a));
         let diff = experiment.invoke(&args_bad)?;
         diff.assert_failure();
         diff.assert_equal_up_to(0, 20);
@@ -568,6 +593,39 @@ fn test_detached_sig_with<'a>(experiment: &mut Experiment,
     diff.assert_failure();
     if expect_success {
         diff.assert_equal_up_to(134, 10);
+    } else {
+        diff.assert_equal_up_to(0, 10);
+    }
+
+    // Now try gpgv.
+    let cert = &experiment.store("cert", &cert.to_vec()?)?;
+    let mut args_good = vec![
+        "gpgv",
+        "--keyring", &cert,
+        "--status-fd=1",
+    ];
+    args_good.extend_from_slice(&extra_args);
+    data_good.iter().for_each(|a| args_good.push(a));
+    let diff = experiment.invoke(&args_good)?;
+    if expect_success {
+        diff.assert_success();
+        //diff.assert_equal_up_to(0, 10);
+    } else {
+        diff.assert_failure();
+        diff.assert_equal_up_to(0, 10);
+    }
+
+    let mut args_bad = vec![
+        "gpgv",
+        "--keyring", &cert,
+        "--status-fd=1",
+    ];
+    args_bad.extend_from_slice(&extra_args);
+    data_bad.iter().for_each(|a| args_bad.push(a));
+    let diff = experiment.invoke(&args_bad)?;
+    diff.assert_failure();
+    if expect_success {
+        //diff.assert_equal_up_to(200, 10);
     } else {
         diff.assert_equal_up_to(0, 10);
     }
