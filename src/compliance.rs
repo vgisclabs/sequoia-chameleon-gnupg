@@ -27,26 +27,15 @@ impl DeVSProducer {
             min_rsa_bits,
         }
     }
-}
 
-impl Policy for DeVSProducer {
-    fn signature(&self, sig: &Signature, _sec: HashAlgoSecurity)
-                 -> openpgp::Result<()>
-    {
-        use HashAlgorithm::*;
-        match sig.hash_algo() {
-            SHA256 | SHA384 | SHA512 => (),
-            a => return Err(Error::PolicyViolation(a.to_string(), None).into()),
-        }
-
-        Ok(())
-    }
-
-    fn key(&self, ka: &ValidErasedKeyAmalgamation<'_, PublicParts>)
-           -> openpgp::Result<()>
+    /// Returns an error if the key violates the policy.
+    fn public_key<P, R>(&self, key: &Key<P, R>) -> openpgp::Result<()>
+    where
+        P: key::KeyParts,
+        R: key::KeyRole,
     {
         use mpi::PublicKey::*;
-        match ka.mpis() {
+        match key.mpis() {
             RSA { n, .. } => {
                 let l = n.bits();
                 if (l == 2048 || l == 3072 || l == 4096)
@@ -83,9 +72,29 @@ impl Policy for DeVSProducer {
                         Err(Error::PolicyViolation(a.to_string(), None).into()),
                 }
             },
-            _ => return Err(Error::PolicyViolation(ka.fingerprint().to_string(),
+            _ => return Err(Error::PolicyViolation(key.fingerprint().to_string(),
                                                    None).into()),
         }
+    }
+}
+
+impl Policy for DeVSProducer {
+    fn signature(&self, sig: &Signature, _sec: HashAlgoSecurity)
+                 -> openpgp::Result<()>
+    {
+        use HashAlgorithm::*;
+        match sig.hash_algo() {
+            SHA256 | SHA384 | SHA512 => (),
+            a => return Err(Error::PolicyViolation(a.to_string(), None).into()),
+        }
+
+        Ok(())
+    }
+
+    fn key(&self, ka: &ValidErasedKeyAmalgamation<'_, PublicParts>)
+           -> openpgp::Result<()>
+    {
+        self.public_key(ka.key())
     }
 
     fn symmetric_algorithm(&self, algo: SymmetricAlgorithm)
@@ -206,5 +215,30 @@ impl Policy for DeVSConsumer {
               -> openpgp::Result<()>
     {
         STANDARD_POLICY.packet(packet)
+    }
+}
+
+/// Computes the compliance flags for a key.
+pub trait KeyCompliance {
+    fn compliance(&self, config: &crate::Config) -> Vec<Compliance>;
+}
+
+impl<P, R> KeyCompliance for Key<P, R>
+where
+    P: key::KeyParts,
+    R: key::KeyRole,
+{
+    fn compliance(&self, config: &crate::Config) -> Vec<Compliance> {
+        let mut c = Vec::with_capacity(2);
+
+        if self.version() == 5 {
+            c.push(Compliance::GnuPG);
+        }
+
+        if config.de_vs_producer.public_key(self).is_ok() {
+            c.push(Compliance::DeVs);
+        }
+
+        c
     }
 }

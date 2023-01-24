@@ -25,6 +25,7 @@ use ipc::Keygrip;
 
 use crate::{
     babel,
+    common::Compliance,
     trust::*,
 };
 
@@ -44,6 +45,7 @@ pub enum Record {
         sum_key_flags: KeyFlags,
         token_sn: Option<TokenSN>,
         curve: Option<Curve>,
+        compliance: Vec<Compliance>,
     },
     Subkey {
         have_secret: bool,
@@ -57,6 +59,7 @@ pub enum Record {
         key_flags: KeyFlags,
         token_sn: Option<TokenSN>,
         curve: Option<Curve>,
+        compliance: Vec<Compliance>,
     },
     Fingerprint(Fingerprint),
     Keygrip(Keygrip),
@@ -133,6 +136,7 @@ impl Record {
                 sum_key_flags,
                 token_sn,
                 curve,
+                compliance,
             } => {
                 let record_type = if *have_secret {
                     "sec"
@@ -152,8 +156,14 @@ impl Record {
                 });
 
                 if mr {
+                    let compliance_flags = compliance.iter()
+                        .filter_map(|c| c.to_flag())
+                        .map(|flag| flag.to_string())
+                        .collect::<Vec<_>>()
+                        .join(" ");
+
                     writeln!(w,
-                             "{}:{}:{}:{}:{:X}:{}:{}::{:#}:::{}{}{}:::{}::{}:::0:",
+                             "{}:{}:{}:{}:{:X}:{}:{}::{:#}:::{}{}{}:::{}::{}:{}::0:",
                              record_type,
                              validity,
                              key_length,
@@ -170,6 +180,7 @@ impl Record {
                              .unwrap_or_default(),
                              curve.as_ref().map(|c| babel::Fish(c).to_string())
                              .unwrap_or_default(),
+                             compliance_flags,
                     )?;
                 } else {
                     writeln!(w,
@@ -195,6 +206,7 @@ impl Record {
                 key_flags,
                 token_sn,
                 curve,
+                compliance,
             } => {
                 let record_type = if *have_secret {
                     "ssb"
@@ -214,7 +226,13 @@ impl Record {
                 });
 
                 if mr {
-                    writeln!(w, "{}:{}:{}:{}:{:X}:{}:{}:::::{}:::{}::{}::",
+                    let compliance_flags = compliance.iter()
+                        .filter_map(|c| c.to_flag())
+                        .map(|flag| flag.to_string())
+                        .collect::<Vec<_>>()
+                        .join(" ");
+
+                    writeln!(w, "{}:{}:{}:{}:{:X}:{}:{}:::::{}:::{}::{}:{}:",
                              record_type,
                              validity,
                              key_length,
@@ -228,6 +246,7 @@ impl Record {
                              .unwrap_or_default(),
                              curve.as_ref().map(|c| babel::Fish(c).to_string())
                              .unwrap_or_default(),
+                             compliance_flags,
                     )?;
                 } else {
                     writeln!(w,

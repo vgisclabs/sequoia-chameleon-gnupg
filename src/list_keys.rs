@@ -15,6 +15,7 @@ use ipc::Keygrip;
 
 use crate::{
     common::Common,
+    compliance::KeyCompliance,
     colons::*,
     trust::{*, cert::*},
 };
@@ -158,6 +159,7 @@ where
             },
             token_sn: have_secret.then(|| TokenSN::SecretAvaliable),
             curve: get_curve(cert.primary_key().mpis()),
+            compliance: cert.primary_key().compliance(config),
         }.emit(config, &mut sink)?;
 
         Record::Fingerprint(cert_fp)
@@ -231,6 +233,7 @@ where
                     .unwrap_or_else(|| KeyFlags::empty()),
                 token_sn: have_secret.then(|| TokenSN::SecretAvaliable),
                 curve: get_curve(subkey.mpis()),
+                compliance: subkey.compliance(config),
             }.emit(config, &mut sink)?;
 
             if config.with_colons || config.with_subkey_fingerprint {
