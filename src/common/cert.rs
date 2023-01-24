@@ -8,7 +8,10 @@ use openpgp::{
             UserIDAmalgamation,
             ValidAmalgamation,
             ValidateAmalgamation,
-            key::SubordinateKeyAmalgamation,
+            key::{
+                PrimaryKeyAmalgamation,
+                SubordinateKeyAmalgamation,
+            },
         },
     },
     packet::key::{
@@ -41,9 +44,9 @@ pub struct AuthenticatedCert<'a> {
     /// `cert.userids()`.
     uid_validities: Vec<Validity>,
 
-    /// Subkey validities, in the same order as returned by
-    /// `cert.keys().subkeys()`.
-    subkey_validities: Vec<Validity>,
+    /// (Sub)key validities, in the same order as returned by
+    /// `cert.keys()`.
+    key_validities: Vec<Validity>,
 }
 
 impl<'a> AuthenticatedCert<'a> {
@@ -93,7 +96,7 @@ impl<'a> AuthenticatedCert<'a> {
         let cert_validity = cert_validity.unwrap_or_else(
             || uid_validities.iter().max().cloned().unwrap_or(Validity::Unknown));
 
-        let subkey_validities: Vec<_> = cert.keys().subkeys()
+        let key_validities: Vec<_> = cert.keys()
             .map(|skb| {
                 if let Ok(vskb) = skb.with_policy(vtm.policy(), vtm.time()) {
                     if let RevocationStatus::Revoked(_) = vskb.revocation_status() {
@@ -113,7 +116,7 @@ impl<'a> AuthenticatedCert<'a> {
             cert,
             cert_validity,
             uid_validities,
-            subkey_validities,
+            key_validities,
         })
     }
 
@@ -133,12 +136,19 @@ impl<'a> AuthenticatedCert<'a> {
             .zip(self.cert.userids())
     }
 
+    /// Returns the primary key and its validity.
+    pub fn primary_key(&self)
+                       -> (Validity, PrimaryKeyAmalgamation<'a, PublicParts>)
+    {
+        (self.key_validities[0].clone(), self.cert.primary_key())
+    }
+
     /// Returns the subkeys with their validities.
     pub fn subkeys(&self)
                    -> impl Iterator<Item = (Validity,
                                             SubordinateKeyAmalgamation<'a, PublicParts>)> + 'a
     {
-        self.subkey_validities.clone().into_iter()
+        self.key_validities.clone().into_iter().skip(1)
             .zip(self.cert.keys().subkeys())
     }
 }
