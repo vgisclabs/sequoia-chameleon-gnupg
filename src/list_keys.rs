@@ -170,25 +170,14 @@ where
             }
         }
 
-        // Sort by: valid, primary, revocation status, value.
+        // Sort the userids so that the primary user id is first.
         let mut userids: Vec<_> = acert.userids().collect();
         let primary_userid = vcert
             .and_then(|vcert| {
                 vcert.primary_userid().ok().map(|u| u.userid())
             });
-        userids.sort_by_cached_key(|(_validity, userid)| {
-            if let Ok(userid) = userid.clone().with_policy(p, config.now()) {
-                (0, // valid.
-                 Some(userid.userid()) != primary_userid, // primary
-                 userid.revocation_status()
-                     != RevocationStatus::NotAsFarAsWeKnow, // Revoked.
-                 userid.userid())
-            } else {
-                (1,
-                 false,
-                 false,
-                 userid.userid())
-            }
+        userids.sort_by_key(|(_validity, userid)| {
+            Some(userid.userid()) != primary_userid
         });
         for (validity, uid) in userids.into_iter() {
             let vuid = uid.clone().with_policy(p, config.now()).ok();
