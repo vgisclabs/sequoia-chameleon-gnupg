@@ -209,7 +209,7 @@ where
         }
 
         for (validity, subkey) in acert.subkeys() {
-            // Don't display expired subkeys or revoked.
+            // Don't display expired or revoked subkeys.
             if ! config.with_colons
                 && (validity == Validity::Expired
                     || validity == Validity::Revoked) {
