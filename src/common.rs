@@ -20,6 +20,7 @@ use openpgp::{
 
 use crate::{
     keydb::KeyDB,
+    keydb::LazyCert,
     status,
 };
 
@@ -300,7 +301,7 @@ impl Query<'_> {
     /// Returns whether `cert` matches this query.
     ///
     /// Note: the match must be authenticated!
-    pub fn matches(&self, cert: &Cert) -> bool {
+    pub fn matches(&self, cert: &LazyCert) -> bool {
         match self {
             Query::Key(h) | Query::ExactKey(h) =>
                 cert.keys().any(|k| k.key_handle().aliases(h)),

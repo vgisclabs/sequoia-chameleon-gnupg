@@ -1,6 +1,7 @@
 //! Manages keyrings and keyboxes.
 
 use std::{
+    cell::RefCell,
     collections::{BTreeMap, BTreeSet},
     fs,
     io::Read,
@@ -12,14 +13,21 @@ use std::{
 use anyhow::{anyhow, Context, Result};
 use home_dir::HomeDirExt;
 
+use once_cell::unsync::OnceCell;
+
 use sequoia_openpgp as openpgp;
 use openpgp::{
     Cert,
+    cert::raw::RawCert,
+    cert::raw::RawCertParser,
     crypto::hash::Digest,
     Fingerprint,
     KeyHandle,
     KeyID,
+    packet::key,
+    packet::Key,
     packet::UserID,
+    packet::Tag,
     parse::Parse,
     serialize::SerializeInto,
     types::HashAlgorithm,
@@ -32,6 +40,174 @@ use crate::{
 /// Controls tracing.
 const TRACE: bool = false;
 
+pub struct LazyCert {
+    // Exactly one of raw and cert are ever alive.  Ideally, we'd put
+    // them in an enum.  To do that, the enum would have to be behind
+    // a `RefCell`, but then we couldn't return bare references to the
+    // `Cert`.
+    raw: RefCell<Option<RawCert<'static>>>,
+    cert: OnceCell<Cert>,
+}
+
+impl LazyCert {
+    /// Creates a `LazyCert` from a `Cert`.
+    fn from_cert(cert: Cert) -> Self {
+        tracer!(TRACE, "LazyCert::from_cert");
+        t!("Adding a parsed cert: {}", cert.fingerprint());
+
+        Self {
+            raw: RefCell::new(None),
+            cert: OnceCell::with_value(cert),
+        }
+    }
+
+    /// Creates a `LazyCert` from a `RawCert`.
+    fn from_raw_cert(raw: RawCert<'static>) -> Self {
+        Self {
+            raw: RefCell::new(Some(raw)),
+            cert: OnceCell::new(),
+        }
+    }
+
+    /// Returns the certificate's fingerprint.
+    pub fn fingerprint(&self) -> Fingerprint {
+        if let Some(cert) = self.cert.get() {
+            cert.fingerprint()
+        } else if let Some(raw) = &*self.raw.borrow() {
+            raw.fingerprint()
+        } else {
+            unreachable!("cert or raw must be set")
+        }
+    }
+
+    /// Returns the certificate's Key ID.
+    pub fn keyid(&self) -> KeyID {
+        KeyID::from(self.fingerprint())
+    }
+
+    /// Returns the user ids.
+    pub fn userids(&self)
+        -> impl Iterator<Item=UserID> + '_
+    {
+        if let Some(cert) = self.cert.get() {
+            Box::new(cert.userids().map(|ua| ua.userid().clone()))
+                as Box<dyn Iterator<Item=UserID> + '_>
+        } else if let Some(raw) = &*self.raw.borrow() {
+            Box::new(
+                raw.userids()
+                    // This is rather unsatisfying, but due to
+                    // lifetimes...
+                    .collect::<Vec<UserID>>()
+                    .into_iter())
+                as Box<dyn Iterator<Item=UserID> + '_>
+        } else {
+            unreachable!("cert or raw must be set")
+        }
+    }
+
+    /// Returns the keys.
+    pub fn keys(&self)
+        -> impl Iterator<Item=Key<key::PublicParts, key::UnspecifiedRole>> + '_
+    {
+        if let Some(cert) = self.cert.get() {
+            Box::new(cert.keys().map(|ka| ka.key().clone()))
+                as Box<dyn Iterator<Item=Key<_, _>> + '_>
+        } else if let Some(raw) = &*self.raw.borrow() {
+            Box::new(
+                raw
+                    .keys()
+                    // This is rather unsatisfying, but due to
+                    // lifetimes...
+                    .collect::<Vec<Key<_, _>>>()
+                    .into_iter())
+                as Box<dyn Iterator<Item=Key<_, _>> + '_>
+        } else {
+            unreachable!("cert or raw must be set")
+        }
+    }
+
+    /// Returns the primary key.
+    pub fn primary_key(&self) -> Key<key::PublicParts, key::PrimaryRole> {
+        self.keys().next().expect("have a primary key").role_into_primary()
+    }
+
+    /// Returns the subkeys.
+    pub fn subkeys<'a>(&'a self)
+        -> impl Iterator<Item=Key<key::PublicParts,
+                                  key::UnspecifiedRole>> + 'a
+    {
+        self.keys().skip(1)
+    }
+
+    /// Returns a reference to the parsed certificate.
+    ///
+    /// If the `LazyCert` is not yet parsed, parses now.
+    pub fn to_cert(&self) -> Result<&Cert> {
+        tracer!(TRACE, "LazyCert::to_cert");
+
+        let mut clear = false;
+        if let Some(raw) = &*self.raw.borrow() {
+            t!("Resolving {}", raw.fingerprint());
+            match Cert::try_from(raw) {
+                Ok(cert) => {
+                    self.cert.set(cert).expect("just checked that it was empty");
+                    clear = true;
+                }
+                Err(err) => {
+                    return Err(err);
+                }
+            }
+        }
+
+        if clear {
+            *self.raw.borrow_mut() = None;
+        }
+
+        if let Some(cert) = self.cert.get() {
+            return Ok(cert);
+        } else {
+            unreachable!("cert or raw must be set")
+        }
+    }
+}
+
+// We can't implement openpgp::serialize::Marshal, because it is
+// sealed.  So we fake what we use :/.
+impl LazyCert {
+    pub fn to_vec(&self) -> Result<Vec<u8>> {
+        if let Some(raw) = &*self.raw.borrow() {
+            Ok(raw.as_bytes().to_vec())
+        } else if let Some(cert) = self.cert.get() {
+            Ok(cert.to_vec()?)
+        } else {
+            unreachable!("raw or cert must be set");
+        }
+    }
+
+    pub fn export(&self, o: &mut dyn std::io::Write) -> Result<()> {
+        use openpgp::serialize::Marshal;
+
+        // We need to strip any local signatures.  If we have a
+        // RawCert, we could try to figure out if there are any local
+        // signatures to vaoid parsing and reserializing, but that is
+        // error prone.
+        let cert = self.to_cert()?;
+        Ok(cert.export(o)?)
+    }
+}
+
+impl From<Cert> for LazyCert {
+    fn from(cert: Cert) -> Self {
+        LazyCert::from_cert(cert)
+    }
+}
+
+impl From<RawCert<'static>> for LazyCert {
+    fn from(cert: RawCert<'static>) -> Self {
+        LazyCert::from_raw_cert(cert)
+    }
+}
+
 #[allow(dead_code)]
 pub struct KeyDB {
     for_gpgv: bool,
@@ -39,10 +215,10 @@ pub struct KeyDB {
     overlay: Option<Overlay>,
 
     initialized: bool,
-    by_fp: BTreeMap<Fingerprint, Rc<Cert>>,
-    by_id: BTreeMap<KeyID, Rc<Cert>>,
-    by_subkey_fp: BTreeMap<Fingerprint, Rc<Cert>>,
-    by_subkey_id: BTreeMap<KeyID, Rc<Cert>>,
+    by_fp: BTreeMap<Fingerprint, Rc<LazyCert>>,
+    by_id: BTreeMap<KeyID, Rc<LazyCert>>,
+    by_subkey_fp: BTreeMap<Fingerprint, Rc<LazyCert>>,
+    by_subkey_id: BTreeMap<KeyID, Rc<LazyCert>>,
     by_userid: BTreeMap<UserID, BTreeSet<Fingerprint>>,
     by_email: BTreeMap<String, BTreeSet<Fingerprint>>,
 }
@@ -277,9 +453,9 @@ impl KeyDB {
         t!("{}", handle);
         match handle {
             KeyHandle::Fingerprint(fp) =>
-                self.by_fp.get(fp).map(AsRef::as_ref),
+                self.by_fp.get(fp).and_then(|c| c.to_cert().ok()),
             KeyHandle::KeyID(id) =>
-                self.by_id.get(id).map(AsRef::as_ref),
+                self.by_id.get(id).and_then(|c| c.to_cert().ok()),
         }
     }
 
@@ -289,21 +465,19 @@ impl KeyDB {
         I: IntoIterator<Item = &'k KeyHandle>,
     {
         tracer!(TRACE, "KeyDB::by_primaries");
-        let mut acc = Vec::new();
-        for handle in handles {
-            t!("{}", handle);
-            if let Some(cert) = match handle {
-                KeyHandle::Fingerprint(fp) =>
-                    self.by_fp.get(fp).map(AsRef::as_ref),
-                KeyHandle::KeyID(id) =>
-                    self.by_id.get(id).map(AsRef::as_ref),
-            } {
-                acc.push(cert);
-            } else {
-                return Err(anyhow::anyhow!("Cert {} not found", handle));
-            }
-        }
-        Ok(acc)
+        handles.into_iter()
+            .map(|handle| {
+                t!("{}", handle);
+                match handle {
+                    KeyHandle::Fingerprint(fp) => self.by_fp.get(fp),
+                    KeyHandle::KeyID(id) => self.by_id.get(id),
+                }
+                .ok_or_else(|| {
+                    anyhow::anyhow!("Cert {} not found", handle)
+                })
+                .and_then(|c| c.to_cert())
+            })
+            .collect()
     }
 
     /// Looks up a cert by subkey key handle.
@@ -312,9 +486,9 @@ impl KeyDB {
         t!("{}", handle);
         match handle {
             KeyHandle::Fingerprint(fp) =>
-                self.by_subkey_fp.get(fp).map(AsRef::as_ref),
+                self.by_subkey_fp.get(fp).and_then(|c| c.to_cert().ok()),
             KeyHandle::KeyID(id) =>
-                self.by_subkey_id.get(id).map(AsRef::as_ref),
+                self.by_subkey_id.get(id).and_then(|c| c.to_cert().ok()),
         }
     }
 
@@ -330,14 +504,18 @@ impl KeyDB {
                 Ok(self.get(h).into_iter().collect()),
             Query::Email(e) =>
                 Ok(self.by_email.get(e)
-                   .map(|fps| fps.iter().filter_map(
-                       |fp| self.by_fp.get(fp).map(AsRef::as_ref)).collect())
+                   .map(|fps| fps.iter()
+                        .filter_map(
+                            |fp| {
+                                self.by_fp.get(fp).and_then(|c| c.to_cert().ok())
+                            })
+                        .collect())
                    .unwrap_or_default()),
             Query::UserIDFragment(f) =>
                 Ok(self.by_userid.iter()
                    .filter(|(k, _)| f.find(k.value()).is_some())
                    .flat_map(|(_, fps)| fps.iter().filter_map(
-                       |fp| self.by_fp.get(fp).map(AsRef::as_ref)))
+                       |fp| self.by_fp.get(fp).and_then(|c| c.to_cert().ok())))
                    .collect()),
         }
     }
@@ -362,7 +540,7 @@ impl KeyDB {
 
     /// Initializes the store, if not already done.
     #[allow(dead_code)]
-    pub fn initialize(&mut self) -> Result<()> {
+    pub fn initialize(&mut self, lazy: bool) -> Result<()> {
         tracer!(TRACE, "KeyDB::initialize");
         if self.initialized {
             return Ok(());
@@ -402,13 +580,20 @@ impl KeyDB {
 
             match resource.kind {
                 Kind::Keyring => {
-                    use sequoia_openpgp_mt::keyring;
                     t!("loading keyring {:?}", resource.path);
-                    for cert in keyring::parse(f)?
-                    {
-                        let cert = cert.context(
-                            format!("While parsing {:?}", resource.path))?;
-                        self.insert(cert)?;
+                    if lazy {
+                        for cert in RawCertParser::from_reader(f)? {
+                            let cert = cert.context(
+                                format!("While parsing {:?}", resource.path))?;
+                            self.insert(cert)?;
+                        }
+                    } else {
+                        use sequoia_openpgp_mt::keyring;
+                        for cert in keyring::parse(f)? {
+                            let cert = cert.context(
+                                format!("While parsing {:?}", resource.path))?;
+                            self.insert(cert)?;
+                        }
                     }
                 },
                 Kind::Keybox => {
@@ -433,10 +618,18 @@ impl KeyDB {
                     let certd =
                         openpgp_cert_d::CertD::with_base_dir(&resource.path)?;
                     for (_, _, cert) in certd.iter()? {
-                        let cert = Cert::from_bytes(&cert)
-                            .context(format!(
+                        let mut parser = RawCertParser::from_reader(
+                            std::io::Cursor::new(cert))
+                            .with_context(|| format!(
                                 "While parsing {:?}", resource.path))?;
-                        self.insert(cert)?;
+                        match parser.next() {
+                            Some(Ok(cert)) => self.insert(cert)?,
+                            Some(Err(err)) => Err(err.context(format!(
+                                "While parsing {:?}", resource.path)))?,
+                            None => Err(anyhow::anyhow!(format!(
+                                "While parsing {:?}: empty file",
+                                resource.path)))?,
+                        }
                     }
                 },
             }
@@ -451,27 +644,48 @@ impl KeyDB {
         // (e.g. for WoT computations, but not for lookup by subkey).
         if let Some(overlay) = &self.overlay {
             if let Ok(certd) = openpgp_cert_d::CertD::with_base_dir(&overlay.path) {
-                use rayon::prelude::*;
                 // XXX: Use upstream version of lazy_iter.
                 let items = lazy_iter(&certd, &overlay.path)
                     .into_iter().flatten() // Folds errors.
                     .collect::<Vec<_>>();
 
-                // For performance reasons, we read, parse, and
-                // canonicalize certs in parallel.
-                for (_fp, tag, cert) in items.into_par_iter()
-                    .map(|(fp, tag, file)| {
-                        // XXX: Once we have a cached tag and
-                        // presumably a Sync index, avoid the work if
-                        // tags match.
+                if lazy {
+                    for (fp, tag, file) in items.into_iter() {
+                        // XXX: Once we have a cached tag, avoid the
+                        // work if tags match.
                         t!("loading {} from overlay", fp);
-                        Ok((fp, tag, Cert::from_reader(file)?))
-                    })
-                    .collect::<Result<Vec<_>>>()?
-                {
-                    // But in the end, we insert from the main thread,
-                    // because our index is not Sync.
-                    self.index(cert, Some(tag));
+                        let mut parser = RawCertParser::from_reader(file)
+                            .with_context(|| format!(
+                                "While parsing {:?}", fp))?;
+                        let cert = match parser.next() {
+                            Some(Ok(cert)) => cert,
+                            Some(Err(err)) => Err(err.context(format!(
+                                "While parsing {:?}", fp)))?,
+                            None => Err(anyhow::anyhow!(format!(
+                                "While parsing {:?}: empty file", fp)))?,
+                        };
+
+                        self.index(cert, Some(tag));
+                    }
+                } else {
+                    use rayon::prelude::*;
+
+                    // For performance reasons, we read, parse, and
+                    // canonicalize certs in parallel.
+                    for (_fp, tag, cert) in items.into_par_iter()
+                        .map(|(fp, tag, file)| {
+                            // XXX: Once we have a cached tag and
+                            // presumably a Sync index, avoid the work if
+                            // tags match.
+                            t!("loading {} from overlay", fp);
+                            Ok((fp, tag, Cert::from_reader(file)?))
+                        })
+                        .collect::<Result<Vec<_>>>()?
+                    {
+                        // But in the end, we insert from the main thread,
+                        // because our index is not Sync.
+                        self.index(cert, Some(tag));
+                    }
                 }
             }
         }
@@ -480,8 +694,11 @@ impl KeyDB {
     }
 
     /// Inserts the given cert into the in-memory database.
-    fn index(&mut self, cert: Cert, _tag: Option<openpgp_cert_d::Tag>) {
+    fn index<C>(&mut self, cert: C, _tag: Option<openpgp_cert_d::Tag>)
+        where C: Into<LazyCert>
+    {
         tracer!(TRACE, "KeyDB::index");
+        let cert = cert.into();
         t!("Inserting {} into the in-core caches", cert.fingerprint());
         let rccert = Rc::new(cert);
 
@@ -491,7 +708,7 @@ impl KeyDB {
         self.by_id.insert(keyid, rccert.clone());
 
         for uidb in rccert.userids() {
-            self.by_userid.entry(uidb.userid().clone())
+            self.by_userid.entry(uidb.clone())
                 .or_default()
                 .insert(fp.clone());
 
@@ -502,7 +719,7 @@ impl KeyDB {
             }
         }
 
-        for subkey in rccert.keys().subkeys() {
+        for subkey in rccert.subkeys() {
             let fp = subkey.fingerprint();
             let keyid = KeyID::from(&fp);
             self.by_subkey_fp.insert(fp, rccert.clone());
@@ -514,8 +731,11 @@ impl KeyDB {
     ///
     /// The cert is written to the overlay resource if it exists,
     /// otherwise the cert is inserted into the in-memory database.
-    pub fn insert(&mut self, cert: Cert) -> Result<()> {
+    pub fn insert<C>(&mut self, cert: C) -> Result<()>
+        where C: Into<LazyCert>
+    {
         tracer!(TRACE, "KeyDB::insert");
+        let cert = cert.into();
 
         if let Some(overlay) = &self.overlay {
             t!("Inserting {} into the overlay", cert.fingerprint());
@@ -539,7 +759,7 @@ impl KeyDB {
     }
 
     /// Iterates over all certs in the database.
-    pub fn iter(&self) -> impl Iterator<Item = Rc<Cert>> + '_ {
+    pub fn iter(&self) -> impl Iterator<Item = Rc<LazyCert>> + '_ {
         self.by_fp.values().cloned()
     }
 }
@@ -574,7 +794,7 @@ impl Overlay {
         // Fabricate a dummy packet header to appease the check in
         // CertD::insert_special.
         use openpgp::{
-            packet::{Tag, header::*},
+            packet::header::*,
             serialize::Marshal,
         };
         let mut dummy = Vec::with_capacity(32 + 2);

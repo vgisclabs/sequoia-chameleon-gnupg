@@ -1,4 +1,6 @@
 use std::{
+    cell::RefCell,
+    collections::HashMap,
     time::SystemTime,
 };
 
@@ -8,10 +10,19 @@ use sequoia_openpgp as openpgp;
 use openpgp::{
     Cert,
     Fingerprint,
+    KeyHandle,
     packet::UserID,
     policy::Policy,
 };
 use sequoia_wot as wot;
+use wot::{
+    CertSynopsis,
+    CertificationSet,
+    store::Backend,
+    store::CertObject,
+    store::Store,
+    store::StoreError,
+};
 
 use crate::{
     Config,
@@ -49,19 +60,25 @@ impl Model for WoT {
         roots.dedup();
 
         Ok(Box::new(WoTViewAt {
-            config,
             roots,
-            network: wot::Network::from_certs(
-                config.keydb().iter().map(|c| c.as_ref().clone()),
-                config.policy(), at)?,
+            network: wot::Network::new(WoTData {
+                config,
+                time: at.unwrap_or_else(SystemTime::now),
+                redge_cache: RefCell::new(HashMap::new()),
+            })?,
         }))
     }
 }
 
-struct WoTViewAt<'a> {
+struct WoTData<'a> {
     config: &'a Config,
+    time: SystemTime,
+    redge_cache: RefCell<HashMap<Fingerprint, Vec<CertificationSet>>>,
+}
+
+struct WoTViewAt<'a> {
     roots: Vec<Fingerprint>,
-    network: wot::Network,
+    network: wot::Network<WoTData<'a>>,
 }
 
 impl<'a> ModelViewAt<'a> for WoTViewAt<'a> {
@@ -73,15 +90,17 @@ impl<'a> ModelViewAt<'a> for WoTViewAt<'a> {
         self.network.reference_time()
     }
     fn policy(&self) -> &dyn Policy {
-        self.config.policy()
+        self.network.config.policy()
     }
 
     fn validity(&self, userid: &UserID, fingerprint: &Fingerprint)
                 -> Result<Validity> {
-        let r = wot::RootedNetwork::new(&self.network, &*self.roots);
+        let mut q = wot::QueryBuilder::new(&self.network);
+        q.roots(&*self.roots);
+        let q = q.build();
 
         let paths =
-            r.authenticate(userid, fingerprint.clone(), wot::FULLY_TRUSTED);
+            q.authenticate(userid, fingerprint.clone(), wot::FULLY_TRUSTED);
 
         let amount = paths.amount();
         if amount >= wot::FULLY_TRUSTED {
@@ -98,7 +117,7 @@ impl<'a> ModelViewAt<'a> for WoTViewAt<'a> {
     }
 
     fn lookup(&self, query: &Query) -> Result<Vec<(Validity, &'a Cert)>> {
-        let certs = self.config.keydb.lookup_candidates(&query)?;
+        let certs = self.network.config.keydb.lookup_candidates(&query)?;
         Ok(certs.into_iter()
            .map(|c| {
                let validity = match query {
@@ -129,5 +148,116 @@ impl<'a> ModelViewAt<'a> for WoTViewAt<'a> {
                (validity, c)
            })
            .collect())
+    }
+}
+
+impl wot::store::Backend for WoTData<'_> {
+    /// Returns the certificates matching the handle.
+    ///
+    /// Returns [`StoreError::NotFound`] if the certificate is not found.
+    ///
+    /// The caller may assume that looking up a fingerprint returns at
+    /// most one certificate.
+    fn cert_object<'a>(&'a self, kh: &KeyHandle) -> Result<Vec<CertObject<'a>>>
+    {
+        let certs = self.config.keydb.by_primaries(std::iter::once(kh))?
+            .into_iter()
+            .map(|c| {
+                CertObject::CertRef(&c)
+            })
+            .collect::<Vec<_>>();
+        if certs.is_empty() {
+            Err(wot::store::StoreError::NotFound(kh.clone()).into())
+        } else {
+            Ok(certs)
+        }
+    }
+
+    /// Lists all of the certificates.
+    fn list_cert_objects<'a>(&'a self)
+        -> Box<dyn Iterator<Item=Fingerprint> + 'a>
+    {
+        Box::new(self.config.keydb.iter().map(|c| c.fingerprint()))
+    }
+}
+
+impl<'wot> wot::store::Store for WoTData<'wot> {
+    /// Returns the reference time.
+    fn reference_time(&self) -> SystemTime {
+        self.time
+    }
+
+    /// Lists all of the certificates.
+    fn list<'a>(&'a self) -> Box<dyn Iterator<Item=Fingerprint> + 'a> {
+        self.list_cert_objects()
+    }
+
+    /// Returns the certificates matching the handle.
+    ///
+    /// Returns [`StoreError::NotFound`] if the certificate is not
+    /// found.  This function SHOULD NOT return an empty vector if the
+    /// certificate is not found.
+    ///
+    /// The caller may assume that looking up a fingerprint returns at
+    /// most one certificate.
+    fn cert(&self, kh: &KeyHandle) -> Result<Vec<CertSynopsis>>
+    {
+        let certs: Vec<CertSynopsis>
+            = self.config.keydb.by_primaries(std::iter::once(kh))?
+            .into_iter()
+            .filter_map(|c| {
+                // Silently skip invalid certificates.
+               let vc = c.with_policy(&self.config.policy, self.time).ok()?;
+               Some(CertSynopsis::from(vc))
+           })
+            .collect();
+        if certs.is_empty() {
+            Err(wot::store::StoreError::NotFound(kh.clone()).into())
+        } else {
+            Ok(certs)
+        }
+    }
+
+    fn certifications_of(&self, target: &Fingerprint, _min_depth: wot::Depth)
+        -> Result<Vec<CertificationSet>>
+    {
+        if let Some(redges) = self.redge_cache.borrow().get(target) {
+            return Ok(redges.clone());
+        }
+
+        let redges = self.certifications_of_uncached(target)?;
+
+        self.redge_cache.borrow_mut()
+            .insert(target.clone(), redges.clone());
+
+        Ok(redges)
+    }
+}
+
+impl<'a> WoTData<'a> {
+    /// Returns a certification set for the specified certificate.
+    ///
+    /// A `CertificateSet` is returned for the certificate itself as
+    /// well as for each User ID (self signed or not) that has a
+    /// cryptographically valid certification.
+    ///
+    /// Returns [`StoreError::NotFound`] if the certificate is not
+    /// found.  This function SHOULD NOT return an empty vector if the
+    /// certificate is not found.
+    fn certifications_of_uncached(&self, target: &Fingerprint)
+        -> Result<Vec<CertificationSet>>
+    {
+        let target = KeyHandle::from(target);
+
+        let cert = self.config.keydb.by_primary(&target)
+            .ok_or_else(|| StoreError::NotFound(target.clone()))?;
+
+        // Turn invalid certificate errors into NotFound errors.
+        let vc = cert.with_policy(self.config.policy(), self.time)
+            .map_err(|_| StoreError::NotFound(target))?;
+
+        let redges = self.redges(vc, 0.into());
+
+        Ok(redges)
     }
 }

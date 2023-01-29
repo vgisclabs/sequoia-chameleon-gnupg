@@ -2,7 +2,7 @@ use anyhow::Result;
 
 use sequoia_openpgp as openpgp;
 use openpgp::{
-    serialize::{Serialize, stream::*},
+    serialize::stream::*,
 };
 
 use crate::{
@@ -49,7 +49,7 @@ pub fn cmd_export(config: &mut crate::Config, args: &[String],
         if export_secret {
             // XXX: We need to ask the agent, and then coordinate the
             // export with the agent.
-            if cert.is_tsk() { // XXX
+            if cert.to_cert().map(|c| c.is_tsk()).unwrap_or(false) { // XXX
                 s.secret_count += 1;
             } else {
                 continue; // No secrets, skip this cert.

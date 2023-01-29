@@ -61,7 +61,7 @@ fn do_encrypt(config: &crate::Config, args: &[String],
     }
 
     // First, get the recipients.
-    let mut recipients: Vec<Recipient> = vec![];
+    let mut keys: Vec<Key<_, _>> = vec![];
     for recipient in &config.remote_user {
         // XXX: honor constraints
         let query = crate::trust::Query::from(recipient.name.as_str());
@@ -105,7 +105,7 @@ fn do_encrypt(config: &crate::Config, args: &[String],
                     continue;
                 }
 
-                recipients.push(key.key().into());
+                keys.push(key.key().clone());
                 found_one_subkey = true;
                 de_vs_compliant &= config.de_vs_producer.key(&key).is_ok();
             }
@@ -158,6 +158,9 @@ fn do_encrypt(config: &crate::Config, args: &[String],
             return Err(error)?;
         }
     }
+
+    let recipients: Vec<Recipient>
+        = keys.iter().map(Recipient::from).collect();
 
     let mut sink = if let Some(name) = config.outfile() {
         utils::create(config, name)?

@@ -17,6 +17,7 @@ use crate::{
     common::Common,
     compliance::KeyCompliance,
     colons::*,
+    keydb::LazyCert,
     trust::{*, cert::*},
 };
 
@@ -56,7 +57,7 @@ pub fn list_keys<C, S>(config: &crate::Config,
                        mut sink: S)
                        -> Result<()>
 where
-    C: std::borrow::Borrow<openpgp::Cert>,
+    C: std::borrow::Borrow<LazyCert>,
     S: Write,
 {
     let vtm = config.trust_model_impl.with_policy(config, Some(config.now()))?;
@@ -78,9 +79,16 @@ where
         let cert = cert.borrow();
 
         // Filter out certs that the user is not interested in.
-        if ! filter.is_empty() && ! filter.iter().any(|q| q.matches(&cert)) {
+        if ! filter.is_empty() && ! filter.iter().any(|q| q.matches(cert)) {
             continue;
         }
+
+        let cert = if let Ok(cert) = cert.to_cert() {
+            cert
+        } else {
+            // XXX: Silenetly skip it if we can't parse it?
+            continue;
+        };
 
         let has_secret = agent.as_mut()
             .map(|a| rt.block_on(crate::agent::has_keys(a, cert))).transpose()?

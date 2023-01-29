@@ -9,8 +9,8 @@ use anyhow::{Context, Result};
 use sequoia_openpgp as openpgp;
 use openpgp::{
     cert::{
-        CertParser,
         CertRevocationBuilder,
+        raw::RawCertParser,
     },
     policy::NullPolicy,
     types::*,
@@ -31,6 +31,7 @@ use crate::{
     babel,
     colons,
     common::Common,
+    keydb::LazyCert,
     status::{Status, NoDataReason},
     utils,
 };
@@ -117,7 +118,9 @@ pub fn cmd_implicit(config: &crate::Config, args: &[String])
             Err(anyhow::anyhow!("I don't know what to do with this data")),
         Some(ListKeys) => {
             let certs =
-                CertParser::from_reader(input)?.collect::<Result<Vec<_>>>()?;
+                RawCertParser::from_reader(input)?
+                    .map(|c| c.and_then(|c| Ok(LazyCert::from(c))))
+                    .collect::<Result<Vec<_>>>()?;
             crate::list_keys::list_keys(
                 config, certs.iter(), vec![], false, false, io::stdout())
         },

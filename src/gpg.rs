@@ -2224,7 +2224,13 @@ fn real_main() -> anyhow::Result<()> {
     }
 
     opt.keydb.add_certd_overlay(&opt.homedir().join("pubring.cert.d"))?;
-    opt.keydb.initialize()?;
+
+    // If a commad is likely to access at least the number of
+    // certificates divided by the number of CPUs, then we should
+    // preload the certificates as we can do that in parallel.
+    let preload = (matches!(command, Some(aListKeys)) && args.len() == 0)
+        || (matches!(command, Some(aExport)) && args.len() == 0);
+    opt.keydb.initialize(! preload)?;
     opt.trust_model_impl =
         opt.trust_model.unwrap_or_default().build(&opt)?;
     opt.trustdb.read_ownertrust(opt.trustdb.path(&opt))?;
