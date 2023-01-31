@@ -1711,7 +1711,7 @@ fn real_main() -> anyhow::Result<()> {
                 //   sl->flags |= PK_LIST_CONFIG;
             },
 	    oDefRecipient => {
-                if let Some(v) = value.as_str() {
+                if let Ok(v) = value.as_str() {
 		    opt.def_recipient = Some(v.into());
 	        }
             },
@@ -1863,7 +1863,7 @@ fn real_main() -> anyhow::Result<()> {
 	        opt.flags.use_embedded_filename = false;
 	    },
 	    oComment => {
-	        if let Some(v) = value.as_str() {
+	        if let Ok(v) = value.as_str() {
 	            opt.comments.push(v.into());
                 }
 	    },
@@ -1921,7 +1921,7 @@ fn real_main() -> anyhow::Result<()> {
                 s2k_cipher = Some(argparse::utils::parse_cipher(value.as_str().unwrap())?);
             },
 	    oS2KCount => {
-	        if let Some(v) = value.as_int() {
+	        if let Ok(v) = value.as_int() {
                     opt.s2k_count = Some(v);
                 } else {
                     opt.s2k_count = None;  /* Auto-calibrate when needed.  */
@@ -2041,7 +2041,7 @@ fn real_main() -> anyhow::Result<()> {
 	    },
 	    oBZ2DecompressLowmem => (),
 	    oPassphrase => {
-                opt.passphrase = value.as_str().map(Into::into);
+                opt.passphrase = Some(value.as_str().unwrap().to_string());
 	    },
 	    oPassphraseFD => {
                 pwfd = Some(utils::source_from_fd(value.as_int().unwrap())?);

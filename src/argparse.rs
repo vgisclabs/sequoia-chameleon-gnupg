@@ -34,30 +34,40 @@ pub enum Value {
 }
 
 impl Value {
-    // Returns the integer value, if applicable.
-    pub fn as_int(&self) -> Option<i64> {
+    /// Returns the kind of this value as human-readable string.
+    fn kind(&self) -> &'static str {
+        match self {
+            Value::Int(_) => "int",
+            Value::String(_) => "string",
+            Value::UInt(_) => "unsigned int",
+            Value::None => "none",
+        }
+    }
+
+    /// Returns the integer value, if applicable.
+    pub fn as_int(&self) -> Result<i64> {
         if let Value::Int(v) = self {
-            Some(*v)
+            Ok(*v)
         } else {
-            None
+            Err(Error::ConversionFailed(self.kind(), "int"))
         }
     }
 
-    // Returns the string value, if applicable.
-    pub fn as_str(&self) -> Option<&str> {
+    /// Returns the string value, if applicable.
+    pub fn as_str(&self) -> Result<&str> {
         if let Value::String(v) = self {
-            Some(v)
+            Ok(v)
         } else {
-            None
+            Err(Error::ConversionFailed(self.kind(), "string"))
         }
     }
 
-    // Returns the unsigned integer value, if applicable.
-    pub fn as_uint(&self) -> Option<u64> {
+    /// Returns the unsigned integer value, if applicable.
+    pub fn as_uint(&self) -> Result<u64> {
         if let Value::UInt(v) = self {
-            Some(*v)
+            Ok(*v)
         } else {
-            None
+            Err(Error::ConversionFailed(self.kind(), "unsigned int"))
         }
     }
 }
@@ -622,6 +632,8 @@ pub enum Error {
     Missing(String),
     #[error("Parameter for {:?} is not a {}: {}", _0, _1, _2)]
     BadValue(String, &'static str, String),
+    #[error("Cannot convert {} to {}", _0, _1)]
+    ConversionFailed(&'static str, &'static str),
 }
 
 /// Result specialization.
