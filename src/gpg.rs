@@ -1509,7 +1509,9 @@ fn real_main() -> anyhow::Result<()> {
             },
 
             oInputSizeHint => {
-                opt.input_size_hint = Some(value.as_uint().unwrap());
+                opt.input_size_hint =
+                    Some(value.as_str().unwrap().parse()
+                         .context("Parsing the input hint")?);
             },
 
 	    oQuiet => {
