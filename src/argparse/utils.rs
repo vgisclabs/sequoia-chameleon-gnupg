@@ -74,7 +74,7 @@ pub fn parse_expiration(s: &str) -> Result<Option<time::Duration>> {
     let now = chrono::Utc::now();
 
     match s {
-        "" | "none" | "never" | "-" => Ok(None),
+        "" | "none" | "never" | "-" | "0" => Ok(None),
         s if s.starts_with("seconds=") => {
             match s[8..].parse::<u64>() {
                 Ok(v) => Ok(Some(time::Duration::new(v, 0))),
