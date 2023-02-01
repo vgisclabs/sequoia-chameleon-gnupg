@@ -46,9 +46,9 @@ serde_cbor = "0.11"
 tempfile = "3"
 
 [[bin]]
-name = "sequoia-chameleon-gpg"
+name = "gpg-sq"
 path = "src/gpg.rs"
 
 [[bin]]
-name = "sequoia-chameleon-gpgv"
+name = "gpgv-sq"
 path = "src/gpgv.rs"

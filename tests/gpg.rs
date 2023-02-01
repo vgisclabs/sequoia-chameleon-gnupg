@@ -61,7 +61,7 @@ lazy_static::lazy_static! {
                 std::env::current_dir().unwrap()
                     .join("target")
             }
-            .join("debug/sequoia-chameleon-gpg")
+            .join("debug/gpg-sq")
             .display().to_string()
         ];
 }
@@ -75,7 +75,7 @@ lazy_static::lazy_static! {
                 std::env::current_dir().unwrap()
                     .join("target")
             }
-            .join("debug/sequoia-chameleon-gpgv")
+            .join("debug/gpgv-sq")
             .display().to_string()
         ];
 }
