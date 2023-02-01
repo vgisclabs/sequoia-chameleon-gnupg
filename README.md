@@ -5,14 +5,13 @@ This is a re-implementation and drop-in replacement of `gpg` and
 
 ## Status
 
-`sequoia-chameleon-gpgv` is feature-complete.  Please report any
-problems you encounter when replacing `gpgv` with
-`sequoia-chameleon-gpgv`.
+`gpgv-sq` is feature-complete.  Please report any problems you
+encounter when replacing `gpgv` with `gpgv-sq`.
 
-`sequoia-chameleon-gpg` is not feature-complete.  It currently
-implements a commonly used subset of the signature creation and
-verification commands, the encryption and decryption commands, the key
-listing commands, and some miscellaneous commands.
+`gpg-sq` is not feature-complete.  It currently implements a commonly
+used subset of the signature creation and verification commands, the
+encryption and decryption commands, the key listing commands, and some
+miscellaneous commands.
 
 Support for trust models is limited.  Currently, the Web-of-Trust
 ("pgp") and always trust ("always") are implemented.
@@ -43,7 +42,7 @@ changes from the Chameleon and import them into GnuPG, by either
 manually running the following or adding it to a cronjob:
 
 ```sh
-$ sequoia-chameleon-gpg --export | gpg --import
+$ gpg-sq --export | gpg --import
 ```
 
 ### How to build and use the Chameleon
