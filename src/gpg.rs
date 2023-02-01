@@ -1,5 +1,5 @@
 use std::{
-    collections::{BTreeMap, HashSet},
+    collections::BTreeMap,
     fmt,
     fs,
     io::{self, Write},
@@ -17,9 +17,8 @@ use openpgp::{
     packet::{
         prelude::*,
         key::{PublicParts, UnspecifiedRole},
-        Signature,
     },
-    policy::{HashAlgoSecurity, Policy, StandardPolicy},
+    policy::Policy,
     types::*,
 };
 
@@ -38,6 +37,8 @@ use common::{Common, Compliance, Query, Validity};
 pub mod compliance;
 mod interactive;
 pub mod keydb;
+pub mod policy;
+use policy::GPGPolicy;
 #[allow(dead_code)]
 pub mod flags;
 use flags::*;
@@ -556,14 +557,14 @@ pub struct Config {
     status_fd: status::Fd,
 }
 
-impl Default for Config {
-    fn default() -> Self {
-        Config {
+impl Config {
+    fn new() -> Result<Self> {
+        Ok(Config {
             // Runtime.
             clock: Default::default(),
             fail: Default::default(),
             override_status_code: Default::default(),
-            policy: Default::default(),
+            policy: GPGPolicy::new()?,
             trustdb: Default::default(),
             trust_model_impl: common::null_model(),
             de_vs_producer: compliance::DeVSProducer::default(),
@@ -676,11 +677,9 @@ impl Default for Config {
             command_fd: io::stdin().into(),
             logger_fd: Box::new(io::sink()),
             status_fd: Box::new(io::sink()).into(),
-        }
+        })
     }
-}
 
-impl Config {
     /// Returns an IPC context.
     pub fn ipc(&self) -> Result<ipc::gnupg::Context> {
         ipc::gnupg::Context::with_homedir(&self.homedir)
@@ -941,59 +940,6 @@ impl common::Common for Config {
 
     fn with_fingerprint(&self) -> bool {
         self.with_fingerprint
-    }
-}
-
-const POLICY: &dyn Policy = &StandardPolicy::new();
-
-#[derive(Debug, Default)]
-struct GPGPolicy {
-    /// Additional weak hash algorithms.
-    ///
-    /// The value indicates whether a warning has been printed for
-    /// this algorithm.
-    weak_digests: HashSet<HashAlgorithm>,
-}
-
-impl Policy for GPGPolicy {
-    fn signature(&self, sig: &Signature, sec: HashAlgoSecurity)
-                 -> openpgp::Result<()>
-    {
-        // First, consult the standard policy.
-        POLICY.signature(sig, sec)?;
-
-
-        // Then, consult our set.
-        if self.weak_digests.contains(&sig.hash_algo()) {
-            return Err(openpgp::Error::PolicyViolation(
-                sig.hash_algo().to_string(), None).into());
-        }
-
-        Ok(())
-    }
-
-    fn key(&self, ka: &ValidErasedKeyAmalgamation<'_, PublicParts>)
-           -> openpgp::Result<()>
-    {
-        POLICY.key(ka)
-    }
-
-    fn symmetric_algorithm(&self, algo: SymmetricAlgorithm)
-                           -> openpgp::Result<()>
-    {
-        POLICY.symmetric_algorithm(algo)
-    }
-
-    fn aead_algorithm(&self, algo: AEADAlgorithm)
-                      -> openpgp::Result<()>
-    {
-        POLICY.aead_algorithm(algo)
-    }
-
-    fn packet(&self, packet: &Packet)
-              -> openpgp::Result<()>
-    {
-        POLICY.packet(packet)
     }
 }
 
@@ -1284,7 +1230,7 @@ fn real_main() -> anyhow::Result<()> {
         &OPTIONS)
         .with_additional_version_information(print_additional_version);
 
-    let mut opt = Config::default();
+    let mut opt = Config::new()?;
     let mut args = Vec::new();
     let mut command = None;
     let mut greeting = false;
@@ -2143,7 +2089,7 @@ fn real_main() -> anyhow::Result<()> {
                 opt.special_filenames = true;
             },
             oWeakDigest => {
-                opt.policy.weak_digests.insert(
+                opt.policy.weak_digest(
                     argparse::utils::parse_digest(value.as_str().unwrap())?);
             },
             oGroup => {

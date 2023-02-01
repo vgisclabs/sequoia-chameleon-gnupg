@@ -1885,6 +1885,7 @@ dependencies = [
  "sequoia-ipc",
  "sequoia-openpgp",
  "sequoia-openpgp-mt",
+ "sequoia-policy-config",
  "sequoia-wot",
  "serde",
  "serde_cbor",
