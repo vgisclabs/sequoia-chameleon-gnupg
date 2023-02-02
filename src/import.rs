@@ -16,7 +16,6 @@ use openpgp::{
 
 use crate::{
     common::Common,
-    status::Status,
     utils,
 };
 
@@ -81,53 +80,7 @@ async fn real_cmd_import(config: &mut crate::Config, args: &[String])
         }
     }
 
-    config.warn(format_args!("Total number processed: {}",
-                             s.count + s.skipped_v3_keys));
-    if s.skipped_v3_keys > 0 {
-        config.warn(format_args!("    skipped PGP-2 keys: {}", s.skipped_v3_keys));
-    }
-    if s.skipped_new_keys  > 0 {
-        config.warn(format_args!("      skipped new keys: {}",
-                                 s.skipped_new_keys ));
-    }
-    if s.imported > 0 {
-        config.warn(format_args!("              imported: {}", s.imported));
-    }
-    if s.unchanged  > 0 {
-        config.warn(format_args!("             unchanged: {}", s.unchanged ));
-    }
-    if s.n_uids  > 0 {
-        config.warn(format_args!("          new user IDs: {}", s.n_uids ));
-    }
-    if s.n_subk  > 0 {
-        config.warn(format_args!("           new subkeys: {}", s.n_subk ));
-    }
-    if s.n_sigs  > 0 {
-        config.warn(format_args!("        new signatures: {}", s.n_sigs ));
-    }
-    if s.n_revoc  > 0 {
-        config.warn(format_args!("   new key revocations: {}", s.n_revoc ));
-    }
-    if s.sec_read  > 0 {
-        config.warn(format_args!("      secret keys read: {}", s.sec_read ));
-    }
-    if s.sec_imported  > 0 {
-        config.warn(format_args!("  secret keys imported: {}", s.sec_imported ));
-    }
-    if s.sec_dups  > 0 {
-        config.warn(format_args!(" secret keys unchanged: {}", s.sec_dups ));
-    }
-    if s.not_imported  > 0 {
-        config.warn(format_args!("          not imported: {}", s.not_imported ));
-    }
-    //if s.n_sigs_cleaned > 0 {
-    //    config.warn(format_args!("    signatures cleaned: {}", s.n_sigs_cleaned));
-    //}
-    //if s.n_uids_cleaned > 0 {
-    //    config.warn(format_args!("      user IDs cleaned: {}", s.n_uids_cleaned));
-    //}
-    config.status().emit(Status::ImportRes(s))?;
-
+    s.print_results(config)?;
     drop(args);
     Ok(())
 }

@@ -24,6 +24,7 @@ use openpgp::{
 
 use crate::{
     common::{
+        Common,
         Compliance,
         OwnerTrust,
         Query,
@@ -785,6 +786,57 @@ pub struct ImportResult {
 }
 
 impl ImportResult {
+    pub fn print_results(&self, config: &crate::Config) -> Result<()> {
+        config.warn(format_args!("Total number processed: {}",
+                                 self.count + self.skipped_v3_keys));
+        if self.skipped_v3_keys > 0 {
+            config.warn(format_args!("    skipped PGP-2 keys: {}", self.skipped_v3_keys));
+        }
+        if self.skipped_new_keys  > 0 {
+            config.warn(format_args!("      skipped new keys: {}",
+                                     self.skipped_new_keys ));
+        }
+        if self.imported > 0 {
+            config.warn(format_args!("              imported: {}", self.imported));
+        }
+        if self.unchanged  > 0 {
+            config.warn(format_args!("             unchanged: {}", self.unchanged ));
+        }
+        if self.n_uids  > 0 {
+            config.warn(format_args!("          new user IDs: {}", self.n_uids ));
+        }
+        if self.n_subk  > 0 {
+            config.warn(format_args!("           new subkeys: {}", self.n_subk ));
+        }
+        if self.n_sigs  > 0 {
+            config.warn(format_args!("        new signatures: {}", self.n_sigs ));
+        }
+        if self.n_revoc  > 0 {
+            config.warn(format_args!("   new key revocations: {}", self.n_revoc ));
+        }
+        if self.sec_read  > 0 {
+            config.warn(format_args!("      secret keys read: {}", self.sec_read ));
+        }
+        if self.sec_imported  > 0 {
+            config.warn(format_args!("  secret keys imported: {}", self.sec_imported ));
+        }
+        if self.sec_dups  > 0 {
+            config.warn(format_args!(" secret keys unchanged: {}", self.sec_dups ));
+        }
+        if self.not_imported  > 0 {
+            config.warn(format_args!("          not imported: {}", self.not_imported ));
+        }
+        //if self.n_sigs_cleaned > 0 {
+        //    config.warn(format_args!("    signatures cleaned: {}", self.n_sigs_cleaned));
+        //}
+        //if self.n_uids_cleaned > 0 {
+        //    config.warn(format_args!("      user IDs cleaned: {}", self.n_uids_cleaned));
+        //}
+        config.status().emit(Status::ImportRes(self.clone()))?;
+
+        Ok(())
+    }
+
     pub fn changed_since(&self, base: ImportResult) -> ImportResult {
         ImportResult {
             count: self.count - base.count,
