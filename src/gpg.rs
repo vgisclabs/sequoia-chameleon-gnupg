@@ -22,6 +22,8 @@ use openpgp::{
     types::*,
 };
 
+mod net; // XXX
+
 pub mod gnupg_interface;
 
 #[macro_use]
@@ -52,6 +54,7 @@ pub mod verify;
 pub mod decrypt;
 pub mod export;
 pub mod import;
+pub mod keyserver;
 pub mod sign;
 pub mod encrypt;
 pub mod list_keys;
@@ -970,8 +973,14 @@ impl URL {
 
 #[derive(Clone)]
 #[allow(dead_code)]
-struct KeyserverURL {
+pub struct KeyserverURL {
     url: String,
+}
+
+impl KeyserverURL {
+    pub fn url(&self) -> &str {
+        &self.url
+    }
 }
 
 impl Default for KeyserverURL {
@@ -2234,6 +2243,8 @@ fn real_main() -> anyhow::Result<()> {
         Some(aGenRevoke) => commands::cmd_generate_revocation(&opt, &args),
         Some(aEnArmor) => commands::cmd_enarmor(&opt, &args),
         Some(aDeArmor) => commands::cmd_dearmor(&opt, &args),
+        Some(aRecvKeys) => keyserver::cmd_receive_keys(&mut opt, &args),
+        Some(aRefreshKeys) => keyserver::cmd_refresh_keys(&mut opt, &args),
         None => commands::cmd_implicit(&opt, &args),
         Some(c) => Err(anyhow::anyhow!("Command {:?} is not implemented.", c)),
     };

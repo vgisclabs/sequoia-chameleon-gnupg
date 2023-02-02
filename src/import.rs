@@ -85,9 +85,9 @@ async fn real_cmd_import(config: &mut crate::Config, args: &[String])
     Ok(())
 }
 
-async fn do_import_cert(config: &mut crate::Config,
-                        s: &mut crate::status::ImportResult,
-                        cert: openpgp::Cert) -> Result<()> {
+pub async fn do_import_cert(config: &mut crate::Config,
+                            s: &mut crate::status::ImportResult,
+                            cert: openpgp::Cert) -> Result<()> {
     // We collect stats for the IMPORT_OK status line.
     use crate::status::*;
     let mut flags = crate::status::ImportOkFlags::default();
@@ -281,10 +281,10 @@ async fn do_import_cert(config: &mut crate::Config,
     Ok(())
 }
 
-async fn do_import_failed(config: &mut crate::Config,
-                          s: &mut crate::status::ImportResult,
-                          e: anyhow::Error,
-                          packets: Vec<openpgp::Packet>) -> Result<()>
+pub async fn do_import_failed(config: &mut crate::Config,
+                              s: &mut crate::status::ImportResult,
+                              e: anyhow::Error,
+                              packets: Vec<openpgp::Packet>) -> Result<()>
 {
     match e.downcast_ref::<openpgp::Error>() {
         Some(openpgp::Error::UnsupportedCert2(_, _)) => {
@@ -334,6 +334,12 @@ async fn do_import_failed(config: &mut crate::Config,
                 }
             }
         },
+        _ => (),
+    }
+
+    use crate::net;
+    match e.downcast_ref::<net::Error>() {
+        Some(net::Error::NotFound) => return Ok(()),
         _ => (),
     }
 
