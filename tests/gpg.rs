@@ -184,6 +184,7 @@ impl Context {
         let mut c = Command::new(&executable[0]);
         c.env("LC_ALL", "C");
         c.env("TZ", "Africa/Nairobi"); // EAT, no DST.
+        c.env("SEQUOIA_CRYPTO_POLICY", ""); // Disable policy.
         let workdir = tempfile::TempDir::new()?;
         c.current_dir(workdir.path());
         for arg in &executable[1..] {
