@@ -136,21 +136,12 @@ deal with this Sequoia implements a number of countermeasures:
     mitigates collision attacks.  This protection is also used by
     [GitHub], among others.
 
-  - Sequoia only accepts SHA-1 in [safer contexts].  For instance,
-    SHA-1 over messages, and its use in third-party certifications are
-    rejected by default.  But, SHA-1 self-signatures that are not
-    suspicious are allowed.
-
-  - Sequoia has announced a timeline to completely [deprecate the
-    use of SHA-1]: in 2023 SHA-1 will no longer be accepted for
-    digital signatures.
+  - Sequoia rejects all signatures using SHA-1 by default.
 
   [SHA-1 is broken]: https://sha-mbles.github.io/
   [SHA-1 is still widely used]: https://gitlab.com/sequoia-pgp/sequoia/-/issues/595
   [SHA1-CD]: https://github.com/cr-marcstevens/sha1collisiondetection
   [GitHub]: https://github.blog/2017-03-20-sha-1-collision-detection-on-github-com/
-  [safer contexts]: https://docs.sequoia-pgp.org/sequoia_openpgp/policy/enum.HashAlgoSecurity.html
-  [deprecate the use of SHA-1]: https://docs.sequoia-pgp.org/sequoia_openpgp/policy/struct.StandardPolicy.html#method.reject_hash_property_at
 
 On the other hand, GnuPG [accepts] SHA-1 everywhere without any
 additional protections.
