@@ -145,8 +145,6 @@ checksum = "bef38d45163c2f1dde094a7dfd33ccf595c92905c8f8f4fdc18d06fb1037718a"
 [[package]]
 name = "buffered-reader"
 version = "1.1.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d0dd286184b392a1ce6b3deecd073f0330df194bf935b87f852147d50d0d2d18"
 dependencies = [
  "bzip2",
  "flate2",
@@ -1896,13 +1894,12 @@ dependencies = [
 
 [[package]]
 name = "sequoia-ipc"
-version = "0.29.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c10e9be28f170d20cebc3dec906b6c2e961b0626062410e621b0b725994ee065"
+version = "0.30.1"
 dependencies = [
  "anyhow",
  "buffered-reader",
  "capnp-rpc",
+ "crossbeam-utils",
  "ctor",
  "dirs",
  "fs2",
@@ -1950,8 +1947,6 @@ dependencies = [
 [[package]]
 name = "sequoia-openpgp"
 version = "1.13.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "70af2f594bf5261eb87be5060db1e40d6445686d2bb3ec41c014cf53701130a2"
 dependencies = [
  "anyhow",
  "base64",
