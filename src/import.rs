@@ -334,8 +334,8 @@ async fn do_import_failed(config: &mut crate::Config,
                 }
             }
         },
-        _ => return Err(e),
+        _ => (),
     }
 
-    Ok(())
+    Err(e)
 }
