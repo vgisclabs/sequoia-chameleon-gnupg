@@ -159,6 +159,11 @@ async fn do_import_cert(config: &mut crate::Config,
                     Ok(new)
                 })?;
 
+            // Redo the computation, maybe the imported key had
+            // incomplete information.
+            let primary_uid =
+                utils::best_effort_primary_uid(config.policy(), &merged);
+
             if ! changed {
                 // I think this should not happen because it
                 // is handled above, but better be safe than
