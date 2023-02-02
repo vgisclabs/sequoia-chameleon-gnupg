@@ -35,6 +35,7 @@ use openpgp::{
 
 use crate::{
     common::Query,
+    print_error_chain,
 };
 
 /// Controls tracing.
@@ -538,6 +539,198 @@ impl KeyDB {
         self.overlay.as_ref().ok_or_else(|| anyhow::anyhow!("No overlay added"))
     }
 
+    // Initialize a certd.
+    fn initialize_certd<P>(&mut self, path: P, lazy: bool)
+        -> Result<Vec<(openpgp_cert_d::Tag, LazyCert)>>
+        where P: AsRef<Path>,
+    {
+        tracer!(TRACE, "KeyDB::initialize_certd");
+        let path = path.as_ref();
+        t!("loading cert-d {:?}", path);
+
+        let certd = openpgp_cert_d::CertD::with_base_dir(&path)
+            .map_err(|err| {
+                let err = anyhow::Error::from(err)
+                    .context(format!("While opening the certd {:?}", path));
+                print_error_chain(&err);
+                err
+            })?;
+
+        let items = lazy_iter(&certd, &path)
+            .into_iter().flatten() // Folds errors.
+            .collect::<Vec<_>>();
+
+        let result = if lazy {
+            items.into_iter().filter_map(|(fp, tag, file)| {
+                // XXX: Once we have a cached tag, avoid the
+                // work if tags match.
+                t!("loading {} from overlay", fp);
+
+                let mut parser = match RawCertParser::from_reader(file) {
+                    Ok(parser) => parser,
+                    Err(err) => {
+                        let err = anyhow::Error::from(err).context(format!(
+                            "While reading {:?} from the certd {:?}",
+                            fp, path));
+                        print_error_chain(&err);
+                        return None;
+                    }
+                };
+
+                match parser.next() {
+                    Some(Ok(cert)) => Some((tag, LazyCert::from(cert))),
+                    Some(Err(err)) => {
+                        let err = anyhow::Error::from(err).context(format!(
+                            "While parsing {:?} from the certd {:?}",
+                            fp, path));
+                        print_error_chain(&err);
+                        None
+                    }
+                    None => {
+                        let err = anyhow::anyhow!(format!(
+                            "While parsing {:?} from the certd {:?}: empty file",
+                            fp, path));
+                        print_error_chain(&err);
+                        None
+                    }
+                }
+            }).collect()
+        } else {
+            use rayon::prelude::*;
+
+            // For performance reasons, we read, parse, and
+            // canonicalize certs in parallel.
+            items.into_par_iter()
+                .filter_map(|(fp, tag, file)| {
+                    // XXX: Once we have a cached tag and
+                    // presumably a Sync index, avoid the work if
+                    // tags match.
+                    t!("loading {} from overlay", fp);
+                    match Cert::from_reader(file) {
+                        Ok(cert) => Some((tag, LazyCert::from(cert))),
+                        Err(err) => {
+                            let err = anyhow::Error::from(err).context(format!(
+                                "While parsing {:?} from the certd {:?}",
+                                fp, path));
+                            print_error_chain(&err);
+                            None
+                        }
+                    }
+                })
+                .collect()
+        };
+
+        Ok(result)
+    }
+
+    // Initialize a keyring.
+    fn initialize_keyring<P>(&mut self, file: fs::File, path: P, lazy: bool)
+        -> Result<Vec<LazyCert>>
+        where P: AsRef<Path>,
+    {
+        tracer!(TRACE, "KeyDB::initialize_keyring");
+        let path = path.as_ref();
+        t!("loading keyring {:?}", path);
+
+        let results = if lazy {
+            let iter = match RawCertParser::from_reader(file) {
+                Ok(iter) => iter,
+                Err(err) => {
+                    let err = anyhow::Error::from(err).context(
+                        format!("Loading keyring {:?}", path));
+                    print_error_chain(&err);
+                    return Err(err);
+                }
+            };
+
+            iter.filter_map(|cert| {
+                match cert {
+                    Ok(cert) => Some(LazyCert::from(cert)),
+                    Err(err) => {
+                        let err = anyhow::Error::from(err).context(format!(
+                            "While parsing cert from keyring {:?}", path));
+                        print_error_chain(&err);
+                        None
+                    }
+                }
+            }).collect()
+        } else {
+            let iter = match sequoia_openpgp_mt::keyring::parse(file) {
+                Ok(iter) => iter,
+                Err(err) => {
+                    let err = anyhow::Error::from(err).context(
+                        format!("Loading keyring {:?}", path));
+                    print_error_chain(&err);
+                    return Err(err);
+                }
+            };
+
+            iter.into_iter().filter_map(|cert| {
+                match cert {
+                    Ok(cert) => Some(LazyCert::from(cert)),
+                    Err(err) => {
+                        let err = anyhow::Error::from(err).context(format!(
+                            "While parsing cert from keyring {:?}", path));
+                        print_error_chain(&err);
+                        None
+                    }
+                }
+            }).collect()
+        };
+
+        Ok(results)
+    }
+
+    // Initialize a keybox.
+    fn initialize_keybox<P>(&mut self, file: fs::File, path: P, _lazy: bool)
+        -> Result<Vec<LazyCert>>
+        where P: AsRef<Path>,
+    {
+        use sequoia_ipc::keybox::*;
+
+        tracer!(TRACE, "KeyDB::initialize_keybox");
+        let path = path.as_ref();
+        t!("loading keybox {:?}", path);
+
+        let iter = match Keybox::from_reader(file) {
+            Ok(iter) => iter,
+            Err(err) => {
+                let err = anyhow::Error::from(err).context(format!(
+                    "While opening keybox at {:?}", path));
+                print_error_chain(&err);
+                return Err(err);
+            }
+        };
+
+        let results = iter.filter_map(|record| {
+            let record = match record {
+                Ok(record) => record,
+                Err(err) => {
+                    let err = anyhow::Error::from(err).context(format!(
+                        "While parsing a record from keybox {:?}", path));
+                    print_error_chain(&err);
+                    return None;
+                }
+            };
+
+            if let KeyboxRecord::OpenPGP(record) = record {
+                match record.cert() {
+                    Ok(cert) => Some(LazyCert::from(cert)),
+                    Err(err) => {
+                        let err = anyhow::Error::from(err).context(format!(
+                            "While parsing a cert from keybox {:?}", path));
+                        print_error_chain(&err);
+                        None
+                    }
+                }
+            } else {
+                None
+            }
+        }).collect();
+
+        Ok(results)
+    }
+
     /// Initializes the store, if not already done.
     #[allow(dead_code)]
     pub fn initialize(&mut self, lazy: bool) -> Result<()> {
@@ -578,60 +771,50 @@ impl KeyDB {
                 continue;
             }
 
-            match resource.kind {
+            let certs = match resource.kind {
                 Kind::Keyring => {
-                    t!("loading keyring {:?}", resource.path);
-                    if lazy {
-                        for cert in RawCertParser::from_reader(f)? {
-                            let cert = cert.context(
-                                format!("While parsing {:?}", resource.path))?;
-                            self.insert(cert)?;
-                        }
-                    } else {
-                        use sequoia_openpgp_mt::keyring;
-                        for cert in keyring::parse(f)? {
-                            let cert = cert.context(
-                                format!("While parsing {:?}", resource.path))?;
-                            self.insert(cert)?;
-                        }
-                    }
+                    self.initialize_keyring(f, &resource.path, lazy)
+                        .with_context(|| format!(
+                            "Reading the keyring {:?}", resource.path))
                 },
                 Kind::Keybox => {
-                    use sequoia_ipc::keybox::*;
-                    t!("loading keybox {:?}", resource.path);
-                    for record in Keybox::from_reader(f)? {
-                        let record = record.context(
-                            format!("While parsing {:?}", resource.path))?;
-                        if let KeyboxRecord::OpenPGP(r) = record {
-                            self.insert(
-                                r.cert().context(format!(
-                                    "While parsing {:?}", resource.path))?)?;
-                        }
-                    }
+                    self.initialize_keybox(f, &resource.path, lazy)
+                        .with_context(|| format!(
+                            "Reading the keybox {:?}", resource.path))
                 },
                 Kind::KeyboxX509 => {
                     t!("ignoring keybox {:?} only used fox X509",
                        resource.path);
+                    Ok(Vec::new())
                 },
                 Kind::CertD => {
-                    t!("loading cert-d {:?}", resource.path);
-                    let certd =
-                        openpgp_cert_d::CertD::with_base_dir(&resource.path)?;
-                    for (_, _, cert) in certd.iter()? {
-                        let mut parser = RawCertParser::from_reader(
-                            std::io::Cursor::new(cert))
-                            .with_context(|| format!(
-                                "While parsing {:?}", resource.path))?;
-                        match parser.next() {
-                            Some(Ok(cert)) => self.insert(cert)?,
-                            Some(Err(err)) => Err(err.context(format!(
-                                "While parsing {:?}", resource.path)))?,
-                            None => Err(anyhow::anyhow!(format!(
-                                "While parsing {:?}: empty file",
-                                resource.path)))?,
+                    self.initialize_certd(&resource.path, lazy)
+                        .with_context(|| format!(
+                            "Reading the certd {:?}", resource.path))
+                        .map(|certs| {
+                            certs
+                                .into_iter()
+                                .map(|(_tag, cert)| cert)
+                                .collect()
+                        })
+                }
+            };
+
+            match certs {
+                Ok(certs) => {
+                    for cert in certs.into_iter() {
+                        let keyid = cert.keyid();
+                        if let Err(err) = self.insert(cert) {
+                            let err = anyhow::Error::from(err)
+                                .context(format!(
+                                    "Reading {} from {:?}",
+                                    keyid, resource.path));
+                            print_error_chain(&err);
+                            continue;
                         }
                     }
-                },
+                }
+                Err(err) => print_error_chain(&err),
             }
 
             if let Some(overlay) = &self.overlay {
@@ -643,49 +826,14 @@ impl KeyDB {
         // the future, we may defer that until it is really needed
         // (e.g. for WoT computations, but not for lookup by subkey).
         if let Some(overlay) = &self.overlay {
-            if let Ok(certd) = openpgp_cert_d::CertD::with_base_dir(&overlay.path) {
-                // XXX: Use upstream version of lazy_iter.
-                let items = lazy_iter(&certd, &overlay.path)
-                    .into_iter().flatten() // Folds errors.
-                    .collect::<Vec<_>>();
+            // We need to drop overlay, as self.initialize_certd takes
+            // a mutable reference to self.
+            let path = overlay.path.clone();
+            drop(overlay);
 
-                if lazy {
-                    for (fp, tag, file) in items.into_iter() {
-                        // XXX: Once we have a cached tag, avoid the
-                        // work if tags match.
-                        t!("loading {} from overlay", fp);
-                        let mut parser = RawCertParser::from_reader(file)
-                            .with_context(|| format!(
-                                "While parsing {:?}", fp))?;
-                        let cert = match parser.next() {
-                            Some(Ok(cert)) => cert,
-                            Some(Err(err)) => Err(err.context(format!(
-                                "While parsing {:?}", fp)))?,
-                            None => Err(anyhow::anyhow!(format!(
-                                "While parsing {:?}: empty file", fp)))?,
-                        };
-
-                        self.index(cert, Some(tag));
-                    }
-                } else {
-                    use rayon::prelude::*;
-
-                    // For performance reasons, we read, parse, and
-                    // canonicalize certs in parallel.
-                    for (_fp, tag, cert) in items.into_par_iter()
-                        .map(|(fp, tag, file)| {
-                            // XXX: Once we have a cached tag and
-                            // presumably a Sync index, avoid the work if
-                            // tags match.
-                            t!("loading {} from overlay", fp);
-                            Ok((fp, tag, Cert::from_reader(file)?))
-                        })
-                        .collect::<Result<Vec<_>>>()?
-                    {
-                        // But in the end, we insert from the main thread,
-                        // because our index is not Sync.
-                        self.index(cert, Some(tag));
-                    }
+            if let Ok(certs) = self.initialize_certd(path, lazy) {
+                for (tag, cert) in certs.into_iter() {
+                    self.index(cert, Some(tag));
                 }
             }
         }
