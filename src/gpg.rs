@@ -495,7 +495,7 @@ pub struct Config {
     input_size_hint: Option<u64>,
     interactive: bool,
     keydb: keydb::KeyDB,
-    keyserver: KeyserverURL,
+    keyserver: Vec<KeyserverURL>,
     keyserver_options: KeyserverOptions,
     list_only: bool,
     list_options: u32,
@@ -2069,7 +2069,7 @@ fn real_main() -> anyhow::Result<()> {
 	        opt.lock_once = false;
             },
 	    oKeyServer => {
-                opt.keyserver = value.as_str().unwrap().parse()?;
+                opt.keyserver.push(value.as_str().unwrap().parse()?);
 	    },
 	    oKeyServerOptions => {
                 opt.keyserver_options = value.as_str().unwrap().parse()?;
@@ -2215,6 +2215,10 @@ fn real_main() -> anyhow::Result<()> {
         let mut password = Vec::new();
         pwfd.read_to_end(&mut password)?;
         opt.static_passprase = Some(password.into()).into();
+    }
+
+    if opt.keyserver.is_empty() {
+        opt.keyserver.push(Default::default());
     }
 
     let result = match command {

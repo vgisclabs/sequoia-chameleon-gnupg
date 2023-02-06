@@ -69,13 +69,39 @@ async fn keyserver_import(config: &mut crate::Config, args: &[String],
     // the importer below will never finish.
     drop(sender);
 
-    let hkp = net::KeyServer::new(config.keyserver.url())?;
+    let servers =
+	config.keyserver.iter().map(|k| net::KeyServer::new(k.url()))
+	.collect::<Result<Vec<_>>>()?;
+
     let crawler = stream::iter(handles)
         .map(|(sender, handle)| {
-            let hkp = &hkp;
+            let servers = &servers;
             async move {
-		if let Err(e) = sender.send(hkp.get(handle).await).await {
-		    eprintln!("gpg: {}", e); // Should not happen.
+		let (ocert, errs) = stream::iter(servers)
+		    .map(|server| server.get(handle.clone()))
+		    .buffer_unordered(servers.len())
+		    .fold((None::<Cert>, vec![]),
+			  |(ocert, mut errs), rcert| async { match rcert {
+			      Ok(c) => match ocert {
+				  Some(b) => (b.merge_public(c).ok(), errs),
+				  None => (Some(c), errs),
+			      },
+			      Err(e) => {
+				  errs.push(e);
+				  (ocert, errs)
+			      }
+			  }})
+		    .await;
+
+		if let Some(cert) = ocert {
+		    if let Err(e) = sender.send(Ok(cert)).await {
+			eprintln!("gpg: {}", e); // Should not happen.
+		    }
+		}
+		for e in errs {
+		    if let Err(e) = sender.send(Err(e)).await {
+			eprintln!("gpg: {}", e); // Should not happen.
+		    }
 		}
             }
         })
