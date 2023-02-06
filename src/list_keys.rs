@@ -46,7 +46,9 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String], list_secret: bool)
         .map(|a| Query::from(&a[..]))
         .collect::<Vec<_>>();
 
-    list_keys(config, config.keydb().iter(), filter, list_secret, true, sink)
+    list_keys(config, config.keydb().iter(), filter, list_secret,
+              args.is_empty(), // Only print header if no query is given.
+              sink)
 }
 
 pub fn list_keys<C, S>(config: &crate::Config,

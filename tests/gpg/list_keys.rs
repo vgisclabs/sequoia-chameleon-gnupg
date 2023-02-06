@@ -64,6 +64,57 @@ fn empty() -> Result<()> {
 }
 
 #[test]
+fn queries() -> Result<()> {
+    let mut experiment = make_experiment!()?;
+    let cert = experiment.artifact(
+        "cert",
+        ||  CertBuilder::new()
+            .set_creation_time(Experiment::now())
+            .add_userid("Alice Lovelace")
+            .add_userid("<alice@lovelace.name>")
+            .add_userid("Alice Lovelace <alice@lovelace.name>")
+            .add_signing_subkey()
+            .generate()
+            .map(|(cert, _rev)| cert),
+        |a, f| a.as_tsk().serialize(f),
+        |b| Cert::from_bytes(&b))?;
+
+    // Create the keyring stores.  Reduces the noise in the upcoming
+    // experiments.
+    let diff = experiment.invoke(&["--list-keys"])?;
+    diff.assert_success();
+
+    let diff = experiment.invoke(&[
+        "--import",
+        &experiment.store("cert", &cert.to_vec()?)?,
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(0, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(9, 0);
+
+    for query in ["alice",
+                  "Alice",
+                  "Lovelace",
+                  "Alice Lovelace",
+                  "<alice@lovelace.name>",
+                  "Alice Lovelace <alice@lovelace.name>",
+    ] {
+        let diff = experiment.invoke(&[
+            "--list-keys", query,
+        ])?;
+        diff.assert_success();
+        diff.assert_equal_up_to(9, 0);
+    }
+
+    Ok(())
+}
+
+#[test]
 fn valid() -> Result<()> {
     let mut experiment = make_experiment!()?;
     let cert = experiment.artifact(
