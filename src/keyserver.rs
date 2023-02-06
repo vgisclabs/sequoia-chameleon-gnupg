@@ -1,3 +1,7 @@
+use std::{
+    time::Duration,
+};
+
 use anyhow::Result;
 use futures::{stream, StreamExt};
 use rand::{thread_rng, seq::SliceRandom};
@@ -18,6 +22,12 @@ use crate::{
 
 /// How many concurrent requests to send out.
 const CONCURRENT_REQUESTS: usize = 4;
+
+/// How long to wait for the initial connection.
+const CONNECT_TIMEOUT: Duration = Duration::new(15, 0);
+
+/// How long to wait for each individual request.
+const REQUEST_TIMEOUT: Duration = Duration::new(5, 0);
 
 /// Dispatches the --receive-keys command.
 pub fn cmd_receive_keys(config: &mut crate::Config, args: &[String])
@@ -70,7 +80,18 @@ async fn keyserver_import(config: &mut crate::Config, args: &[String],
     drop(sender);
 
     let servers =
-	config.keyserver.iter().map(|k| net::KeyServer::new(k.url()))
+	config.keyserver.iter().map(|k| {
+	    let c = reqwest::Client::builder()
+		.user_agent(concat!(
+		    "gpg-sq/",
+		    env!("CARGO_PKG_VERSION"),
+		))
+		.connect_timeout(CONNECT_TIMEOUT)
+		.timeout(REQUEST_TIMEOUT)
+		.build()?;
+
+	    net::KeyServer::with_client(k.url(), c)
+	})
 	.collect::<Result<Vec<_>>>()?;
 
     let crawler = stream::iter(handles)
