@@ -68,14 +68,16 @@ async fn keyserver_import(config: &mut crate::Config, args: &[String],
 
     let hkp = net::KeyServer::new(config.keyserver.url())?;
     let crawler = stream::iter(handles)
-        .for_each(|(sender, handle)| {
+        .map(|(sender, handle)| {
             let hkp = &hkp;
             async move {
 		if let Err(e) = sender.send(hkp.get(handle).await).await {
 		    eprintln!("gpg: {}", e); // Should not happen.
 		}
             }
-        });
+        })
+	.buffer_unordered(CONCURRENT_REQUESTS)
+	.for_each(|_| async { () });
 
     // Finally, start the importer.
     let importer = importer(config, receiver);
