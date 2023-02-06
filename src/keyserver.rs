@@ -1,5 +1,6 @@
 use anyhow::Result;
 use futures::{stream, StreamExt};
+use rand::{thread_rng, seq::SliceRandom};
 use tokio::sync::mpsc::{channel, Receiver};
 
 use sequoia_openpgp::{
@@ -39,7 +40,7 @@ async fn keyserver_import(config: &mut crate::Config, args: &[String],
 			  refresh_keys: bool)
 			  -> Result<()>
 {
-    let handles: Vec<KeyHandle> = if args.is_empty() && refresh_keys {
+    let mut handles: Vec<KeyHandle> = if args.is_empty() && refresh_keys {
 	config.keydb().iter().map(|c| c.fingerprint().into()).collect()
     } else {
 	args.iter()
@@ -53,6 +54,8 @@ async fn keyserver_import(config: &mut crate::Config, args: &[String],
 	    })
 	    .collect()
     };
+
+    handles.shuffle(&mut thread_rng());
 
     // We start crawling the keyserver for certs, and send them to a
     // concurrent mutator that inserts the certs into the store.
