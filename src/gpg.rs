@@ -58,6 +58,8 @@ pub mod keyserver;
 pub mod sign;
 pub mod encrypt;
 pub mod list_keys;
+pub mod locate;
+use locate::AutoKeyLocate;
 
 /// Commands and options.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -461,6 +463,7 @@ pub struct Config {
     ask_cert_expire: bool,
     ask_cert_level: bool,
     ask_sig_expire: bool,
+    auto_key_locate: Vec<AutoKeyLocate>,
     batch: bool,
     cert_digest: HashAlgorithm,
     cert_policy_url: Vec<URL>,
@@ -579,6 +582,7 @@ impl Config {
             ask_cert_expire: false,
             ask_cert_level: false,
             ask_sig_expire: false,
+            auto_key_locate: vec![],
             batch: false,
             cert_digest: Default::default(),
             cert_policy_url: vec![],
@@ -1242,6 +1246,7 @@ fn real_main() -> anyhow::Result<()> {
     let mut opt = Config::new()?;
     let mut args = Vec::new();
     let mut command = None;
+    let mut auto_key_locate_given = false;
     let mut greeting = false;
     let mut no_greeting = false;
     let mut detached_sig = false;
@@ -2121,6 +2126,24 @@ fn real_main() -> anyhow::Result<()> {
             oNoGroups => {
                 opt.groups.clear();
             },
+            oAutoKeyLocate => {
+                auto_key_locate_given = true;
+                for s in value.as_str().unwrap().split(',') {
+                    if s == "clear" {
+                        opt.auto_key_locate.clear();
+                        continue;
+                    }
+
+                    let akl: AutoKeyLocate = s.parse()?;
+                    if ! opt.auto_key_locate.contains(&akl) {
+                        opt.auto_key_locate.push(akl);
+                    }
+                }
+            },
+            oNoAutoKeyLocate => {
+                auto_key_locate_given = true;
+                opt.auto_key_locate.clear();
+            },
             oFakedSystemTime => {
                 opt.clock = value.as_str().unwrap().parse()?;
                 // XXX: GnuPG prints this warning later.
@@ -2161,6 +2184,16 @@ fn real_main() -> anyhow::Result<()> {
     // to the --list-keys command.
     if command.is_none() && fpr_maybe_cmd {
         command = Some(aListKeys);
+    }
+
+    // Set the default auto key location method set, if none of the
+    // options have been given.
+    if ! auto_key_locate_given {
+        opt.auto_key_locate = vec![
+            AutoKeyLocate::Local,
+            AutoKeyLocate::Wkd,
+            AutoKeyLocate::KeyServer,
+        ];
     }
 
     // XXX: More option frobbing.
