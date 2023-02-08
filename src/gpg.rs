@@ -876,6 +876,13 @@ impl Config {
         // Then, use the trust model to lookup the cert.
         vtm.lookup(query)
     }
+
+    /// Makes an http client for keyserver and WKD requests.
+    pub fn make_http_client(&self) -> keyserver::HttpClientBuilder {
+        keyserver::HttpClientBuilder::default()
+	    .connect_timeout(keyserver::CONNECT_TIMEOUT)
+	    .request_timeout(keyserver::REQUEST_TIMEOUT)
+    }
 }
 
 impl common::Common for Config {

@@ -21,13 +21,13 @@ use crate::{
 };
 
 /// How many concurrent requests to send out.
-const CONCURRENT_REQUESTS: usize = 4;
+pub const CONCURRENT_REQUESTS: usize = 4;
 
 /// How long to wait for the initial connection.
-const CONNECT_TIMEOUT: Duration = Duration::new(15, 0);
+pub const CONNECT_TIMEOUT: Duration = Duration::new(15, 0);
 
 /// How long to wait for each individual request.
-const REQUEST_TIMEOUT: Duration = Duration::new(5, 0);
+pub const REQUEST_TIMEOUT: Duration = Duration::new(5, 0);
 
 /// Dispatches the --receive-keys command.
 pub fn cmd_receive_keys(config: &mut crate::Config, args: &[String])
@@ -81,15 +81,7 @@ async fn keyserver_import(config: &mut crate::Config, args: &[String],
 
     let servers =
 	config.keyserver.iter().map(|k| {
-	    let c = reqwest::Client::builder()
-		.user_agent(concat!(
-		    "gpg-sq/",
-		    env!("CARGO_PKG_VERSION"),
-		))
-		.connect_timeout(CONNECT_TIMEOUT)
-		.timeout(REQUEST_TIMEOUT)
-		.build()?;
-
+	    let c = config.make_http_client().build()?;
 	    net::KeyServer::with_client(k.url(), c)
 	})
 	.collect::<Result<Vec<_>>>()?;
@@ -160,4 +152,31 @@ async fn importer(config: &mut crate::Config,
 
     s.print_results(config)?;
     Ok(())
+}
+
+#[derive(Default)]
+pub struct HttpClientBuilder {
+    connect_timeout: Duration,
+    request_timeout: Duration,
+    user_agent: String,
+}
+
+impl HttpClientBuilder {
+    pub fn connect_timeout(mut self, d: Duration) -> Self {
+        self.connect_timeout = d;
+        self
+    }
+
+    pub fn request_timeout(mut self, d: Duration) -> Self {
+        self.request_timeout = d;
+        self
+    }
+
+    pub fn build(&self) -> Result<reqwest::Client> {
+        Ok(reqwest::Client::builder()
+	    .user_agent(self.user_agent.clone())
+	    .connect_timeout(self.connect_timeout)
+	    .timeout(self.request_timeout)
+	    .build()?)
+    }
 }
