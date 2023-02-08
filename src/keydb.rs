@@ -734,8 +734,21 @@ impl KeyDB {
     /// Initializes the store, if not already done.
     #[allow(dead_code)]
     pub fn initialize(&mut self, lazy: bool) -> Result<()> {
-        tracer!(TRACE, "KeyDB::initialize");
-        if self.initialized {
+        self._initialize(lazy, false)
+    }
+
+    /// Re-Initializes the store.
+    ///
+    /// Calling this function picks up changes in any of the
+    /// resources.
+    #[allow(dead_code)]
+    pub fn reinitialize(&mut self, lazy: bool) -> Result<()> {
+        self._initialize(lazy, true)
+    }
+
+    fn _initialize(&mut self, lazy: bool, force: bool) -> Result<()> {
+        tracer!(TRACE, "KeyDB::_initialize");
+        if self.initialized && ! force {
             return Ok(());
         }
         self.initialized = true;
