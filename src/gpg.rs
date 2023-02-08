@@ -679,7 +679,7 @@ impl Config {
             attribute_fd: Box::new(io::sink()),
             command_fd: io::stdin().into(),
             logger_fd: Box::new(io::sink()),
-            status_fd: Box::new(io::sink()).into(),
+            status_fd: status::Fd::sink(),
         })
     }
 

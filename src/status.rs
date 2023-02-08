@@ -5,6 +5,7 @@ use std::{
     convert::TryFrom,
     fmt,
     io,
+    io::Write,
     sync::Mutex,
     time::SystemTime,
 };
@@ -42,19 +43,46 @@ use crate::{
 /// aligning more closely with GnuPG avoids a lot of false positives.
 const STRICT_OUTPUT: bool = true;
 
-pub struct Fd(Mutex<RefCell<Box<dyn io::Write + Send + Sync>>>);
+pub struct Fd(Option<Mutex<RefCell<Box<dyn io::Write + Send + Sync>>>>);
 
 impl<S: io::Write + Send + Sync + 'static> From<S> for Fd {
     fn from(s: S) -> Fd {
-        Fd(Mutex::new(RefCell::new(Box::new(s))))
+        Fd(Some(Mutex::new(RefCell::new(Box::new(s)))))
     }
 }
 
 impl Fd {
+    // Sends all output to /dev/null.
+    pub fn sink() -> Self {
+        Fd(None)
+    }
+
+    // Whether gpg was called with --status-fd.  If not, everything is
+    // sent to /dev/null.
+    pub fn enabled(&self) -> bool {
+        self.0.is_some()
+    }
+
     #[allow(dead_code)]
     pub fn emit(&self, status: Status<'_>) -> Result<()> {
         crate::with_invocation_log(|sink| status.emit(sink));
-        status.emit(&mut *self.0.lock().expect("not poisoned").borrow_mut())
+        if let Some(fd) = self.0.as_ref() {
+            status.emit(&mut *fd.lock().expect("not poisoned").borrow_mut())
+        } else {
+            Ok(())
+        }
+    }
+
+    // If --status-fd was passed, then emits something on the
+    // specified file descriptor, otherwise prints the message plus a
+    // newline on stdout.
+    pub fn emit_or(&self, status: Status<'_>, msg: &str) -> Result<()> {
+        crate::with_invocation_log(|sink| status.emit(sink));
+        if self.enabled() {
+            self.emit(status)
+        } else {
+            Ok(writeln!(io::stdout(), "{}", msg)?)
+        }
     }
 }
 
@@ -249,6 +277,15 @@ pub enum Status<'a> {
     PinentryLaunched(String),
 
     NoData(NoDataReason),
+
+    // What to prompt for, e.g., `ask_revocation_reason.okay`.
+    GetBool(String),
+
+    // What to prompt for, e.g. `ask_revocation_reason.text`.
+    GetLine(String),
+
+    // Sent when we got a prompt.
+    GotIt,
 
     Failure {
         location: &'a str,
@@ -710,6 +747,12 @@ impl Status<'_> {
                              ExpectedSignature => 4,
                          })?;
             },
+
+            GetBool(prompt) => writeln!(w, "GET_BOOL {}", prompt)?,
+
+            GetLine(prompt) => writeln!(w, "GET_LINE {}", prompt)?,
+
+            GotIt => writeln!(w, "GOT_IT")?,
 
             Failure {
                 location,

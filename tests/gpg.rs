@@ -38,6 +38,7 @@ mod gpg {
     mod list_keys;
     mod version;
     mod trust_models;
+    mod status_fd;
 }
 
 lazy_static::lazy_static! {

@@ -396,7 +396,10 @@ fn do_we_trust(config: &crate::Config,
                 userid: cert.primary_userid().ok().map(|u| u.userid()),
             })?;
 
-        if config.prompt_yN(format_args!("Use this key anyway?"))? {
+        if config.prompt_yN(
+            "untrusted_key.override".into(),
+            format_args!("Use this key anyway?"))?
+        {
             return Ok(true);
         }
     }

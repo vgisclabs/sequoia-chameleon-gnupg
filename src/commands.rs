@@ -362,7 +362,8 @@ pub fn cmd_generate_revocation(config: &crate::Config, args: &[String])
     let creation_time =
         chrono::DateTime::<chrono::Utc>::from(primary.creation_time());
 
-    if ! config.prompt_yN(format_args!(
+    if ! config.prompt_yN("gen_revoke.okay",
+                          format_args!(
         "
 sec  {}/{} {} {}
 
@@ -378,8 +379,10 @@ Create a revocation certificate for this key?",
 
     'start_over: loop {
         let reason = loop {
-            match config.prompt(format_args!(
-                "Please select the reason for the revocation:
+            match config.prompt(
+                "ask_revocation_reason.code",
+                format_args!("\
+Please select the reason for the revocation:
   0 = No reason specified
   1 = Key has been compromised
   2 = Key is superseded
@@ -402,7 +405,8 @@ Your decision?"))?.to_lowercase().as_str()
         eprintln!("Enter an optional description; end it with an empty line:");
         let mut description = vec![];
         loop {
-            let line = config.prompt(format_args!(">"))?;
+            let line = config.prompt(
+                "ask_revocation_reason.text", format_args!(">"))?;
             if line.is_empty() {
                 break;
             } else {
@@ -418,7 +422,10 @@ Your decision?"))?.to_lowercase().as_str()
         } else {
             eprintln!("{}", description);
         }
-        if ! config.prompt_yN(format_args!("Is this okay?"))? {
+        if ! config.prompt_yN(
+            "ask_revocation_reason.okay",
+            format_args!("Is this okay?"))?
+        {
             continue 'start_over;
         }
 
