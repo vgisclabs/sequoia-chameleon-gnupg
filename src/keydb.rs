@@ -932,13 +932,31 @@ pub struct Overlay {
     path: PathBuf,
     certd: openpgp_cert_d::CertD,
     #[allow(dead_code)]
-    trust_root: Cert,
+    trust_root: OnceCell<Cert>,
 }
 
 impl Overlay {
     fn new(p: &Path) -> Result<Overlay> {
         let certd = openpgp_cert_d::CertD::with_base_dir(p)?;
 
+        Ok(Overlay {
+            path: p.into(),
+            certd,
+            trust_root: Default::default(),
+        })
+    }
+
+    /// Lazily reads (or creates) the trust root.
+    pub fn trust_root(&self) -> Result<&Cert> {
+        self.trust_root.get_or_try_init(|| self.load_trust_root())
+    }
+
+    /// Eagerly loads the trust root, or generates one if none existed
+    /// before.
+    ///
+    /// This is done during the insertion, while we hold the exclusive
+    /// lock, so this is race free.
+    fn load_trust_root(&self) -> Result<Cert> {
         // Fabricate a dummy packet header to appease the check in
         // CertD::insert_special.
         use openpgp::{
@@ -954,7 +972,7 @@ impl Overlay {
                                   0, 0, 0, 0, 0, 0, 0, 0,
                                   0, 0, 0, 0, 0, 0, 0, 0]);
 
-        let (_, trust_root) = certd.insert_special(
+        let (_, trust_root) = self.certd.insert_special(
             openpgp_cert_d::TRUST_ROOT,
             dummy.into(),
             |_, existing| {
@@ -965,11 +983,7 @@ impl Overlay {
                 }
             })?;
 
-        Ok(Overlay {
-            path: p.into(),
-            certd,
-            trust_root: Cert::from_bytes(&trust_root)?,
-        })
+        Cert::from_bytes(&trust_root)
     }
 
     fn generate_trust_root() -> Result<openpgp_cert_d::Data> {
