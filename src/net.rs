@@ -122,4 +122,13 @@ pub enum Error {
     MismatchedKeyHandle(KeyHandle, Cert),
     #[error("HTTPS Status Code: {0}")]
     HttpsStatusCode(StatusCode),
+
+    /// wkd errors:
+    /// An email address is malformed
+    #[error("Malformed email address {0}")]
+    MalformedEmail(String),
+
+    /// An email address was not found in Cert userids.
+    #[error("Email address {0} not found in Cert's userids")]
+    EmailNotInUserids(String),
 }

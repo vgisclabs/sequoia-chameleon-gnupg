@@ -22,7 +22,8 @@ use openpgp::{
     types::*,
 };
 
-mod net; // XXX
+pub mod net; // XXX
+pub mod wkd; // XXX
 
 pub mod gnupg_interface;
 
