@@ -243,12 +243,24 @@ impl Output {
     }
 
     /// Canonicalizes the paths in the output.
+    ///
+    /// This replaces `homedir` with `"/HOMEDIR"` and `experiment`
+    /// with `"/EXPERIMENT"` in stdout and stderr, and normalizes the
+    /// underline decorating `homedir` in key listings in stdout.
     fn canonicalize(mut self, homedir: &Path, experiment: &Path) -> Self {
+        const DASHES: &str =
+            "\n------------------------------------------------------------";
+        let d = regex::bytes::Regex::new(
+            &DASHES[..DASHES.len().min(homedir.to_str().unwrap().len() + 1)])
+            .unwrap();
         let h = regex::bytes::Regex::new(homedir.to_str().unwrap()).unwrap();
         let e = regex::bytes::Regex::new(experiment.to_str().unwrap()).unwrap();
         self.stdout =
-            e.replace_all(&h.replace_all(&self.stdout, &b"/HOMEDIR"[..]),
-                          &b"/EXPERIMENT"[..])
+            e.replace_all(
+                &h.replace_all(
+                    &d.replace_all(&self.stdout, &b"\n--------"[..]),
+                    &b"/HOMEDIR"[..]),
+                &b"/EXPERIMENT"[..])
             .into();
         self.stderr =
             e.replace_all(&h.replace_all(&self.stderr, &b"/HOMEDIR"[..]),
