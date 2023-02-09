@@ -62,6 +62,7 @@ pub mod list_keys;
 pub mod locate;
 use locate::AutoKeyLocate;
 pub mod parcimonie;
+pub mod dirmngr;
 
 /// Commands and options.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -2270,6 +2271,10 @@ fn real_main() -> anyhow::Result<()> {
         pwfd.read_to_end(&mut password)?;
         opt.static_passprase = Some(password.into()).into();
     }
+
+    // Read dirmngr's configuration.  We honor some of the options
+    // there, but we do the operations in this process.
+    dirmngr::parse(&mut opt)?;
 
     if opt.keyserver.is_empty() {
         opt.keyserver.push(Default::default());
