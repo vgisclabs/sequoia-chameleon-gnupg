@@ -31,6 +31,10 @@ fn dump_options() -> Result<()> {
         "--dump-options",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(51, 0); // Card options.
+    diff.assert_equal_up_to(
+        51 // Card options.
+            + 23 // Sequoia-specific options.
+            + 0,
+        0);
     Ok(())
 }

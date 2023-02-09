@@ -61,6 +61,7 @@ pub mod encrypt;
 pub mod list_keys;
 pub mod locate;
 use locate::AutoKeyLocate;
+pub mod parcimonie;
 
 /// Commands and options.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -427,6 +428,9 @@ pub enum CmdOrOpt {
     oRequireCompliance,
 
     oNoop,
+
+    // Our own extensions.
+    aXSequoiaParcimonie,
 
     // Special, implicit commands.
     aHelp = 'h' as isize,
@@ -2164,6 +2168,12 @@ fn real_main() -> anyhow::Result<()> {
                     DateTime::<Utc>::from(opt.now())
                         .format("%Y-%m-%d %H:%M:%S")));
             },
+
+            // Our own extensions.
+            aXSequoiaParcimonie => {
+                set_cmd(&mut command, aXSequoiaParcimonie)?;
+            },
+
             _ => (),
         }
         Ok(())
@@ -2222,6 +2232,7 @@ fn real_main() -> anyhow::Result<()> {
     }
 
     opt.keydb.add_certd_overlay(&opt.homedir().join("pubring.cert.d"))?;
+    parcimonie::start(&opt, command);
 
     // If a commad is likely to access at least the number of
     // certificates divided by the number of CPUs, then we should
@@ -2293,6 +2304,11 @@ fn real_main() -> anyhow::Result<()> {
         Some(aRecvKeys) => keyserver::cmd_receive_keys(&mut opt, &args),
         Some(aRefreshKeys) => keyserver::cmd_refresh_keys(&mut opt, &args),
         None => commands::cmd_implicit(&opt, &args),
+
+        // Our own extensions.
+        Some(aXSequoiaParcimonie) =>
+            parcimonie::cmd_parcimonie(&mut opt, &args),
+
         Some(c) => Err(anyhow::anyhow!("Command {:?} is not implemented.", c)),
     };
 

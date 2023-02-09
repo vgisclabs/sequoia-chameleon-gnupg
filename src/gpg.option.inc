@@ -524,6 +524,9 @@ const OPTIONS: &[Opt<CmdOrOpt>] = &[
                                                        ,
 
 
+  Opt { short_opt: aXSequoiaParcimonie, long_opt: "x-sequoia-parcimonie", flags: (TYPE_NONE | OPT_COMMAND), description: "@", },
+
+
  
 
         // Special, implicit commands.
