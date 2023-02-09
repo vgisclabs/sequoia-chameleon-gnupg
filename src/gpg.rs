@@ -983,8 +983,7 @@ impl URL {
     }
 }
 
-#[derive(Clone)]
-#[allow(dead_code)]
+#[derive(Clone, PartialEq, Eq)]
 pub struct KeyserverURL {
     url: String,
 }
@@ -2082,7 +2081,10 @@ fn real_main() -> anyhow::Result<()> {
 	        opt.lock_once = false;
             },
 	    oKeyServer => {
-                opt.keyserver.push(value.as_str().unwrap().parse()?);
+                let ks = value.as_str().unwrap().parse()?;
+                if ! opt.keyserver.contains(&ks) {
+                    opt.keyserver.push(ks);
+                }
 	    },
 	    oKeyServerOptions => {
                 opt.keyserver_options = value.as_str().unwrap().parse()?;
