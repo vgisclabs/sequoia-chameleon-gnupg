@@ -145,6 +145,14 @@ pub fn parse(config: &mut crate::Config) -> Result<()> {
                     }
 	        },
 
+                oUseTor => {
+                    let _ = config.use_tor.set(true);
+                },
+
+                oNoUseTor => {
+                    let _ = config.use_tor.set(false);
+                },
+
                 c => t!("Ignoring {:?}={:?}", c, value),
             }
             Ok(())

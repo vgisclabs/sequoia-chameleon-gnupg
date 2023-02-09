@@ -417,7 +417,10 @@ async fn worker(config: &mut crate::Config) -> openpgp::Result<()> {
 
             let servers =
 	        keyservers.iter().map(|k| {
-	            let c = http_client.build()?;
+	            let c = http_client
+                        .clone()
+                        .for_url(k.url())?
+                        .build()?;
 	            net::KeyServer::with_client(k.url(), c)
 	        })
 	        .collect::<Result<Vec<_>>>()?;

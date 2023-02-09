@@ -8,6 +8,7 @@ use std::{
 };
 
 use anyhow::{Context, Result};
+use once_cell::unsync::OnceCell;
 
 use sequoia_openpgp as openpgp;
 use sequoia_ipc as ipc;
@@ -549,6 +550,7 @@ pub struct Config {
     trust_model: Option<trust::TrustModel>,
     trusted_keys: Vec<openpgp::Fingerprint>,
     use_embedded_filename: bool,
+    use_tor: OnceCell<bool>,
     verbose: usize,
     verify_options: u32,
     with_colons: bool,
@@ -672,6 +674,7 @@ impl Config {
             trust_model: None,
             trusted_keys: vec![],
             use_embedded_filename: false,
+            use_tor: Default::default(),
             verbose: 0,
             verify_options: 0,
             with_colons: false,
@@ -885,9 +888,42 @@ impl Config {
 
     /// Makes an http client for keyserver and WKD requests.
     pub fn make_http_client(&self) -> keyserver::HttpClientBuilder {
+        use reqwest::StatusCode;
+
+        /// Connects to Tor's SOCKS5 proxy port and see if it feels
+        /// like tor.
+        async fn detect_tor() -> Result<bool> {
+            let torproject = memchr::memmem::Finder::new(b"torproject");
+
+            // Make a GET to the proxy, Tor will reply with an error.
+            let r = reqwest::get("http://localhost:9050").await?;
+            let status = r.status();
+            let b = r.bytes().await?;
+
+            Ok(status == StatusCode::NOT_IMPLEMENTED
+               && torproject.find(&b).is_some())
+        }
+
+        // Lazily compute whether we want to use Tor.  Does not run if
+        // --use-tor or --no-use-tor has been given in dirmngr.conf.
+        // Only one thread will compute this.
+        let use_tor = self.use_tor.get_or_init(|| {
+            let transaction = || {
+                let rt = tokio::runtime::Runtime::new()?;
+                rt.block_on(detect_tor())
+            };
+
+            // Spawn a thread so that this is safe to use from async
+            // environments.
+            std::thread::spawn(transaction)
+                .join().unwrap_or(Ok(false))
+                .unwrap_or(false)
+        });
+
         keyserver::HttpClientBuilder::default()
 	    .connect_timeout(keyserver::CONNECT_TIMEOUT)
 	    .request_timeout(keyserver::REQUEST_TIMEOUT)
+            .use_tor(*use_tor)
     }
 }
 

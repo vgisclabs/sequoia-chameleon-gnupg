@@ -8,6 +8,7 @@ use rand::{thread_rng, seq::SliceRandom};
 use tokio::sync::mpsc::{channel, Receiver};
 
 use sequoia_openpgp::{
+    self as openpgp,
     Cert,
     KeyHandle,
 };
@@ -81,7 +82,10 @@ async fn keyserver_import(config: &mut crate::Config, args: &[String],
 
     let servers =
 	config.keyserver.iter().map(|k| {
-	    let c = config.make_http_client().build()?;
+	    let c = config.make_http_client()
+                .for_url(k.url())?
+                .build()?;
+
 	    net::KeyServer::with_client(k.url(), c)
 	})
 	.collect::<Result<Vec<_>>>()?;
@@ -154,11 +158,12 @@ async fn importer(config: &mut crate::Config,
     Ok(())
 }
 
-#[derive(Default)]
+#[derive(Default, Clone)]
 pub struct HttpClientBuilder {
     connect_timeout: Duration,
     request_timeout: Duration,
     user_agent: String,
+    use_tor: bool,
 }
 
 impl HttpClientBuilder {
@@ -172,11 +177,48 @@ impl HttpClientBuilder {
         self
     }
 
+    pub fn use_tor(mut self, v: bool) -> Self {
+        self.use_tor = v;
+        if v {
+            // Cut Tor some slack.
+            self.connect_timeout *= 2; // XXX: Essentially random.
+            self.request_timeout *= 3; // XXX: Essentially random.
+        }
+        self
+    }
+
+    /// Specializes the client for the given URL.
+    ///
+    /// If the domain is an onion-address, we switch on tor mode.
+    pub fn for_url<U: AsRef<str>>(mut self, u: U) -> Result<Self> {
+        let uri = reqwest::Url::parse(u.as_ref())?;
+	if uri.domain().map(|d| d.ends_with(".onion")).unwrap_or(false) {
+            self = self.use_tor(true);
+        }
+        Ok(self)
+    }
+
     pub fn build(&self) -> Result<reqwest::Client> {
-        Ok(reqwest::Client::builder()
+        let mut c = reqwest::Client::builder()
 	    .user_agent(self.user_agent.clone())
 	    .connect_timeout(self.connect_timeout)
-	    .timeout(self.request_timeout)
-	    .build()?)
+	    .timeout(self.request_timeout);
+
+        if self.use_tor {
+            // Select a fresh circuit by providing a random
+            // username/password combination.
+            let mut nonce = [0; 4];
+            openpgp::crypto::random(&mut nonce[..]);
+
+            // Just randomize the password.
+            let nonce = openpgp::fmt::hex::encode(&nonce);
+            let url =
+                format!("socks5h://anonymous:{}@127.0.0.1:9050", nonce);
+
+            // Use it for all requests, regardless of protocol.
+	    c = c.proxy(reqwest::Proxy::all(url)?);
+	}
+
+        Ok(c.build()?)
     }
 }
