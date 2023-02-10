@@ -59,6 +59,19 @@ $ cargo build --release
 
   [build dependencies]: https://gitlab.com/sequoia-pgp/sequoia#requirements-and-msrv
 
+Alternatively, you can change the cryptographic library that is used.
+Note that this will change the [build dependencies].  Currently,
+`crypto-openssl` and `crypto-cng` are supported, which select OpenSSL
+and Windows CNG, respectively.  To select a different backend, disable
+the default features and activate the corresponding feature:
+
+```sh
+$ git clone https://gitlab.com/sequoia-pgp/sequoia-chameleon-gnupg.git
+$ cd sequoia-chameleon-gnupg
+$ cargo build --release --no-default-features --features=crypto-openssl
+[...]
+```
+
 To use the Chameleon, you need to make sure that it is invoked either
 directly by you or indirectly by programs instead of GnuPG.  One way
 to do that is to put it under the name `gpg` into your path, but we
