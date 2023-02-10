@@ -1,13 +1,18 @@
 macro_rules! trace_module {
     ( $I:ident ) => {
         /// Controls tracing in this module.
-        pub const $I: bool = false;
+        pub fn trace(enable: bool) {
+            $I.store(enable, std::sync::atomic::Ordering::Relaxed);
+        }
+
+        static $I: std::sync::atomic::AtomicBool =
+            std::sync::atomic::AtomicBool::new(false);
     };
 }
 
 macro_rules! trace {
     ( $TRACE:expr, $fmt:expr, $($pargs:expr),* ) => {
-        if $TRACE {
+        if $TRACE.load(std::sync::atomic::Ordering::Relaxed) {
             let m = format!($fmt, $($pargs),*);
             eprintln!("{}", m);
             crate::with_invocation_log(|w| Ok(writeln!(w, "{}", m)?));
