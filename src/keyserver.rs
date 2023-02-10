@@ -21,6 +21,8 @@ use crate::{
     },
 };
 
+trace_module!(TRACE);
+
 /// How many concurrent requests to send out.
 pub const CONCURRENT_REQUESTS: usize = 4;
 
@@ -51,6 +53,8 @@ async fn keyserver_import(config: &mut crate::Config, args: &[String],
 			  refresh_keys: bool)
 			  -> Result<()>
 {
+    tracer!(TRACE, "keyserver::keyserver_import");
+
     let mut handles: Vec<KeyHandle> = if args.is_empty() && refresh_keys {
 	config.keydb().iter().map(|c| c.fingerprint().into()).collect()
     } else {
@@ -82,6 +86,8 @@ async fn keyserver_import(config: &mut crate::Config, args: &[String],
 
     let servers =
 	config.keyserver.iter().map(|k| {
+            t!("Using server {}", k.url());
+
 	    let c = config.make_http_client()
                 .for_url(k.url())?
                 .build()?;
@@ -95,19 +101,28 @@ async fn keyserver_import(config: &mut crate::Config, args: &[String],
             let servers = &servers;
             async move {
 		let (ocert, errs) = stream::iter(servers)
-		    .map(|server| server.get(handle.clone()))
+		    .map(|server| async {
+                        let response = server.get(handle.clone()).await;
+                        (server.url().clone(), response)
+                    })
 		    .buffer_unordered(servers.len())
 		    .fold((None::<Cert>, vec![]),
-			  |(ocert, mut errs), rcert| async { match rcert {
-			      Ok(c) => match ocert {
-				  Some(b) => (b.merge_public(c).ok(), errs),
-				  None => (Some(c), errs),
-			      },
-			      Err(e) => {
-				  errs.push(e);
-				  (ocert, errs)
-			      }
-			  }})
+			  |(ocert, mut errs), (url, rcert)| {
+                              async move { match rcert {
+			          Ok(c) => {
+                                      t!("{}: found", url);
+                                      match ocert {
+				          Some(b) => (b.merge_public(c).ok(), errs),
+				          None => (Some(c), errs),
+                                      }
+			          },
+			          Err(e) => {
+                                      t!("{}: {}", url, e);
+				      errs.push(e);
+				      (ocert, errs)
+			          }
+                              }}
+			  })
 		    .await;
 
 		if let Some(cert) = ocert {

@@ -26,6 +26,7 @@ pub fn parse_command_line() {
 pub fn enable_all() {
     enable("dirmngr");
     enable("keydb");
+    enable("keyserver");
     enable("parcimonie");
 }
 
@@ -33,6 +34,7 @@ pub fn enable(module: &str) {
     match module {
         "dirmngr" => crate::dirmngr::trace(true),
         "keydb" => crate::keydb::trace(true),
+        "keyserver" => crate::keyserver::trace(true),
         "parcimonie" => crate::parcimonie::trace(true),
         _ => (),
     }

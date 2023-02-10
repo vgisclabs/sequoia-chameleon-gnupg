@@ -399,12 +399,14 @@ async fn worker(config: &mut crate::Config) -> openpgp::Result<()> {
 		.map(|email| async move {
 	            let c = http_client.build()?;
                     let r = wkd::get(&c, email.to_string()).await;
-                    t!("wkd for {}: {:?}",
-                       email,
-                       r.as_ref().map(|certs| {
-                           certs.iter().map(|cert| cert.fingerprint())
-                               .collect::<Vec<Fingerprint>>()
-                       }));
+                    match &r {
+                        Ok(certs) =>
+                            t!("WKD({}): {:?}", email,
+                               certs.iter().map(|cert| cert.keyid())
+                               .collect::<Vec<_>>()),
+                        Err(e) =>
+                            t!("WKD({}): {}", email, e),
+                    }
                     r
                 })
 		.buffer_unordered(CONCURRENT_REQUESTS)
@@ -427,14 +429,18 @@ async fn worker(config: &mut crate::Config) -> openpgp::Result<()> {
 
             let fpr = &fpr;
 	    let responses = stream::iter(servers)
-		.map(move |server| async move { server.get(fpr.clone()).await })
+		.map(move |server| async move {
+                    let r = server.get(fpr.clone()).await;
+                    match &r {
+			Ok(_) => t!("{}: found", server.url()),
+			Err(e) => t!("{}: {}", server.url(), e),
+                    }
+                    r
+                })
 		.buffer_unordered(concurrent_requests)
 		.filter_map(|rcert| async { match rcert {
                     Ok(cert) => Some(cert),
-                    Err(err) => {
-                        t!("key server: {:?}", err);
-                        None
-                    },
+                    Err(_) => None,
                 }})
                 .collect::<Vec<_>>();
 

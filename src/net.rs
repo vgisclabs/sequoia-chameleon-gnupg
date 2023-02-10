@@ -59,6 +59,12 @@ impl KeyServer {
         Ok(KeyServer{client, uri})
     }
 
+    /// Returns the keyserver's base URL.
+    pub fn url(&self) -> &reqwest::Url {
+        // XXX: this has the schemes replaced which may be confusing.
+        &self.uri
+    }
+
     /// Retrieves the certificate with the given handle.
     pub async fn get<H: Into<KeyHandle>>(&self, handle: H)
                                          -> Result<Cert>
