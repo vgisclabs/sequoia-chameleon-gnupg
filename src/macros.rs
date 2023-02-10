@@ -1,3 +1,10 @@
+macro_rules! trace_module {
+    ( $I:ident ) => {
+        /// Controls tracing in this module.
+        pub const $I: bool = false;
+    };
+}
+
 macro_rules! trace {
     ( $TRACE:expr, $fmt:expr, $($pargs:expr),* ) => {
         if $TRACE {

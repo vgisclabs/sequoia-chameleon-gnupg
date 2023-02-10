@@ -38,8 +38,7 @@ use crate::{
     print_error_chain,
 };
 
-/// Controls tracing.
-const TRACE: bool = false;
+trace_module!(TRACE);
 
 pub struct LazyCert {
     // Exactly one of raw and cert are ever alive.  Ideally, we'd put

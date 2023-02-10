@@ -7,8 +7,7 @@ use crate::{
     Result,
 };
 
-/// Controls tracing.
-const TRACE: bool = false;
+trace_module!(TRACE);
 
 /// Commands and options.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

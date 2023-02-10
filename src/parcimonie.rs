@@ -86,8 +86,7 @@ use crate::{
     Result,
 };
 
-/// Controls tracing.
-const TRACE: bool = false;
+trace_module!(TRACE);
 
 /// This is a simple heuristic to check whether a certificate might be
 /// flooded.  If a User ID or attribute has more than this number of
