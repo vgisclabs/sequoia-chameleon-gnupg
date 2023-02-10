@@ -123,7 +123,6 @@ pub fn start(config: &crate::Config, command: Option<CmdOrOpt>) {
 
     if command == Some(CmdOrOpt::aXSequoiaParcimonie) {
         // Prevent recursing to avoid fork-bombing.
-        t!("not trying to start parcimonie in the parcimonie daemon");
         return;
     }
 
@@ -169,6 +168,10 @@ fn real_start(config: &crate::Config) -> Result<()> {
 
     for ks in &config.keyserver {
         p.arg("--keyserver").arg(ks.url());
+    }
+
+    if let Some(modules) = crate::tracing::enabled_modules() {
+        p.arg("--debug").arg(modules);
     }
 
     // We now hold the exclusive lock.  Release it now, so that the

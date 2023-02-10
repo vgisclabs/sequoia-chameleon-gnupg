@@ -5,6 +5,11 @@ macro_rules! trace_module {
             $I.store(enable, std::sync::atomic::Ordering::Relaxed);
         }
 
+        /// Returns whether tracing is enabled in this module.
+        pub fn traced() -> bool {
+            $I.load(std::sync::atomic::Ordering::Relaxed)
+        }
+
         static $I: std::sync::atomic::AtomicBool =
             std::sync::atomic::AtomicBool::new(false);
     };
