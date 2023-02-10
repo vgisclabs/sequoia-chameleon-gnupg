@@ -30,6 +30,7 @@ pub mod gnupg_interface;
 
 #[macro_use]
 mod macros;
+pub mod tracing;
 pub mod agent;
 #[allow(dead_code)]
 pub mod argparse;
@@ -1284,6 +1285,8 @@ fn print_additional_version(config: &Config) {
 
 #[allow(dead_code, unused_variables, unused_assignments)]
 fn real_main() -> anyhow::Result<()> {
+    tracing::parse_command_line();
+
     let parser = argparse::Parser::new(
         "gpg",
         "Sign, check, encrypt or decrypt\n\
