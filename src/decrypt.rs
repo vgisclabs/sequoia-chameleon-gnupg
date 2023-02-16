@@ -29,6 +29,10 @@ use sequoia_ipc as ipc;
 use ipc::gnupg::{
     KeyPair,
 };
+
+use sequoia_cert_store as cert_store;
+use cert_store::Store;
+
 use crate::{
     babel,
     common::Common,
@@ -102,9 +106,9 @@ pub fn cmd_decrypt(config: &crate::Config, args: &[String])
     Ok(())
 }
 
-struct DHelper<'a> {
-    config: &'a crate::Config,
-    vhelper: VHelper<'a>,
+struct DHelper<'a, 'store> {
+    config: &'a crate::Config<'store>,
+    vhelper: VHelper<'a, 'store>,
     used_mdc: bool,
     filename: String,
 
@@ -112,8 +116,8 @@ struct DHelper<'a> {
     de_vs_compliant: bool,
 }
 
-impl<'a> DHelper<'a> {
-    fn new(config: &'a crate::Config, vhelper: VHelper<'a>)
+impl<'a, 'store> DHelper<'a, 'store> {
+    fn new(config: &'a crate::Config<'store>, vhelper: VHelper<'a, 'store>)
            -> Self {
         DHelper {
             config,
@@ -278,7 +282,10 @@ impl<'a> DHelper<'a> {
                     "public key is {}", handle));
             }
 
-            if let Some(cert) = self.config.keydb().get(&handle) {
+            if let Some(cert) = self.config.keydb().lookup_by_key(&handle).ok()
+                .and_then(|certs: Vec<_>| certs.into_iter().next())
+                .and_then(|cert| cert.as_cert().ok())
+            {
                 if self.config.verbose > 0 {
                     self.config.warn(format_args!(
                         "using subkey {} instead of primary key {}", handle,
@@ -315,7 +322,10 @@ impl<'a> DHelper<'a> {
             }
 
             // See if we have the recipient cert.
-            let cert = match self.config.keydb().by_subkey(&handle) {
+            let cert = match self.config.keydb().lookup_by_key(&handle).ok()
+                .and_then(|c| c.into_iter().next())
+                .and_then(|c| c.as_cert().ok())
+            {
                 Some(c) => c,
                 None => {
                     emit_no_seckey(keyid)?;
@@ -436,7 +446,7 @@ impl<'a> DHelper<'a> {
     }
 }
 
-impl<'a> DecryptionHelper for DHelper<'a> {
+impl<'a, 'store> DecryptionHelper for DHelper<'a, 'store> {
     fn decrypt<D>(&mut self, pkesks: &[PKESK], skesks: &[SKESK],
                   sym_algo: Option<SymmetricAlgorithm>,
                   decrypt: D) -> Result<Option<openpgp::Fingerprint>>
@@ -447,20 +457,25 @@ impl<'a> DecryptionHelper for DHelper<'a> {
             self.config.override_session_key.is_none() // Voids compliance.
             && (pkesks.is_empty() || skesks.is_empty()) // Both => void.
             && pkesks.iter().all(|pkesk| { // Check all recipients.
-                if let Some(cert) = self.config.keydb()
-                    .get(&pkesk.recipient().into())
+                let certs = if let Ok(certs) = self.config.keydb()
+                    .lookup_by_key(&pkesk.recipient().into())
                 {
+                    certs
+                } else {
+                    return false;
+                };
+
+                for cert in certs.into_iter().filter_map(|cert| cert.as_cert().ok()) {
                     if let Some(key) = cert.keys()
                         .with_policy(&self.config.de_vs_producer, None)
                         .key_handle(pkesk.recipient()).next()
                     {
-                        self.config.de_vs_producer.key(&key).is_ok()
-                    } else {
-                        false // Shouldn't happen.
+                        if self.config.de_vs_producer.key(&key).is_ok() {
+                            return true;
+                        }
                     }
-                } else {
-                    false // If we don't know the recipient, void.
                 }
+                false
             });
 
         let rt = tokio::runtime::Runtime::new()?;
@@ -475,7 +490,7 @@ impl<'a> DecryptionHelper for DHelper<'a> {
     }
 }
 
-impl<'a> VerificationHelper for DHelper<'a> {
+impl<'a, 'store> VerificationHelper for DHelper<'a, 'store> {
     fn inspect(&mut self, pp: &openpgp::parse::PacketParser) -> Result<()> {
         match &pp.packet {
             Packet::SEIP(p) => self.used_mdc = p.version() == 1,

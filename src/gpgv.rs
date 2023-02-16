@@ -1,4 +1,5 @@
 use std::{
+    borrow::Cow,
     fmt,
     fs,
     io,
@@ -9,9 +10,11 @@ use anyhow::{Context, Result};
 
 use sequoia_openpgp as openpgp;
 use openpgp::{
-    cert::prelude::*,
     policy::Policy,
 };
+
+use sequoia_cert_store as cert_store;
+use cert_store::LazyCert;
 
 pub mod gnupg_interface;
 
@@ -91,7 +94,7 @@ const OPTIONS: &[Opt<CmdOrOpt>] = &[
 ];
 
 #[allow(dead_code)]
-pub struct Config {
+pub struct Config<'store> {
     // Runtime.
     fail: std::cell::Cell<bool>,
     policy: GPGPolicy,
@@ -102,7 +105,7 @@ pub struct Config {
     enable_special_filenames: bool,
     homedir: PathBuf,
     ignore_time_conflict: bool,
-    keydb: keydb::KeyDB,
+    keydb: keydb::KeyDB<'store>,
     list_sigs: bool,
     outfile: Option<String>,
     quiet: bool,
@@ -114,7 +117,7 @@ pub struct Config {
     status_fd: status::Fd,
 }
 
-impl Config {
+impl<'store> Config<'store> {
     fn new() -> Result<Self> {
         Ok(Config {
             // Runtime.
@@ -145,7 +148,7 @@ impl Config {
     }
 }
 
-impl common::Common for Config {
+impl<'store> common::Common<'store> for Config<'store> {
     fn argv0(&self) -> &'static str {
         "gpgv"
     }
@@ -163,12 +166,13 @@ impl common::Common for Config {
         &self.homedir
     }
 
-    fn keydb(&self) -> &keydb::KeyDB {
+    fn keydb(&self) -> &keydb::KeyDB<'store> {
         &self.keydb
     }
 
     fn lookup_certs(&self, _query: &common::Query)
-                    -> anyhow::Result<Vec<(common::Validity, &Cert)>> {
+        -> anyhow::Result<Vec<(common::Validity, Cow<LazyCert<'store>>)>>
+    {
         // The verification code uses this to determine the validity.
         // Since gpgv doesn't use trust models, its output doesn't
         // include validity information.  The verification code uses

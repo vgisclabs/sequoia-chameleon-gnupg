@@ -2210,6 +2210,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "sequoia-cert-store"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cf234b5315e6fb459f72715198e6b86e6bdec0776c2bc2f2b35c83aedf343ee6"
+dependencies = [
+ "anyhow",
+ "crossbeam",
+ "dirs",
+ "num_cpus",
+ "once_cell",
+ "openpgp-cert-d",
+ "rayon",
+ "sequoia-net",
+ "sequoia-openpgp",
+ "thiserror",
+ "tokio",
+]
+
+[[package]]
 name = "sequoia-chameleon-gnupg"
 version = "0.2.0"
 dependencies = [
@@ -2236,6 +2255,7 @@ dependencies = [
  "rayon",
  "regex",
  "reqwest",
+ "sequoia-cert-store",
  "sequoia-ipc",
  "sequoia-net",
  "sequoia-openpgp",
@@ -2371,9 +2391,9 @@ dependencies = [
 
 [[package]]
 name = "sequoia-wot"
-version = "0.4.1"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fb50fc6f2cb1de4deee82910501e5e97261132d7b33caaa04b2a8b77ff939dff"
+checksum = "58b0679f90ebf4b4683b7b4a68b20ed0f4ec11d6ed6d6425f95f4d44dd29c8d9"
 dependencies = [
  "anyhow",
  "chrono",
@@ -2384,7 +2404,8 @@ dependencies = [
  "enumber",
  "lazy_static",
  "num_cpus",
- "sequoia-net",
+ "openpgp-cert-d",
+ "sequoia-cert-store",
  "sequoia-openpgp",
  "sequoia-policy-config",
  "thiserror",

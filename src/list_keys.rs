@@ -1,4 +1,5 @@
 use std::{
+    borrow::Cow,
     io::{self, Write},
 };
 
@@ -13,11 +14,14 @@ use openpgp::{
 use sequoia_ipc as ipc;
 use ipc::Keygrip;
 
+use sequoia_cert_store as cert_store;
+use cert_store::LazyCert;
+use cert_store::Store;
+
 use crate::{
     common::Common,
     compliance::KeyCompliance,
     colons::*,
-    keydb::LazyCert,
     trust::{*, cert::*},
 };
 
@@ -46,20 +50,19 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String], list_secret: bool)
         .map(|a| Query::from(&a[..]))
         .collect::<Vec<_>>();
 
-    list_keys(config, config.keydb().iter(), filter, list_secret,
+    list_keys(config, config.keydb().certs(), filter, list_secret,
               args.is_empty(), // Only print header if no query is given.
               sink)
 }
 
-pub fn list_keys<C, S>(config: &crate::Config,
-                       certs: impl Iterator<Item = C>,
-                       filter: Vec<Query>,
-                       list_secret: bool,
-                       emit_header: bool,
-                       mut sink: S)
-                       -> Result<()>
+pub fn list_keys<'a, 'store: 'a, S>(config: &'a crate::Config,
+                                    certs: impl Iterator<Item = Cow<'a, LazyCert<'store>>> + 'a,
+                                    filter: Vec<Query>,
+                                    list_secret: bool,
+                                    emit_header: bool,
+                                    mut sink: S)
+    -> Result<()>
 where
-    C: std::borrow::Borrow<LazyCert>,
     S: Write,
 {
     let vtm = config.trust_model_impl.with_policy(config, Some(config.now()))?;
@@ -78,28 +81,25 @@ where
     let mut emitted_header = false;
 
     for cert in certs {
-        let cert = cert.borrow();
-
         // Filter out certs that the user is not interested in.
-        if ! filter.is_empty() && ! filter.iter().any(|q| q.matches(cert)) {
+        if ! filter.is_empty() && ! filter.iter().any(|q| q.matches(&cert)) {
             continue;
         }
 
-        let cert = if let Ok(cert) = cert.to_cert() {
-            cert
-        } else {
-            // XXX: Silenetly skip it if we can't parse it?
-            continue;
-        };
-
         let has_secret = agent.as_mut()
-            .map(|a| rt.block_on(crate::agent::has_keys(a, cert))).transpose()?
+            .map(|a| rt.block_on(crate::agent::has_keys(a, &cert))).transpose()?
             .unwrap_or_default();
 
         if list_secret && has_secret.is_empty() {
             // No secret (sub)key, don't list this key in --list-secret-keys.
             continue;
         }
+
+        let cert = if let Ok(cert) = cert.to_cert() {
+            cert
+        } else {
+            continue;
+        };
 
         // For humans, we print the location of the store if we list
         // at least one key.

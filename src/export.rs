@@ -5,6 +5,9 @@ use openpgp::{
     serialize::stream::*,
 };
 
+use sequoia_cert_store as cert_store;
+use cert_store::Store;
+
 use crate::{
     common::{Common, Query},
     status::{Status, ExportResult},
@@ -42,7 +45,7 @@ pub fn cmd_export(config: &mut crate::Config, args: &[String],
         .map(|a| Query::from(&a[..]))
         .collect::<Vec<_>>();
 
-    for cert in config.keydb().iter() {
+    for cert in config.keydb().certs() {
         s.count += 1;
 
         // Only export keys with secret if so desired.

@@ -1,6 +1,7 @@
 //! Implements the Tofu+PGP model.
 
 use std::{
+    borrow::Cow,
     time::SystemTime,
 };
 
@@ -8,11 +9,13 @@ use anyhow::Result;
 
 use sequoia_openpgp as openpgp;
 use openpgp::{
-    Cert,
     Fingerprint,
     packet::UserID,
     policy::Policy,
 };
+
+use sequoia_cert_store as cert_store;
+use cert_store::LazyCert;
 
 use crate::{
     Config,
@@ -40,8 +43,10 @@ impl TofuPGP {
 }
 
 impl Model for TofuPGP {
-    fn with_policy<'a>(&self, config: &'a Config, time: Option<SystemTime>)
-                      -> Result<Box<dyn ModelViewAt<'a> + 'a>>
+    fn with_policy<'a, 'store>(&self, config: &'a Config<'store>,
+                               time: Option<SystemTime>)
+        -> Result<Box<dyn ModelViewAt<'a, 'store> + 'a>>
+    where 'store: 'a
     {
         Ok(Box::new(TofuPGPViewAt {
             pgp: self.pgp.with_policy(config, time)?,
@@ -49,11 +54,11 @@ impl Model for TofuPGP {
     }
 }
 
-struct TofuPGPViewAt<'a> {
-    pgp: Box<dyn ModelViewAt<'a> + 'a>,
+struct TofuPGPViewAt<'a, 'store> {
+    pgp: Box<dyn ModelViewAt<'a, 'store> + 'a>,
 }
 
-impl<'a> ModelViewAt<'a> for TofuPGPViewAt<'a> {
+impl<'a, 'store> ModelViewAt<'a, 'store> for TofuPGPViewAt<'a, 'store> {
     fn kind(&self) -> TrustModel {
         TrustModel::TofuPGP
     }
@@ -71,7 +76,9 @@ impl<'a> ModelViewAt<'a> for TofuPGPViewAt<'a> {
         self.pgp.validity(userid, fingerprint)
     }
 
-    fn lookup(&self, query: &Query) -> Result<Vec<(Validity, &'a Cert)>> {
+    fn lookup(&self, query: &Query)
+        -> Result<Vec<(Validity, Cow<'a, LazyCert<'store>>)>>
+    {
         self.pgp.lookup(query)
     }
 }

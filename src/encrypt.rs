@@ -269,7 +269,7 @@ fn do_encrypt(config: &crate::Config, args: &[String],
     Ok(())
 }
 
-async fn ask_password(config: &crate::Config, cacheid: Option<String>)
+async fn ask_password(config: &crate::Config<'_>, cacheid: Option<String>)
                       -> Result<Password> {
     let mut agent = config.connect_agent().await?;
     Ok(crate::agent::get_passphrase(

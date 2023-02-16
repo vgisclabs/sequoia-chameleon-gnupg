@@ -1,6 +1,7 @@
 //! Miscellaneous commands.
 
 use std::{
+    borrow::Cow,
     io::{self, Read},
 };
 
@@ -27,11 +28,13 @@ use openpgp::{
     },
 };
 
+use sequoia_cert_store as cert_store;
+use cert_store::LazyCert;
+
 use crate::{
     babel,
     colons,
     common::Common,
-    keydb::LazyCert,
     status::{Status, NoDataReason},
     utils,
 };
@@ -119,10 +122,10 @@ pub fn cmd_implicit(config: &crate::Config, args: &[String])
         Some(ListKeys) => {
             let certs =
                 RawCertParser::from_reader(input)?
-                    .map(|c| c.and_then(|c| Ok(LazyCert::from(c))))
+                    .map(|r| r.map(|c| Cow::Owned(LazyCert::from(c))))
                     .collect::<Result<Vec<_>>>()?;
             crate::list_keys::list_keys(
-                config, certs.iter(), vec![], false, false, io::stdout())
+                config, certs.into_iter(), vec![], false, false, io::stdout())
         },
         Some(InlineVerify) => {
             let mut sink = if let Some(name) = config.outfile() {
@@ -339,7 +342,7 @@ pub fn cmd_generate_revocation(config: &crate::Config, args: &[String])
     if certs.len() > 1 {
         return Err(anyhow::anyhow!("query \"{}\" matched multiple keys", q));
     }
-    let cert = certs[0].1;
+    let cert = certs[0].1.to_cert()?;
     let primary = cert.primary_key().key();
 
     // Get the primary signer.  To that end, we need a valid cert

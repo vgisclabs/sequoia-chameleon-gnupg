@@ -14,6 +14,9 @@ use sequoia_openpgp::{
 };
 use crate::net; // XXX
 
+use sequoia_cert_store as cert_store;
+use cert_store::Store;
+
 use crate::{
     common::{
 	Common,
@@ -49,14 +52,14 @@ pub fn cmd_refresh_keys(config: &mut crate::Config, args: &[String])
 }
 
 /// Dispatches the --receive-keys and --refresh-keys commands.
-async fn keyserver_import(config: &mut crate::Config, args: &[String],
+async fn keyserver_import(config: &mut crate::Config<'_>, args: &[String],
 			  refresh_keys: bool)
 			  -> Result<()>
 {
     tracer!(TRACE, "keyserver::keyserver_import");
 
     let mut handles: Vec<KeyHandle> = if args.is_empty() && refresh_keys {
-	config.keydb().iter().map(|c| c.fingerprint().into()).collect()
+	config.keydb().fingerprints().map(Into::into).collect()
     } else {
 	args.iter()
 	    .filter_map(|a| match Query::from(a.as_str()) {
@@ -150,7 +153,7 @@ async fn keyserver_import(config: &mut crate::Config, args: &[String],
     Ok(())
 }
 
-async fn importer(config: &mut crate::Config,
+async fn importer(config: &mut crate::Config<'_>,
 		  mut rx: Receiver<Result<Cert>>)
 		  -> Result<()> {
     // We collect stats for the final IMPORT_RES status line.

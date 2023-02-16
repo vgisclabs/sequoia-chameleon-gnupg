@@ -1,4 +1,5 @@
 use std::{
+    borrow::Cow,
     convert::TryFrom,
     collections::BTreeSet,
 };
@@ -31,6 +32,10 @@ use ipc::{
     gnupg::Agent,
     assuan::{Response, escape},
 };
+
+use sequoia_cert_store as cert_store;
+use cert_store::LazyCert;
+
 use futures::stream::StreamExt;
 
 /// Controls how gpg-agent inquires passwords.
@@ -302,7 +307,7 @@ pub async fn has_key(agent: &mut Agent,
 /// Returns the (sub)keys of the given cert that have a secret in the
 /// agent.
 pub async fn has_keys(agent: &mut Agent,
-                      cert: &Cert)
+                      cert: &Cow<'_, LazyCert<'_>>)
                       -> Result<BTreeSet<Fingerprint>>
 {
     let mut result = BTreeSet::default();

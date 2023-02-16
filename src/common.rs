@@ -1,6 +1,7 @@
 //! Controls the execution of commands via the configuration.
 
 use std::{
+    borrow::Cow,
     fmt,
     io,
     path::{Path, PathBuf},
@@ -11,23 +12,24 @@ use anyhow::Result;
 
 use sequoia_openpgp as openpgp;
 use openpgp::{
-    Cert,
     Fingerprint,
     KeyHandle,
     packet::UserID,
     policy::Policy,
 };
 
+use sequoia_cert_store as cert_store;
+use cert_store::LazyCert;
+
 use crate::{
     keydb::KeyDB,
-    keydb::LazyCert,
     status,
 };
 
 pub mod cert;
 
 /// Controls common to gpgv and gpg.
-pub trait Common {
+pub trait Common<'store> {
     /// Returns the name of the program.
     fn argv0(&self) -> &'static str;
 
@@ -78,12 +80,12 @@ pub trait Common {
     }
 
     /// Returns a reference to the key database.
-    fn keydb(&self) -> &KeyDB;
+    fn keydb(&self) -> &KeyDB<'store>;
 
     /// Returns certs matching a given query using groups and the
     /// configured trust model.
     fn lookup_certs(&self, query: &Query)
-                    -> anyhow::Result<Vec<(Validity, &Cert)>>;
+                    -> anyhow::Result<Vec<(Validity, Cow<LazyCert<'store>>)>>;
 
     /// Returns the output file.
     fn outfile(&self) -> Option<&String>;
@@ -187,15 +189,19 @@ impl fmt::Display for TrustModel {
 }
 
 pub trait Model {
-    fn with_policy<'a>(&self, config: &'a crate::Config, at: Option<SystemTime>)
-                      -> Result<Box<dyn ModelViewAt<'a> + 'a>>;
+    fn with_policy<'a, 'store>(&self, config: &'a crate::Config<'store>,
+                               at: Option<SystemTime>)
+        -> Result<Box<dyn ModelViewAt<'a, 'store> + 'a>>
+        where 'store: 'a;
 }
 
 pub fn null_model() -> Box<dyn Model> {
     struct Null(());
     impl Model for Null {
-        fn with_policy<'a>(&self, _: &'a crate::Config, _: Option<SystemTime>)
-                           -> Result<Box<dyn ModelViewAt<'a> + 'a>>
+        fn with_policy<'a, 'store>(&self, _: &'a crate::Config,
+                                   _: Option<SystemTime>)
+            -> Result<Box<dyn ModelViewAt<'a, 'store> + 'a>>
+            where 'store: 'a
         {
             Err(anyhow::anyhow!("Cannot instantiate null model"))
         }
@@ -203,14 +209,15 @@ pub fn null_model() -> Box<dyn Model> {
     Box::new(Null(()))
 }
 
-pub trait ModelViewAt<'a> {
+pub trait ModelViewAt<'a, 'store> {
     fn kind(&self) -> TrustModel;
     fn time(&self) -> SystemTime;
     fn policy(&self) -> &dyn Policy;
     fn validity(&self, userid: &UserID, fingerprint: &Fingerprint)
                 -> Result<Validity>;
 
-    fn lookup(&self, query: &Query) -> Result<Vec<(Validity, &'a Cert)>>;
+    fn lookup(&self, query: &Query)
+        -> Result<Vec<(Validity, Cow<'a, LazyCert<'store>>)>>;
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -264,7 +271,7 @@ pub enum Query<'a> {
     Key(KeyHandle),
     ExactKey(KeyHandle),
     Email(String),
-    UserIDFragment(memchr::memmem::Finder<'a>),
+    UserIDFragment(&'a str),
 }
 
 impl fmt::Display for Query<'_> {
@@ -273,8 +280,8 @@ impl fmt::Display for Query<'_> {
             Query::Key(h) => write!(f, "{}", h),
             Query::ExactKey(h) => write!(f, "{}!", h),
             Query::Email(e) => write!(f, "<{}>", e),
-            Query::UserIDFragment(v) =>
-                write!(f, "{}", String::from_utf8_lossy(v.needle())),
+            Query::UserIDFragment(frag) =>
+                write!(f, "{}", frag),
         }
     }
 }
@@ -292,7 +299,7 @@ impl<'a> From<&'a str> for Query<'a> {
         } else if s.starts_with("<") && s.ends_with(">") {
             Query::Email(s[1..s.len()-1].into())
         } else {
-            Query::UserIDFragment(memchr::memmem::Finder::new(s))
+            Query::UserIDFragment(s)
         }
     }
 }
@@ -301,13 +308,19 @@ impl Query<'_> {
     /// Returns whether `cert` matches this query.
     ///
     /// Note: the match must be authenticated!
-    pub fn matches(&self, cert: &LazyCert) -> bool {
+    pub fn matches(&self, cert: &Cow<LazyCert>) -> bool {
         match self {
             Query::Key(h) | Query::ExactKey(h) =>
                 cert.keys().any(|k| k.key_handle().aliases(h)),
             Query::Email(e) => cert.userids().any(|u| u.email().ok().flatten().as_ref() == Some(e)),
             Query::UserIDFragment(f) =>
-                cert.userids().any(|u| f.find(u.value()).is_some()),
+                cert.userids().any(|u| {
+                    if let Ok(u) = std::str::from_utf8(u.value()) {
+                        u.contains(f)
+                    } else {
+                        false
+                    }
+                }),
         }
     }
 
@@ -318,7 +331,12 @@ impl Query<'_> {
         match self {
             Query::Key(_) | Query::ExactKey(_) => false,
             Query::Email(e) => uid.email().ok().flatten().as_ref() == Some(e),
-            Query::UserIDFragment(f) => f.find(uid.value()).is_some(),
+            Query::UserIDFragment(f) =>
+                if let Ok(u) = std::str::from_utf8(uid.value()) {
+                    u.contains(f)
+                } else {
+                    false
+                },
         }
     }
 }

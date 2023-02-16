@@ -1,14 +1,15 @@
 use std::{
+    borrow::Cow,
     cell::RefCell,
     collections::HashMap,
     time::SystemTime,
 };
 
 use anyhow::Result;
+use anyhow::Context;
 
 use sequoia_openpgp as openpgp;
 use openpgp::{
-    Cert,
     Fingerprint,
     KeyHandle,
     packet::UserID,
@@ -19,10 +20,14 @@ use wot::{
     CertSynopsis,
     CertificationSet,
     store::Backend,
-    store::CertObject,
     store::Store,
     store::StoreError,
 };
+
+use sequoia_cert_store as cert_store;
+use cert_store::LazyCert;
+use cert_store::Store as _;
+use cert_store::store::UserIDQueryParams;
 
 use crate::{
     Config,
@@ -47,8 +52,10 @@ impl WoT {
 }
 
 impl Model for WoT {
-    fn with_policy<'a>(&self, config: &'a Config, at: Option<SystemTime>)
-                      -> Result<Box<dyn ModelViewAt<'a> + 'a>>
+    fn with_policy<'a, 'store>(&self, config: &'a Config<'store>,
+                               at: Option<SystemTime>)
+        -> Result<Box<dyn ModelViewAt<'a, 'store> + 'a>>
+        where 'store: 'a
     {
         // Start with the roots from the trust database.
         let mut roots = config.trustdb.ultimately_trusted_keys();
@@ -70,18 +77,18 @@ impl Model for WoT {
     }
 }
 
-struct WoTData<'a> {
-    config: &'a Config,
+struct WoTData<'a, 'store> {
+    config: &'a Config<'store>,
     time: SystemTime,
     redge_cache: RefCell<HashMap<Fingerprint, Vec<CertificationSet>>>,
 }
 
-struct WoTViewAt<'a> {
+struct WoTViewAt<'a, 'store> {
     roots: Vec<Fingerprint>,
-    network: wot::Network<WoTData<'a>>,
+    network: wot::Network<WoTData<'a, 'store>>,
 }
 
-impl<'a> ModelViewAt<'a> for WoTViewAt<'a> {
+impl<'a, 'store> ModelViewAt<'a, 'store> for WoTViewAt<'a, 'store> {
     fn kind(&self) -> TrustModel {
         TrustModel::PGP
     }
@@ -116,7 +123,7 @@ impl<'a> ModelViewAt<'a> for WoTViewAt<'a> {
         }
     }
 
-    fn lookup(&self, query: &Query) -> Result<Vec<(Validity, &'a Cert)>> {
+    fn lookup(&self, query: &Query) -> Result<Vec<(Validity, Cow<'a, LazyCert<'store>>)>> {
         let certs = self.network.config.keydb.lookup_candidates(&query)?;
         Ok(certs.into_iter()
            .map(|c| {
@@ -151,45 +158,17 @@ impl<'a> ModelViewAt<'a> for WoTViewAt<'a> {
     }
 }
 
-impl wot::store::Backend for WoTData<'_> {
-    /// Returns the certificates matching the handle.
-    ///
-    /// Returns [`StoreError::NotFound`] if the certificate is not found.
-    ///
-    /// The caller may assume that looking up a fingerprint returns at
-    /// most one certificate.
-    fn cert_object<'a>(&'a self, kh: &KeyHandle) -> Result<Vec<CertObject<'a>>>
-    {
-        let certs = self.config.keydb.by_primaries(std::iter::once(kh))?
-            .into_iter()
-            .map(|c| {
-                CertObject::CertRef(&c)
-            })
-            .collect::<Vec<_>>();
-        if certs.is_empty() {
-            Err(wot::store::StoreError::NotFound(kh.clone()).into())
-        } else {
-            Ok(certs)
-        }
-    }
-
-    /// Lists all of the certificates.
-    fn list_cert_objects<'a>(&'a self)
-        -> Box<dyn Iterator<Item=Fingerprint> + 'a>
-    {
-        Box::new(self.config.keydb.iter().map(|c| c.fingerprint()))
-    }
-}
-
-impl<'wot> wot::store::Store for WoTData<'wot> {
+impl wot::store::Store for WoTData<'_, '_> {
     /// Returns the reference time.
     fn reference_time(&self) -> SystemTime {
         self.time
     }
 
     /// Lists all of the certificates.
-    fn list<'a>(&'a self) -> Box<dyn Iterator<Item=Fingerprint> + 'a> {
-        self.list_cert_objects()
+    fn iter_fingerprints<'a>(&'a self)
+        -> Box<dyn Iterator<Item=Fingerprint> + 'a>
+    {
+        self.config.keydb.fingerprints()
     }
 
     /// Returns the certificates matching the handle.
@@ -200,15 +179,16 @@ impl<'wot> wot::store::Store for WoTData<'wot> {
     ///
     /// The caller may assume that looking up a fingerprint returns at
     /// most one certificate.
-    fn cert(&self, kh: &KeyHandle) -> Result<Vec<CertSynopsis>>
+    fn lookup_synopses(&self, kh: &KeyHandle) -> Result<Vec<CertSynopsis>>
     {
         let certs: Vec<CertSynopsis>
-            = self.config.keydb.by_primaries(std::iter::once(kh))?
+            = self.config.keydb.lookup_by_cert(kh)?
             .into_iter()
             .filter_map(|c| {
                 // Silently skip invalid certificates.
-               let vc = c.with_policy(&self.config.policy, self.time).ok()?;
-               Some(CertSynopsis::from(vc))
+                c.with_policy(&self.config.policy, self.time)
+                    .map(|vc| CertSynopsis::from(vc))
+                    .ok()
            })
             .collect();
         if certs.is_empty() {
@@ -232,9 +212,46 @@ impl<'wot> wot::store::Store for WoTData<'wot> {
 
         Ok(redges)
     }
+
+    fn lookup_synopses_by_userid(&self, userid: UserID) -> Vec<Fingerprint> {
+        self.config.keydb.lookup_by_userid(&userid)
+            .unwrap_or(Vec::new())
+            .into_iter()
+            .map(|c| c.fingerprint())
+            .collect()
+    }
+
+    fn lookup_synopses_by_email(&self, email: &str) -> Vec<(Fingerprint, UserID)> {
+        let email = if let Ok(email) = UserIDQueryParams::is_email(email) {
+            email
+        } else {
+            return Vec::new();
+        };
+
+        self.config.keydb.lookup_by_email(&email)
+            .unwrap_or(Vec::new())
+            .into_iter()
+            .flat_map(|cert| {
+                cert.userids()
+                    .filter_map(|userid| {
+                        if let Ok(Some(e)) = userid.email() {
+                            if e == email {
+                                Some((cert.fingerprint(), userid.clone()))
+                            } else {
+                                None
+                            }
+                        } else {
+                            None
+                        }
+                    })
+                    .collect::<Vec<_>>()
+                    .into_iter()
+            })
+            .collect()
+    }
 }
 
-impl<'a> WoTData<'a> {
+impl<'a, 'store> WoTData<'a, 'store> {
     /// Returns a certification set for the specified certificate.
     ///
     /// A `CertificateSet` is returned for the certificate itself as
@@ -247,16 +264,14 @@ impl<'a> WoTData<'a> {
     fn certifications_of_uncached(&self, target: &Fingerprint)
         -> Result<Vec<CertificationSet>>
     {
-        let target = KeyHandle::from(target);
-
-        let cert = self.config.keydb.by_primary(&target)
-            .ok_or_else(|| StoreError::NotFound(target.clone()))?;
+        let cert = self.config.keydb.lookup_by_cert_fpr(&target)
+            .with_context(|| StoreError::NotFound(KeyHandle::from(target.clone())))?;
 
         // Turn invalid certificate errors into NotFound errors.
         let vc = cert.with_policy(self.config.policy(), self.time)
-            .map_err(|_| StoreError::NotFound(target))?;
+            .map_err(|_| StoreError::NotFound(KeyHandle::from(target.clone())))?;
 
-        let redges = self.redges(vc, 0.into());
+        let redges = self.config.keydb.redges(vc, 0.into());
 
         Ok(redges)
     }

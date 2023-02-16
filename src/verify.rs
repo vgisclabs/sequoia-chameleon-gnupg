@@ -23,6 +23,9 @@ use openpgp::parse::{
 };
 use openpgp::parse::stream::*;
 
+use sequoia_cert_store as cert_store;
+use cert_store::Store;
+
 use crate::{
     babel,
     common::{Common, Query, Validity},
@@ -122,8 +125,8 @@ pub fn cmd_verify(control: &crate::Config, args: &[String])
     }
 }
 
-pub struct VHelper<'a> {
-    control: &'a crate::Config,
+pub struct VHelper<'a, 'store> {
+    control: &'a crate::Config<'store>,
     #[allow(dead_code)]
     signatures: usize,
     good_signatures: usize,
@@ -140,8 +143,8 @@ pub struct VHelper<'a> {
     weak_digest_warning_printed: HashSet<HashAlgorithm>,
 }
 
-impl<'a> VHelper<'a> {
-    pub fn new(control: &'a crate::Config, signatures: usize)
+impl<'a, 'store> VHelper<'a, 'store> {
+    pub fn new(control: &'a crate::Config<'store>, signatures: usize)
                -> Self {
         VHelper {
             control,
@@ -743,10 +746,12 @@ impl<'a> VHelper<'a> {
     }
 }
 
-impl<'a> VerificationHelper for VHelper<'a> {
+impl<'a, 'store> VerificationHelper for VHelper<'a, 'store> {
     fn get_certs(&mut self, ids: &[openpgp::KeyHandle]) -> Result<Vec<Cert>> {
-        Ok(ids.iter().map(|id| self.control.keydb().get(id).cloned())
-           .filter_map(|v| v).collect())
+        Ok(ids.iter().filter_map(|id| self.control.keydb().lookup_by_key(id).ok())
+           .flatten()
+           .filter_map(|cert| cert.as_cert().ok())
+           .collect())
     }
 
     fn check(&mut self, structure: MessageStructure) -> Result<()> {

@@ -1,4 +1,5 @@
 use std::{
+    borrow::Cow,
     collections::BTreeMap,
     fmt,
     fs,
@@ -22,6 +23,9 @@ use openpgp::{
     policy::Policy,
     types::*,
 };
+
+use sequoia_cert_store as cert_store;
+use cert_store::LazyCert;
 
 pub mod net; // XXX
 pub mod wkd; // XXX
@@ -454,7 +458,7 @@ use CmdOrOpt::*;
 include!("gpg.option.inc");
 
 #[allow(dead_code)]
-pub struct Config {
+pub struct Config<'store> {
     // Runtime.
     clock: clock::Clock,
     fail: std::cell::Cell<bool>,
@@ -505,7 +509,7 @@ pub struct Config {
     import_options: u32,
     input_size_hint: Option<u64>,
     interactive: bool,
-    keydb: keydb::KeyDB,
+    keydb: keydb::KeyDB<'store>,
     keyserver: Vec<KeyserverURL>,
     keyserver_options: KeyserverOptions,
     list_only: bool,
@@ -572,7 +576,7 @@ pub struct Config {
     status_fd: status::Fd,
 }
 
-impl Config {
+impl<'store> Config<'store> {
     fn new() -> Result<Self> {
         Ok(Config {
             // Runtime.
@@ -803,7 +807,7 @@ impl Config {
         Ok(())
     }
 
-    fn mut_keydb(&mut self) -> &mut keydb::KeyDB {
+    fn mut_keydb(&mut self) -> &mut keydb::KeyDB<'store> {
         &mut self.keydb
     }
 
@@ -836,7 +840,7 @@ impl Config {
 
     /// Returns certs matching a given query using groups and the
     /// configured trust model.
-    pub fn lookup_certs(&self, query: &Query) -> Result<Vec<(Validity, &Cert)>> {
+    pub fn lookup_certs(&self, query: &Query) -> Result<Vec<(Validity, Cow<LazyCert<'store>>)>> {
         self.lookup_certs_with(
             self.trust_model_impl.with_policy(self, Some(self.now()))?.as_ref(),
             query, true)
@@ -844,11 +848,12 @@ impl Config {
 
     /// Returns certs matching a given query using groups and the
     /// given trust model.
-    pub fn lookup_certs_with<'a: 't, 't>(&'a self,
-                                         vtm: &dyn trust::ModelViewAt<'t>,
-                                         query: &Query,
-                                         expand_groups: bool)
-                                         -> Result<Vec<(Validity, &'t Cert)>> {
+    pub fn lookup_certs_with<'a>(&self,
+                                 vtm: &dyn trust::ModelViewAt<'a, 'store>,
+                                 query: &Query,
+                                 expand_groups: bool)
+        -> Result<Vec<(Validity, Cow<'a, LazyCert<'store>>)>>
+    {
         match query {
             Query::Key(_) | Query::ExactKey(_) =>
                 (), // Let the trust model do the lookup.
@@ -869,9 +874,7 @@ impl Config {
             },
             // Maybe expand groups.  See comment above.
             Query::UserIDFragment(f) => if expand_groups {
-                let e = std::str::from_utf8(f.needle())
-                    .expect("was a String before");
-                if let Some(queries) = self.groups.get(e) {
+                if let Some(queries) = self.groups.get(&f[..]) {
                     let mut acc = Vec::new();
                     for query in queries {
                         let q = query.as_str().into();
@@ -928,7 +931,7 @@ impl Config {
     }
 }
 
-impl common::Common for Config {
+impl<'store> common::Common<'store> for Config<'store> {
     fn argv0(&self) -> &'static str {
         "gpg"
     }
@@ -950,12 +953,13 @@ impl common::Common for Config {
         &self.homedir
     }
 
-    fn keydb(&self) -> &keydb::KeyDB {
+    fn keydb(&self) -> &keydb::KeyDB<'store> {
         &self.keydb
     }
 
     fn lookup_certs(&self, query: &Query)
-                    -> anyhow::Result<Vec<(Validity, &Cert)>> {
+        -> anyhow::Result<Vec<(Validity, Cow<LazyCert<'store>>)>>
+    {
         Config::lookup_certs(self, query)
     }
 

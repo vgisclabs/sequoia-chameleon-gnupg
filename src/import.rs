@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 use anyhow::Result;
 
 use sequoia_openpgp as openpgp;
@@ -14,6 +16,10 @@ use openpgp::{
     },
 };
 
+use sequoia_cert_store as cert_store;
+use cert_store::Store;
+use cert_store::StoreUpdate;
+
 use crate::{
     common::Common,
     utils,
@@ -29,7 +35,7 @@ pub fn cmd_import(config: &mut crate::Config, args: &[String])
     rt.block_on(real_cmd_import(config, args))
 }
 
-async fn real_cmd_import(config: &mut crate::Config, args: &[String])
+async fn real_cmd_import(config: &mut crate::Config<'_>, args: &[String])
                          -> Result<()>
 {
     // We collect stats for the final IMPORT_RES status line.
@@ -85,7 +91,7 @@ async fn real_cmd_import(config: &mut crate::Config, args: &[String])
     Ok(())
 }
 
-pub async fn do_import_cert(config: &mut crate::Config,
+pub async fn do_import_cert(config: &mut crate::Config<'_>,
                             s: &mut crate::status::ImportResult,
                             cert: openpgp::Cert) -> Result<()> {
     // We collect stats for the IMPORT_OK status line.
@@ -114,9 +120,25 @@ pub async fn do_import_cert(config: &mut crate::Config,
         utils::best_effort_primary_uid(config.policy(), &cert);
 
     // See if we know the cert.
-    if let Some(existing) =
-        config.keydb().by_primary(&cert.key_handle())
+    if let Ok(existing) =
+        config.keydb().lookup_by_cert_fpr(&cert.fingerprint())
     {
+        let mut _existing;
+        let existing = if let Ok(c) = existing.to_cert() {
+            c
+        } else {
+            // We failed to turn a RawCert into a Cert.  Now it's time
+            // for some insanity: we clone the new certificate's
+            // primary key and turn it into a Cert.  This will cause
+            // the existing entry to be overwritten, which is the best we
+            // can do in this case.
+            _existing = Cert::from_packets(
+                std::iter::once(
+                    Packet::from(cert.primary_key().key().clone())))
+                .expect("valid");
+            &_existing
+        };
+
         // We do, this is an update.
         if &cert == existing {
             s.unchanged += 1;
@@ -215,7 +237,7 @@ pub async fn do_import_cert(config: &mut crate::Config,
                 })?;
 
             // Actually store the cert.
-            config.mut_keydb().insert(merged)?;
+            config.mut_keydb().update(Cow::Owned(merged.into()))?;
         }
     } else {
         flags.set(IMPORT_OK_NEW_KEY);
@@ -234,7 +256,7 @@ pub async fn do_import_cert(config: &mut crate::Config,
             })?;
 
         // Actually store the cert.
-        config.mut_keydb().insert(cert)?;
+        config.mut_keydb().update(Cow::Owned(cert.into()))?;
     }
 
     if let Some(key) = key {
@@ -281,7 +303,7 @@ pub async fn do_import_cert(config: &mut crate::Config,
     Ok(())
 }
 
-pub async fn do_import_failed(config: &mut crate::Config,
+pub async fn do_import_failed(config: &mut crate::Config<'_>,
                               s: &mut crate::status::ImportResult,
                               e: anyhow::Error,
                               packets: Vec<openpgp::Packet>) -> Result<()>
@@ -316,11 +338,14 @@ pub async fn do_import_failed(config: &mut crate::Config,
                 // XXX: Support 3rd-party revocations.
                 let issuers = revocation.get_issuers();
                 if let Some(cert) = issuers.iter()
-                    .find_map(|i| config.keydb().by_primary(i))
+                    .flat_map(|i| {
+                        config.keydb().lookup_by_cert(i).unwrap_or(Vec::new())
+                    })
+                    .next()
                 {
                     // Good.  Now, construct a minimal cert to import.
                     let min = openpgp::Cert::from_packets(vec![
-                        cert.primary_key().key().clone().into(),
+                        cert.primary_key().clone().into(),
                         Packet::from(revocation.clone()),
                     ].into_iter())?;
                     do_import_cert(config, s, min).await?;

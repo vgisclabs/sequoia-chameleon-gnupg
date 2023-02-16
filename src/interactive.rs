@@ -33,7 +33,7 @@ impl Fd {
     }
 }
 
-impl Config {
+impl Config<'_> {
     /// Prompts the given question `keyword` (when reading via
     /// command-fd) or `prompt` (when reading via `stdin`), and reads
     /// a line from the command-fd or stdin, as appropriate.

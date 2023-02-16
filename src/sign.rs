@@ -129,7 +129,7 @@ pub fn cmd_sign(config: &crate::Config, args: &[String],
     Ok(())
 }
 
-pub async fn get_signers(config: &crate::Config)
+pub async fn get_signers(config: &crate::Config<'_>)
                          -> Result<(Vec<Box<dyn crypto::Signer + Send + Sync>>,
                                     Vec<(PublicKeyAlgorithm, Fingerprint)>)> {
     let mut signers = vec![];
@@ -146,7 +146,7 @@ pub async fn get_signers(config: &crate::Config)
         // first hit wins.
         let cert = match certs.len() {
             0 => return Err(anyhow::anyhow!("Signing key {} not found", query)),
-            1 => certs[0].1,
+            1 => &certs[0].1,
             n => return Err(anyhow::anyhow!(
                 "Signing key {} maps to {} different keys: {:?}", query, n,
                 certs.iter().map(|c| c.1.fingerprint().to_string())

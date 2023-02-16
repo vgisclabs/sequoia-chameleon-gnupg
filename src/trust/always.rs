@@ -1,6 +1,7 @@
 //! Implements the "always trust" model.
 
 use std::{
+    borrow::Cow,
     time::SystemTime,
 };
 
@@ -8,11 +9,13 @@ use anyhow::Result;
 
 use sequoia_openpgp as openpgp;
 use openpgp::{
-    Cert,
     Fingerprint,
     packet::UserID,
     policy::Policy,
 };
+
+use sequoia_cert_store as cert_store;
+use cert_store::LazyCert;
 
 use crate::{
     Config,
@@ -31,8 +34,10 @@ use crate::{
 pub struct Always(());
 
 impl Model for Always {
-    fn with_policy<'a>(&self, config: &'a Config, time: Option<SystemTime>)
-                      -> Result<Box<dyn ModelViewAt<'a> + 'a>>
+    fn with_policy<'a, 'store>(&self, config: &'a Config<'store>,
+                               time: Option<SystemTime>)
+        -> Result<Box<dyn ModelViewAt<'a, 'store> + 'a>>
+    where 'store: 'a
     {
         Ok(Box::new(AlwaysViewAt {
             config,
@@ -41,12 +46,12 @@ impl Model for Always {
     }
 }
 
-struct AlwaysViewAt<'a> {
-    config: &'a Config,
+struct AlwaysViewAt<'a, 'store> {
+    config: &'a Config<'store>,
     time: SystemTime,
 }
 
-impl<'a> ModelViewAt<'a> for AlwaysViewAt<'a> {
+impl<'a, 'store> ModelViewAt<'a, 'store> for AlwaysViewAt<'a, 'store> {
     fn kind(&self) -> TrustModel {
         TrustModel::Always
     }
@@ -65,7 +70,7 @@ impl<'a> ModelViewAt<'a> for AlwaysViewAt<'a> {
         Ok(Validity::Unknown)
     }
 
-    fn lookup(&self, query: &Query) -> Result<Vec<(Validity, &'a Cert)>> {
+    fn lookup(&self, query: &Query) -> Result<Vec<(Validity, Cow<'a, LazyCert<'store>>)>> {
         Ok(self.config.keydb.lookup_candidates(query)?
            .into_iter()
            .map(|c| (Validity::Unknown, c))

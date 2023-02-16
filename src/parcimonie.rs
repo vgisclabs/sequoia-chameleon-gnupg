@@ -53,6 +53,7 @@
 //! the time to sleep after doing an update, we limit lambda to 19
 //! hours.
 
+use std::borrow::Cow;
 use std::collections::HashMap;
 use std::collections::hash_map::Entry;
 use std::fs::File;
@@ -72,6 +73,10 @@ use openpgp::Fingerprint;
 use openpgp::cert::prelude::*;
 use openpgp::types::RevocationStatus;
 use openpgp::packet::prelude::*;
+
+use sequoia_cert_store as cert_store;
+use cert_store::Store;
+use cert_store::StoreUpdate;
 
 use crate::net; // XXX
 
@@ -250,7 +255,7 @@ pub fn cmd_parcimonie(config: &mut crate::Config, args: &[String])
     }
 }
 
-async fn worker(config: &mut crate::Config) -> openpgp::Result<()> {
+async fn worker(config: &mut crate::Config<'_>) -> openpgp::Result<()> {
     tracer!(TRACE, "parcimonie::worker");
 
     // See which methods we may use to update the certs.
@@ -261,7 +266,9 @@ async fn worker(config: &mut crate::Config) -> openpgp::Result<()> {
 
     let mut rng = rand::thread_rng();
 
-    let mut certs: Vec<_> = config.keydb().iter().collect();
+    let mut certs: Vec<_> = config.keydb().certs()
+        .filter_map(|c| c.as_cert().ok())
+        .collect();
     let mut n = certs.len();
     loop {
         // Do not overstay our welcome.
@@ -316,7 +323,9 @@ async fn worker(config: &mut crate::Config) -> openpgp::Result<()> {
             // monitor may have changed.
             let _ = config.mut_keydb().reinitialize(true);
 
-            certs = config.keydb().iter().collect();
+            certs = config.keydb().certs()
+                .filter_map(|c| c.as_cert().ok())
+                .collect();
             n = certs.len();
 
             if n == 0 {
@@ -330,8 +339,7 @@ async fn worker(config: &mut crate::Config) -> openpgp::Result<()> {
                 let i = rng.gen_range(0..n);
                 let c = certs.get(i).unwrap();
 
-                match c.to_cert()
-                    .and_then(|c| c.with_policy(config.policy(), None))
+                match c.with_policy(config.policy(), None)
                 {
                     Ok(vc) => {
                         if let RevocationStatus::Revoked(_)
@@ -373,8 +381,7 @@ async fn worker(config: &mut crate::Config) -> openpgp::Result<()> {
 
             // Get all of the valid, non-revoked email addresses.
             let emails: Vec<String> = if akl_wkd {
-                match cert.to_cert()
-                    .and_then(|c| c.with_policy(config.policy(), None))
+                match cert.with_policy(config.policy(), None)
                 {
                     Ok(vcert) => {
                         let mut emails: Vec<String> = vcert.userids()
@@ -512,11 +519,15 @@ async fn worker(config: &mut crate::Config) -> openpgp::Result<()> {
 
                     // Merge the update into the existing key
                     // material, if any.
-                    let cert = if let Some(existing)
-                        = config.keydb().by_primary(&cert.fingerprint().into())
+                    let cert = if let Ok(existing)
+                        = config.keydb().lookup_by_cert_fpr(&cert.fingerprint())
                     {
-                        existing.clone().merge_public(cert)
-                            .expect("same certificate")
+                        if let Ok(existing) = existing.to_cert() {
+                            existing.clone().merge_public(cert)
+                                .expect("same certificate")
+                        } else {
+                            cert
+                        }
                     } else {
                         cert
                     };
@@ -527,7 +538,7 @@ async fn worker(config: &mut crate::Config) -> openpgp::Result<()> {
                 .collect::<Vec<Cert>>();
 
             for cert in certs {
-                if let Err(e) = config.mut_keydb().insert(cert) {
+                if let Err(e) = config.mut_keydb().update(Cow::Owned(cert.into())) {
                     t!("inserting cert: {}", e);
                 }
             }
@@ -600,7 +611,7 @@ fn clean(config: &crate::Config, cert: Cert) -> Option<Cert> {
             // very old certifications.
             for issuer in sig.issuer_fingerprints() {
                 // Do we have an issuer?
-                if let Some(_) = ks.by_primary(&issuer.into()) {
+                if let Ok(_) = ks.lookup_by_cert_fpr(issuer) {
                     // Do we already have a sig from this issuer?
                     match most_recent.entry(issuer.clone()) {
                         Entry::Occupied(mut e) => {
