@@ -35,6 +35,14 @@ pub(crate) fn indent(i: isize) -> &'static str {
 }
 
 macro_rules! tracer {
+    // Make tracer!(true, ...) work
+    ( true, $func:expr ) => {
+        tracer!(std::sync::atomic::AtomicBool::new(true), $func, 0)
+    };
+    // as well as tracer!(false, ...).
+    ( false, $func:expr ) => {
+        tracer!(std::sync::atomic::AtomicBool::new(false), $func, 0)
+    };
     ( $TRACE:expr, $func:expr ) => {
         tracer!($TRACE, $func, 0)
     };
