@@ -11,6 +11,21 @@ test:
     - mkdir -p /run/user/$UID # For GnuPG's socket directories
     - cargo test
 
+all_commits:
+  # Test each commit up to main, to facilitate bisecting.
+  interruptible: true
+  script:
+    - if [ -d target ]; then find target | wc --lines; du -sh target; fi
+    - if [ -d cargo ]; then find cargo | wc --lines; du -sh cargo; fi
+    - rustc --version
+    - cargo --version
+    - apt-cache policy libgcrypt20 gnupg
+    - gpg --version
+    - mkdir -p /run/user/$UID # For GnuPG's socket directories
+    - .ci/all_commits.sh
+  variables:
+    GIT_STRATEGY: clone
+
 variables:
   CARGO_HOME: $CI_PROJECT_DIR/cargo
   CARGO_FLAGS: --color always
