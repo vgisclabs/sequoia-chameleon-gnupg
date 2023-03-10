@@ -182,7 +182,8 @@ fn real_start(config: &crate::Config) -> Result<()> {
         .stdout(Stdio::null())
         .stderr(Stdio::null())
         .arg("--x-sequoia-parcimonie")
-        .arg("--auto-key-locate").arg(akl);
+        .arg("--auto-key-locate").arg(akl)
+        .arg("--homedir").arg(&config.homedir);
 
     for ks in &config.keyserver {
         p.arg("--keyserver").arg(ks.url());
