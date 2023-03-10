@@ -121,6 +121,23 @@ fn keep_running(config: &crate::Config) -> bool {
 pub fn start(config: &crate::Config, command: Option<CmdOrOpt>) {
     tracer!(TRACE, "parcimonie::start");
 
+    match std::fs::metadata(&config.homedir) {
+        Err(err) => {
+            // Home directory doesn't exist.
+            t!("Not starting parcimonie, error stat'ing \
+                home directory ({:?}): {:?}",
+               config.homedir, err);
+            return;
+        }
+        Ok(metadata) => {
+            if ! metadata.is_dir() {
+                t!("Not starting parcimonie, home directory ({:?}) \
+                    is not a directory",
+                   config.homedir);
+            }
+        }
+    }
+
     if command == Some(CmdOrOpt::aXSequoiaParcimonie) {
         // Prevent recursing to avoid fork-bombing.
         return;
