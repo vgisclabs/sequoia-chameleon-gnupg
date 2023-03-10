@@ -180,6 +180,7 @@ fn real_start(config: &crate::Config) -> Result<()> {
     let mut p = Command::new(exe);
     p.stdin(Stdio::null())
         .stdout(Stdio::null())
+        .stderr(Stdio::null())
         .arg("--x-sequoia-parcimonie")
         .arg("--auto-key-locate").arg(akl);
 
