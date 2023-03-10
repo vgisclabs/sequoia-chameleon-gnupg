@@ -16,6 +16,7 @@ const PLAINTEXT: &[u8] = b"plaintext";
 
 /// Tests --trust-model=always.
 #[test]
+#[ntest::timeout(60000)]
 fn always() -> Result<()> {
     let mut experiment = make_experiment!()?;
 
@@ -42,6 +43,7 @@ fn always() -> Result<()> {
 
 /// Tests --trust-model=pgp.
 #[test]
+#[ntest::timeout(60000)]
 fn pgp() -> Result<()> {
     for (owner_trust, expectation) in [
         (None, false),
@@ -91,6 +93,7 @@ fn pgp() -> Result<()> {
 
 /// Tests --trust-model=auto.
 #[test]
+#[ntest::timeout(60000)]
 fn auto() -> Result<()> {
     for (owner_trust, expectation) in [
         (None, false),

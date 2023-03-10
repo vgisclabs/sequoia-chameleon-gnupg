@@ -3,6 +3,7 @@ use anyhow::Result;
 use super::super::*;
 
 #[test]
+#[ntest::timeout(60000)]
 fn version() -> Result<()> {
     let mut experiment = make_experiment!()?;
     let diff = experiment.invoke(&[
@@ -14,6 +15,7 @@ fn version() -> Result<()> {
 }
 
 #[test]
+#[ntest::timeout(60000)]
 fn help() -> Result<()> {
     let mut experiment = make_experiment!()?;
     let diff = experiment.invoke(&[
@@ -25,6 +27,7 @@ fn help() -> Result<()> {
 }
 
 #[test]
+#[ntest::timeout(60000)]
 fn dump_options() -> Result<()> {
     let mut experiment = make_experiment!()?;
     let diff = experiment.invoke(&[

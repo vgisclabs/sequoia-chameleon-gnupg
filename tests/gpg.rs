@@ -349,7 +349,11 @@ impl Experiment {
         let mut path: PathBuf =
             PathBuf::from(env!("CARGO_MANIFEST_DIR"))
             .join("tests")
-            .join(function[5..] // Drop the extra "gpg::".
+            .join(function
+                  // Added by ntest.
+                  .strip_suffix("::ntest_callback").unwrap_or(function)
+                  // Drop the extra "gpg::".
+                  [5..]
                   // Turn it into a relative path.
                   .replace("::", &std::path::MAIN_SEPARATOR.to_string()));
         for parameter in parameters {

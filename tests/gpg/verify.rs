@@ -20,6 +20,7 @@ const MSG: &[u8] = b"Hello, world!";
 const MSG_BAD: &[u8] = b"Hello, world?";
 
 #[test]
+#[ntest::timeout(60000)]
 fn basic() -> Result<()> {
     let mut experiment = make_experiment!()?;
     let cert = experiment.artifact(
@@ -52,6 +53,7 @@ fn basic() -> Result<()> {
 }
 
 #[test]
+#[ntest::timeout(60000)]
 fn cipher_suites() -> Result<()> {
     use CipherSuite::*;
     for cs in vec![
@@ -98,6 +100,7 @@ fn cipher_suites() -> Result<()> {
 }
 
 #[test]
+#[ntest::timeout(60000)]
 fn hash_algos() -> Result<()> {
     let mut experiment = make_experiment!()?;
     let cert = experiment.artifact(
@@ -150,6 +153,7 @@ fn hash_algos() -> Result<()> {
 }
 
 #[test]
+#[ntest::timeout(60000)]
 fn weak_hash_algos() -> Result<()> {
     let mut experiment = make_experiment!()?;
     let cert = experiment.artifact(
@@ -206,6 +210,7 @@ fn weak_hash_algos() -> Result<()> {
 }
 
 #[test]
+#[ntest::timeout(60000)]
 fn signature_types() -> Result<()> {
     let mut experiment = make_experiment!()?;
     let cert = experiment.artifact(
@@ -266,6 +271,7 @@ fn signature_types() -> Result<()> {
 }
 
 #[test]
+#[ntest::timeout(60000)]
 fn extended() -> Result<()> {
     let mut experiment = make_experiment!()?;
 
@@ -424,6 +430,7 @@ fn extended() -> Result<()> {
 }
 
 #[test]
+#[ntest::timeout(60000)]
 fn wrong_key() -> Result<()> {
     let mut experiment = make_experiment!()?;
     let cert = experiment.artifact(
