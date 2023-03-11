@@ -664,19 +664,25 @@ impl fmt::Display for Diff<'_> {
             writeln!(f, "stdout (edit distance {}):",
                      self.oracle.stdout_edit_distance(&self.us))?;
             udiff(f,
+                  "oracle stdout",
                   &String::from_utf8_lossy(&self.oracle.stdout),
+                  "chameleon stdout",
                   &String::from_utf8_lossy(&self.us.stdout))?;
         }
 
         if self.oracle.stderr.len() + self.us.stderr.len() > 0 {
             writeln!(f, "stderr (edit distance {}):",
                      self.oracle.stderr_edit_distance(&self.us))?;
-            udiff(f, &String::from_utf8_lossy(&self.oracle.stderr),
+            udiff(f, "oracle stderr",
+                  &String::from_utf8_lossy(&self.oracle.stderr),
+                  "chameleon stderr",
                   &String::from_utf8_lossy(&self.us.stderr))?;
         }
 
         writeln!(f, "status:")?;
-        udiff(f, &self.oracle.status.to_string(), &self.us.status.to_string())?;
+        udiff(f, "oracle status",
+              &self.oracle.status.to_string(),
+              "chameleon status", &self.us.status.to_string())?;
 
         let mut r = Vec::new();
         self.experiment.reproducer(&mut r).unwrap();
@@ -687,7 +693,11 @@ impl fmt::Display for Diff<'_> {
 }
 
 /// Prints a unified-diff style line-based difference.
-fn udiff(f: &mut fmt::Formatter<'_>, left: &str, right: &str) -> fmt::Result {
+fn udiff(f: &mut fmt::Formatter<'_>,
+         left_name: &str, left: &str,
+         right_name: &str, right: &str) -> fmt::Result {
+    writeln!(f, "--- {}", left_name)?;
+    writeln!(f, "+++ {}", right_name)?;
     for diff in diff::lines(left, right) {
         match diff {
             diff::Result::Left(l)    => writeln!(f, "-{}", l)?,
