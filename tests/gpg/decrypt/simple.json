@@ -191,6 +191,202 @@
       "files": {}
     }
   ],
+  "former_us_outputs": [
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--decrypt\"",
+        "\"/EXPERIMENT/ciphertext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: encrypted with ECDH key, ID BF7A540B72FCBD7D\\ngpg: decryption failed: No secret key\\n",
+      "stdout": "[GNUPG:] ENC_TO BF7A540B72FCBD7D 18 0\\n[GNUPG:] NO_SECKEY BF7A540B72FCBD7D\\n[GNUPG:] BEGIN_DECRYPTION\\n[GNUPG:] DECRYPTION_FAILED\\n[GNUPG:] END_DECRYPTION\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--decrypt\"",
+        "\"--verbose\"",
+        "\"/EXPERIMENT/ciphertext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: public key is BF7A540B72FCBD7D\\ngpg: encrypted with ECDH key, ID BF7A540B72FCBD7D\\ngpg: decryption failed: No secret key\\n",
+      "stdout": "[GNUPG:] ENC_TO BF7A540B72FCBD7D 18 0\\n[GNUPG:] NO_SECKEY BF7A540B72FCBD7D\\n[GNUPG:] BEGIN_DECRYPTION\\n[GNUPG:] DECRYPTION_FAILED\\n[GNUPG:] END_DECRYPTION\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--decrypt\"",
+        "\"--list-only\"",
+        "\"/EXPERIMENT/ciphertext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: encrypted with ECDH key, ID BF7A540B72FCBD7D\\n",
+      "stdout": "[GNUPG:] ENC_TO BF7A540B72FCBD7D 18 0\\n[GNUPG:] NO_SECKEY BF7A540B72FCBD7D\\n[GNUPG:] BEGIN_DECRYPTION\\n[GNUPG:] END_DECRYPTION\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--decrypt\"",
+        "\"--list-only\"",
+        "\"--verbose\"",
+        "\"/EXPERIMENT/ciphertext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: public key is BF7A540B72FCBD7D\\ngpg: encrypted with ECDH key, ID BF7A540B72FCBD7D\\n",
+      "stdout": "[GNUPG:] ENC_TO BF7A540B72FCBD7D 18 0\\n[GNUPG:] NO_SECKEY BF7A540B72FCBD7D\\n[GNUPG:] BEGIN_DECRYPTION\\n[GNUPG:] END_DECRYPTION\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--import\"",
+        "\"/EXPERIMENT/cert\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: key CF3EBF750CBC0B42: public key \"Alice Lovelace <alice@lovelace.name>\" imported\\ngpg: Total number processed: 1\\ngpg:               imported: 1\\n",
+      "stdout": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--decrypt\"",
+        "\"/EXPERIMENT/ciphertext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: encrypted with 256-bit ECDH key, ID BF7A540B72FCBD7D, created 2022-12-20\\n      \"Alice Lovelace <alice@lovelace.name>\"\\ngpg: decryption failed: No secret key\\n",
+      "stdout": "[GNUPG:] ENC_TO BF7A540B72FCBD7D 18 0\\n[GNUPG:] KEY_CONSIDERED 363D4946E9756AC646A05AD3CF3EBF750CBC0B42 0\\n[GNUPG:] NO_SECKEY BF7A540B72FCBD7D\\n[GNUPG:] BEGIN_DECRYPTION\\n[GNUPG:] DECRYPTION_FAILED\\n[GNUPG:] END_DECRYPTION\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--decrypt\"",
+        "\"--verbose\"",
+        "\"/EXPERIMENT/ciphertext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: public key is BF7A540B72FCBD7D\\ngpg: using subkey BF7A540B72FCBD7D instead of primary key CF3EBF750CBC0B42\\ngpg: encrypted with 256-bit ECDH key, ID BF7A540B72FCBD7D, created 2022-12-20\\n      \"Alice Lovelace <alice@lovelace.name>\"\\ngpg: decryption failed: No secret key\\n",
+      "stdout": "[GNUPG:] ENC_TO BF7A540B72FCBD7D 18 0\\n[GNUPG:] KEY_CONSIDERED 363D4946E9756AC646A05AD3CF3EBF750CBC0B42 0\\n[GNUPG:] NO_SECKEY BF7A540B72FCBD7D\\n[GNUPG:] BEGIN_DECRYPTION\\n[GNUPG:] DECRYPTION_FAILED\\n[GNUPG:] END_DECRYPTION\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--decrypt\"",
+        "\"--list-only\"",
+        "\"/EXPERIMENT/ciphertext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: encrypted with 256-bit ECDH key, ID BF7A540B72FCBD7D, created 2022-12-20\\n      \"Alice Lovelace <alice@lovelace.name>\"\\n",
+      "stdout": "[GNUPG:] ENC_TO BF7A540B72FCBD7D 18 0\\n[GNUPG:] KEY_CONSIDERED 363D4946E9756AC646A05AD3CF3EBF750CBC0B42 0\\n[GNUPG:] NO_SECKEY BF7A540B72FCBD7D\\n[GNUPG:] BEGIN_DECRYPTION\\n[GNUPG:] END_DECRYPTION\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--decrypt\"",
+        "\"--list-only\"",
+        "\"--verbose\"",
+        "\"/EXPERIMENT/ciphertext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: public key is BF7A540B72FCBD7D\\ngpg: using subkey BF7A540B72FCBD7D instead of primary key CF3EBF750CBC0B42\\ngpg: encrypted with 256-bit ECDH key, ID BF7A540B72FCBD7D, created 2022-12-20\\n      \"Alice Lovelace <alice@lovelace.name>\"\\n",
+      "stdout": "[GNUPG:] ENC_TO BF7A540B72FCBD7D 18 0\\n[GNUPG:] KEY_CONSIDERED 363D4946E9756AC646A05AD3CF3EBF750CBC0B42 0\\n[GNUPG:] NO_SECKEY BF7A540B72FCBD7D\\n[GNUPG:] BEGIN_DECRYPTION\\n[GNUPG:] END_DECRYPTION\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--import\"",
+        "\"/EXPERIMENT/key\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: key CF3EBF750CBC0B42: \"Alice Lovelace <alice@lovelace.name>\" not changed\\ngpg: key CF3EBF750CBC0B42: secret key imported\\ngpg: Total number processed: 1\\ngpg:              unchanged: 1\\ngpg:       secret keys read: 1\\ngpg:   secret keys imported: 1\\n",
+      "stdout": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--decrypt\"",
+        "\"--output\"",
+        "\"decrypted-plaintext\"",
+        "\"/EXPERIMENT/ciphertext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: encrypted with 256-bit ECDH key, ID BF7A540B72FCBD7D, created 2022-12-20\\n      \"Alice Lovelace <alice@lovelace.name>\"\\n",
+      "stdout": "[GNUPG:] ENC_TO BF7A540B72FCBD7D 18 0\\n[GNUPG:] KEY_CONSIDERED 363D4946E9756AC646A05AD3CF3EBF750CBC0B42 0\\n[GNUPG:] DECRYPTION_KEY 6A94F18849CC7DA22673FD07BF7A540B72FCBD7D 363D4946E9756AC646A05AD3CF3EBF750CBC0B42 -\\n[GNUPG:] BEGIN_DECRYPTION\\n[GNUPG:] DECRYPTION_INFO 2 9 0\\n[GNUPG:] PLAINTEXT 62 0\\n[GNUPG:] PLAINTEXT_LENGTH 9\\n[GNUPG:] DECRYPTION_OKAY\\n[GNUPG:] GOODMDC\\n[GNUPG:] END_DECRYPTION\\n",
+      "status": "exit status: 0",
+      "files": {
+        "decrypted-plaintext": "plaintext"
+      }
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--decrypt\"",
+        "\"--output\"",
+        "\"decrypted-plaintext\"",
+        "\"--verbose\"",
+        "\"/EXPERIMENT/ciphertext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: public key is BF7A540B72FCBD7D\\ngpg: using subkey BF7A540B72FCBD7D instead of primary key CF3EBF750CBC0B42\\ngpg: encrypted with 256-bit ECDH key, ID BF7A540B72FCBD7D, created 2022-12-20\\n      \"Alice Lovelace <alice@lovelace.name>\"\\ngpg: AES256 encrypted data\\ngpg: original file name=''\\n",
+      "stdout": "[GNUPG:] ENC_TO BF7A540B72FCBD7D 18 0\\n[GNUPG:] KEY_CONSIDERED 363D4946E9756AC646A05AD3CF3EBF750CBC0B42 0\\n[GNUPG:] DECRYPTION_KEY 6A94F18849CC7DA22673FD07BF7A540B72FCBD7D 363D4946E9756AC646A05AD3CF3EBF750CBC0B42 -\\n[GNUPG:] BEGIN_DECRYPTION\\n[GNUPG:] DECRYPTION_INFO 2 9 0\\n[GNUPG:] PLAINTEXT 62 0\\n[GNUPG:] PLAINTEXT_LENGTH 9\\n[GNUPG:] DECRYPTION_OKAY\\n[GNUPG:] GOODMDC\\n[GNUPG:] END_DECRYPTION\\n",
+      "status": "exit status: 0",
+      "files": {
+        "decrypted-plaintext": "plaintext"
+      }
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--decrypt\"",
+        "\"--list-only\"",
+        "\"--output\"",
+        "\"nothing\"",
+        "\"/EXPERIMENT/ciphertext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: encrypted with 256-bit ECDH key, ID BF7A540B72FCBD7D, created 2022-12-20\\n      \"Alice Lovelace <alice@lovelace.name>\"\\n",
+      "stdout": "[GNUPG:] ENC_TO BF7A540B72FCBD7D 18 0\\n[GNUPG:] KEY_CONSIDERED 363D4946E9756AC646A05AD3CF3EBF750CBC0B42 0\\n[GNUPG:] BEGIN_DECRYPTION\\n[GNUPG:] END_DECRYPTION\\n",
+      "status": "exit status: 0",
+      "files": {
+        "nothing": ""
+      }
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--decrypt\"",
+        "\"--list-only\"",
+        "\"--output\"",
+        "\"nothing\"",
+        "\"--verbose\"",
+        "\"/EXPERIMENT/ciphertext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: public key is BF7A540B72FCBD7D\\ngpg: using subkey BF7A540B72FCBD7D instead of primary key CF3EBF750CBC0B42\\ngpg: encrypted with 256-bit ECDH key, ID BF7A540B72FCBD7D, created 2022-12-20\\n      \"Alice Lovelace <alice@lovelace.name>\"\\n",
+      "stdout": "[GNUPG:] ENC_TO BF7A540B72FCBD7D 18 0\\n[GNUPG:] KEY_CONSIDERED 363D4946E9756AC646A05AD3CF3EBF750CBC0B42 0\\n[GNUPG:] BEGIN_DECRYPTION\\n[GNUPG:] END_DECRYPTION\\n",
+      "status": "exit status: 0",
+      "files": {
+        "nothing": ""
+      }
+    }
+  ],
   "artifacts": {
     "cert": "\\xC5X\\x04c\\xA1\\xE01\\x16\\t+\\x06\\x01\\x04\\x01\\xDAG\\x0F\\x01\\x01\\x07@\\x92\\xE2EZ\\xE0\\xAD\\x0E\\xF1\\xDE\\x89\\xB6\\x15?*\\xE8\\xEF\\x06X\\xBC\\x93\\x89\\xD6\\x01q>\\xE4\\xC9\\x0E\\xB0\\xB0}S\\x00\\x00\\xFC\\r\\xF5\\x8C \\xAE\\x89\\x08\\xE0\\x84Gȓ\\x98\\xF6\\xF4K\\x04\\xAEc\\xDB\\xDD\\x81օ\\xA0i\\x8DX\\x8Bz\\xB0\\xF9\\x13\\x01\\xC2\\xC0\\x0B\\x04\\x1F\\x16\\n\\x00}\\x05\\x82c\\xA1\\xE01\\x03\\x0B\\t\\x07\\t\\x10\\xCF>\\xBFu\\x0C\\xBC\\x0BBG\\x14\\x00\\x00\\x00\\x00\\x00\\x1E\\x00 salt@notations.sequoia-pgp.org|ѕ\\xEA$\\xDD\\xC1\\xB98\\xE3\\xE3\\x1E\\x04ߐR\\xAA\\xEDh\\xDE\\xFB}\\xC4i\\xC26X\\xEAkq֥\\x03\\x15\\n\\x08\\x02\\x9B\\x01\\x02\\x1E\\x01\\x16!\\x046=IF\\xE9uj\\xC6F\\xA0Z\\xD3\\xCF>\\xBFu\\x0C\\xBC\\x0BB\\x00\\x00\\x96z\\x00\\xFD\\x14\\xAEG\\x07Թay\\xE4\\xC2\\xB2\\xD7S\\x0B(U\\xB6\\xD17I|\\xA1\\xBE\\x1CY\\xF20\\xA0I\\r\\x03\\xF9\\x01\\x00\\xBC\\xB3\\\\\\x9E'\\xA0\\x17*\\xB5\\xEA-\\x83\\xAC\\xC8t,\\xE4\\xF0\\x1E\\xE1N\\xA5\\xCBO\\xD6IŮW}\\xD2\\x00\\xCD$Alice Lovelace <alice@lovelace.name>\\xC2\\xC0\\x0E\\x04\\x13\\x16\\n\\x00\\x80\\x05\\x82c\\xA1\\xE01\\x03\\x0B\\t\\x07\\t\\x10\\xCF>\\xBFu\\x0C\\xBC\\x0BBG\\x14\\x00\\x00\\x00\\x00\\x00\\x1E\\x00 salt@notations.sequoia-pgp.orgfc\\x87ʥ\\x9A\\xA5\\x1EqFo\\xB6h\\xC7>vM\\xC5Ea1?E\\x1E1\\xEB'oB\\x8C\\xA7t\\x03\\x15\\n\\x08\\x02\\x99\\x01\\x02\\x9B\\x01\\x02\\x1E\\x01\\x16!\\x046=IF\\xE9uj\\xC6F\\xA0Z\\xD3\\xCF>\\xBFu\\x0C\\xBC\\x0BB\\x00\\x00\\xED\\xA4\\x00\\xFD\\x17\\xF4\\xEDa\\x1Ab\\x9B\\x9F0\\xD4A\\x85\\x06f\\x1BH\\xFDb\\xB2\\xAD\\xC8\\x0E\\xBB\\xA2\\xD9\\x01H\\xA4\\x83Ii\"\\x00\\xFD\\x1Fr+d\\x0Bp{\\xDF\\xDCf}>e\\x99\\\\\\xA4\\x1C\\xA3O\\x9F\\x04\\xF8\\x84\\xF1\\xEA1qqVG\\xF3\\x04\\xC7]\\x04c\\xA1\\xE01\\x12\\n+\\x06\\x01\\x04\\x01\\x97U\\x01\\x05\\x01\\x01\\x07@\\xFE\\x10\\xC2}\\xD8\\xF2\\xCD6\\xC8\\xE1g\\xD4\\xE1E\\t3\\x83\\x124\\xD9\\x10\\x9E\\xE7#V\\xBBp5\\x81r\\xDDG\\x03\\x01\\x08\\x07\\x00\\x00\\xFFf\\x99-v\\x89\\x08\\xDA\\xF1h\\x95X\\xF5\\xBE\\x7F\"\\x1D\\xE0\\xA8f\\x99\\xAC\\xD4\\xFB~X\\xF2*}\\x7F6Y\\x18\\x11Z\\xC2\\xC0\\x00\\x04\\x18\\x16\\n\\x00r\\x05\\x82c\\xA1\\xE01\\t\\x10\\xCF>\\xBFu\\x0C\\xBC\\x0BBG\\x14\\x00\\x00\\x00\\x00\\x00\\x1E\\x00 salt@notations.sequoia-pgp.org\\xCE\\x13ͷ\\x05\\x15\\xD3Z\\x05\\x82r\\xA4q\\xE4\\xF2\\xFE\\xB8\\xCD\\xE3fm\\x9A\\xB5v<\\xCE\\xFD3\\x8A\\x10?o\\x02\\x9B\\x04\\x16!\\x046=IF\\xE9uj\\xC6F\\xA0Z\\xD3\\xCF>\\xBFu\\x0C\\xBC\\x0BB\\x00\\x00\\xE3U\\x01\\x00\\xEF\\xBEE|5v\\xB6\\xA6=\\xA7g\\xA7\\xF1\\xB3%\\xAD1\\x0F\\xA3&]\\x12>\\xCA$\\xC77\\x8E\\x91\\xC8,\\xA4\\x00\\xFA\\x03\\xA7\\xDB]鵤;k0\\xBB\\x1E\\xC5)\\xA7\\xE1\\x9CZ\\xD0\\xE9,>\\x17dC\\x81\\\\ |i\\xE2\\x00"
   },

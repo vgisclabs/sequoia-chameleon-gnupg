@@ -64,6 +64,71 @@
       "files": {}
     }
   ],
+  "former_us_outputs": [
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--import\"",
+        "\"/EXPERIMENT/cert\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: key 5E5F3263D4C8971C: public key \"Alice Lovelace <alice@lovelace.name>\" imported\\ngpg: Total number processed: 1\\ngpg:               imported: 1\\n",
+      "stdout": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--import-ownertrust\"",
+        "\"/EXPERIMENT/ownertrust\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: inserting ownertrust of full\\n",
+      "stdout": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--check-trustdb\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:256:22:5E5F3263D4C8971C:1671553073:1765901873::f:::cESC:::::ed25519:::0:\\nfpr:::::::::74FE141F184B720D69F21D025E5F3263D4C8971C:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsub:-:256:22:D77995F93039254B:1671553073:1765901873:::::s:::::ed25519::\\nfpr:::::::::B81FBB3B288F75CACDDAE301D77995F93039254B:\\nsub:-:256:18:8182B418501FFD41:1671553073:1765901873:::::e:::::cv25519::\\nfpr:::::::::4B673A0AB3066AE384AC448D8182B418501FFD41:\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--batch\"",
+        "\"--status-fd=1\"",
+        "\"--no-auto-key-locate\"",
+        "\"--trust-model\"",
+        "\"auto\"",
+        "\"--encrypt\"",
+        "\"--recipient\"",
+        "\"<alice@lovelace.name>\"",
+        "\"--output\"",
+        "\"ciphertext\"",
+        "\"/EXPERIMENT/plaintext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: 8182B418501FFD41: There is no assurance this key belongs to the named user\\ngpg: /EXPERIMENT/plaintext: encryption failed: Unusable public key\\n",
+      "stdout": "[GNUPG:] KEY_CONSIDERED 74FE141F184B720D69F21D025E5F3263D4C8971C 0\\n[GNUPG:] INV_RECP 10 <alice@lovelace.name>\\n[GNUPG:] FAILURE encrypt 53\\n",
+      "status": "exit status: 2",
+      "files": {}
+    }
+  ],
   "artifacts": {
     "cert": "\\xC5X\\x04c\\xA1\\xE01\\x16\\t+\\x06\\x01\\x04\\x01\\xDAG\\x0F\\x01\\x01\\x07@\\x8F\\x0F`\\x93\\xB4'\\xF48\\x9D\\xA5\\xB3\\xBD3\\xEC\\xADO\\x0E\\xF1\\x12\\xBC\\xF5\\xF2\\x89$\\x02\\xB9\\x81Y\\xF3\\xC9\\xABC\\x00\\x01\\x00\\x87\\x1C\\x86\\x94\\xDA\\x0B4\\x13\\x80>5\\x91\\xF2\\xF3\\x9DJm\\x15\\xB7\\x93\\x08ϑ\\xDC\\xE8\\xCAr\\xC0\\xCB\\xEF7\\xFD\\x11\\x1C\\xC2\\xC0\\x11\\x04\\x1F\\x16\\n\\x00\\x83\\x05\\x82c\\xA1\\xE01\\x05\\x89\\x05\\x9F\\xA6\\x00\\x03\\x0B\\t\\x07\\t\\x10^_2c\\xD4\\xC8\\x97\\x1CG\\x14\\x00\\x00\\x00\\x00\\x00\\x1E\\x00 salt@notations.sequoia-pgp.org^\\x14\\xB7\\xC0\\x1C\\x99\\xA2\\x8D\\x1E\\xB2$\\xFA\\xDDQ\\xE2T\\x97^\\xB2\\xA6?\\x06\\xC1\\xCB\\xC1\\xA7J5\\xB9u\\xBF\\t\\x03\\x15\\n\\x08\\x02\\x9B\\x01\\x02\\x1E\\x01\\x16!\\x04t\\xFE\\x14\\x1F\\x18Kr\\ri\\xF2\\x1D\\x02^_2c\\xD4\\xC8\\x97\\x1C\\x00\\x00\\x98\\x1C\\x01\\x00魕\\xB7y\\x95\\x9F3\\x01\\x9E\\xA5\\xED\\xC6M\\xC3\\xC17da\\x99\\x05r\\xAE:b\"\\x17\\x13%\\xA9\\xA9\\x05\\x00\\xFFS\\t\\x0E\\x92\\xD0y\\x9Ca?\\xCA9՛\\xAA\\xB1\\x7Fr[\\x86\\x18h\\x9B\\xA5\\xCD^r`\\x10\\x02,\\xAD\\x0F\\xCD$Alice Lovelace <alice@lovelace.name>\\xC2\\xC0\\x14\\x04\\x13\\x16\\n\\x00\\x86\\x05\\x82c\\xA1\\xE01\\x05\\x89\\x05\\x9F\\xA6\\x00\\x03\\x0B\\t\\x07\\t\\x10^_2c\\xD4\\xC8\\x97\\x1CG\\x14\\x00\\x00\\x00\\x00\\x00\\x1E\\x00 salt@notations.sequoia-pgp.org\\xC3\\n\\x1A\\x0F\\xB08\\xF2\\xC1#\\xC9q\\x8D\\xF4`\\xC3a\\xA1\\x00\\x9A\\xBE\\x91.\\x8By\\xEF\\xBF\\xEC\\xE3\\xDEy\\xFF\\xBE\\x03\\x15\\n\\x08\\x02\\x99\\x01\\x02\\x9B\\x01\\x02\\x1E\\x01\\x16!\\x04t\\xFE\\x14\\x1F\\x18Kr\\ri\\xF2\\x1D\\x02^_2c\\xD4\\xC8\\x97\\x1C\\x00\\x00\\xBF\\xEE\\x01\\x00\\x8D\\xA2\\x9FPX\\xD3\\xEB\\x80\\x82\\xE3\\xDD5\\x06\\xD5o?\\xDE\\x15_)\\x1E\\x87\\xACЃ\\xD6\\xD4 j\\x8B\\xA5o\\x01\\x00\\xF3z4\\xE6\\xB39\\xA6\\xCE\\xFA\\x80~\\x1F\\x02\\xB4\\xFB2\\x9F\\x11\\x1CҮ\\xF5I\\xEF\\xCE\\xB4,\\x08\\xD9w{\\x0C\\xC7X\\x04c\\xA1\\xE01\\x16\\t+\\x06\\x01\\x04\\x01\\xDAG\\x0F\\x01\\x01\\x07@*\\xEB6\\x88\\xED+\\xE4J\\xD0'9E\\x07\\x81_=悰\\xAE\\xCC}\\x82\\xE5\\x96\\x06\\x9C\\xF8\\xF4\\\\\\xCD\\x0F\\x00\\x00\\xFE:\\xDD\\xF7\\x8E@!\\xCE\\xEA\\x98~F\\x93p\\xFENɎ\\n\\xB5o\\xC2E(\\n\\xA4^\\xBE\\xC7 a\\x05\\x1E\\x10G\\xC2\\xC0\\xC5\\x04\\x18\\x16\\n\\x017\\x05\\x82c\\xA1\\xE01\\x05\\x89\\x05\\x9F\\xA6\\x00\\t\\x10^_2c\\xD4\\xC8\\x97\\x1CG\\x14\\x00\\x00\\x00\\x00\\x00\\x1E\\x00 salt@notations.sequoia-pgp.orgc\\x89\\x90+V\\xC4\\xCA\\x8B\\xF1\\xABz\\xB9\\xB0\\xD0hZ:\\xA7\\x93eh\\xD2Tm\\x03+\\xC4G\\x9D\\xBB\\xBE\\xFA\\x02\\x9B\\x02\\xBE\\xA0\\x04\\x19\\x16\\n\\x00o\\x05\\x82c\\xA1\\xE01\\t\\x10\\xD7y\\x95\\xF909%KG\\x14\\x00\\x00\\x00\\x00\\x00\\x1E\\x00 salt@notations.sequoia-pgp.org3`\\x96\"\\xD5J\\x9C\\xAA\\xAE\\x8B\\x8B+y\\xC1d8$\\xA5\\xCBP\\xF6\\xC2$\\xC1-\\x04\\x9D)\\xDB]H\\r\\x16!\\x04\\xB8\\x1F\\xBB;(\\x8Fu\\xCA\\xCD\\xDA\\xE3\\x01\\xD7y\\x95\\xF909%K\\x00\\x00\\x14\\x15\\x00\\xFF]\\xAB\\x07\\xF64;\\x91\\xF7\\xE4+\\tR\\xAD\\x7F\\x83\\x06^\\xA4\\xEF\\x1D<\\xCC\\xEF\\xF1H.\\xF6]\\x0B;\\x86^\\x01\\x00\\xD77\\x82\\x05\\xD4uz\\xA5u\\x12gn\\xDD\\xE7t<_\\xB1ᒵ\\xEC\\\\5\\x03]Q\\x91\\x1A_4\\x08\\x16!\\x04t\\xFE\\x14\\x1F\\x18Kr\\ri\\xF2\\x1D\\x02^_2c\\xD4\\xC8\\x97\\x1C\\x00\\x00\\xC6\\xDF\\x01\\x00\\x92\\xCB\\xC4\\x8E\\x81\\xF4+\\x0EVګ\\x1A\\x87\\x8F\\xB8#g\\xCC7%g\\x81k\\x85Nk\\xDC\\xC3s\\x93\\xE7\\x93\\x00\\xFF`b<\\x85\\x86\\x19\\xB2\\xF1\\xC5f&\\x98\\xA4q\\x05f\\x0F\\xC0H\\xE45\\x18\\xB1\\x1D\\xAF\\xEAYJ\\x0E\\xBDJ\\x02\\xC7]\\x04c\\xA1\\xE01\\x12\\n+\\x06\\x01\\x04\\x01\\x97U\\x01\\x05\\x01\\x01\\x07@\\xAC& \\xADdB\\x92\\x0F\\xE6Y\\x96\\xA8\\xA6\\xF0\\xFB\\x01G\\xC06\\xBC\\xF3%\\xC7v\\xF76\\xCCG\\xA0\\xF4\\xF5\\x14\\x03\\x01\\x08\\x07\\x00\\x00\\xFFIv\\xE1\\xD5\\xF8|\\xC6\\x16K\\x83\\xA2\\xBA\\xF9/zY\\x06}\\x90\\xE2H`(\\xBF\\xC3C#\\xF5\\xEEv5\\x08\\x11,\\xC2\\xC0\\x06\\x04\\x18\\x16\\n\\x00x\\x05\\x82c\\xA1\\xE01\\x05\\x89\\x05\\x9F\\xA6\\x00\\t\\x10^_2c\\xD4\\xC8\\x97\\x1CG\\x14\\x00\\x00\\x00\\x00\\x00\\x1E\\x00 salt@notations.sequoia-pgp.org\\xB9\\xC8|\\x88Oň-dE\\x8BԀ7T\\xE1v\\x00:\\x89{۴)\\xE5\\xF4R\\x9AsW\\xAA\\xEF\\x02\\x9B\\x0C\\x16!\\x04t\\xFE\\x14\\x1F\\x18Kr\\ri\\xF2\\x1D\\x02^_2c\\xD4\\xC8\\x97\\x1C\\x00\\x00.\\xE8\\x00\\xFFAW\\x02\\xA6\\xF6\\xD5j\\xAD=\\x99s\\xB3\\r\\xF0jO^U_'\\xB1.ϡ\\x8A_\\xF9\\x87J\\xD85\\xDA\\x01\\x00\\xBF~\\x8E)\\x16\\xA0V\\x08\\xC9t\\x01\\x0B\\x9A,3\\xFC\\xD7,\\xE3*\\xBF$A\\x9BT\\xD0fH\\xF0\\t\\xDA\\x0F"
   },

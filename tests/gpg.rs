@@ -438,8 +438,10 @@ impl Output {
 #[serde_as]
 #[derive(Debug, Default, Serialize, Deserialize)]
 struct ArtifactStore {
-    /// The invocations' output.
+    /// The oracle's output.
     outputs: Vec<Output>,
+    /// Our previous invocations' output.
+    former_us_outputs: Option<Vec<Output>>,
     /// The files created by the invocation below the working
     /// directory.
     #[serde_as(as = "BTreeMap<_, Stfu8Bytes>")]
@@ -619,8 +621,30 @@ impl Experiment {
 
         // First, invoke the Chameleon.
         eprintln!("Invoking the chameleon");
-        let us = self.us.invoke(&args)?
+        let mut us = self.us.invoke(&args)?
             .canonicalize(self.us.home.path(), self.wd.path());
+
+        us.args = normalized_args.clone();
+
+        let former_us = if let Some(o) = self.artifacts
+            .former_us_outputs.as_ref()
+            .and_then(|o| o.get(n))
+            .filter(|v| v.args == normalized_args)
+        {
+            eprintln!("Have previous output from the chameleon");
+            Some(o.clone())
+        } else {
+            // Save the current output for the next run.
+            eprintln!("No previous output from the chameleon");
+            if self.artifacts.former_us_outputs.is_none() {
+                self.artifacts.former_us_outputs = Some(Vec::new());
+            }
+            let o = self.artifacts.former_us_outputs.as_mut().expect("have it");
+            o.truncate(n);
+            o.push(us.clone());
+
+            None
+        };
 
         // Then, invoke GnuPG if we don't have a cached artifact.
         let oracle = if let Some(o) = self.artifacts.outputs.get(n)
@@ -647,6 +671,7 @@ impl Experiment {
             experiment: &*self,
             args: args.iter().map(ToString::to_string).collect(),
             oracle,
+            former_us,
             us,
             dynamic_upper_bounds: self.artifacts.dynamic_upper_bounds.get(n),
         })
@@ -696,13 +721,14 @@ impl Experiment {
     }
 }
 
-/// The difference between invoking the reference GnuPG and the
-/// Chameleon.
+/// The difference between invoking the reference GnuPG & the former
+/// Chameleon and the Chameleon.
 pub struct Diff<'a> {
     experiment: &'a Experiment,
     args: Vec<String>,
     oracle: Output,
     us: Output,
+    former_us: Option<Output>,
     dynamic_upper_bounds: Option<&'a (usize, usize)>,
 }
 
@@ -807,6 +833,16 @@ impl fmt::Display for Diff<'_> {
                   &String::from_utf8_lossy(&self.oracle.stdout),
                   "chameleon stdout",
                   &String::from_utf8_lossy(&self.us.stdout))?;
+
+            if let Some(former_us) = self.former_us.as_ref() {
+                udiff(f,
+                      "former gpg-chameleon stdout",
+                      &String::from_utf8_lossy(&former_us.stdout),
+                      "gpg-chameleon stdout",
+                      &String::from_utf8_lossy(&self.us.stdout))?;
+            } else {
+                writeln!(f, "Can't compare to previous run: output not recorded")?;
+            }
         }
 
         if self.oracle.stderr.len() + self.us.stderr.len() > 0 {
@@ -816,12 +852,29 @@ impl fmt::Display for Diff<'_> {
                   &String::from_utf8_lossy(&self.oracle.stderr),
                   "chameleon stderr",
                   &String::from_utf8_lossy(&self.us.stderr))?;
+
+            if let Some(former_us) = self.former_us.as_ref() {
+                udiff(f,
+                      "former chameleon stderr",
+                      &String::from_utf8_lossy(&former_us.stderr),
+                      "chameleon stderr",
+                      &String::from_utf8_lossy(&self.us.stderr))?;
+            } else {
+                writeln!(f, "Can't compare to previous run: output not recorded")?;
+            }
         }
 
         writeln!(f, "status:")?;
         udiff(f, "oracle status",
               &self.oracle.status.to_string(),
               "chameleon status", &self.us.status.to_string())?;
+
+        if let Some(former_us) = self.former_us.as_ref() {
+            udiff(f, "former gpg-sq", &former_us.status.to_string(),
+                  "gpg-sq", &self.us.status.to_string())?;
+        } else {
+            writeln!(f, "Can't compare to previous run: output not recorded")?;
+        }
 
         let mut r = Vec::new();
         self.experiment.reproducer(&mut r).unwrap();

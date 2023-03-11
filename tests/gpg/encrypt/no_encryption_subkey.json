@@ -30,6 +30,37 @@
       "files": {}
     }
   ],
+  "former_us_outputs": [
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--import\"",
+        "\"/EXPERIMENT/cert\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: key D549EFC2952CCDCD: public key \"Alice Lovelace <alice@lovelace.name>\" imported\\ngpg: Total number processed: 1\\ngpg:               imported: 1\\n",
+      "stdout": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--no-auto-key-locate\"",
+        "\"--always-trust\"",
+        "\"--encrypt\"",
+        "\"--recipient\"",
+        "\"<alice@lovelace.name>\"",
+        "\"--output\"",
+        "\"ciphertext\"",
+        "\"/EXPERIMENT/plaintext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: <alice@lovelace.name>: skipped: Unusable public key\\ngpg: /EXPERIMENT/plaintext: encryption failed: Unusable public key\\n",
+      "stdout": "[GNUPG:] KEY_CONSIDERED 48034B7798889D3D62C026F1D549EFC2952CCDCD 0\\n[GNUPG:] INV_RECP 0 <alice@lovelace.name>\\n[GNUPG:] FAILURE encrypt 53\\n",
+      "status": "exit status: 2",
+      "files": {}
+    }
+  ],
   "artifacts": {
     "cert": "\\xC5X\\x04c\\xA1\\xE01\\x16\\t+\\x06\\x01\\x04\\x01\\xDAG\\x0F\\x01\\x01\\x07@m\\x12\\xEC\\xE7\\xAC\\x8Fb \\xAFH\\x11;ۄ49\\x9A\\xB0q\\x1F˸.\\xDAcY\\xB8\\xD2\\x10\\x00\\x00\\xFE#\\x80md\\x08{B\\xAD\\x18\\xBDE d\\x08[\\xF1\\x0E,\\xABa\\xB7\\xC9\\x0ELV\\x83\\xD9\\xEB\\x0B\\xB0\\xE3\\x8C\\x0E\\xBD\\xC2\\xC0\\x0B\\x04\\x1F\\x16\\n\\x00}\\x05\\x82c\\xA1\\xE01\\x03\\x0B\\t\\x07\\t\\x10\\xD5I\\xEF\\xC2\\x95,\\xCD\\xCDG\\x14\\x00\\x00\\x00\\x00\\x00\\x1E\\x00 salt@notations.sequoia-pgp.orgݮ!C\\x8EX\\x05`P6\\xEF\\x97\\xC8k\\x96\\xB1\\x11\\xE4\\xE9\\xF5\\xDDNP\\xA8\\xF0\\xFD\\xF8;[ۺR\\x03\\x15\\n\\x08\\x02\\x9B\\x01\\x02\\x1E\\x01\\x16!\\x04H\\x03Kw\\x98\\x88\\x9D=b\\xC0&\\xF1\\xD5I\\xEF\\xC2\\x95,\\xCD\\xCD\\x00\\x00Ϛ\\x01\\x00\\xA3\\xEA\\xF6+\\xD47\\xF7\\x15\\xCEBL\\xB7\\xB8\\x12j\\xF6\\x96a0\"\\xBE\"\\xF4\\xBEY\\xE3\\x8C\\x06Gꌷ\\x00\\xFFb\\x181?\\xB2\\x05\\x12\\x060\\x9A'H\\x17\\xCE\\xE9\\xA8q]\\x89N\\xFB\\xD1\\x19\\xFB\\x9A\\xDF\\x07\\xF9Z\\x04\\x89\\x00\\xCD$Alice Lovelace <alice@lovelace.name>\\xC2\\xC0\\x0E\\x04\\x13\\x16\\n\\x00\\x80\\x05\\x82c\\xA1\\xE01\\x03\\x0B\\t\\x07\\t\\x10\\xD5I\\xEF\\xC2\\x95,\\xCD\\xCDG\\x14\\x00\\x00\\x00\\x00\\x00\\x1E\\x00 salt@notations.sequoia-pgp.org\\xE13\\xD1X\\xE3\\x98/\\xD7s\\xE1\\xA6|\\xA8=Ld\\xEC\\x97\\t%\\x91\\xE1&\\x0E\\x11 \\xE1\\xD7\\x11e\\x95y\\x03\\x15\\n\\x08\\x02\\x99\\x01\\x02\\x9B\\x01\\x02\\x1E\\x01\\x16!\\x04H\\x03Kw\\x98\\x88\\x9D=b\\xC0&\\xF1\\xD5I\\xEF\\xC2\\x95,\\xCD\\xCD\\x00\\x00͈\\x00\\xFFN\\xA7E1sWד\\xD1{\\x84\\xB2\\x86\\x80\\xBD\\xB1\\xEC\\xB6h\\xEC\\x86\\xC4\\xC0z\\x83\\xD6\\xCB\\x03\\x86\\x06\\x01\\x00\\xDAm<\\x82?U\\xDB\\xF3\\xE9a\\xC5\\xD9(\\xD2$\\xD1b\\x8B\\xCB.^\\x90\\x9A\\x89׿F\\xB6l=S\\t"
   },

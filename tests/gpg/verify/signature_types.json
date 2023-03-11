@@ -994,6 +994,1001 @@
       "files": {}
     }
   ],
+  "former_us_outputs": [
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: Can't check signature: No public key\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 00 1671553073 9 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n[GNUPG:] NO_PUBKEY E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg_bad\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: Can't check signature: No public key\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 00 1671553073 9 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n[GNUPG:] NO_PUBKEY E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"gpgv\"",
+        "\"--keyring\"",
+        "\"/EXPERIMENT/empty\"",
+        "\"--status-fd=1\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg\""
+      ],
+      "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpgv: Can't check signature: No public key\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 00 1671553073 9 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n[GNUPG:] NO_PUBKEY E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"gpgv\"",
+        "\"--keyring\"",
+        "\"/EXPERIMENT/empty\"",
+        "\"--status-fd=1\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg_bad\""
+      ],
+      "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpgv: Can't check signature: No public key\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 00 1671553073 9 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n[GNUPG:] NO_PUBKEY E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--import\"",
+        "\"/EXPERIMENT/cert\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: key 498BF4FCF23FC83E: public key \"Alice Lovelace <alice@lovelace.name>\" imported\\ngpg: Total number processed: 1\\ngpg:               imported: 1\\n",
+      "stdout": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: Good signature from \"Alice Lovelace <alice@lovelace.name>\" [unknown]\\ngpg: WARNING: This key is not certified with a trusted signature!\\ngpg:          There is no indication that the signature belongs to the owner.\\nPrimary key fingerprint: D59B E14B 6459 2232 3843  4784 498B F4FC F23F C83E\\n     Subkey fingerprint: 1C1C B500 9A09 970F 70EE  4775 E2B0 97EC 30C6 894F\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED D59BE14B6459223238434784498BF4FCF23FC83E 0\\n[GNUPG:] SIG_ID 59mVLCKZbt8ajK7y3ITi9BtKuu8 2022-12-20 1671553073\\n[GNUPG:] KEY_CONSIDERED D59BE14B6459223238434784498BF4FCF23FC83E 0\\n[GNUPG:] GOODSIG E2B097EC30C6894F Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org\\n[GNUPG:] NOTATION_DATA \\x82?\\x90-\\xFD\\xECl\\xD86\\xC4.\\xD5\\xFA\"\\xB3T\\xF3Q\\x89Y\\xB2Tqpڢ\\xF7\\x91\\xBD\\xFA\\xF5\\xDB\\n[GNUPG:] VALIDSIG 1C1CB5009A09970F70EE4775E2B097EC30C6894F 2022-12-20 1671553073 0 4 0 22 10 00 D59BE14B6459223238434784498BF4FCF23FC83E\\n[GNUPG:] TRUST_UNDEFINED 0 pgp\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg_bad\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: BAD signature from \"Alice Lovelace <alice@lovelace.name>\" [unknown]\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED D59BE14B6459223238434784498BF4FCF23FC83E 0\\n[GNUPG:] BADSIG E2B097EC30C6894F Alice Lovelace <alice@lovelace.name>\\n",
+      "status": "exit status: 1",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"gpgv\"",
+        "\"--keyring\"",
+        "\"/EXPERIMENT/cert\"",
+        "\"--status-fd=1\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg\""
+      ],
+      "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpgv: Good signature from \"Alice Lovelace <alice@lovelace.name>\"\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED D59BE14B6459223238434784498BF4FCF23FC83E 0\\n[GNUPG:] SIG_ID 59mVLCKZbt8ajK7y3ITi9BtKuu8 2022-12-20 1671553073\\n[GNUPG:] KEY_CONSIDERED D59BE14B6459223238434784498BF4FCF23FC83E 0\\n[GNUPG:] GOODSIG E2B097EC30C6894F Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org\\n[GNUPG:] NOTATION_DATA \\x82?\\x90-\\xFD\\xECl\\xD86\\xC4.\\xD5\\xFA\"\\xB3T\\xF3Q\\x89Y\\xB2Tqpڢ\\xF7\\x91\\xBD\\xFA\\xF5\\xDB\\n[GNUPG:] VALIDSIG 1C1CB5009A09970F70EE4775E2B097EC30C6894F 2022-12-20 1671553073 0 4 0 22 10 00 D59BE14B6459223238434784498BF4FCF23FC83E\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"gpgv\"",
+        "\"--keyring\"",
+        "\"/EXPERIMENT/cert\"",
+        "\"--status-fd=1\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg_bad\""
+      ],
+      "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpgv: BAD signature from \"Alice Lovelace <alice@lovelace.name>\"\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED D59BE14B6459223238434784498BF4FCF23FC83E 0\\n[GNUPG:] BADSIG E2B097EC30C6894F Alice Lovelace <alice@lovelace.name>\\n",
+      "status": "exit status: 1",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: Good signature from \"Alice Lovelace <alice@lovelace.name>\" [unknown]\\ngpg: WARNING: This key is not certified with a trusted signature!\\ngpg:          There is no indication that the signature belongs to the owner.\\nPrimary key fingerprint: D59B E14B 6459 2232 3843  4784 498B F4FC F23F C83E\\n     Subkey fingerprint: 1C1C B500 9A09 970F 70EE  4775 E2B0 97EC 30C6 894F\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED D59BE14B6459223238434784498BF4FCF23FC83E 0\\n[GNUPG:] SIG_ID 96DHVLZ2TsY7rxO4FoyyBH08Neg 2022-12-20 1671553073\\n[GNUPG:] KEY_CONSIDERED D59BE14B6459223238434784498BF4FCF23FC83E 0\\n[GNUPG:] GOODSIG E2B097EC30C6894F Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org\\n[GNUPG:] NOTATION_DATA \\x89L\\xE2o΍\\xF4\\xF8\\x88\\xCB>*u\\x82\\xFA%0F%1B\\xCF\\xCF\\xEF\\xD6\\xF3\\xCB*\\x8Cm:!\\xEE$]\\xD9\\n[GNUPG:] VALIDSIG 1C1CB5009A09970F70EE4775E2B097EC30C6894F 2022-12-20 1671553073 0 4 0 22 10 01 D59BE14B6459223238434784498BF4FCF23FC83E\\n[GNUPG:] TRUST_UNDEFINED 0 pgp\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg_bad\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: BAD signature from \"Alice Lovelace <alice@lovelace.name>\" [unknown]\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED D59BE14B6459223238434784498BF4FCF23FC83E 0\\n[GNUPG:] BADSIG E2B097EC30C6894F Alice Lovelace <alice@lovelace.name>\\n",
+      "status": "exit status: 1",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"gpgv\"",
+        "\"--keyring\"",
+        "\"/EXPERIMENT/cert\"",
+        "\"--status-fd=1\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg\""
+      ],
+      "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpgv: Good signature from \"Alice Lovelace <alice@lovelace.name>\"\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED D59BE14B6459223238434784498BF4FCF23FC83E 0\\n[GNUPG:] SIG_ID 96DHVLZ2TsY7rxO4FoyyBH08Neg 2022-12-20 1671553073\\n[GNUPG:] KEY_CONSIDERED D59BE14B6459223238434784498BF4FCF23FC83E 0\\n[GNUPG:] GOODSIG E2B097EC30C6894F Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org\\n[GNUPG:] NOTATION_DATA \\x89L\\xE2o΍\\xF4\\xF8\\x88\\xCB>*u\\x82\\xFA%0F%1B\\xCF\\xCF\\xEF\\xD6\\xF3\\xCB*\\x8Cm:!\\xEE$]\\xD9\\n[GNUPG:] VALIDSIG 1C1CB5009A09970F70EE4775E2B097EC30C6894F 2022-12-20 1671553073 0 4 0 22 10 01 D59BE14B6459223238434784498BF4FCF23FC83E\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"gpgv\"",
+        "\"--keyring\"",
+        "\"/EXPERIMENT/cert\"",
+        "\"--status-fd=1\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg_bad\""
+      ],
+      "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpgv: BAD signature from \"Alice Lovelace <alice@lovelace.name>\"\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED D59BE14B6459223238434784498BF4FCF23FC83E 0\\n[GNUPG:] BADSIG E2B097EC30C6894F Alice Lovelace <alice@lovelace.name>\\n",
+      "status": "exit status: 1",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: standalone signature of class 0x02\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 02 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg_bad\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: standalone signature of class 0x02\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 02 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"gpgv\"",
+        "\"--keyring\"",
+        "\"/EXPERIMENT/cert\"",
+        "\"--status-fd=1\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg\""
+      ],
+      "stderr": "gpgv: standalone signature of class 0x02\\ngpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpgv: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 02 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"gpgv\"",
+        "\"--keyring\"",
+        "\"/EXPERIMENT/cert\"",
+        "\"--status-fd=1\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg_bad\""
+      ],
+      "stderr": "gpgv: standalone signature of class 0x02\\ngpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpgv: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 02 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: standalone signature of class 0x10\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: invalid root packet for sigclass 10\\ngpg: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 10 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg_bad\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: standalone signature of class 0x10\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: invalid root packet for sigclass 10\\ngpg: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 10 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"gpgv\"",
+        "\"--keyring\"",
+        "\"/EXPERIMENT/cert\"",
+        "\"--status-fd=1\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg\""
+      ],
+      "stderr": "gpgv: standalone signature of class 0x10\\ngpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpgv: invalid root packet for sigclass 10\\ngpgv: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 10 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"gpgv\"",
+        "\"--keyring\"",
+        "\"/EXPERIMENT/cert\"",
+        "\"--status-fd=1\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg_bad\""
+      ],
+      "stderr": "gpgv: standalone signature of class 0x10\\ngpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpgv: invalid root packet for sigclass 10\\ngpgv: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 10 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: standalone signature of class 0x11\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: invalid root packet for sigclass 11\\ngpg: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 11 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg_bad\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: standalone signature of class 0x11\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: invalid root packet for sigclass 11\\ngpg: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 11 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"gpgv\"",
+        "\"--keyring\"",
+        "\"/EXPERIMENT/cert\"",
+        "\"--status-fd=1\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg\""
+      ],
+      "stderr": "gpgv: standalone signature of class 0x11\\ngpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpgv: invalid root packet for sigclass 11\\ngpgv: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 11 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"gpgv\"",
+        "\"--keyring\"",
+        "\"/EXPERIMENT/cert\"",
+        "\"--status-fd=1\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg_bad\""
+      ],
+      "stderr": "gpgv: standalone signature of class 0x11\\ngpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpgv: invalid root packet for sigclass 11\\ngpgv: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 11 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: standalone signature of class 0x12\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: invalid root packet for sigclass 12\\ngpg: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 12 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg_bad\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: standalone signature of class 0x12\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: invalid root packet for sigclass 12\\ngpg: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 12 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"gpgv\"",
+        "\"--keyring\"",
+        "\"/EXPERIMENT/cert\"",
+        "\"--status-fd=1\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg\""
+      ],
+      "stderr": "gpgv: standalone signature of class 0x12\\ngpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpgv: invalid root packet for sigclass 12\\ngpgv: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 12 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"gpgv\"",
+        "\"--keyring\"",
+        "\"/EXPERIMENT/cert\"",
+        "\"--status-fd=1\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg_bad\""
+      ],
+      "stderr": "gpgv: standalone signature of class 0x12\\ngpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpgv: invalid root packet for sigclass 12\\ngpgv: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 12 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: standalone signature of class 0x13\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: invalid root packet for sigclass 13\\ngpg: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 13 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg_bad\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: standalone signature of class 0x13\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: invalid root packet for sigclass 13\\ngpg: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 13 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"gpgv\"",
+        "\"--keyring\"",
+        "\"/EXPERIMENT/cert\"",
+        "\"--status-fd=1\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg\""
+      ],
+      "stderr": "gpgv: standalone signature of class 0x13\\ngpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpgv: invalid root packet for sigclass 13\\ngpgv: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 13 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"gpgv\"",
+        "\"--keyring\"",
+        "\"/EXPERIMENT/cert\"",
+        "\"--status-fd=1\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg_bad\""
+      ],
+      "stderr": "gpgv: standalone signature of class 0x13\\ngpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpgv: invalid root packet for sigclass 13\\ngpgv: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 13 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: standalone signature of class 0x16\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 16 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg_bad\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: standalone signature of class 0x16\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 16 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"gpgv\"",
+        "\"--keyring\"",
+        "\"/EXPERIMENT/cert\"",
+        "\"--status-fd=1\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg\""
+      ],
+      "stderr": "gpgv: standalone signature of class 0x16\\ngpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpgv: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 16 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"gpgv\"",
+        "\"--keyring\"",
+        "\"/EXPERIMENT/cert\"",
+        "\"--status-fd=1\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg_bad\""
+      ],
+      "stderr": "gpgv: standalone signature of class 0x16\\ngpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpgv: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 16 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: standalone signature of class 0x18\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: invalid root packet for sigclass 18\\ngpg: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 18 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg_bad\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: standalone signature of class 0x18\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: invalid root packet for sigclass 18\\ngpg: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 18 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"gpgv\"",
+        "\"--keyring\"",
+        "\"/EXPERIMENT/cert\"",
+        "\"--status-fd=1\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg\""
+      ],
+      "stderr": "gpgv: standalone signature of class 0x18\\ngpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpgv: invalid root packet for sigclass 18\\ngpgv: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 18 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"gpgv\"",
+        "\"--keyring\"",
+        "\"/EXPERIMENT/cert\"",
+        "\"--status-fd=1\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg_bad\""
+      ],
+      "stderr": "gpgv: standalone signature of class 0x18\\ngpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpgv: invalid root packet for sigclass 18\\ngpgv: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 18 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: standalone signature of class 0x19\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 19 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg_bad\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: standalone signature of class 0x19\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 19 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"gpgv\"",
+        "\"--keyring\"",
+        "\"/EXPERIMENT/cert\"",
+        "\"--status-fd=1\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg\""
+      ],
+      "stderr": "gpgv: standalone signature of class 0x19\\ngpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpgv: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 19 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"gpgv\"",
+        "\"--keyring\"",
+        "\"/EXPERIMENT/cert\"",
+        "\"--status-fd=1\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg_bad\""
+      ],
+      "stderr": "gpgv: standalone signature of class 0x19\\ngpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpgv: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 19 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: standalone signature of class 0x1f\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: invalid root packet for sigclass 1f\\ngpg: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 1f 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg_bad\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: standalone signature of class 0x1f\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: invalid root packet for sigclass 1f\\ngpg: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 1f 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"gpgv\"",
+        "\"--keyring\"",
+        "\"/EXPERIMENT/cert\"",
+        "\"--status-fd=1\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg\""
+      ],
+      "stderr": "gpgv: standalone signature of class 0x1f\\ngpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpgv: invalid root packet for sigclass 1f\\ngpgv: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 1f 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"gpgv\"",
+        "\"--keyring\"",
+        "\"/EXPERIMENT/cert\"",
+        "\"--status-fd=1\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg_bad\""
+      ],
+      "stderr": "gpgv: standalone signature of class 0x1f\\ngpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpgv: invalid root packet for sigclass 1f\\ngpgv: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 1f 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: standalone signature of class 0x20\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: standalone revocation - use \"gpg --import\" to apply\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 20 1671553073 52 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg_bad\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: standalone signature of class 0x20\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: standalone revocation - use \"gpg --import\" to apply\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 20 1671553073 52 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"gpgv\"",
+        "\"--keyring\"",
+        "\"/EXPERIMENT/cert\"",
+        "\"--status-fd=1\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg\""
+      ],
+      "stderr": "gpgv: standalone signature of class 0x20\\ngpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpgv: standalone revocation - use \"gpg --import\" to apply\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 20 1671553073 52 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"gpgv\"",
+        "\"--keyring\"",
+        "\"/EXPERIMENT/cert\"",
+        "\"--status-fd=1\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg_bad\""
+      ],
+      "stderr": "gpgv: standalone signature of class 0x20\\ngpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpgv: standalone revocation - use \"gpg --import\" to apply\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 20 1671553073 52 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: standalone signature of class 0x28\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: invalid root packet for sigclass 28\\ngpg: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 28 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg_bad\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: standalone signature of class 0x28\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: invalid root packet for sigclass 28\\ngpg: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 28 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"gpgv\"",
+        "\"--keyring\"",
+        "\"/EXPERIMENT/cert\"",
+        "\"--status-fd=1\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg\""
+      ],
+      "stderr": "gpgv: standalone signature of class 0x28\\ngpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpgv: invalid root packet for sigclass 28\\ngpgv: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 28 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"gpgv\"",
+        "\"--keyring\"",
+        "\"/EXPERIMENT/cert\"",
+        "\"--status-fd=1\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg_bad\""
+      ],
+      "stderr": "gpgv: standalone signature of class 0x28\\ngpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpgv: invalid root packet for sigclass 28\\ngpgv: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 28 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: standalone signature of class 0x30\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: invalid root packet for sigclass 30\\ngpg: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 30 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg_bad\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: standalone signature of class 0x30\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: invalid root packet for sigclass 30\\ngpg: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 30 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"gpgv\"",
+        "\"--keyring\"",
+        "\"/EXPERIMENT/cert\"",
+        "\"--status-fd=1\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg\""
+      ],
+      "stderr": "gpgv: standalone signature of class 0x30\\ngpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpgv: invalid root packet for sigclass 30\\ngpgv: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 30 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"gpgv\"",
+        "\"--keyring\"",
+        "\"/EXPERIMENT/cert\"",
+        "\"--status-fd=1\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg_bad\""
+      ],
+      "stderr": "gpgv: standalone signature of class 0x30\\ngpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpgv: invalid root packet for sigclass 30\\ngpgv: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 30 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: standalone signature of class 0x40\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 40 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg_bad\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: standalone signature of class 0x40\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 40 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"gpgv\"",
+        "\"--keyring\"",
+        "\"/EXPERIMENT/cert\"",
+        "\"--status-fd=1\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg\""
+      ],
+      "stderr": "gpgv: standalone signature of class 0x40\\ngpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpgv: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 40 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"gpgv\"",
+        "\"--keyring\"",
+        "\"/EXPERIMENT/cert\"",
+        "\"--status-fd=1\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg_bad\""
+      ],
+      "stderr": "gpgv: standalone signature of class 0x40\\ngpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpgv: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 40 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: standalone signature of class 0x50\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 50 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg_bad\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: standalone signature of class 0x50\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 50 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"gpgv\"",
+        "\"--keyring\"",
+        "\"/EXPERIMENT/cert\"",
+        "\"--status-fd=1\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg\""
+      ],
+      "stderr": "gpgv: standalone signature of class 0x50\\ngpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpgv: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 50 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"gpgv\"",
+        "\"--keyring\"",
+        "\"/EXPERIMENT/cert\"",
+        "\"--status-fd=1\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg_bad\""
+      ],
+      "stderr": "gpgv: standalone signature of class 0x50\\ngpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpgv: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 50 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: standalone signature of class 0x4d\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 4d 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg_bad\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: standalone signature of class 0x4d\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 4d 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"gpgv\"",
+        "\"--keyring\"",
+        "\"/EXPERIMENT/cert\"",
+        "\"--status-fd=1\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg\""
+      ],
+      "stderr": "gpgv: standalone signature of class 0x4d\\ngpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpgv: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 4d 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"gpgv\"",
+        "\"--keyring\"",
+        "\"/EXPERIMENT/cert\"",
+        "\"--status-fd=1\"",
+        "\"/EXPERIMENT/sig\"",
+        "\"/EXPERIMENT/msg_bad\""
+      ],
+      "stderr": "gpgv: standalone signature of class 0x4d\\ngpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpgv: Can't check signature: Invalid signature class\\n",
+      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG E2B097EC30C6894F 22 10 4d 1671553073 32 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\n",
+      "status": "exit status: 2",
+      "files": {}
+    }
+  ],
   "artifacts": {
     "cert": "\\xC5X\\x04c\\xA1\\xE01\\x16\\t+\\x06\\x01\\x04\\x01\\xDAG\\x0F\\x01\\x01\\x07@\\x8C\\x08\\xAF/[\\x08o\\xB4m\\x97\\xB4\\xDC\\xF0J}\\xBC\\x0E\\xA2T\\x08ux\\xA1\\x13\\xE7=\\x17\\x9E\\x86\\t\\x19\\x8C\\x00\\x00\\xFF\\\\\\x90\\xA2\\x866\\xB5\\xE1S\\xF6\\xA3Tr\\x91xk\\x1A\\x828\\xBC\\xBE\\xDB\\\\Ssa\\xD2]ǚ\\x0C\\xB8y\\x11~\\xC2\\xC0\\x0B\\x04\\x1F\\x16\\n\\x00}\\x05\\x82c\\xA1\\xE01\\x03\\x0B\\t\\x07\\t\\x10I\\x8B\\xF4\\xFC\\xF2?\\xC8>G\\x14\\x00\\x00\\x00\\x00\\x00\\x1E\\x00 salt@notations.sequoia-pgp.org\\xBF\\xD4\\x0F\\x17\\rJ\\xB9\\x8E\\xECh\\xAA3\\xC9\\x1C\\xE0\\n\\xFE\\xE5\\xA5\\xF9\\x13\\xAA\\x1Fq\\x03\\xA4\\xC3uZ\\xBD%\\xE2\\x03\\x15\\n\\x08\\x02\\x9B\\x01\\x02\\x1E\\x01\\x16!\\x04՛\\xE1KdY\"28CG\\x84I\\x8B\\xF4\\xFC\\xF2?\\xC8>\\x00\\x00\\x19\\r\\x01\\x00\\xA8Is\\xA3X\\xC0޶\\xB3jv\\xBD\\x98#\\xCEt\\x9D\\x98\\x86m \\xBD2bn\\x1F\\x93\\xA2\\xD4\\x10\\xD29\\x01\\x00\\xEF\\xA4b\\x9D\\\\Q\\x84\\xA5\\xBFyz\\x07\\t\\xCC\\xFA\\x0CM\\xC9\\x1A{`\\x1F#]\\xC2\\nh\\xD7s\\xAB3\\t\\xCD$Alice Lovelace <alice@lovelace.name>\\xC2\\xC0\\x0E\\x04\\x13\\x16\\n\\x00\\x80\\x05\\x82c\\xA1\\xE01\\x03\\x0B\\t\\x07\\t\\x10I\\x8B\\xF4\\xFC\\xF2?\\xC8>G\\x14\\x00\\x00\\x00\\x00\\x00\\x1E\\x00 salt@notations.sequoia-pgp.org\\xB7Ha\\xA02\\xBE\\x03z\\xD5Y\\x88\\xA1g\\x00\\x9E5\\x8D\\x14\\n\\xEAJ\\xFD\\xE3\\xF5\\x95\\x96&\\xFD\\xF4w\\xAC\\xE3\\x03\\x15\\n\\x08\\x02\\x99\\x01\\x02\\x9B\\x01\\x02\\x1E\\x01\\x16!\\x04՛\\xE1KdY\"28CG\\x84I\\x8B\\xF4\\xFC\\xF2?\\xC8>\\x00\\x00Y\\xC9\\x00\\xFE%\\x04͹4\\xEC\\xD8\\xDF\\xED\\x88\\x95\\x8B;\\xF9\\xEF\\xF7\\xBB\\xC30Hv\\xC7\\x04\\xF3d\\xF8\\xC4\\x06\\xC8b\\x14\\xE4\\x00\\xFFzG\\xFB\\xAB\\xA2\\x10\\xAD\\xCA\\xD2v\\x0E\\x04\\xE7\\x00y\\x87y\\xD5k \\xE6)W\\x90\\xAD\\x85\\xC27\\x05\\xDB?\\x0B\\xC7X\\x04c\\xA1\\xE01\\x16\\t+\\x06\\x01\\x04\\x01\\xDAG\\x0F\\x01\\x01\\x07@\\xB5\\xE0TxK\\xDF\\x08<g\\xEFw\\xBF\\xB8*W\\xB3\\xAFi\\xA9]\\x11\\xFD\\x86}\\xE0~#h\\xC5\\xCA\\x1C\\x17\\x00\\x00\\xFD\\x1Al\\xAA7L[\\xA8d\\xF3\\xC9\\x93\\xBD\\t\\xF8\\x06\\x85\\xE9Ao\\x8A\\x8EhP\\x84\\x88\\x14q\\xDD\\x0C\\x87\\xF2\\xDE\\x10\\xE9\\xC2\\xC0\\xBF\\x04\\x18\\x16\\n\\x011\\x05\\x82c\\xA1\\xE01\\t\\x10I\\x8B\\xF4\\xFC\\xF2?\\xC8>G\\x14\\x00\\x00\\x00\\x00\\x00\\x1E\\x00 salt@notations.sequoia-pgp.orgO\\x08\\x9E'\\xDC\\x08QU\\xCDj\\xD3v\\xC1\\x9B\\xD7\\xEE\\x0B$j\\x06\\xEE\\xC8\\x8F\\xC8V<\\x898Owb\\xDF\\x02\\x9B\\x02\\xBE\\xA0\\x04\\x19\\x16\\n\\x00o\\x05\\x82c\\xA1\\xE01\\t\\x10Ⱇ\\xEC0ƉOG\\x14\\x00\\x00\\x00\\x00\\x00\\x1E\\x00 salt@notations.sequoia-pgp.org\\x92\\xDD\\x1F\\xA4\\xBDrB\\xF2.\\xFB\\xAE\\xEB\\x17\\x8E\\xF3>\\x81\\n\\x91\\xC8P\\xB4\\xE8C[\\x81\\x89>\\x05\\xC4\\xD92\\x16!\\x04\\x1C\\x1C\\xB5\\x00\\x9A\\t\\x97\\x0Fp\\xEEGuⰗ\\xEC0ƉO\\x00\\x00\\x10\\t\\x00\\xFFN\\x1D\\xBBc\\x18h\"\\x97\\x85l\"\\t Į\\x9B\\x1E\\x1E\\xA9\"6t\\xF0\\xDB/q\\xB0\\xFA\\x9F\\xEF\\xCF(\\x01\\x00\\xF8\\xA6%j\\x99K\\xAF\\x1C,\\x94\\xEE\\xF5\\xCC}\\xB0\\x15㤯$9[t\\x91\\x1B*bk(\\x08\\xA3\\r\\x16!\\x04՛\\xE1KdY\"28CG\\x84I\\x8B\\xF4\\xFC\\xF2?\\xC8>\\x00\\x00\\x85\\xAF\\x01\\x00\\xF0\\xDAi\\xBAH\\x14\\x04\\xC1&\\x08\\x18\\xA1\\x87\\xEA?\\\\\\xA6!?\\x07V`P\\xBF\\x06W\\x9B\\xB3\\xFB83\\xB5\\x01\\x00\\x95w\\xA9\\x1E\\xA4I\\xDE\\x05e\\xAF$9d%JvP\\xB6U\\xF1M\\x8DB\\xAE\\xAAWS\\xEFO\\x1F\\xEA\\x0B",
     "sig.0": "½\\x04\\x00\\x16\\n\\x00o\\x05\\x82c\\xA1\\xE01\\t\\x10Ⱇ\\xEC0ƉOG\\x14\\x00\\x00\\x00\\x00\\x00\\x1E\\x00 salt@notations.sequoia-pgp.org\\x82?\\x90-\\xFD\\xECl\\xD86\\xC4.\\xD5\\xFA\"\\xB3T\\xF3Q\\x89Y\\xB2Tqpڢ\\xF7\\x91\\xBD\\xFA\\xF5\\xDB\\x16!\\x04\\x1C\\x1C\\xB5\\x00\\x9A\\t\\x97\\x0Fp\\xEEGuⰗ\\xEC0ƉO\\x00\\x00\\x1C\\xC8\\x00\\xFFZҁ\\x7FM\\x984\\r\\x7F\\x12P=ɦ\\xAA\"\\xF1\\n\\xAD\\x17\\x15m\\xDD\\xCE՞o\\xB1\\x84,n\\xBD\\x01\\x00\\xA65N\\x8C\\xFE\\xED\\x0B\\x87\\xF9?\\xE2\\xF0\\x94q\\xBFO+\\x88\\xAD\\xB5v*rb\\xF4ca\\xBD\\n\\t",
