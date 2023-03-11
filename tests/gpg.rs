@@ -131,10 +131,18 @@ fn build() {
 
 /// A context for GnuPG.
 ///
-/// Creates a temporary directory and cleans up on Drop.
+/// Creates a temporary directory and cleans it up on Drop.
 pub struct Context {
+    // How to invoke gpg or gpg-sq.
+    //
+    // gpg[0] is the executable and the rest are arguments that are
+    // implicitly passed to it.
     gpg: Vec<String>,
+
+    // Like `gpg`, but for gpgv or gpgv-sq.
     gpgv: Vec<String>,
+
+    /// What is passed to --homedir.
     home: tempfile::TempDir,
 }
 
@@ -159,8 +167,8 @@ impl Context {
         })
     }
 
-    /// Stores the given data in the state directory, returning a path
-    /// to that file.
+    /// Stores the given data in the home directory, and returns the
+    /// absolute path to that file.
     ///
     /// Useful for building up invocations.
     pub fn store(&self, name: &str, data: impl AsRef<[u8]>) -> Result<String> {
@@ -170,6 +178,10 @@ impl Context {
     }
 
     /// Invokes the GnuPG implementation with the given arguments.
+    ///
+    /// The output of the invocation (stdout and stderr) as well as
+    /// any files created under the current directory are returned in
+    /// an instance of `Output`.
     pub fn invoke(&self, args: &[&str]) -> Result<Output> {
         // See if the user wants gpg or gpgv.
         let (executable, args) =
@@ -201,6 +213,7 @@ impl Context {
         }
         let out = c.output()?;
 
+        // Collect any output produced in the working directory.
         let mut files = BTreeMap::default();
         for entry in fs::read_dir(&workdir)? {
             let path = entry?.path();
@@ -218,12 +231,26 @@ impl Context {
     }
 }
 
+/// The output of an invocation of some command.
+///
+/// This is returned by `Context::invoke`.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Output {
+    /// The command that was run as well as the arguments.
+    ///
+    /// This is the unnormalized command.  That is, args[0] is not
+    /// mapped to the actual implementation that is used.
     args: Vec<String>,
+
+    /// The captured stderr and stdout.
     stderr: Vec<u8>,
     stdout: Vec<u8>,
+
+    /// The status code, e.g., "exit status: 0".
     status: String,
+
+    /// Any files that are produced by the invocation under the
+    /// working directory.
     files: BTreeMap<String, Vec<u8>>,
 }
 
@@ -323,6 +350,8 @@ impl ArtifactStore {
 /// the differences.
 pub struct Experiment {
     wd: tempfile::TempDir,
+    /// A record of what actions were performed (storing a file,
+    /// invoking a command) and their order.
     log: std::cell::RefCell<Vec<Action>>,
     /// We store the output of GnuPG so that we don't build-depend on
     /// it.
@@ -338,8 +367,12 @@ impl Drop for Experiment {
     }
 }
 
+/// An experiment consists of a number of actions, which are executed
+/// in order.
 enum Action {
+    /// Store a file in the working directory.
     Store(PathBuf),
+    /// Invoke a command.
     Invoke(Vec<String>),
 }
 
