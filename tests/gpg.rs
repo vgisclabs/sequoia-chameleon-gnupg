@@ -743,7 +743,11 @@ impl Diff<'_> {
             eprintln!("Invocation not successful.\n\n{}", self);
             panic!();
         }
-        self.assert_dynamic_upper_bounds();
+        if ! self.assert_dynamic_upper_bounds()
+            || ! self.assert_unchanged_output()
+        {
+            panic!()
+        }
     }
 
     /// Asserts that both implementations returned failure.
@@ -756,29 +760,63 @@ impl Diff<'_> {
             eprintln!("Invocation did not fail.\n\n{}", self);
             panic!();
         }
-        self.assert_dynamic_upper_bounds();
-    }
-
-    /// Asserts that both implementations wrote the same output up to
-    /// a limit recorded when the artifact was recorded.
-    ///
-    /// Assert that the edit distance between the implementations
-    /// output on stdout (stderr) does not exceed the recorded limits.
-    /// Panics otherwise.
-    pub fn assert_dynamic_upper_bounds(&self) {
-        if let Some(&(out_limit, err_limit)) = self.dynamic_upper_bounds {
-            eprintln!("asserting recorded limits of {}, {}", out_limit, err_limit);
-            self.assert_equal_up_to(out_limit, err_limit);
+        if ! self.assert_dynamic_upper_bounds()
+            || ! self.assert_unchanged_output()
+        {
+            eprintln!("\n{}", self);
+            panic!()
         }
     }
 
-    /// Asserts that both implementations wrote the same output up to
+    /// Returns whether the current output is the same as the recorded
+    /// output.
+    pub fn assert_unchanged_output(&self) -> bool {
+        let mut pass = true;
+
+        if let Some(former_us) = self.former_us.as_ref() {
+            eprintln!("asserting output matches output from last run.");
+
+            if former_us.stdout != self.us.stdout {
+                pass = false;
+                eprintln!("Stdout changed from last run.");
+            }
+            if former_us.stderr != self.us.stderr {
+                pass = false;
+                eprintln!("Stderr changed from last run.");
+            }
+            if former_us.status != self.us.status {
+                pass = false;
+                eprintln!("Status changed from last run.");
+            }
+        } else {
+            eprintln!("Can't compare output to last run: \
+                       no output for last run is recorded");
+        }
+
+        pass
+    }
+
+    /// Returns whether both implementations wrote the same output up to
+    /// a limit recorded when the artifact was recorded.
+    ///
+    /// Asserts that the edit distance between the implementations
+    /// output on stdout (stderr) does not exceed the recorded limits.
+    pub fn assert_dynamic_upper_bounds(&self) -> bool {
+        let mut pass = true;
+        if let Some(&(out_limit, err_limit)) = self.dynamic_upper_bounds {
+            eprintln!("asserting recorded limits of {}, {}", out_limit, err_limit);
+            pass = self.assert_equal_up_to(out_limit, err_limit);
+        }
+        pass
+    }
+
+    /// Returns whether both implementations wrote the same output up to
     /// a limit.
     ///
     /// Assert that the edit distance between the implementations
     /// output on stdout (stderr) does not exceed the given
-    /// `out_limit` (`err_limit`).  Panics otherwise.
-    pub fn assert_equal_up_to(&self, out_limit: usize, err_limit: usize) {
+    /// `out_limit` (`err_limit`).
+    pub fn assert_equal_up_to(&self, out_limit: usize, err_limit: usize) -> bool {
         let mut pass = true;
 
         let d = self.oracle.stdout_edit_distance(&self.us);
@@ -805,10 +843,7 @@ impl Diff<'_> {
                       d, err_limit);
         }
 
-        if ! pass {
-            eprintln!("\n{}", self);
-            panic!();
-        }
+        pass
     }
 
     /// Invokes a callback with the working directory.
@@ -833,8 +868,12 @@ impl fmt::Display for Diff<'_> {
                   &String::from_utf8_lossy(&self.oracle.stdout),
                   "chameleon stdout",
                   &String::from_utf8_lossy(&self.us.stdout))?;
+        }
 
-            if let Some(former_us) = self.former_us.as_ref() {
+        if let Some(former_us) = self.former_us.as_ref() {
+            if former_us.stdout.len() + self.us.stdout.len() > 0 {
+                writeln!(f, "stdout (edit distance {}):",
+                         former_us.stdout_edit_distance(&self.us))?;
                 udiff(f,
                       "former gpg-chameleon stdout",
                       &String::from_utf8_lossy(&former_us.stdout),
@@ -843,6 +882,8 @@ impl fmt::Display for Diff<'_> {
             } else {
                 writeln!(f, "Can't compare to previous run: output not recorded")?;
             }
+        } else {
+            writeln!(f, "Can't compare to previous run: output not recorded")?;
         }
 
         if self.oracle.stderr.len() + self.us.stderr.len() > 0 {
@@ -852,8 +893,10 @@ impl fmt::Display for Diff<'_> {
                   &String::from_utf8_lossy(&self.oracle.stderr),
                   "chameleon stderr",
                   &String::from_utf8_lossy(&self.us.stderr))?;
+        }
 
-            if let Some(former_us) = self.former_us.as_ref() {
+        if let Some(former_us) = self.former_us.as_ref() {
+            if former_us.stderr.len() + self.us.stderr.len() > 0 {
                 udiff(f,
                       "former chameleon stderr",
                       &String::from_utf8_lossy(&former_us.stderr),
