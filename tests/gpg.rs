@@ -321,7 +321,10 @@ impl Output {
 
 #[derive(Debug, Default, Serialize, Deserialize)]
 struct ArtifactStore {
+    /// The invocations' output.
     outputs: Vec<Output>,
+    /// The files created by the invocation below the working
+    /// directory.
     artifacts: BTreeMap<String, Vec<u8>>,
 
     /// Difference to the Chameleon's stderr and stdout at the time
@@ -332,14 +335,35 @@ struct ArtifactStore {
 
 impl ArtifactStore {
     fn load(path: &Path) -> Result<Self> {
-        let mut f = fs::File::open(&path)?;
-        Ok(serde_cbor::from_reader(&mut f)?)
+        let mut f = match fs::File::open(&path) {
+            Ok(f) => f,
+            Err(err) => {
+                eprintln!("Opening artifact store {:?}: {}",
+                          path, err);
+                return Err(err.into());
+            }
+        };
+
+        match serde_cbor::from_reader(&mut f) {
+            Ok(r) => Ok(r),
+            Err(err) => {
+                eprintln!("Reading artifact store {:?}: {}",
+                          path, err);
+                Err(err.into())
+            }
+        }
     }
 
     fn store(&self, path: &Path) -> Result<()> {
         fs::create_dir_all(path.parent().unwrap())?;
         let mut f = fs::File::create(path)?;
         serde_cbor::to_writer(&mut f, self)?;
+
+        // Also write out a JSON variant.
+        let mut path = PathBuf::from(path);
+        path.set_extension("json");
+        let mut f = fs::File::create(path)?;
+        serde_json::to_writer_pretty(&mut f, self)?;
         Ok(())
     }
 }
@@ -482,6 +506,7 @@ impl Experiment {
         eprintln!("Invoking {:?} {}", what, normalized_args.join(" "));
 
         // First, invoke the Chameleon.
+        eprintln!("Invoking the chameleon");
         let us = self.us.invoke(&args)?
             .canonicalize(self.us.home.path(), self.wd.path());
 
@@ -489,9 +514,11 @@ impl Experiment {
         let oracle = if let Some(o) = self.artifacts.outputs.get(n)
             .filter(|v| v.args == normalized_args)
         {
+            eprintln!("Not invoking the oracle: using cached results");
             o.clone()
         } else {
             // Cache miss or the arguments changed.
+            eprintln!("Invoking the oracle");
             let mut output = self.oracle.invoke(&args)?
                 .canonicalize(self.oracle.home.path(), self.wd.path());
             output.args = normalized_args;
