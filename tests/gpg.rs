@@ -11,6 +11,8 @@ use std::{
 use anyhow::Result;
 use serde::{Serialize, Deserialize};
 
+use serde_with::serde_as;
+
 use sequoia_openpgp as openpgp;
 
 /// Produces the fully qualified function name.
@@ -231,9 +233,120 @@ impl Context {
     }
 }
 
+/// A dummy type so that we can serialize a Vec<u8> as an
+/// STFU8-encoded string.
+///
+/// By encoding `Vec<u8>` using STFU8, we make the output files human
+/// readable instead of an opaque array of integers `[100,101,94,
+/// ... ]`.  This is great for examining what exactly the output was
+/// without using any special tools.
+struct Stfu8Bytes {
+}
+
+impl serde_with::SerializeAs<Vec<u8>> for Stfu8Bytes
+{
+    fn serialize_as<S>(bytes: &Vec<u8>, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(&stfu8::encode_u8(bytes))
+    }
+}
+
+impl<'de> serde_with::DeserializeAs<'de, Vec<u8>> for Stfu8Bytes
+{
+    fn deserialize_as<D>(deserializer: D) -> Result<Vec<u8>, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        // `SeqIter` is inspired by serde_with's version, which is
+        // under the Apache-2.0 or MIT license.
+        //
+        // https://github.com/jonasbb/serde_with/blob/e010b09/serde_with/src/utils.rs#L71-L105
+        struct SeqIter<'de, A, T> {
+            access: A,
+            marker: std::marker::PhantomData<(&'de (), T)>,
+        }
+
+        impl<'de, A, T> SeqIter<'de, A, T> {
+            fn new(access: A) -> Self
+            where
+                A: serde::de::SeqAccess<'de>,
+            {
+                Self {
+                    access,
+                    marker: std::marker::PhantomData,
+                }
+            }
+        }
+
+        impl<'de, A, T> Iterator for SeqIter<'de, A, T>
+        where
+            A: serde::de::SeqAccess<'de>,
+            T: Deserialize<'de>,
+        {
+            type Item = Result<T, A::Error>;
+
+            fn next(&mut self) -> Option<Self::Item> {
+                self.access.next_element().transpose()
+            }
+
+            fn size_hint(&self) -> (usize, Option<usize>) {
+                match self.access.size_hint() {
+                    Some(size) => (size, Some(size)),
+                    None => (0, None),
+                }
+            }
+        }
+
+
+        struct Stfu8BytesVisitor;
+
+        impl<'de> serde::de::Visitor<'de> for Stfu8BytesVisitor {
+            type Value = Vec<u8>;
+
+            fn expecting(&self, formatter: &mut fmt::Formatter<'_>)
+                -> fmt::Result
+            {
+                formatter.write_str("a [u8] or a String")
+            }
+
+            fn visit_bytes<E>(self, bytes: &[u8]) -> Result<Self::Value, E> {
+                Ok(bytes.to_vec())
+            }
+
+            fn visit_byte_buf<E>(self, v: Vec<u8>) -> Result<Self::Value, E> {
+                Ok(v)
+            }
+
+            fn visit_str<E>(self, s: &str) -> Result<Self::Value, E>
+                where E: serde::de::Error
+            {
+                Ok(stfu8::decode_u8(s).map_err(serde::de::Error::custom)?)
+            }
+
+            fn visit_string<E>(self, s: String)
+                -> Result<Self::Value, E>
+                where E: serde::de::Error
+            {
+                Ok(stfu8::decode_u8(&s).map_err(serde::de::Error::custom)?)
+            }
+
+            fn visit_seq<A>(self, seq: A) -> Result<Self::Value, A::Error>
+            where
+                A: serde::de::SeqAccess<'de>,
+            {
+                SeqIter::new(seq).collect()
+            }
+        }
+        deserializer.deserialize_any(Stfu8BytesVisitor)
+    }
+}
+
 /// The output of an invocation of some command.
 ///
 /// This is returned by `Context::invoke`.
+#[serde_as]
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Output {
     /// The command that was run as well as the arguments.
@@ -243,7 +356,9 @@ pub struct Output {
     args: Vec<String>,
 
     /// The captured stderr and stdout.
+    #[serde_as(as = "Stfu8Bytes")]
     stderr: Vec<u8>,
+    #[serde_as(as = "Stfu8Bytes")]
     stdout: Vec<u8>,
 
     /// The status code, e.g., "exit status: 0".
@@ -251,6 +366,7 @@ pub struct Output {
 
     /// Any files that are produced by the invocation under the
     /// working directory.
+    #[serde_as(as = "BTreeMap<_, Stfu8Bytes>")]
     files: BTreeMap<String, Vec<u8>>,
 }
 
@@ -319,12 +435,14 @@ impl Output {
     }
 }
 
+#[serde_as]
 #[derive(Debug, Default, Serialize, Deserialize)]
 struct ArtifactStore {
     /// The invocations' output.
     outputs: Vec<Output>,
     /// The files created by the invocation below the working
     /// directory.
+    #[serde_as(as = "BTreeMap<_, Stfu8Bytes>")]
     artifacts: BTreeMap<String, Vec<u8>>,
 
     /// Difference to the Chameleon's stderr and stdout at the time
