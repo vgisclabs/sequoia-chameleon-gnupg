@@ -66,6 +66,9 @@ path = "src/gpg.rs"
 name = "gpgv-sq"
 path = "src/gpgv.rs"
 
+[profile.release]
+debug = true
+
 [features]
 default = ["crypto-nettle"]
 crypto-nettle = ["sequoia-openpgp/crypto-nettle"]
