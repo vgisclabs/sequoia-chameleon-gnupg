@@ -317,15 +317,41 @@ impl<'store> KeyDB<'store> {
                 err
             })?;
 
-        let items = lazy_iter(&certd, &path)
-            .into_iter().flatten() // Folds errors.
-            .collect::<Vec<_>>();
+        let items = certd.iter_fingerprints()?;
+
+        let open = |fp: String| -> Option<(String, _, _)> {
+            let path = path.join(&fp[..2]).join(&fp[2..]);
+
+            let f = match fs::File::open(&path) {
+                Ok(f) => f,
+                Err(err) => {
+                    t!("Reading {:?}: {}", path, err);
+                    return None;
+                }
+            };
+            let metadata = match f.metadata() {
+                Ok(f) => f,
+                Err(err) => {
+                    t!("Stating entry {:?}: {}", path, err);
+                    return None;
+                }
+            };
+            match openpgp_cert_d::Tag::try_from(metadata) {
+                Ok(tag) => Some((fp, tag, f)),
+                Err(err) => {
+                    t!("Getting tag for entry {:?}: {}", path, err);
+                    None
+                }
+            }
+        };
 
         let result = if lazy {
-            items.into_iter().filter_map(|(fp, tag, file)| {
+            items.into_iter().filter_map(|fp| {
                 // XXX: Once we have a cached tag, avoid the
                 // work if tags match.
                 t!("loading {} from overlay", fp);
+
+                let (fp, tag, file) = open(fp)?;
 
                 let mut parser = match RawCertParser::from_reader(file) {
                     Ok(parser) => parser,
@@ -361,12 +387,15 @@ impl<'store> KeyDB<'store> {
 
             // For performance reasons, we read, parse, and
             // canonicalize certs in parallel.
-            items.into_par_iter()
-                .filter_map(|(fp, tag, file)| {
+            items.collect::<Vec<_>>().into_par_iter()
+                .filter_map(|fp| {
                     // XXX: Once we have a cached tag and
                     // presumably a Sync index, avoid the work if
                     // tags match.
                     t!("loading {} from overlay", fp);
+
+                    let (fp, tag, file) = open(fp)?;
+
                     match Cert::from_reader(file) {
                         Ok(cert) => Some((tag, LazyCert::from(cert))),
                         Err(err) => {
@@ -606,22 +635,6 @@ impl<'store> KeyDB<'store> {
         Ok(())
     }
 }
-
-/// Like CertD::iter, but returns open `File`s.
-///
-/// XXX: Use the upstream version once available.
-fn lazy_iter<'c>(c: &'c openpgp_cert_d::CertD, base: &'c Path)
-                 -> Result<impl Iterator<Item = (String,
-                                                 openpgp_cert_d::Tag,
-                                                 fs::File)> + 'c> {
-    Ok(c.iter_fingerprints()?.filter_map(move |fp| {
-        let path = base.join(&fp[..2]).join(&fp[2..]);
-        let f = fs::File::open(path).ok()?;
-        let tag = f.metadata().ok()?.try_into().ok()?;
-        Some((fp, tag, f))
-    }))
-}
-
 
 pub struct Overlay<'store> {
     path: PathBuf,
