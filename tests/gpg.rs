@@ -344,7 +344,7 @@ impl ArtifactStore {
             }
         };
 
-        match serde_cbor::from_reader(&mut f) {
+        match serde_json::from_reader(&mut f) {
             Ok(r) => Ok(r),
             Err(err) => {
                 eprintln!("Reading artifact store {:?}: {}",
@@ -356,12 +356,6 @@ impl ArtifactStore {
 
     fn store(&self, path: &Path) -> Result<()> {
         fs::create_dir_all(path.parent().unwrap())?;
-        let mut f = fs::File::create(path)?;
-        serde_cbor::to_writer(&mut f, self)?;
-
-        // Also write out a JSON variant.
-        let mut path = PathBuf::from(path);
-        path.set_extension("json");
         let mut f = fs::File::create(path)?;
         serde_json::to_writer_pretty(&mut f, self)?;
         Ok(())
@@ -416,7 +410,7 @@ impl Experiment {
         for parameter in parameters {
             path.push(parameter);
         }
-        let artifacts_store = path.with_extension("cbor");
+        let artifacts_store = path.with_extension("json");
 
         // Load the stored artifacts, if any.
         let artifacts =

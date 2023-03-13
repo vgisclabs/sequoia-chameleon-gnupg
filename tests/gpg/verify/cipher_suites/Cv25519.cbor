@@ -1,94 +1,0 @@
-£goutputsä•dargsÇx!"--faked-system-time=1671553073!"m"--list-keys"fstderròœgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
-gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
-gpg: keybox '/HOMEDIR/pubring.kbx' created
-gpg: /HOMEDIR/trustdb.gpg: trustdb created
-fstdoutÄfstatusnexit status: 0efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrô!gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
-gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
-gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
-gpg:                using EDDSA key E678AE4A007A33EFB0098AA7F0AC6AF7EC9AA061
-gpg: Can't check signature: No public key
-fstdoutòî[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG F0AC6AF7EC9AA061 22 10 00 1671553073 9 E678AE4A007A33EFB0098AA7F0AC6AF7EC9AA061
-[GNUPG:] NO_PUBKEY F0AC6AF7EC9AA061
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrô!gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
-gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
-gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
-gpg:                using EDDSA key E678AE4A007A33EFB0098AA7F0AC6AF7EC9AA061
-gpg: Can't check signature: No public key
-fstdoutòî[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG F0AC6AF7EC9AA061 22 10 00 1671553073 9 E678AE4A007A33EFB0098AA7F0AC6AF7EC9AA061
-[GNUPG:] NO_PUBKEY F0AC6AF7EC9AA061
-fstatusnexit status: 2efiles†•dargsÜf"gpgv"k"--keyring"s"/EXPERIMENT/empty"o"--status-fd=1"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrò´gpgv: Signature made Tue Dec 20 19:17:53 2022 EAT
-gpgv:                using EDDSA key E678AE4A007A33EFB0098AA7F0AC6AF7EC9AA061
-gpgv: Can't check signature: No public key
-fstdoutòî[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG F0AC6AF7EC9AA061 22 10 00 1671553073 9 E678AE4A007A33EFB0098AA7F0AC6AF7EC9AA061
-[GNUPG:] NO_PUBKEY F0AC6AF7EC9AA061
-fstatusnexit status: 2efiles†•dargsÜf"gpgv"k"--keyring"s"/EXPERIMENT/empty"o"--status-fd=1"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrò´gpgv: Signature made Tue Dec 20 19:17:53 2022 EAT
-gpgv:                using EDDSA key E678AE4A007A33EFB0098AA7F0AC6AF7EC9AA061
-gpgv: Can't check signature: No public key
-fstdoutòî[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG F0AC6AF7EC9AA061 22 10 00 1671553073 9 E678AE4A007A33EFB0098AA7F0AC6AF7EC9AA061
-[GNUPG:] NO_PUBKEY F0AC6AF7EC9AA061
-fstatusnexit status: 2efiles†•dargsÉx!"--faked-system-time=1671553073!"j"--import"r"/EXPERIMENT/cert"fstderrôgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
-gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
-gpg: key 2D3463AAB1F25439: public key "Alice Lovelace <alice@lovelace.name>" imported
-gpg: Total number processed: 1
-gpg:               imported: 1
-fstdoutÄfstatusnexit status: 0efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôigpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
-gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
-gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
-gpg:                using EDDSA key E678AE4A007A33EFB0098AA7F0AC6AF7EC9AA061
-gpg: Good signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
-gpg: WARNING: This key is not certified with a trusted signature!
-gpg:          There is no indication that the signature belongs to the owner.
-Primary key fingerprint: A55A 7FD4 44AB 562E B389  D225 2D34 63AA B1F2 5439
-     Subkey fingerprint: E678 AE4A 007A 33EF B009  8AA7 F0AC 6AF7 EC9A A061
-fstdoutô¡[GNUPG:] NEWSIG
-[GNUPG:] KEY_CONSIDERED A55A7FD444AB562EB389D2252D3463AAB1F25439 0
-[GNUPG:] SIG_ID yU93xb0v34/AskAPoT+bqvPwV+c 2022-12-20 1671553073
-[GNUPG:] KEY_CONSIDERED A55A7FD444AB562EB389D2252D3463AAB1F25439 0
-[GNUPG:] GOODSIG F0AC6AF7EC9AA061 Alice Lovelace <alice@lovelace.name>
-[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org
-[GNUPG:] NOTATION_DATA €É25îËã=Gq%18œõ80 J∫Ähñ—%15∫|%01Ó˚£Å∏é
-[GNUPG:] VALIDSIG E678AE4A007A33EFB0098AA7F0AC6AF7EC9AA061 2022-12-20 1671553073 0 4 0 22 10 00 A55A7FD444AB562EB389D2252D3463AAB1F25439
-[GNUPG:] KEY_CONSIDERED A55A7FD444AB562EB389D2252D3463AAB1F25439 0
-[GNUPG:] KEY_CONSIDERED A55A7FD444AB562EB389D2252D3463AAB1F25439 0
-[GNUPG:] TRUST_UNDEFINED 0 pgp
-fstatusnexit status: 0efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrô@gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
-gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
-gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
-gpg:                using EDDSA key E678AE4A007A33EFB0098AA7F0AC6AF7EC9AA061
-gpg: BAD signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
-fstdoutò‹[GNUPG:] NEWSIG
-[GNUPG:] KEY_CONSIDERED A55A7FD444AB562EB389D2252D3463AAB1F25439 0
-[GNUPG:] KEY_CONSIDERED A55A7FD444AB562EB389D2252D3463AAB1F25439 0
-[GNUPG:] BADSIG F0AC6AF7EC9AA061 Alice Lovelace <alice@lovelace.name>
-fstatusnexit status: 1efiles†•dargsÜf"gpgv"k"--keyring"r"/EXPERIMENT/cert"o"--status-fd=1"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrò¡gpgv: Signature made Tue Dec 20 19:17:53 2022 EAT
-gpgv:                using EDDSA key E678AE4A007A33EFB0098AA7F0AC6AF7EC9AA061
-gpgv: Good signature from "Alice Lovelace <alice@lovelace.name>"
-fstdoutô[GNUPG:] NEWSIG
-[GNUPG:] KEY_CONSIDERED A55A7FD444AB562EB389D2252D3463AAB1F25439 0
-[GNUPG:] SIG_ID yU93xb0v34/AskAPoT+bqvPwV+c 2022-12-20 1671553073
-[GNUPG:] KEY_CONSIDERED A55A7FD444AB562EB389D2252D3463AAB1F25439 0
-[GNUPG:] GOODSIG F0AC6AF7EC9AA061 Alice Lovelace <alice@lovelace.name>
-[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org
-[GNUPG:] NOTATION_DATA €É25îËã=Gq%18œõ80 J∫Ähñ—%15∫|%01Ó˚£Å∏é
-[GNUPG:] VALIDSIG E678AE4A007A33EFB0098AA7F0AC6AF7EC9AA061 2022-12-20 1671553073 0 4 0 22 10 00 A55A7FD444AB562EB389D2252D3463AAB1F25439
-fstatusnexit status: 0efiles†•dargsÜf"gpgv"k"--keyring"r"/EXPERIMENT/cert"o"--status-fd=1"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrò¿gpgv: Signature made Tue Dec 20 19:17:53 2022 EAT
-gpgv:                using EDDSA key E678AE4A007A33EFB0098AA7F0AC6AF7EC9AA061
-gpgv: BAD signature from "Alice Lovelace <alice@lovelace.name>"
-fstdoutò‹[GNUPG:] NEWSIG
-[GNUPG:] KEY_CONSIDERED A55A7FD444AB562EB389D2252D3463AAB1F25439 0
-[GNUPG:] KEY_CONSIDERED A55A7FD444AB562EB389D2252D3463AAB1F25439 0
-[GNUPG:] BADSIG F0AC6AF7EC9AA061 Alice Lovelace <alice@lovelace.name>
-fstatusnexit status: 1efiles†iartifacts¢dcertô˚≈Xc°‡1	+⁄G@Â%ÕõÁÁ…‰IFEu≈ÊbËlﬂj∞+Ê6Ó.7Œı†  ˝œàΩ
-múÒ}` rìï€>ÅøìÛÇ~võíß∞!≠¬¿
- }Çc°‡1		-4c™±ÚT9G       salt@notations.sequoia-pgp.org—2aDcÍ6YÜk·’3Y∞Ü'™óhÇø:‡Ñ
-d
-õ!•Z‘D´V.≥â“%-4c™±ÚT9  Ò ⁄5˚ˇoìxP'vàÛ|AcùJX∑Zç£¥˘ãT	 ˇK}¨ÎRÀ«± ?d∂õê[IwπKd»A¥ŒÏYÕ$Alice Lovelace <alice@lovelace.name>¬¿
- ÄÇc°‡1		-4c™±ÚT9G       salt@notations.sequoia-pgp.org˙Bvï¸R";|¸ˇÅ#FL1≈‹≤Yπ¶ÒÑ™Î˝™ù
-ôõ!•Z‘D´V.≥â“%-4c™±ÚT9  q“ ⁄›”‹Y‘=!ΩC<16wMÕpÅTuWWÍ"ÉıªWÆ” È2—¬&È@[i0~)\˚z=Î£†¨Ìµ‚¿‚ê«Xc°‡1	+⁄G@ΩÊD óR~b BYı!¬áp^∞c~QOÎHÙ‚∆  «≤JøÜ◊éì6ÜâlŸqfZåO{v»Ã¬%∆ˇ{Ü¬¿ø
-1Çc°‡1	-4c™±ÚT9G       salt@notations.sequoia-pgp.org*À´E æxì∏èW}reªªÖŸni8’òÃ•ªñ˝@•õæ†
- oÇc°‡1	¨j˜Ïö†aG       salt@notations.sequoia-pgp.org¥`q∞_d´)4∑Vé•YP9K[¨ZßlÒ‹ˆÃ!ÊxÆJ z3Ô∞	äß¨j˜Ïö†a  *û ˇ\˝áË`VÌÎjrq‚˛éC—pÔÑÃ}"’¸.»ÌK ˇ[u‡]Òå´ca`-rki◊:ı£õÃT	P&ı»(C®ÿ!•Z‘D´V.≥â“%-4c™±ÚT9  î §†›D3E‰πF°»P◊Éyl∑™›AD¢¡<íN ˇJM∑$c°åk/Á=yÉ'¢ï‹@Îo5Ãu—ûAOkcsigòø¬Ω 
- oÇc°‡1	¨j˜Ïö†aG       salt@notations.sequoia-pgp.org€É25îËã=Gqœõ80 J∫Ähñ—∫|Ó˚£Å∏é!ÊxÆJ z3Ô∞	äß¨j˜Ïö†a  Eƒ ‘î∞]#£Á∂Ü?ã›{Z c˝å üÇúÑÎO1≤ πp±¸IÕ∞ÔD˛I@v7Ä«‡≥™á…‰¶%,tdynamic_upper_boundsäÇ VÇ Ç Ç Ç Ç  ÇÜÇCÇ ÇC

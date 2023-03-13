@@ -1,283 +1,0 @@
-£goutputsò•dargsÇx!"--faked-system-time=1671553073!"m"--list-keys"fstderròœgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
-gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
-gpg: keybox '/HOMEDIR/pubring.kbx' created
-gpg: /HOMEDIR/trustdb.gpg: trustdb created
-fstdoutÄfstatusnexit status: 0efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
-gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
-gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
-gpg:                using RSA key 7108E748FBED4AC95246593BEC06F80B416AEE24
-gpg: Can't check signature: No public key
-fstdoutòì[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG EC06F80B416AEE24 1 10 00 1671553073 9 7108E748FBED4AC95246593BEC06F80B416AEE24
-[GNUPG:] NO_PUBKEY EC06F80B416AEE24
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
-gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
-gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
-gpg:                using RSA key 7108E748FBED4AC95246593BEC06F80B416AEE24
-gpg: Can't check signature: No public key
-fstdoutòì[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG EC06F80B416AEE24 1 10 00 1671553073 9 7108E748FBED4AC95246593BEC06F80B416AEE24
-[GNUPG:] NO_PUBKEY EC06F80B416AEE24
-fstatusnexit status: 2efiles†•dargsÜf"gpgv"k"--keyring"s"/EXPERIMENT/empty"o"--status-fd=1"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrò©gpgv: Signature made Tue Dec 20 19:17:53 2022 EAT
-gpgv:                using RSA key 7108E748FBED4AC95246593BEC06F80B416AEE24
-gpgv: Can't check signature: No public key
-fstdoutòì[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG EC06F80B416AEE24 1 10 00 1671553073 9 7108E748FBED4AC95246593BEC06F80B416AEE24
-[GNUPG:] NO_PUBKEY EC06F80B416AEE24
-fstatusnexit status: 2efiles†•dargsÜf"gpgv"k"--keyring"s"/EXPERIMENT/empty"o"--status-fd=1"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrò©gpgv: Signature made Tue Dec 20 19:17:53 2022 EAT
-gpgv:                using RSA key 7108E748FBED4AC95246593BEC06F80B416AEE24
-gpgv: Can't check signature: No public key
-fstdoutòì[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG EC06F80B416AEE24 1 10 00 1671553073 9 7108E748FBED4AC95246593BEC06F80B416AEE24
-[GNUPG:] NO_PUBKEY EC06F80B416AEE24
-fstatusnexit status: 2efiles†•dargsÉx!"--faked-system-time=1671553073!"j"--import"r"/EXPERIMENT/cert"fstderrôgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
-gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
-gpg: key EC06F80B416AEE24: public key "Alice Lovelace <alice@lovelace.name>" imported
-gpg: Total number processed: 1
-gpg:               imported: 1
-fstdoutÄfstatusnexit status: 0efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôpgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
-gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
-gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
-gpg:                using RSA key 7108E748FBED4AC95246593BEC06F80B416AEE24
-gpg: bad data signature from key EC06F80B416AEE24: Wrong key usage (0x00, 0x4)
-gpg: Can't check signature: Wrong key usage
-fstdoutò¥[GNUPG:] NEWSIG
-[GNUPG:] KEY_CONSIDERED 7108E748FBED4AC95246593BEC06F80B416AEE24 0
-[GNUPG:] ERRSIG EC06F80B416AEE24 1 10 00 1671553073 125 7108E748FBED4AC95246593BEC06F80B416AEE24
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôpgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
-gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
-gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
-gpg:                using RSA key 7108E748FBED4AC95246593BEC06F80B416AEE24
-gpg: bad data signature from key EC06F80B416AEE24: Wrong key usage (0x00, 0x4)
-gpg: Can't check signature: Wrong key usage
-fstdoutò¥[GNUPG:] NEWSIG
-[GNUPG:] KEY_CONSIDERED 7108E748FBED4AC95246593BEC06F80B416AEE24 0
-[GNUPG:] ERRSIG EC06F80B416AEE24 1 10 00 1671553073 125 7108E748FBED4AC95246593BEC06F80B416AEE24
-fstatusnexit status: 2efiles†•dargsÜf"gpgv"k"--keyring"r"/EXPERIMENT/cert"o"--status-fd=1"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrò˚gpgv: Signature made Tue Dec 20 19:17:53 2022 EAT
-gpgv:                using RSA key 7108E748FBED4AC95246593BEC06F80B416AEE24
-gpgv: bad data signature from key EC06F80B416AEE24: Wrong key usage (0x00, 0x4)
-gpgv: Can't check signature: Wrong key usage
-fstdoutò¥[GNUPG:] NEWSIG
-[GNUPG:] KEY_CONSIDERED 7108E748FBED4AC95246593BEC06F80B416AEE24 0
-[GNUPG:] ERRSIG EC06F80B416AEE24 1 10 00 1671553073 125 7108E748FBED4AC95246593BEC06F80B416AEE24
-fstatusnexit status: 2efiles†•dargsÜf"gpgv"k"--keyring"r"/EXPERIMENT/cert"o"--status-fd=1"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrò˚gpgv: Signature made Tue Dec 20 19:17:53 2022 EAT
-gpgv:                using RSA key 7108E748FBED4AC95246593BEC06F80B416AEE24
-gpgv: bad data signature from key EC06F80B416AEE24: Wrong key usage (0x00, 0x4)
-gpgv: Can't check signature: Wrong key usage
-fstdoutò¥[GNUPG:] NEWSIG
-[GNUPG:] KEY_CONSIDERED 7108E748FBED4AC95246593BEC06F80B416AEE24 0
-[GNUPG:] ERRSIG EC06F80B416AEE24 1 10 00 1671553073 125 7108E748FBED4AC95246593BEC06F80B416AEE24
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôpgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
-gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
-gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
-gpg:                using RSA key 57DFFDE4C65AA1D492A19D4812E2B64E271B08D6
-gpg: bad data signature from key 12E2B64E271B08D6: Wrong key usage (0x00, 0x2)
-gpg: Can't check signature: Wrong key usage
-fstdoutò¥[GNUPG:] NEWSIG
-[GNUPG:] KEY_CONSIDERED 7108E748FBED4AC95246593BEC06F80B416AEE24 0
-[GNUPG:] ERRSIG 12E2B64E271B08D6 1 10 00 1671553073 125 57DFFDE4C65AA1D492A19D4812E2B64E271B08D6
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôpgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
-gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
-gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
-gpg:                using RSA key 57DFFDE4C65AA1D492A19D4812E2B64E271B08D6
-gpg: bad data signature from key 12E2B64E271B08D6: Wrong key usage (0x00, 0x2)
-gpg: Can't check signature: Wrong key usage
-fstdoutò¥[GNUPG:] NEWSIG
-[GNUPG:] KEY_CONSIDERED 7108E748FBED4AC95246593BEC06F80B416AEE24 0
-[GNUPG:] ERRSIG 12E2B64E271B08D6 1 10 00 1671553073 125 57DFFDE4C65AA1D492A19D4812E2B64E271B08D6
-fstatusnexit status: 2efiles†•dargsÜf"gpgv"k"--keyring"r"/EXPERIMENT/cert"o"--status-fd=1"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrò˚gpgv: Signature made Tue Dec 20 19:17:53 2022 EAT
-gpgv:                using RSA key 57DFFDE4C65AA1D492A19D4812E2B64E271B08D6
-gpgv: bad data signature from key 12E2B64E271B08D6: Wrong key usage (0x00, 0x2)
-gpgv: Can't check signature: Wrong key usage
-fstdoutò¥[GNUPG:] NEWSIG
-[GNUPG:] KEY_CONSIDERED 7108E748FBED4AC95246593BEC06F80B416AEE24 0
-[GNUPG:] ERRSIG 12E2B64E271B08D6 1 10 00 1671553073 125 57DFFDE4C65AA1D492A19D4812E2B64E271B08D6
-fstatusnexit status: 2efiles†•dargsÜf"gpgv"k"--keyring"r"/EXPERIMENT/cert"o"--status-fd=1"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrò˚gpgv: Signature made Tue Dec 20 19:17:53 2022 EAT
-gpgv:                using RSA key 57DFFDE4C65AA1D492A19D4812E2B64E271B08D6
-gpgv: bad data signature from key 12E2B64E271B08D6: Wrong key usage (0x00, 0x2)
-gpgv: Can't check signature: Wrong key usage
-fstdoutò¥[GNUPG:] NEWSIG
-[GNUPG:] KEY_CONSIDERED 7108E748FBED4AC95246593BEC06F80B416AEE24 0
-[GNUPG:] ERRSIG 12E2B64E271B08D6 1 10 00 1671553073 125 57DFFDE4C65AA1D492A19D4812E2B64E271B08D6
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôpgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
-gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
-gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
-gpg:                using RSA key 61CF762355A089BB7EED836DEE7448AD6E41DAFC
-gpg: bad data signature from key EE7448AD6E41DAFC: Wrong key usage (0x00, 0x2)
-gpg: Can't check signature: Wrong key usage
-fstdoutò¥[GNUPG:] NEWSIG
-[GNUPG:] KEY_CONSIDERED 7108E748FBED4AC95246593BEC06F80B416AEE24 0
-[GNUPG:] ERRSIG EE7448AD6E41DAFC 1 10 00 1671553073 125 61CF762355A089BB7EED836DEE7448AD6E41DAFC
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôpgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
-gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
-gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
-gpg:                using RSA key 61CF762355A089BB7EED836DEE7448AD6E41DAFC
-gpg: bad data signature from key EE7448AD6E41DAFC: Wrong key usage (0x00, 0x2)
-gpg: Can't check signature: Wrong key usage
-fstdoutò¥[GNUPG:] NEWSIG
-[GNUPG:] KEY_CONSIDERED 7108E748FBED4AC95246593BEC06F80B416AEE24 0
-[GNUPG:] ERRSIG EE7448AD6E41DAFC 1 10 00 1671553073 125 61CF762355A089BB7EED836DEE7448AD6E41DAFC
-fstatusnexit status: 2efiles†•dargsÜf"gpgv"k"--keyring"r"/EXPERIMENT/cert"o"--status-fd=1"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrò˚gpgv: Signature made Tue Dec 20 19:17:53 2022 EAT
-gpgv:                using RSA key 61CF762355A089BB7EED836DEE7448AD6E41DAFC
-gpgv: bad data signature from key EE7448AD6E41DAFC: Wrong key usage (0x00, 0x2)
-gpgv: Can't check signature: Wrong key usage
-fstdoutò¥[GNUPG:] NEWSIG
-[GNUPG:] KEY_CONSIDERED 7108E748FBED4AC95246593BEC06F80B416AEE24 0
-[GNUPG:] ERRSIG EE7448AD6E41DAFC 1 10 00 1671553073 125 61CF762355A089BB7EED836DEE7448AD6E41DAFC
-fstatusnexit status: 2efiles†•dargsÜf"gpgv"k"--keyring"r"/EXPERIMENT/cert"o"--status-fd=1"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrò˚gpgv: Signature made Tue Dec 20 19:17:53 2022 EAT
-gpgv:                using RSA key 61CF762355A089BB7EED836DEE7448AD6E41DAFC
-gpgv: bad data signature from key EE7448AD6E41DAFC: Wrong key usage (0x00, 0x2)
-gpgv: Can't check signature: Wrong key usage
-fstdoutò¥[GNUPG:] NEWSIG
-[GNUPG:] KEY_CONSIDERED 7108E748FBED4AC95246593BEC06F80B416AEE24 0
-[GNUPG:] ERRSIG EE7448AD6E41DAFC 1 10 00 1671553073 125 61CF762355A089BB7EED836DEE7448AD6E41DAFC
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôggpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
-gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
-gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
-gpg:                using RSA key 8CA9BD86C1DC9FA4404E2CAE867C45AA88B307F6
-gpg: Good signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
-gpg: WARNING: This key is not certified with a trusted signature!
-gpg:          There is no indication that the signature belongs to the owner.
-Primary key fingerprint: 7108 E748 FBED 4AC9 5246  593B EC06 F80B 416A EE24
-     Subkey fingerprint: 8CA9 BD86 C1DC 9FA4 404E  2CAE 867C 45AA 88B3 07F6
-fstdoutô–[GNUPG:] NEWSIG
-[GNUPG:] KEY_CONSIDERED 7108E748FBED4AC95246593BEC06F80B416AEE24 0
-[GNUPG:] SIG_ID 4uYn2emUtBBeHbSmdku8Tw3hoGs 2022-12-20 1671553073
-[GNUPG:] KEY_CONSIDERED 7108E748FBED4AC95246593BEC06F80B416AEE24 0
-[GNUPG:] GOODSIG 867C45AA88B307F6 Alice Lovelace <alice@lovelace.name>
-[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org
-[GNUPG:] NOTATION_DATA #J%14%124Ò?¨âk%20:%17@I%0AÁ%1A˘ML%1E1L%0C%06î!:%0Fa%1A
-[GNUPG:] VALIDSIG 8CA9BD86C1DC9FA4404E2CAE867C45AA88B307F6 2022-12-20 1671553073 0 4 0 1 10 00 7108E748FBED4AC95246593BEC06F80B416AEE24
-[GNUPG:] KEY_CONSIDERED 7108E748FBED4AC95246593BEC06F80B416AEE24 0
-[GNUPG:] KEY_CONSIDERED 7108E748FBED4AC95246593BEC06F80B416AEE24 0
-[GNUPG:] TRUST_UNDEFINED 0 pgp
-fstatusnexit status: 0efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrô>gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
-gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
-gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
-gpg:                using RSA key 8CA9BD86C1DC9FA4404E2CAE867C45AA88B307F6
-gpg: BAD signature from "Alice Lovelace <alice@lovelace.name>" [unknown]
-fstdoutò‹[GNUPG:] NEWSIG
-[GNUPG:] KEY_CONSIDERED 7108E748FBED4AC95246593BEC06F80B416AEE24 0
-[GNUPG:] KEY_CONSIDERED 7108E748FBED4AC95246593BEC06F80B416AEE24 0
-[GNUPG:] BADSIG 867C45AA88B307F6 Alice Lovelace <alice@lovelace.name>
-fstatusnexit status: 1efiles†•dargsÜf"gpgv"k"--keyring"r"/EXPERIMENT/cert"o"--status-fd=1"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderròøgpgv: Signature made Tue Dec 20 19:17:53 2022 EAT
-gpgv:                using RSA key 8CA9BD86C1DC9FA4404E2CAE867C45AA88B307F6
-gpgv: Good signature from "Alice Lovelace <alice@lovelace.name>"
-fstdoutô+[GNUPG:] NEWSIG
-[GNUPG:] KEY_CONSIDERED 7108E748FBED4AC95246593BEC06F80B416AEE24 0
-[GNUPG:] SIG_ID 4uYn2emUtBBeHbSmdku8Tw3hoGs 2022-12-20 1671553073
-[GNUPG:] KEY_CONSIDERED 7108E748FBED4AC95246593BEC06F80B416AEE24 0
-[GNUPG:] GOODSIG 867C45AA88B307F6 Alice Lovelace <alice@lovelace.name>
-[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org
-[GNUPG:] NOTATION_DATA #J%14%124Ò?¨âk%20:%17@I%0AÁ%1A˘ML%1E1L%0C%06î!:%0Fa%1A
-[GNUPG:] VALIDSIG 8CA9BD86C1DC9FA4404E2CAE867C45AA88B307F6 2022-12-20 1671553073 0 4 0 1 10 00 7108E748FBED4AC95246593BEC06F80B416AEE24
-fstatusnexit status: 0efiles†•dargsÜf"gpgv"k"--keyring"r"/EXPERIMENT/cert"o"--status-fd=1"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderròægpgv: Signature made Tue Dec 20 19:17:53 2022 EAT
-gpgv:                using RSA key 8CA9BD86C1DC9FA4404E2CAE867C45AA88B307F6
-gpgv: BAD signature from "Alice Lovelace <alice@lovelace.name>"
-fstdoutò‹[GNUPG:] NEWSIG
-[GNUPG:] KEY_CONSIDERED 7108E748FBED4AC95246593BEC06F80B416AEE24 0
-[GNUPG:] KEY_CONSIDERED 7108E748FBED4AC95246593BEC06F80B416AEE24 0
-[GNUPG:] BADSIG 867C45AA88B307F6 Alice Lovelace <alice@lovelace.name>
-fstatusnexit status: 1efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrôpgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
-gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
-gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
-gpg:                using RSA key AB55E6BD69EC89DB3DAA2B4BDEF41F7DC0AB731B
-gpg: bad data signature from key DEF41F7DC0AB731B: Wrong key usage (0x00, 0x8)
-gpg: Can't check signature: Wrong key usage
-fstdoutò¥[GNUPG:] NEWSIG
-[GNUPG:] KEY_CONSIDERED 7108E748FBED4AC95246593BEC06F80B416AEE24 0
-[GNUPG:] ERRSIG DEF41F7DC0AB731B 1 10 00 1671553073 125 AB55E6BD69EC89DB3DAA2B4BDEF41F7DC0AB731B
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrôpgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
-gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
-gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
-gpg:                using RSA key AB55E6BD69EC89DB3DAA2B4BDEF41F7DC0AB731B
-gpg: bad data signature from key DEF41F7DC0AB731B: Wrong key usage (0x00, 0x8)
-gpg: Can't check signature: Wrong key usage
-fstdoutò¥[GNUPG:] NEWSIG
-[GNUPG:] KEY_CONSIDERED 7108E748FBED4AC95246593BEC06F80B416AEE24 0
-[GNUPG:] ERRSIG DEF41F7DC0AB731B 1 10 00 1671553073 125 AB55E6BD69EC89DB3DAA2B4BDEF41F7DC0AB731B
-fstatusnexit status: 2efiles†•dargsÜf"gpgv"k"--keyring"r"/EXPERIMENT/cert"o"--status-fd=1"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrò˚gpgv: Signature made Tue Dec 20 19:17:53 2022 EAT
-gpgv:                using RSA key AB55E6BD69EC89DB3DAA2B4BDEF41F7DC0AB731B
-gpgv: bad data signature from key DEF41F7DC0AB731B: Wrong key usage (0x00, 0x8)
-gpgv: Can't check signature: Wrong key usage
-fstdoutò¥[GNUPG:] NEWSIG
-[GNUPG:] KEY_CONSIDERED 7108E748FBED4AC95246593BEC06F80B416AEE24 0
-[GNUPG:] ERRSIG DEF41F7DC0AB731B 1 10 00 1671553073 125 AB55E6BD69EC89DB3DAA2B4BDEF41F7DC0AB731B
-fstatusnexit status: 2efiles†•dargsÜf"gpgv"k"--keyring"r"/EXPERIMENT/cert"o"--status-fd=1"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrò˚gpgv: Signature made Tue Dec 20 19:17:53 2022 EAT
-gpgv:                using RSA key AB55E6BD69EC89DB3DAA2B4BDEF41F7DC0AB731B
-gpgv: bad data signature from key DEF41F7DC0AB731B: Wrong key usage (0x00, 0x8)
-gpgv: Can't check signature: Wrong key usage
-fstdoutò¥[GNUPG:] NEWSIG
-[GNUPG:] KEY_CONSIDERED 7108E748FBED4AC95246593BEC06F80B416AEE24 0
-[GNUPG:] ERRSIG DEF41F7DC0AB731B 1 10 00 1671553073 125 AB55E6BD69EC89DB3DAA2B4BDEF41F7DC0AB731B
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrô!gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
-gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
-gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
-gpg:                using EDDSA key FA11604A4FB3BF8B091A8C2C3674B3743095DD22
-gpg: Can't check signature: No public key
-fstdoutòî[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG 3674B3743095DD22 22 10 00 1671553073 9 FA11604A4FB3BF8B091A8C2C3674B3743095DD22
-[GNUPG:] NO_PUBKEY 3674B3743095DD22
-fstatusnexit status: 2efiles†•dargsÖx!"--faked-system-time=1671553073!"o"--status-fd=1"j"--verify"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrô!gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
-gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
-gpg: Signature made Tue Dec 20 19:17:53 2022 EAT
-gpg:                using EDDSA key FA11604A4FB3BF8B091A8C2C3674B3743095DD22
-gpg: Can't check signature: No public key
-fstdoutòî[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG 3674B3743095DD22 22 10 00 1671553073 9 FA11604A4FB3BF8B091A8C2C3674B3743095DD22
-[GNUPG:] NO_PUBKEY 3674B3743095DD22
-fstatusnexit status: 2efiles†•dargsÜf"gpgv"k"--keyring"r"/EXPERIMENT/cert"o"--status-fd=1"q"/EXPERIMENT/sig"q"/EXPERIMENT/msg"fstderrò´gpgv: Signature made Tue Dec 20 19:17:53 2022 EAT
-gpgv:                using EDDSA key FA11604A4FB3BF8B091A8C2C3674B3743095DD22
-gpgv: Can't check signature: No public key
-fstdoutòî[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG 3674B3743095DD22 22 10 00 1671553073 9 FA11604A4FB3BF8B091A8C2C3674B3743095DD22
-[GNUPG:] NO_PUBKEY 3674B3743095DD22
-fstatusnexit status: 2efiles†•dargsÜf"gpgv"k"--keyring"r"/EXPERIMENT/cert"o"--status-fd=1"q"/EXPERIMENT/sig"u"/EXPERIMENT/msg_bad"fstderrò´gpgv: Signature made Tue Dec 20 19:17:53 2022 EAT
-gpgv:                using EDDSA key FA11604A4FB3BF8B091A8C2C3674B3743095DD22
-gpgv: Can't check signature: No public key
-fstdoutòî[GNUPG:] NEWSIG
-[GNUPG:] ERRSIG 3674B3743095DD22 22 10 00 1671553073 9 FA11604A4FB3BF8B091A8C2C3674B3743095DD22
-[GNUPG:] NO_PUBKEY 3674B3743095DD22
-fstatusnexit status: 2efiles†iartifacts®dcertô ≈¬ÿc°“! ªM∑∏± ⁄”vXÔ,î@ûp·aÈ€<ÿéÄi/b`‹‚ñ˝"◊_˚hP ˘_Ô™úï¬7áˇëtÃ◊Ü±»ôT	î3M‹ÜTq¬òèL…DË.WñÀ≤ì\ò¯éá´=™‰&¿Û’≥ßFj
-–.˙ÚQ¢L1XﬂûïóåjˆÙQ€xœ”z‹–§,koõx∞ÛÄÅd∏êÅ§›„1´rçó˙∑‚úÙ,ﬂ:ú€)è^V¯T›íx˙¯-)tc€†°ó§√dÕzÜeØ
-B%íaSR A»'Û±¸F¸ Èı%SÎÇ=R3◊úáMËF”°ƒ¿N(ª∆iOûı√   ˇZˆl+Jß2ó£ÅÓxΩKU$úŒgSˇôi—≠#hS ﬁ˚\ÄÀnı∫OJ∫¯·RØı#ˆ™¿JçAµ@ ÷9a÷öµ¬ùlëc%6ˆˇ∏kZ5ˇW3xÒ‹Á∑Ì¬®’“†<bY?‘+[Ñ‡tÍ_&.îP‚É8d+hQÄn±t4ó=¬Cò£zn∫ˆŸRûáwcjkﬁª@Ne¬≠ç$nπÏ£´jô¥RÉ$Ün.|oŒK˜Ó;ÍÇc{¬≠ôòˆ®8&ëq´Øƒ÷C], <œ·äŸ>âw∞w~‡Rl~
-√´Q"ö$ªº{% Ÿ^?n≈tF∫ôˇ! Õ>õ"”oì´vF»m–/CSãò˚Î,˙$/≤dË.ê»|˝R6ƒ˚.ÖC2 ÉFßåÆáÄﬂÈ°=ô£ìgû˜Ùòâ·˜˘GRäº4Mæ2®°±ÚDºÈuÎ5ëûºÃPT/cÖ=ÿŸ.NCÜ~hÅ˝´Ùvzö?'Lëå< Èû}(#«tß®˜5˛‹g™œûYÖ¯¢π…~p™ÓΩP¿∞£˝ﬁòÄ®y>0óc∏c+œ»!∫]Ÿ_ÚàŸê‘-éFÛÁ ïht0ÙŸ ú˘¨›åTŸ˚!I⁄NÉû“ˆ$∆îñáÆmçIZb•À¯gJ
-V∆Ïá ∑≤ƒ^!πh69—˘µ^V◊±5\ª‡`ä“#n∂˙q°5≥"˜VYë|—ÈªøØ7r⁄√kπÉõ2.1ê®€ëL5pfæQöö;©≤rÙ%Ó∂§Uà∆»˛%å¿£…•∞π±∑P∞˘:¡∫J¡Q%.bÇPÈ2ÀY¢,ı˜>O¬¿…
- }Çc°“!		Ï¯AjÓ$G       salt@notations.sequoia-pgp.orgzdÏ:Ï˚xmScBOyæl>°3œCŒÍâ?±¢≠òÕc
-õ!qÁH˚ÌJ…RFY;Ï¯AjÓ$  —d¸§W∆kŸ˚å≠ÃeóHVQ√¥ñq%ÉsˆehÏËmVuÌÛ=Ñä”<å¥”i}£¬v #ãŒk¥˘\ =Ôÿ=«M§®6œÏæÈ»›,ºcëÒY∏¡3ÕT⁄t„´NJÎœ±¶1Ø≠V¡ªGÓŒúœXƒ£ê0ùu´@Óàçt3-™`ï⁄ôˇR+⁄≥¬'YÈs"R7∆s¯É‡®*Y{•ïD-£úx::¬	+jîID›aé¥„z§å/ùlúÆÎ
-^2Ω«—Mô%=Ö=ö—Ë¯∆%¯∫≥∫ÃSåBñXŸ/∞åÿ¯˝ ¢‘¨ÖKBF]áBÌË;F9Õ$Alice Lovelace <alice@lovelace.name>¬¿Ã
- ÄÇc°“!		Ï¯AjÓ$G       salt@notations.sequoia-pgp.org¥z].:mÁÙ(Ωêl‰¢"fÍäÑÂpÍQÙö∑µ
-ôõ!qÁH˚ÌJ…RFY;Ï¯AjÓ$  ∂üˇf∞—<ﬂ´˝8Û[êë7±∏ƒx‚s·÷ª∂Â ¶(OÕzØõa∫“qkbnvæ≈B6˚˜ıÌ^Q˜[ O»òÎHOˇ¥gts∑Ç–v™œO;n˙õ“[ªF∫∞J.iÆO’»Án¯zÄÖ‹é0∏°/s–6°o∆(mùKœbˇÆvI¯—´°û;ó$Ö/ùˆŒÛ]F&‚Ïv|P|Â0”À√@—a£¥∞•!∞Ú5Qi˝J∂ÿÅ∞g_]ò!Ã˜`ß;Œl¸â◊£9èÁitRÿôñÀË∞bÖ—‰˛™¿∞DÖ·Dà…—ÅÄy¯’¨µ«¬ÿc°“! √¸‰bF3ã47ÀÙ1nI5ë®â∂hò{¨:¯∏¿\>úˇÆÔΩÌÃ˛F˚«ÿÓç©0<eshª†‘·X%Ôå©Ì‚tﬂÂ)Z˘ªx˘éå?ö3wôÔ.ˇc;˛˝f&¬H|ª«:	s}ÙŸ6:ó¿¸7Ã˝5ƒ<læâ»ôõcÏn∑1ÁUs“Ô‚ãí•⁄ãºk£›î‚hçS2√!ÇìØ£ª˛ø∏y#úpò⁄2ÕÔö*¸NÑ4‰[zûıœ%a÷/ü≈È¢&—AÎpPµë´45∆X«àEMº∫ãslqã}Æ¬HE!ÇÔﬁ%B≤ß}	oµ˛|°nŸÓº    ëjhB
-x`ƒáçç«òÜ(¶ˆV„Pê"igœÅ∂4Ûºy\≥·@xô¢â‡=Pˆﬂ Ûk<íﬁÿ®BãXç˝)Nî·ﬁ.}ôXèÈœëπmC¥®?≈_öh›’J⁄„8 .œ}ºqº¡nMF≠>øØ¿}Ëy.>‡u<ÒÁE9jj/ª>Úº“À•™ˇ£nZ54ìSâ;l|[¯∆ ≈vÔ4ñÈ∑%%eh¯ÍdÇ·I«˚7µ⁄‚ Y«Œ$éH.Wz∫ë0ü⁄'˝πs@›ß_Rc˝í"Í*¬cãçQÎ¸›sÒûÚ|{pÔ∆ï1-öoƒ€å ƒ7xfYoî‚øÈÍ¡ß¶¨
-ZnÀ¢'8ÄoÈ‚éﬂãb…ﬂ≈±ÿÙnê'1 ëÖ‡WfAªÛ>⁄ÒÉ˝®œcZ®_28·´‹´ƒtF-çv◊◊<*ÇGÁ#ÀKÉ7Ñ‰òæWÕ?»v≈å[è´¡hêOÇM' „pÇ_˙?ç ˇ˙Zlê	ƒ÷NÃq⁄‘Ó„w]õ„ŒîˇπJÿõ Îwa[∂˛ôq ∑#÷mÔ•®}˜ñ≠û≤“A{ƒ∑®?Ûã6´bfÇ†Y9qsEKƒ}ÜÁÄûπCò70éC¶Ü_ ÌD˘?wrÈBöÿ	Ñ>π¬°Œ˙LÛ∞¸G ¬ƒcMπ? tvÀI4´ πåÅWHÖ/‡pÒx¡≈∆È‹∆J6çKM®{aHñ7”5(ã˜ïE:Õõ∏GÊqIŸ“îêY⁄3K^‰È$êÉûì·√YÈMA∏œ ˙|èëB/neÉwÒmïÄ~w&W‚ñˆCb%ÓAMÏñ∞ùä˛+|=ù¬¿æ
- rÇc°“!	Ï¯AjÓ$G       salt@notations.sequoia-pgp.orgßŸßˆt+ú±‚~ßºEã—Tï®Ë(Ω≤J¡|õ!qÁH˚ÌJ…RFY;Ï¯AjÓ$  Òˇq¯˝£À3.RêµÍÏ—)oU∞]◊◊HÕS©	Ä–≠ì‹‚"ãs_¯§Ü*ÀBh˜⁄¿≈ìÓe}æòÒd¥Y0ƒû˙é	vá©≥È2ê66ü∑Ö¬3,…}x
-6Hp˘5èÕ={œö@πN0’˛.π/
-®ÂGÂlŸkZÇòÖª§∆∆∑Œ}‘©K˛È!ìè˘Q¶PÅ€ûÏ^À VÉ¸|√*.œπ„¢»I,]4gèï
-÷{«æeHb´≥±ÎÏP’ñ¨≈=Ù;”±$¯°Ã÷‰≈1ë:ÑUÍll…qd U•“⁄ÉÌE Zó©!ˇ—Å˝VÈ)gÑÒ†Á8R™ÚúÓ$™«¬ÿc°“! »Œt!¶"~√ßkJ∑±ùl8GJ⁄‘‰§Ü'äéâõËÍ¬ÂJ°Ì¸µ’ŒøWÒªu«ÕY¿µáƒ“óºH/˚“åO2zë¿Øè◊;.):ÃáÊWçKêÑ≈Ÿ‡DºÜS¬’ê∑UÈ&ft√7N °|˜Lï"ƒ:%(c‹H[;S¬“∏ ÿz›€Ó˛>¡|ß‘´ÃKæ.!v]öw—ö Ålôl©!y—Uú´zÏ^^É§¶Isº‹n/Aä/n|π+zÒº›»ŒTk∞Q”≥%€ä˜Û:ÖèÈ¬\Ωlo:>Y£EPKÀ˙Fõ”l¢*ï{    ©√àñ
-Ú´∂¿∆bÀ¥çöËµvG<z¨˘	◊~Õ.~≤`ªZ¸%VÎ[üyÍÜ®˜}wçA™ƒæ≤=‚Q3K3ñ)Ë6l_£NŸ´úÿ-Q˘≥ &CbàäÔÀ)?ÏÂT X[|›e_lÖ€_=Ωâ5äT@^¡Ì∑2ySÕoÓú€[e°Kçf@æîp◊Îiú˚Æzéó¡ÌŒ—œH» T3!üúA!X≤◊8èßÍ˝œLGãR≈lcìëlKhd˜‹2e^úÇ5ó ë&éËkÈ÷f¬Y˚EåOô
-ØR¿~∆–í#3Ô´'ÿö'Ò©6.m¯ˆÅ%— “é¿àÔêgµ™¿à∏wuÏ7`€PA+ëøC@À‹†VÎiÒp\ª˜Oµ€ﬁYÍ^õãîªÜÖw´\Ê+ÍØ¬Wçß.Œu ÁìjNÒê”àE^üˆË3s/∂|°ı¬u≤õpÆT23”(‰ﬁ"íHœX\¨≠ˇL=ÉÎç Ûœ∞úC&/=´R”Aëx>(Óã≠€Êr<ÑÛF£ŸäÂoËBËC·ª‡ÿÃNS^Ìú3ËÆÿÕWeQ-‘kˆLhú1çNy>‚qùÍÙ+Å„É#Ï>±ë–”?∞ ¸¥Rã¸tG nıg∏÷V•ıD¬irÏ÷úIJ	#ÔíØ' ‰6;´?öÉ≈•2aKÛBÏÚãolxD•.Û™ø7ßöI˙ú∞YÉw4ﬁ0⁄ÛQ6ß?drÖïô˛'ÎüäÜ\À–ˆ†@Âˆü·^¿A¨∫¥VEOkNﬂ<nîO$r™#.zoISew≈FÛ‹ªêÓÑh;Rnyk9¡¬¿æ
- rÇc°“!	Ï¯AjÓ$G       salt@notations.sequoia-pgp.org+%√ÈE´¯Ñœ,ëß·ß∂…ÒÑÒàk`wvî¨rWﬂõ!qÁH˚ÌJ…RFY;Ï¯AjÓ$  hª˚T‹
-´ lh<≤A;A˝5Ûä=QdøW€bÆ® óÄ∆>pS∏ºgî ¯0 Z‹&)≠ú?9±∫jXËgVÑÕº /Æö>[j‡eÑºKv/©«ﬂ¥ü∫]NL„nbèô$~ê˝íˆ!X«*ï	¿˙¶\Ó»Î	Â¿ºﬁ’f°Ä+˜$Aí‡•Ò  êß»ÿùQ¥™r™î]ÆkŒ™!ú‚AN[√ﬁ‘ñ>è≥«˛—R√Ìf’A∏Éx:õwYtùuL”s«X}∑ã£p<
-B}í‚7Ü¿ÕÇuÖWZ->&!h…ı`6Ü^ıH1ß<"2Íò:7»eÍ9«¬ÿc°“! ÀÁıù™QJLyûømr≥ˆsC˛eˆ¬ŒF˝$ß÷ñôL µ9e%OG/˜Ê!QZ#∑wÁb≠ùp"˘ Ÿ\¡Ñ⁄º≥D	À<∏´Oπ‚îŒÒÂäûHÜ89ÙñÉ*Qg∆@˜˛l†äJzæƒËıW≠Uä{`p¶˚»˙ãqD]ê6Í‚V
-DqˆmÆ€∫3~€á∞ÿı‹`É8e'"Ùﬂ-˘DH(€ QŒÂ6úAmŒ7Ò÷€ÿ
-“1¥2V\~Ã∏àË≠dqCêBõ≥ŸˆV÷ANUƒ{ûemE%ñ÷cÈ•µÅ9˘û»¢4]>0[û{ì}àCy∞éÙL!   ¸Â.ûŸ.@™~§ŒS‘É∏1G†®Då(ıøùº◊AN(5πŒ
-à
-_Ú7∫(Jç<ÜR„:∆©N˘ ﬂ%wme◊≠xVÔÇq<±!Ü1⁄√ôé^Ù∂ø<>¶òóÙRÂH<™— ›uà?»ß∆¨	’÷ÓU€˚›åQ¸∆·±.@H†C^z(≥¿Çr=òKÑl” _ıÃM<Ÿ èüPıZΩ?ÓjhLE+|ô≠ïå$p'iﬁw^â6C9(qì	„|”°ìÁãŸlí»Ä∂“∏…]ˆ,.…ßÀÄÌ™5ÕäÊ£§¶ØwTà¨yï‘∂(ƒÈ>8«∏ ⁄Í%æê-j(≠t°Æ#xœ€Û≠˛æ¥~ËÔï„KøßWOåe˙Ë•[¸µ≠b¯y‘Hëv¶P˛t˙oî®còÜŸ	ÈN%j	ÔÌ<âÑîm)√g⁄ Ô®‰ãz+í≤Øü∫˘¸Tıg·ÉãcçzüZÔˇSë‚Ra Ór˝Ç<R,1Î_˛(≈Æ≈˙≠:ƒÚÏ‰®QΩˇ-ÜU;f1s»LÆf&ËÎŸN≈7œìó;ÀË»·„Ö,ú]´£◊ò>Ω—4lÎ-πLŸç/dˆ¿älZÏ‡œ¿ñ<R∂uËéPœw ˛≈ºk®Óv|ó‹Ñz™oU`ø•≠Û—¡ ¬RHû◊K_ÆΩﬂ05üÄœ
-Ä\∞!ö4#\E†gÏ¶§∏'Æ≥…NW-Å‰[PU¬’ª∞BúWÕ“Áœ$û˙QÈVÙl‹yàt\‹ΩÈë‚éÀQ]3È‚µTægÛ∏†ãÏ±’ºe≤ò%pˇ<ö`›[QSr4£?Ò¬¬<
-Çc°“!	Ï¯AjÓ$G       salt@notations.sequoia-pgp.orgb)ñkﬁAaV^"ih/
-W’l5ÿy⁄ÕâLõ¿º†
- oÇc°“!	Ü|E™à≥ˆG       salt@notations.sequoia-pgp.org4¿”xè˚:Éô±É_ív‚Tfê@â9«(≥åÙJ∏Ò£ß◊!å©ΩÜ¡‹ü§@N,ÆÜ|E™à≥ˆ  ¸ ®;‰:'◊Àå∂kÅvøLˇ≤æëEÂ|»e} CÄÎ)òˆ3Wìıi&p©Ω	mã˚8®qÙÅ‰œ‘Û¯Åo0»E\Í_s≠îh{ˇµxˆL?≈ÉÜÙÒFÑ0g]ÒˆT¿ßµ`¡û¡"2öŒˆ1S4”Új ï1•'æ3*`'Å
-ë|)ä§<U¬ óÛg}ä”ø›g·‡l‘&ÁjU=•ˆFqñêâ°æ∆ﬂzM!BÈÜ°°ê-?2b^d[N@®√ù3ÓLJÄûàm*˝ ÜSDøO¥ŸùÑ‘*Ç"Q<Üµ™£Ô€@∂»ë@1™ä’àTx%Yóàz‘ïì«Ìï©öâ!qÁH˚ÌJ…RFY;Ï¯AjÓ$  ’ êª¿Ìß¯Á¶Â[\5ÁWxˆ^≠Ñ0n¨)|µ∫ã Ò#YNW?;˝1¶ÑBV≈!PÉ¶›]Â‘ˇ!·g`c»ﬂE’@ﬂ∫HÅÌbó®£÷çÍ4è«7»8wæ§D6•µv†a"‚cDàÇÏÂyícÅk 5à~luëÍj≠0›)ï,S¢ü«Ø†Œê.'[¶µ´◊Öÿﬂìû˛0Ó‘T—∏€Î d)ıSòÃN∂t#åJ¸jœÂN+Ä¢”w,-±ÒF‘⁄§/ºZÃd¶f‘∏uÜ3rË›T;vñ:—+’}RX¿„.Õ59&,4.ÎráôcQuŒœ’cÊQ_«¬ÿc°“! Ëa 6Z—◊≈‰,æ^xÖØò◊¥j»‘Äµ¡™˙Í≤=5d'?∂∏2iÛÏ—FR{f\∂?+4à»¿vq=—–¸`˛El"‰¸ìàã‘∫◊whNßÔGNœ¯@¿K~IBù®≠dr®$0¨4∑,]æ¨∂4û17\˘b>Æåj*ıË?JÙ±´±øb◊óRò8RÁ’ùá≥Æ îº&≥ö¢—èø˚ßŒ‹ÃæEÍ>GÓòéâ¿‚ÈKM)!9ÿΩAºõ⁄uP˘‹~˙mh{∆∆€ê(äˆ÷Ø,√Ù•~ˇŒP£àÍÀi~£‡:òˇÂ +œyŒ"-µÒ-    §»€Ñ…».†»”tÎ¿ØD=Û&ó`u√Bzµ'}`j◊3“Mê}=Ü˙]/úÉpŸ|⁄zb∂˜å€ñß&Ã(°‚•¡	gí# ¸yÇvL}»÷Úœ|qc.	Rôù]‰}F°[;tñ»˙˛“nÂˆ ;Æ≈≈¥˜á/dµè˙£‹"ƒ¥dVôÅ”ﬁ¨8)><c©‡•†∞:ƒ ˇ∏GkâÔÙöAí&r2Ó,»MπD[ñ›Œ˙¨ÀÅ^†…ÔaùÔÉFb'Â|¯Æå·$^6Õê•_ç¥úciÅPÁÛë8£éË¯ÙöÅÑ4˚>œQ‘Ù 4πGÙ`¥] Ï,îluÌÌJWÒ&§£}÷˜â˚·G…~!â˜÷Ω—jtåIÜ†cùr2¬•Òÿw˘'˝xL∫è™1˝k3˝˙k,£ºqÀà≠U¡ì2óûHÓdÿxëÛÃ≠ ¥s•B‡©sΩR›¯YΩßvSèvF‡ŸMÛ≥'@G™|{ ˚„∑[°ñMÿ˝;√uÏÿ?5uLÍZ•Àñ1Ñ-.öÂnUﬁ!Û$ZëkÅ†"j»èåF˛±ŸÔ9n’#‰Æ<wèU,6‚v™òÈOÆ+Í!ÎE¥˘ÒEgq ™õy{E…á@ÍnÄßÇoZ8>Ùä2	Eµbq\B⁄ö ÃóÙﬂóUò◊WãqU¯¿˛93ó¢	5ÇúºˆÎœπÍûK‚ﬁWÌPŸ«Aπñ\JüÜòè¶;Ç¡\ıå_≤nHèπ ƒ={®É∂pËÃm¥∂/˝éÔ?®"Øñ±Âö5¯€ò°
-eK0√·∞“ï¶;k¬Y%ùsÌ‹F@Î¬¿æ
- rÇc°“!	Ï¯AjÓ$G       salt@notations.sequoia-pgp.org˝)Ty≠Ì€•&ı≈ı8ÛêÖÔ[Ÿ˘ûÜΩÎèU∞	õ !qÁH˚ÌJ…RFY;Ï¯AjÓ$  ¨î µ’5µtƒ,˝‡»¶A
-°)∞™ìATÜàÎ+Ó	@ª≤⁄Fïk7ÖÆœSñ9>å‘-Á$[Ò¥70  è6õ‡}ÎY¬¿õVË¢ıΩ”\¬‡Otåˆ&:π©HÕkÛ®f·È¡«ÇÁlû˙»k°ÛRœ"WGﬁ˙∑Àó.√‹g ß {¢•)•∆çµÊÍ¬D¨‡-àﬂGÌ)Ã{$Î^≤|˛wRï®ÈQ”ËﬂzÙ¬[_ËÓQ∏„'L!ˆm£ù—i (™7ÇÀîdbØ1npòÙõVë$¶ßÍ≤„RÈJ˛çN¸`Ë’”Ìı—p©
-õcÊµ?Ïºesig.0ô~¬¿ª 
- oÇc°‡1	Ï¯AjÓ$G       salt@notations.sequoia-pgp.org¬à±çÃodï^i¶Øé¡pz{$`s’â≤Û˛2†B^!qÁH˚ÌJ…RFY;Ï¯AjÓ$  ∏0 ÜYX<Ÿ°˚¯ç˛7ÇÈ¬Bç?æÖ∞œ)Xâ±ˆ€`fä“æB#Pu˙ ÌçâÕ¸ÜgÕzŸı•gg‡˚i/Œ9„ñ ß… ˚S¶gbÑüwàÅ8Øx›QUD∞-ä∑ª·Ë´ÔzÇdh…kp9˛û/áıÙ	ª«Ì∏◊Ùˆ¬Ö`x]<&∏x,˚í“ñ4]yz∑"r◊7qô	êπ.D/Ë>)œÙõ"	∆–JU∂I—'E∑’R!ÜŒ‹óÂ≠r®∆ﬁ∞6à%–ìù⁄î“‘2ÄçûeˇøYq∑1Ìµ‚p‰ÊÖIâ˘ÓÃΩ-EQc∑Ò<p¢•éhesig.1ô~¬¿ª 
- oÇc°‡1	‚∂N'÷G       salt@notations.sequoia-pgp.org:z|Ê÷W,ãRm≥¯|ŸÇàvÀ™3Ä¸Ï‡±!Wﬂ˝‰∆Z°‘í°ùH‚∂N'÷  ˇˇDœâÃ†Z∂∆éõk∏M›Ü`àî¨¯*PTˇ\Ö™|!Ÿ\q¯LÑ(76:xL˛Aüq¸ìu[¥%Œog˜-ãì9È*7jp,"∑cQ<ﬁ/O‡„ æJ¶ù`<Ëc≈ÃáF|iM¸∆¯*ÛπpxºΩª.÷ÁG]ä?·j“Õ_%π"˝%ÿˇY¬Ú‹üé>¥¸BÌÖ∑˜”«∆aà(ÇMSs‡BX¡sl8ƒ[>x∏°[U$WFé¥{ùÉDôƒ7ÏΩM∑Ìîj	9§ÓN‘•å≥ù}!Ã-%z& Ê…∫N.pˆnÖ–[Ü,ﬁ03'∏ª%uíüÔp‚v}Ê˝esig.2ô~¬¿ª 
- oÇc°‡1	ÓtH≠nA⁄¸G       salt@notations.sequoia-pgp.org©◊,ó™^'I‰‚wÃÎÆ⁄pªæI±˘˛ Ub≠~!aœv#U†âª~ÌÉmÓtH≠nA⁄¸  º˙ˇZ_Ù)ôXqÅøV¢pûæ®nr’ú¸}Ú[YÑDÆÙO{Æ¸ÖπpUy±cdz;CÉ:Ï,π‰a˝‰Y/jH¢π	—F=Œá+‰EæÃÙB¥‹`FÏfÃæ≤zâ™ˆ,…ˇÁ¶]J„Ùgí;«>Ib$/‡Z≥(ª†÷NxMOÜ‡™ï(ûˇuD$0˚k zf•@Í´™ê„Zÿ9B≤	‚à˝ô∂U
- x8†£uÍ`^^¢I˙‘∑Mm É‹xÑ Ü˛^µtÃÆæ9Ó4˝—BÄ=3X\¨dÖu^]¬ﬁmÍiÈ0â-˘jdî„lCoU	›uˆéesig.3ô~¬¿ª 
- oÇc°‡1	Ü|E™à≥ˆG       salt@notations.sequoia-pgp.org#J4Ò?¨âk :@I
-Á˘ML1Lî!:a!å©ΩÜ¡‹ü§@N,ÆÜ|E™à≥ˆ  	˚Ç®øÚA!ëõ∑ µ`¬Aµ
-Ék∞JøæÏ3)˙vn|[2∂ûÇ£™·&ÕRÓr7≈HÅ€ôﬂÿæt>ÆnH"‹◊œ∂üÈhÈ€5wt„(M[°"€hƒ√ÖÅ≥,Â¥N+ zﬁGÀ’5£¬ﬂmÄ…!™≈3XÍ™ì‹ÛƒaµÆFß≥Ï&åT:ır¢Ìïs∫´oh`¯àãßÂÛl&‘ﬂÚ7£˝Ôsr2Ûgæ?°@¡Q⁄√êg óƒ≤5˜zL'"ö≤câ”%o.¶Àbæ]à»:x¢ú›ë	öéJêTÿâ%’)–ùÒË Gºcü9éË^_2Å,5ﬁ>æ4esig.4ô~¬¿ª 
- oÇc°‡1	ﬁÙ}¿´sG       salt@notations.sequoia-pgp.orgÑ<'∫Ê¯Ìg!P‘F≠G√Úôπ’“ÿB®ç÷«‚9ñ!´UÊΩiÏâ€=™+KﬁÙ}¿´s  ¥ À(¯íÖçaó1t^%7çO"ÄîœÕÂw¬óüPSLØo1Á≤%Çóoä«ÅÎÅÀ¡´KOÛOÈ∏T¯ùﬂÓwÃMúÿrTéﬂf4¯√÷EÎ]’Qw‡bÎœ˙ÀﬂˇÍÎhÀ›:ΩÕÜUÕëhM˚+è?5áI„(ë≤‹¿™ıF‰àÄòó÷‰üMªT·—îö{5rn›Ì'âV¶E{•¿”˙AYz`ƒ;&4G¿'^mv˘t»®‹¨™ÖSÃèëıÍÌ€	‰g≠èü·&⁄≈f˝!7ÎM‚ÌáŸØù-àgC>YxwÛÁx’ïY“÷$‘∞tÁ≠Ñ4˙>¸»ñF™¨é}ÈcIesig.5òø¬Ω 
- oÇc°‡1	6t≥t0ï›"G       salt@notations.sequoia-pgp.orgÇwmÂø¯mDç(‘®÷N2` ÿÄp€_}”VÁR!˙`JO≥øã	å,6t≥t0ï›"  S¢ ˇ]#]EVÕˆ¯∑˛´ÈÈºçi„råÜgΩÖZ7a ˇzÔm»É4“ñeK[è˘Z©VÓ)ﬂ64˜ﬂì]r.jstandaloneòXcæîõ	+⁄G@ù˜ıy÷Í®÷	¸ÒDœsø?Ò!&åi§qÍÒ'E -Ö  ˇo≤¬Àz¿±«ˇöŸìë2qñZÆìéD¸ï^0¢ëÃtdynamic_upper_boundsòÇ VÇ Ç Ç Ç Ç  Ç Ç Ç Ç Ç Ç Ç Ç Ç Ç Ç Ç ÇÜÇCÇ ÇCÇ Ç Ç Ç Ç Ç Ç Ç 

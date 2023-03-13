@@ -1,82 +1,0 @@
-£goutputsˆ¥dargsƒx!"--faked-system-time=1671553073!"j"--import"r"/EXPERIMENT/cert"fstderr™cgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
-gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
-gpg: keybox '/HOMEDIR/pubring.kbx' created
-gpg: /HOMEDIR/trustdb.gpg: trustdb created
-gpg: key 7AEDB9BDEA62E208: public key "Alice Lovelace <alice@lovelace.name>" imported
-gpg: Total number processed: 1
-gpg:               imported: 1
-fstdout€fstatusnexit status: 0efiles ¥dargsƒx!"--faked-system-time=1671553073!"u"--import-ownertrust"x"/EXPERIMENT/ownertrust"fstderr˜˜gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
-gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
-gpg: inserting ownertrust of 6
-fstdout€fstatusnexit status: 0efiles ¥dargs‚x!"--faked-system-time=1671553073!"q"--check-trustdb"fstderr™)gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
-gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
-gpg: marginals needed: 3  completes needed: 1  trust model: pgp
-gpg: depth: 0  valid:   1  signed:   0  trust: 0-, 0q, 0n, 0m, 0f, 1u
-gpg: next trustdb check due at 2025-12-16
-fstdout€fstatusnexit status: 0efiles ¥dargsƒx!"--faked-system-time=1671553073!"m"--list-keys"o"--with-colons"fstderr˜ygpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
-gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
-fstdout™tru::1:1671553073:1765901873:3:1:5
-pub:u:255:22:7AEDB9BDEA62E208:1671553073:1765901873::u:::cESC:::::ed25519:::0:
-fpr:::::::::FD56D8D2DF1989C7518FDFD57AEDB9BDEA62E208:
-uid:u::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:
-sub:u:255:22:932A3CF56D95018C:1671553073:1765901873:::::s:::::ed25519::
-fpr:::::::::5FCD26887B528AF9EF9F9B94932A3CF56D95018C:
-sub:u:255:18:805AA22564D5590D:1671553073:1765901873:::::e:::::cv25519::
-fpr:::::::::FDAF5693CC97C77751CDC6E1805AA22564D5590D:
-fstatusnexit status: 0efiles ¥dargsŒx!"--faked-system-time=1671553073!"i"--batch"o"--status-fd=1"v"--no-auto-key-locate"o"--trust-model"e"pgp"k"--encrypt"m"--recipient"w"<alice@lovelace.name>"j"--output"l"ciphertext"w"/EXPERIMENT/plaintext"fstderr˜ygpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
-gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
-fstdout˜¼[GNUPG:] KEY_CONSIDERED FD56D8D2DF1989C7518FDFD57AEDB9BDEA62E208 0
-[GNUPG:] KEY_CONSIDERED FD56D8D2DF1989C7518FDFD57AEDB9BDEA62E208 0
-[GNUPG:] BEGIN_ENCRYPTION 2 9
-[GNUPG:] END_ENCRYPTION
-fstatusnexit status: 0efiles¡jciphertext˜¢„^€Z¢%dÕY@¨_F¦6§¤R¨‰Šr	Á)_%y·$*STòòg°ÁT0Ìë§OñQª«[å[5|ä/Ü0\C¾3ªİ~ÙRM¢´Ş~Ö@]—!ğç´y »Ò@›…›hø`»È¥˜ÌPˆzòÚ^ÆOZ£‹¿âGë@=Â`xJ¬iN#Û/sPı]Q·*7úh_45éº¥%¥dargsƒx!"--faked-system-time=1671553073!"j"--import"q"/EXPERIMENT/key"fstderr™rgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
-gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
-gpg: key 7AEDB9BDEA62E208: "Alice Lovelace <alice@lovelace.name>" not changed
-gpg: key 7AEDB9BDEA62E208: secret key imported
-gpg: Total number processed: 1
-gpg:              unchanged: 1
-gpg:       secret keys read: 1
-gpg:   secret keys imported: 1
-fstdout€fstatusnexit status: 0efiles ¥dargs†x!"--faked-system-time=1671553073!"o"--status-fd=1"k"--decrypt"j"--output"k"plaintext"x"/EXPERIMENT/ciphertext"fstderr˜ôgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
-gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
-gpg: encrypted with 255-bit ECDH key, ID 805AA22564D5590D, created 2022-12-20
-      "Alice Lovelace <alice@lovelace.name>"
-fstdout™[GNUPG:] ENC_TO 805AA22564D5590D 18 0
-[GNUPG:] KEY_CONSIDERED FD56D8D2DF1989C7518FDFD57AEDB9BDEA62E208 0
-[GNUPG:] KEY_CONSIDERED FD56D8D2DF1989C7518FDFD57AEDB9BDEA62E208 0
-[GNUPG:] DECRYPTION_KEY FDAF5693CC97C77751CDC6E1805AA22564D5590D FD56D8D2DF1989C7518FDFD57AEDB9BDEA62E208 u
-[GNUPG:] KEY_CONSIDERED FD56D8D2DF1989C7518FDFD57AEDB9BDEA62E208 0
-[GNUPG:] BEGIN_DECRYPTION
-[GNUPG:] DECRYPTION_INFO 2 9 0
-[GNUPG:] PLAINTEXT 62 1671553073 plaintext
-[GNUPG:] PLAINTEXT_LENGTH 9
-[GNUPG:] DECRYPTION_OKAY
-[GNUPG:] GOODMDC
-[GNUPG:] END_DECRYPTION
-fstatusnexit status: 0efiles¡iplaintext‰plaintext¥dargs†x!"--faked-system-time=1671553073!"o"--status-fd=1"k"--decrypt"j"--output"k"plaintext"x"/EXPERIMENT/ciphertext"fstderr˜ôgpg: WARNING: unsafe permissions on homedir '/HOMEDIR'
-gpg: WARNING: running with faked system time: 2022-12-20 16:17:53
-gpg: encrypted with 255-bit ECDH key, ID 805AA22564D5590D, created 2022-12-20
-      "Alice Lovelace <alice@lovelace.name>"
-fstdout™[GNUPG:] ENC_TO 805AA22564D5590D 18 0
-[GNUPG:] KEY_CONSIDERED FD56D8D2DF1989C7518FDFD57AEDB9BDEA62E208 0
-[GNUPG:] KEY_CONSIDERED FD56D8D2DF1989C7518FDFD57AEDB9BDEA62E208 0
-[GNUPG:] DECRYPTION_KEY FDAF5693CC97C77751CDC6E1805AA22564D5590D FD56D8D2DF1989C7518FDFD57AEDB9BDEA62E208 u
-[GNUPG:] KEY_CONSIDERED FD56D8D2DF1989C7518FDFD57AEDB9BDEA62E208 0
-[GNUPG:] BEGIN_DECRYPTION
-[GNUPG:] DECRYPTION_INFO 2 9 0
-[GNUPG:] PLAINTEXT 62 0 
-[GNUPG:] PLAINTEXT_LENGTH 9
-[GNUPG:] DECRYPTION_OKAY
-[GNUPG:] GOODMDC
-[GNUPG:] END_DECRYPTION
-fstatusnexit status: 0efiles¡iplaintext‰plaintextiartifacts¡dcert™5ÅXc¡à1	+ÚG@m>ğ9/õËô†ì»½…&iH<óä}mÆ,@rîøÛ  ÿFöüÂ+ZOÁXšj"Œ/<Dk,®˜¾¾9"ƒÙK÷IÂÀ
- ƒ‚c¡à1‰Ÿ¦ 		zí¹½êbâG       salt@notations.sequoia-pgp.org¬Ä¨¡¥İÏÁ¹&¸KŸ¥¾©9ÁQ‰€cñ×Ø½9º
-›!ıVØÒß‰ÇQßÕzí¹½êbâ  F‡ ­w„+
-4Íì1ê\6åhŸ.Ò›§]³ -br‡ ÿJ‡y_ÛŸ=ãƒ>W£—£)PDæu¹¨ëEÓÌOèÍ$Alice Lovelace <alice@lovelace.name>ÂÀ
- †‚c¡à1‰Ÿ¦ 		zí¹½êbâG       salt@notations.sequoia-pgp.orgW*âö0?ï™Ò…©ÎNş¥€¯Ë“Š.™›CšĞ‹
-™›!ıVØÒß‰ÇQßÕzí¹½êbâ  å íÕ¥6`A3éÉ Ú¤"œÚ#"C2àBC—TÛ¯ ÓúoÅfÄ}“Ğõ<ï÷Š€`ş¡,ñ—ÍP‡Û¾IÇXc¡à1	+ÚG@e™®$£ïO¼ùIrılbÎ‚– W‡å4¦rÂ4±òƒxR  ş#_RçK„Ú`0SÛŠš6ÏZÒ¿¶ıò¦­+ãçœÔlÂÀÅ
-7‚c¡à1‰Ÿ¦ 	zí¹½êbâG       salt@notations.sequoia-pgp.orgs’·Ûºbu;Š5©š/§òN,E3Æq¸¥ğäë ¤›¾ 
- o‚c¡à1	“*<õm•ŒG       salt@notations.sequoia-pgp.org¤fã™‡,gû-¥}t^â’µ×JŸÕè˜âåå!_Í&ˆ{RŠùïŸ›”“*<õm•Œ  Ôı ©¤œ\/”D½
-ôâY½UÏc¤Á„¦‚4ãü† Ï€Å¡<ô½Ôz¢c>r5'Ø×˜E"?²-å¡è´›*a!ıVØÒß‰ÇQßÕzí¹½êbâ  úã ÷zÎb0I27q™ˆ2‰oª2’ÇhEèÄ|õlf—Y% Ì÷ßf>3:ñ¦ôÀ.H},¯ÍJéÜ¯+¼C&¤Ç]c¡à1
-+—U@yh¸8÷7ÄÀõÖX/“XŞ¼Z“6fA¦0È7'  ÿA³JÒ ñÓš‹æ²ÿGX‚ØënsÑËê¶.@ÂÀ
- x‚c¡à1‰Ÿ¦ 	zí¹½êbâG       salt@notations.sequoia-pgp.org²T°àJEøxš,q‡CÀ~6d2J£ÊõW0?)i›!ıVØÒß‰ÇQßÕzí¹½êbâ  îM °×`vqî¹.‰ë7éZö‡ÇŞ¢0ûS¥3êk‚h ş!òáÜî=BPêÀ÷ğù'ÅB¼‚ğÁèòLÎ;'¾ÑGtdynamic_upper_boundsˆ‚ V‚ ‚ °‚ ‚D ‚  ‚†‚‡
