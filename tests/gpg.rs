@@ -746,6 +746,7 @@ impl Diff<'_> {
         if ! self.assert_dynamic_upper_bounds()
             || ! self.assert_unchanged_output()
         {
+            eprintln!("\n{}", self);
             panic!()
         }
     }
