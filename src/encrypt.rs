@@ -91,7 +91,7 @@ fn do_encrypt(config: &crate::Config, args: &[String],
                 key_query = key_query.key_handle(h.clone());
             } else {
                 key_query = key_query
-                    .for_transport_encryption()
+                    .for_storage_encryption()
                     .for_transport_encryption();
             }
 
