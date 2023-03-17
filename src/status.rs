@@ -208,12 +208,12 @@ pub enum Status<'a> {
 
     InvalidRecipient {
         reason: InvalidKeyReason,
-        query: &'a Query<'a>,
+        query: &'a Query,
     },
 
     InvalidSigner {
         reason: InvalidKeyReason,
-        query: &'a Query<'a>,
+        query: &'a Query,
     },
 
     KeyConsidered {

@@ -105,6 +105,10 @@ fn queries() -> Result<()> {
                   "Alice Lovelace",
                   "<alice@lovelace.name>",
                   "Alice Lovelace <alice@lovelace.name>",
+                  "ALICE",
+                  "alice lovelace",
+                  "<ALICE@lovelace.name>",
+                  "<alice@LOVELACE.NAME>",
     ] {
         let diff = experiment.invoke(&[
             "--list-keys", query,

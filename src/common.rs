@@ -267,14 +267,14 @@ impl fmt::Display for crate::babel::Fish<Validity> {
 /// A query for certs, e.g. for use with `--recipient` and
 /// `--list-keys`.
 #[derive(Clone, Debug)]
-pub enum Query<'a> {
+pub enum Query {
     Key(KeyHandle),
     ExactKey(KeyHandle),
     Email(String),
-    UserIDFragment(&'a str),
+    UserIDFragment(String),
 }
 
-impl fmt::Display for Query<'_> {
+impl fmt::Display for Query {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Query::Key(h) => write!(f, "{}", h),
@@ -286,7 +286,7 @@ impl fmt::Display for Query<'_> {
     }
 }
 
-impl<'a> From<&'a str> for Query<'a> {
+impl From<&str> for Query {
     fn from(s: &str) -> Query {
         if s.ends_with("!") {
             if let Ok(h) = s[..s.len()-1].parse() {
@@ -297,14 +297,14 @@ impl<'a> From<&'a str> for Query<'a> {
         if let Ok(h) = s.parse() {
             Query::Key(h)
         } else if s.starts_with("<") && s.ends_with(">") {
-            Query::Email(s[1..s.len()-1].into())
+            Query::Email(s[1..s.len()-1].to_lowercase())
         } else {
-            Query::UserIDFragment(s)
+            Query::UserIDFragment(s.to_lowercase())
         }
     }
 }
 
-impl Query<'_> {
+impl Query {
     /// Returns whether `cert` matches this query.
     ///
     /// Note: the match must be authenticated!
@@ -316,7 +316,7 @@ impl Query<'_> {
             Query::UserIDFragment(f) =>
                 cert.userids().any(|u| {
                     if let Ok(u) = std::str::from_utf8(u.value()) {
-                        u.contains(f)
+                        u.to_lowercase().contains(f)
                     } else {
                         false
                     }
@@ -333,7 +333,7 @@ impl Query<'_> {
             Query::Email(e) => uid.email().ok().flatten().as_ref() == Some(e),
             Query::UserIDFragment(f) =>
                 if let Ok(u) = std::str::from_utf8(uid.value()) {
-                    u.contains(f)
+                    u.to_lowercase().contains(f)
                 } else {
                     false
                 },
