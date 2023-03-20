@@ -125,7 +125,7 @@ pub fn cmd_implicit(config: &crate::Config, args: &[String])
                     .map(|r| r.map(|c| Cow::Owned(LazyCert::from(c))))
                     .collect::<Result<Vec<_>>>()?;
             crate::list_keys::list_keys(
-                config, certs.into_iter(), vec![], false, false, io::stdout())
+                config, certs.into_iter(), false, false, io::stdout())
         },
         Some(InlineVerify) => {
             let mut sink = if let Some(name) = config.outfile() {

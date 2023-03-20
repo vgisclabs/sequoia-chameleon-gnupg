@@ -1,5 +1,6 @@
 use std::{
     borrow::Cow,
+    collections::BTreeMap,
     io::{self, Write},
 };
 
@@ -19,7 +20,7 @@ use cert_store::LazyCert;
 use cert_store::Store;
 
 use crate::{
-    common::Common,
+    common::{Common, Query},
     compliance::KeyCompliance,
     colons::*,
     trust::{*, cert::*},
@@ -46,18 +47,32 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String], list_secret: bool)
         }.emit(config, &mut sink)?;
     }
 
-    let filter: Vec<Query> = args.iter()
-        .map(|a| Query::from(&a[..]))
-        .collect::<Vec<_>>();
+    let certs = if args.is_empty() {
+        config.keydb().certs()
+    } else {
+        let mut certs = BTreeMap::new();
+        for query in args.iter().map(|a| Query::from(&a[..])) {
+            match query {
+                Query::Key(h) | Query::ExactKey(h) =>
+                    config.keydb().lookup_by_key(&h)?,
+                Query::Email(e) =>
+                    config.keydb().lookup_by_email(&e)?,
+                Query::UserIDFragment(f) =>
+                    config.keydb().grep_userid(&f)?,
+            }.into_iter().for_each(|c| {
+                certs.insert(c.fingerprint(), c);
+            });
+        }
+        Box::new(certs.into_values())
+    };
 
-    list_keys(config, config.keydb().certs(), filter, list_secret,
+    list_keys(config, certs, list_secret,
               args.is_empty(), // Only print header if no query is given.
               sink)
 }
 
 pub fn list_keys<'a, 'store: 'a, S>(config: &'a crate::Config,
                                     certs: impl Iterator<Item = Cow<'a, LazyCert<'store>>> + 'a,
-                                    filter: Vec<Query>,
                                     list_secret: bool,
                                     emit_header: bool,
                                     mut sink: S)
@@ -81,11 +96,6 @@ where
     let mut emitted_header = false;
 
     for cert in certs {
-        // Filter out certs that the user is not interested in.
-        if ! filter.is_empty() && ! filter.iter().any(|q| q.matches(&cert)) {
-            continue;
-        }
-
         let has_secret = agent.as_mut()
             .map(|a| rt.block_on(crate::agent::has_keys(a, &cert))).transpose()?
             .unwrap_or_default();
