@@ -44,6 +44,7 @@ pub mod clock;
 pub mod common;
 use common::{Common, Compliance, Query, Validity};
 pub mod compliance;
+pub mod homedir;
 mod interactive;
 pub mod keydb;
 pub mod policy;
@@ -627,9 +628,8 @@ impl<'store> Config<'store> {
             groups: Default::default(),
             homedir: std::env::var_os("GNUPGHOME")
                 .map(Into::into)
-                .unwrap_or_else(|| dirs::home_dir()
-                                .expect("cannot get user's home directory")
-                                .join(".gnupg")),
+                .ok_or_else(|| anyhow::anyhow!("for conversion to err"))
+                .or_else(|_| homedir::default())?,
             import_options: Default::default(),
             input_size_hint: None,
             interactive: false,
@@ -765,6 +765,12 @@ impl<'store> Config<'store> {
                                         self.pinentry_mode.as_str())).await?;
 
         Ok(agent)
+    }
+
+    /// Returns whether we're using the default home directory.
+    fn homedir_is_default(&self) -> Result<bool> {
+        use utils::robustly_canonicalize as rc;
+        Ok(rc(&self.homedir) == rc(homedir::default()?))
     }
 
     /// Checks whether the permissions on the state directory are
@@ -2275,7 +2281,17 @@ fn real_main() -> anyhow::Result<()> {
         return Ok(());
     }
 
-    opt.keydb.add_certd_overlay(&opt.homedir().join("pubring.cert.d"))?;
+    if opt.homedir_is_default()? {
+        // If we're using the default GNUPGHOME, we use the default
+        // openpgp-cert-d so that certificates are shared.
+        // XXX: Use CertD::default_location() once that is public.
+        opt.keydb.add_certd_overlay(
+            &dirs::data_dir().ok_or(anyhow::anyhow!("unsupported platform"))?
+                .join("pgp.cert.d"))?;
+    } else {
+        // Otherwise, we create a openpgp-cert-d in the GNUPGHOME.
+        opt.keydb.add_certd_overlay(&opt.homedir().join("pubring.cert.d"))?;
+    }
     parcimonie::start(&opt, command);
 
     // If a commad is likely to access at least the number of

@@ -4,6 +4,7 @@ use std::{
     convert::TryInto,
     fs,
     io,
+    path::{Path, PathBuf},
 };
 
 use anyhow::{Context, Result};
@@ -217,4 +218,55 @@ pub fn undeline_for(t: &str) -> &[u8] {
     const U: [u8; 80] = ['-' as u8; 80];
     let l = U.len().min(t.len());
     &U[..l]
+}
+
+/// Robustly canonicalizes the given path.
+///
+/// This function works even in cases where std::fs::canonicalize does
+/// not, notably when a component doesn't yet exist.
+pub fn robustly_canonicalize<P: AsRef<Path>>(path: P) -> PathBuf {
+    if let Ok(p) = path.as_ref().canonicalize() {
+        return p;
+    }
+
+    let mut p = path.as_ref().to_path_buf();
+    let mut tail = if let Some(t) = p.file_name() {
+        PathBuf::from(t)
+    } else {
+        return p; // Somewhat odd corner case.
+    };
+
+    // Walk up, trying to canonicalize the parents.
+    while p.pop() {
+        if let Ok(p) = p.canonicalize() {
+            return p.join(tail);
+        }
+        tail = p.file_name().map(PathBuf::from)
+            .or_else(|| std::env::current_dir().ok())
+            .unwrap_or_else(|| PathBuf::from(".")) // Technically a failure.
+            .join(tail);
+    }
+
+    p.join(tail)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn robustly_canonicalize() {
+        use super::robustly_canonicalize as rc;
+        let current_dir = std::env::current_dir().unwrap();
+
+        assert_eq!(rc(""), Path::new(""));
+        assert_eq!(rc("/"), Path::new("/"));
+        assert_eq!(rc("."), current_dir);
+        assert_eq!(rc("./"), current_dir);
+        assert_eq!(rc("/dev"), Path::new("/dev"));
+        assert_eq!(rc("/dev/null"), Path::new("/dev/null"));
+        assert_eq!(rc("/dev/i/dont/exist"), Path::new("/dev/i/dont/exist"));
+        assert_eq!(rc("/i/dont/exist"), Path::new("/i/dont/exist"));
+        assert_eq!(rc("i/dont/exist"), current_dir.join("i/dont/exist"));
+    }
 }
