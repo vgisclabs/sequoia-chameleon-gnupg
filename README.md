@@ -102,6 +102,7 @@ given, and whether an error occurred or not.
 $ cargo build
 [...]
 $ export PATH=$(pwd)/shim-debug:$PATH
+$ # WARNING: this only works with a debug build!
 $ export SEQUOIA_GPG_CHAMELEON_LOG_INVOCATIONS=/tmp/invocation.log
 $ # Run your test suite here.  This is an example:
 $ (gpg --version ; gpg --lsign-key) >/dev/null 2>&1
