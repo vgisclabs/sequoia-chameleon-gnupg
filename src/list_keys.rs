@@ -18,6 +18,7 @@ use ipc::Keygrip;
 use sequoia_cert_store as cert_store;
 use cert_store::LazyCert;
 use cert_store::Store;
+use cert_store::store::StoreError;
 
 use crate::{
     common::{Common, Query},
@@ -52,17 +53,35 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String], list_secret: bool)
     } else {
         let mut certs = BTreeMap::new();
         for query in args.iter().map(|a| Query::from(&a[..])) {
-            match query {
+            let r = match query {
                 Query::Key(h) | Query::ExactKey(h) =>
-                    config.keydb().lookup_by_key(&h)?,
+                    config.keydb().lookup_by_key(&h),
                 Query::Email(e) =>
-                    config.keydb().lookup_by_email(&e)?,
+                    config.keydb().lookup_by_email(&e),
                 Query::UserIDFragment(f) =>
-                    config.keydb().grep_userid(&f)?,
-            }.into_iter().for_each(|c| {
+                    config.keydb().grep_userid(&f),
+            };
+
+            let r = match r {
+                Ok(certs) => certs,
+                Err(err) => {
+                    match err.downcast_ref::<StoreError>() {
+                        Some(&StoreError::NotFound(_)) => vec![],
+                        Some(&StoreError::NoMatches(_)) => vec![],
+                        _ => return Err(err),
+                    }
+                }
+            };
+            r.into_iter().for_each(|c| {
                 certs.insert(c.fingerprint(), c);
             });
         }
+
+        if certs.is_empty() {
+            return Err(anyhow::anyhow!(
+                "error reading key: No public key"));
+        }
+
         Box::new(certs.into_values())
     };
 

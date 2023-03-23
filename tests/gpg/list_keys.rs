@@ -117,6 +117,37 @@ fn queries() -> Result<()> {
         diff.assert_equal_up_to(9, 0);
     }
 
+    // It is possible to specify multiple search terms.  In this case
+    // gpg only fails if all search terms return nothing.
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "not_present1@example.org",
+        "not_present2@example.org",
+    ])?;
+    diff.assert_failure();
+    diff.assert_equal_up_to(0, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "not_present1@example.org",
+        "alice",
+        "not_present2@example.org",
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(0, 0);
+
+    // If two patterns match the same certificate, the certificate
+    // should only be output once.
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "not_present1@example.org",
+        "alice",
+        &cert.fingerprint().to_string(),
+        "not_present2@example.org",
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(0, 0);
+
     Ok(())
 }
 
