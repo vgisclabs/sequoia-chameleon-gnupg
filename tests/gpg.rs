@@ -859,7 +859,12 @@ impl Diff<'_> {
 
 impl fmt::Display for Diff<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        writeln!(f, "args:\n {:?}\n", self.args)?;
+        writeln!(f, "args:\n {}\n",
+                 self.args
+                     .iter()
+                     .map(|arg| format!("{:?}", arg))
+                     .collect::<Vec<String>>()
+                     .join(" "))?;
 
         if self.oracle.stdout.len() + self.us.stdout.len() > 0 {
             writeln!(f, "stdout (edit distance {}):",
