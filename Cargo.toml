@@ -33,7 +33,7 @@ rand_distr = { version = "0.4", default-features = false }
 rayon = "1"
 reqwest = { version = "0.11", features = ["socks"] }
 sequoia-cert-store = "0.2"
-sequoia-openpgp = { version = "1.13", default-features = false, features = ["compression"] }
+sequoia-openpgp = { version = "1.14", default-features = false, features = ["compression"] }
 sequoia-openpgp-mt = "0.1"
 sequoia-policy-config = "0.5"
 sequoia-ipc = "0.30.1"
