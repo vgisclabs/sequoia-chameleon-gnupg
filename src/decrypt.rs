@@ -106,6 +106,73 @@ pub fn cmd_decrypt(config: &crate::Config, args: &[String])
     Ok(())
 }
 
+/// Dispatches the --decrypt-files command.
+pub fn cmd_decrypt_files(config: &crate::Config, args: &[String])
+                         -> Result<()>
+{
+    let inputs_store;
+    let inputs = if args.is_empty() {
+        // Read files from stdin, one each line.
+        use io::BufRead;
+        inputs_store = io::BufReader::new(io::stdin()).lines()
+            .collect::<io::Result<Vec<String>>>()?;
+        &inputs_store[..]
+    } else {
+        args
+    };
+
+    let policy = config.policy();
+    for ciphertext in inputs {
+        config.status().emit(Status::FileStart {
+            what: crate::status::FileStartOperation::Encrypt,
+            name: &ciphertext,
+        })?;
+
+        // Note: we use crypto::Decryptors backed by the gpg-agent.
+        // Currently, it is not safe to use these from async contexts,
+        // because they evaluate futures using a runtime, which may not be
+        // nested.  Therefore, the following code may not be run in an
+        // async context.
+        let transaction = || -> Result<()> {
+            let message = utils::open(config, &ciphertext)?;
+            let mut sink = utils::create(
+                config, &utils::make_outfile_name(ciphertext)?)?;
+
+            let helper = DHelper::new(config, VHelper::new(config, 1));
+            let message = DecryptorBuilder::from_reader(message)?;
+            let mut d = match message.with_policy(policy, config.now(), helper) {
+                Ok(d) => d,
+                Err(e) => if config.list_only {
+                    return Ok(());
+                } else {
+                    return Err(e);
+                },
+            };
+
+            if ! config.list_only {
+                io::copy(&mut d, &mut sink)?;
+            }
+            let helper = d.into_helper();
+
+            if ! config.list_only {
+                helper.config.status().emit(Status::DecryptionOkay)?;
+                // For compatibility reasons we issue GOODMDC also for AEAD messages.
+                helper.config.status().emit(Status::GoodMDC)?;
+            }
+
+            Ok(())
+        };
+
+        if let Err(e) = transaction() {
+            config.error(format_args!("{}", e));
+        }
+        config.status().emit(Status::EndDecryption)?;
+        config.status().emit(Status::FileDone)?;
+    }
+
+    Ok(())
+}
+
 struct DHelper<'a, 'store> {
     config: &'a crate::Config<'store>,
     vhelper: VHelper<'a, 'store>,

@@ -2286,7 +2286,7 @@ fn real_main() -> anyhow::Result<()> {
         // it only supports multifile with three commands).  Let's see
         // if we can get away with a goodlist here.
         match command {
-            Some(aEncr) =>
+            Some(aEncr) | Some(aDecrypt) =>
                 if opt.outfile().is_some() {
                     return Err(anyhow::anyhow!(
                         "--output doesn't work for this command"));
@@ -2393,7 +2393,11 @@ fn real_main() -> anyhow::Result<()> {
         } else {
             verify::cmd_verify(&opt, &args)
         },
-        Some(aDecrypt) => decrypt::cmd_decrypt(&opt, &args),
+        Some(aDecrypt) => if multifile {
+            decrypt::cmd_decrypt_files(&opt, &args)
+        } else {
+            decrypt::cmd_decrypt(&opt, &args)
+        },
         Some(aExport) => export::cmd_export(&mut opt, &args, false),
         Some(aImport) => import::cmd_import(&mut opt, &args),
         Some(aSign) => sign::cmd_sign(&mut opt, &args, detached_sig, false),

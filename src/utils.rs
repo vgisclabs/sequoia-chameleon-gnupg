@@ -250,6 +250,28 @@ pub fn robustly_canonicalize<P: AsRef<Path>>(path: P) -> PathBuf {
     p.join(tail)
 }
 
+/// Strips known extensions from filename.
+///
+/// Returns an error if we didn't recognize the file extension.
+pub fn make_outfile_name<S: AsRef<str>>(name: S) -> Result<String> {
+    let s = name.as_ref();
+    if s.ends_with(".gpg") {
+        Ok(s[..s.len() - 4].into())
+    } else if s.ends_with(".gpg") {
+        Ok(s[..s.len() - 4].into())
+    } else if s.ends_with(".pgp") {
+        Ok(s[..s.len() - 4].into())
+    } else if s.ends_with(".sig") {
+        Ok(s[..s.len() - 4].into())
+    } else if s.ends_with(".asc") {
+        Ok(s[..s.len() - 4].into())
+    } else if s.ends_with(".sign") {
+        Ok(s[..s.len() - 5].into())
+    } else {
+        Err(anyhow::anyhow!("{}: unknown suffix", s))
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
