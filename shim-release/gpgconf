@@ -7,7 +7,7 @@ then
 
     if "$CHAMELEON" --version >/dev/null
     then
-	/usr/bin/gpgconf "$@" | sed -e "s|/usr/bin/gpg2\\?\$|$CHAMELEON|"
+	/usr/bin/gpgconf "$@" | sed -e "s|^gpg:OpenPGP:.*$|gpg:OpenPGP:$CHAMELEON|"
 	exit "${PIPESTATUS[0]}"
     fi
 fi
