@@ -11,7 +11,7 @@ use openpgp::{
     cert::amalgamation::key::PrimaryKey,
     crypto,
     serialize::stream::*,
-    types::{PublicKeyAlgorithm, SignatureType},
+    types::{KeyFlags, PublicKeyAlgorithm, SignatureType},
 };
 
 use crate::{
@@ -134,7 +134,8 @@ pub async fn get_signers(config: &crate::Config<'_>)
                                     Vec<(PublicKeyAlgorithm, Fingerprint)>)> {
     let mut signers = vec![];
     let mut signers_desc = vec![];
-    for local_user in config.local_users()? {
+    for local_user in config.local_users(KeyFlags::empty().set_signing()).await?
+    {
         let query = crate::trust::Query::from(local_user.as_str());
         let certs = config.lookup_certs(&query)?;
 

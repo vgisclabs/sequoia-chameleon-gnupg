@@ -24,8 +24,10 @@ use openpgp::{
     types::*,
 };
 
-use sequoia_cert_store as cert_store;
-use cert_store::LazyCert;
+use sequoia_cert_store::{
+    LazyCert,
+    Store,
+};
 
 pub mod net; // XXX
 pub mod wkd; // XXX
@@ -832,10 +834,35 @@ impl<'store> Config<'store> {
     }
 
     /// Returns the local users used e.g. in signing operations.
-    pub fn local_users(&self) -> Result<Vec<String>> {
+    pub async fn local_users(&self, flags: KeyFlags) -> Result<Vec<String>> {
         if self.local_user.is_empty() {
             if self.def_secret_key.is_empty() {
-                Err(anyhow::anyhow!("There is no default key, use -u"))
+                let mut agent = match self.connect_agent().await {
+                    Ok(a) => a,
+                    Err(e) => return Err(
+                        e.context("There is no default key, and \
+                                   connecting to the agent failed")),
+                };
+
+                // The user did not express a preference, use any
+                // usable key.  GnuPG uses the first one it finds.  Do
+                // the same, mostly because this search operation is
+                // so expensive.
+                for cert in self.keydb().certs() {
+                    if let Ok(vcert) = cert.with_policy(self.policy(), None) {
+                        for sk in vcert.keys().key_flags(&flags).alive()
+                            .revoked(false)
+                        {
+                            if agent::has_key(&mut agent, sk.key()).await? {
+                                return Ok(vec![cert.fingerprint().to_string()]);
+                            }
+                        }
+                    }
+                }
+
+                // Heuristic failed to find a usable secret key.
+                Err(anyhow::anyhow!("We did not find a usable secret key, \
+                                     maybe use -u"))
             } else {
                 Ok(self.def_secret_key.clone())
             }
