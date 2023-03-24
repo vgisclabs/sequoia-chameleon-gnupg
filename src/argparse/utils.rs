@@ -49,7 +49,7 @@ pub fn parse_cipher(s: &str) -> Result<SymmetricAlgorithm> {
         "camellia128" => Ok(SymmetricAlgorithm::Camellia128),
         "camellia192" => Ok(SymmetricAlgorithm::Camellia192),
         "camellia256" => Ok(SymmetricAlgorithm::Camellia256),
-        _ => Err(anyhow::anyhow!("Unknown hash algorithm {:?}", s)),
+        _ => Err(anyhow::anyhow!("Unknown cipher algorithm {:?}", s)),
     }
 }
 
@@ -66,7 +66,7 @@ pub fn parse_compressor(s: &str) -> Result<CompressionAlgorithm> {
         "zip" => Ok(CompressionAlgorithm::Zip),
         "zlib" => Ok(CompressionAlgorithm::Zlib),
         "bzip2" => Ok(CompressionAlgorithm::BZip2),
-        _ => Err(anyhow::anyhow!("Unknown hash algorithm {:?}", s)),
+        _ => Err(anyhow::anyhow!("Unknown compression algorithm {:?}", s)),
     }
 }
 
