@@ -45,6 +45,7 @@ pub fn parse_cipher(s: &str) -> Result<SymmetricAlgorithm> {
         "aes" => Ok(SymmetricAlgorithm::AES128),
         "aes192" => Ok(SymmetricAlgorithm::AES192),
         "aes256" => Ok(SymmetricAlgorithm::AES256),
+        "twofish" => Ok(SymmetricAlgorithm::Twofish),
         "twofish128" => Ok(SymmetricAlgorithm::Twofish),
         "camellia128" => Ok(SymmetricAlgorithm::Camellia128),
         "camellia192" => Ok(SymmetricAlgorithm::Camellia192),
