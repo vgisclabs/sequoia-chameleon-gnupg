@@ -36,7 +36,10 @@ pub fn cmd_encrypt(config: &crate::Config, args: &[String],
                    symmetric: bool, sign: bool)
                    -> Result<()>
 {
-    if let Err(e) = do_encrypt(config, args, symmetric, sign) {
+    if let Err(e) = do_encrypt(config, args,
+                               config.outfile(),
+                               symmetric, sign)
+    {
         config.error(format_args!(
             "{}: encryption failed: {}",
             args.get(0).map(String::as_str).unwrap_or("-"),
@@ -45,7 +48,45 @@ pub fn cmd_encrypt(config: &crate::Config, args: &[String],
     Ok(())
 }
 
+/// Dispatches the --encrypt-files command.
+pub fn cmd_encrypt_files(config: &crate::Config, args: &[String])
+                         -> Result<()>
+{
+    let inputs_store;
+    let inputs = if args.is_empty() {
+        // Read files from stdin, one each line.
+        use io::BufRead;
+        inputs_store = io::BufReader::new(io::stdin()).lines()
+            .collect::<io::Result<Vec<String>>>()?;
+        &inputs_store[..]
+    } else {
+        args
+    };
+
+    for plaintext in inputs {
+        config.status().emit(Status::FileStart {
+            what: crate::status::FileStartOperation::Encrypt,
+            name: &plaintext,
+        })?;
+
+        if let Err(e) = do_encrypt(config, &[plaintext.into()],
+                                   Some(&format!("{}.gpg", plaintext)),
+                                   false, false)
+        {
+            config.error(format_args!(
+                "{}: encryption failed: {}",
+                args.get(0).map(String::as_str).unwrap_or("-"),
+                e));
+        }
+
+        config.status().emit(Status::FileDone)?;
+    }
+
+    Ok(())
+}
+
 fn do_encrypt(config: &crate::Config, args: &[String],
+              outfile: Option<&String>,
               symmetric: bool, sign: bool)
               -> Result<()>
 {
@@ -162,7 +203,7 @@ fn do_encrypt(config: &crate::Config, args: &[String],
     let recipients: Vec<Recipient>
         = keys.iter().map(Recipient::from).collect();
 
-    let mut sink = if let Some(name) = config.outfile() {
+    let mut sink = if let Some(name) = outfile {
         utils::create(config, name)?
     } else {
         Box::new(io::stdout())
