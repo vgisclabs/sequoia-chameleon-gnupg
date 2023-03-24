@@ -1,4 +1,4 @@
-image: registry.gitlab.com/sequoia-pgp/build-docker-image/bookworm:latest
+image: 192.168.122.1:5000/sequoia-pgp/build-docker-image/bookworm-prebuild:latest
 
 test:
   script:
