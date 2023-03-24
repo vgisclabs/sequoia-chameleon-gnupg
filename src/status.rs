@@ -169,6 +169,12 @@ pub enum Status<'a> {
     },
     EndEncryption,
 
+    FileStart {
+        what: FileStartOperation,
+        name: &'a str,
+    },
+    FileDone,
+
     BeginSigning(HashAlgorithm),
     SigCreated {
         typ: SigType,
@@ -453,6 +459,12 @@ impl Status<'_> {
 
             BeginDecryption => writeln!(w, "BEGIN_DECRYPTION")?,
             EndDecryption => writeln!(w, "END_DECRYPTION")?,
+
+            FileStart {
+                what,
+                name,
+            } => writeln!(w, "FILE_START {} {}", what, name)?,
+            FileDone => writeln!(w, "FILE_DONE")?,
 
             DecryptionKey {
                 fp,
@@ -1050,6 +1062,24 @@ impl From<InvalidKeyReason> for u8 {
             MissingIssuerCertificate => 12,
             KeyDisabled => 13,
             SyntaxError => 14,
+        }
+    }
+}
+
+/// Operation for use with Status::FileStart.
+pub enum FileStartOperation {
+    Verify,
+    Encrypt,
+    Decrypt,
+}
+
+impl fmt::Display for FileStartOperation {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        use FileStartOperation::*;
+        match self {
+            Verify => f.write_str("1"),
+            Encrypt => f.write_str("2"),
+            Decrypt => f.write_str("3"),
         }
     }
 }

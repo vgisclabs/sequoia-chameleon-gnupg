@@ -2217,6 +2217,9 @@ fn real_main() -> anyhow::Result<()> {
             oNoGroups => {
                 opt.groups.clear();
             },
+            oMultifile => {
+                multifile = true;
+            },
             oAutoKeyLocate => {
                 auto_key_locate_given = true;
                 for s in value.as_str().unwrap().split(',') {
@@ -2275,6 +2278,19 @@ fn real_main() -> anyhow::Result<()> {
 
     if greeting && ! no_greeting {
         eprintln!("Greetings from the people of earth!");
+    }
+
+    if multifile {
+        // XXX: GnuPG has a badlist of commands that don't work with
+        // multifile, but in reality that list is incomplete (in fact,
+        // it only supports multifile with three commands).  Let's see
+        // if we can get away with a goodlist here.
+        match command {
+            Some(aVerify) => (),
+            _ => return Err(anyhow::anyhow!(
+                "{:?} does not yet work with --multifile",
+                command)),
+        }
     }
 
     // If there is no command but the --fingerprint is given, default
@@ -2367,7 +2383,11 @@ fn real_main() -> anyhow::Result<()> {
     }
 
     let result = match command {
-        Some(aVerify) => verify::cmd_verify(&opt, &args),
+        Some(aVerify) => if multifile {
+            verify::cmd_verify_files(&opt, &args)
+        } else {
+            verify::cmd_verify(&opt, &args)
+        },
         Some(aDecrypt) => decrypt::cmd_decrypt(&opt, &args),
         Some(aExport) => export::cmd_export(&mut opt, &args, false),
         Some(aImport) => import::cmd_import(&mut opt, &args),

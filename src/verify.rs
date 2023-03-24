@@ -98,6 +98,54 @@ pub fn cmd_verify(control: &crate::Config, args: &[String])
     map_verificaton_error(control, do_it())
 }
 
+/// Dispatches the --verify-files command.
+pub fn cmd_verify_files(control: &crate::Config, args: &[String])
+                        -> Result<()>
+{
+    let inputs_store;
+    let inputs = if args.is_empty() {
+        // Read files from stdin, one each line.
+        use io::BufRead;
+        inputs_store = io::BufReader::new(io::stdin()).lines()
+            .collect::<io::Result<Vec<String>>>()?;
+        &inputs_store[..]
+    } else {
+        args
+    };
+
+    let policy = control.policy();
+    for sigfile in inputs {
+        let sig = utils::open(control, &sigfile)?;
+
+        control.status().emit(Status::FileStart {
+            what: crate::status::FileStartOperation::Verify,
+            name: &sigfile,
+        })?;
+
+        let do_it = || -> Result<()> {
+            // Curiously, GnuPG supports --output with --multifile
+            // --verify, but it will override the file with each
+            // verification.
+            let mut sink = if let Some(name) = control.outfile() {
+                utils::create(control, name)?
+            } else {
+                Box::new(io::sink())
+            };
+            let helper = VHelper::new(control, 1);
+            let mut v = VerifierBuilder::from_reader(sig)?
+                .with_policy(policy, control.now(), helper)?;
+            io::copy(&mut v, &mut sink)?;
+
+            Ok(())
+        };
+
+        let _ = map_verificaton_error(control, do_it());
+        control.status().emit(Status::FileDone)?;
+    }
+
+    Ok(())
+}
+
 fn map_verificaton_error(control: &crate::Config, r: Result<()>)
                          -> Result<()> {
     match r {
