@@ -95,33 +95,39 @@ pub fn cmd_verify(control: &crate::Config, args: &[String])
         }
     };
 
-    if let Err(e) = do_it() {
-        control.override_status_code(1);
-        match e.downcast::<openpgp::Error>() {
-            Ok(oe) => {
-                // Map our errors to the way GnuPG reports errors.
-                match oe {
-                    openpgp::Error::MalformedPacket(_) =>
-                    {
-                        control.status().emit(Status::NoData(
-                            NoDataReason::ExpectedPacket))?;
-                        control.status().emit(Status::NoData(
-                            NoDataReason::ExpectedSignature))?;
-                    },
-                    openpgp::Error::MalformedMessage(_) => {
-                        control.status().emit(Status::NoData(
-                            NoDataReason::InvalidPacket))?;
-                        control.status().emit(Status::NoData(
-                            NoDataReason::ExpectedSignature))?;
-                    },
-                    _ => (),
-                }
-                Err(oe.into())
-            },
-            Err(e) => Err(e),
-        }
-    } else {
-        Ok(())
+    map_verificaton_error(control, do_it())
+}
+
+fn map_verificaton_error(control: &crate::Config, r: Result<()>)
+                         -> Result<()> {
+    match r {
+        Ok(()) => Ok(()),
+        Err(e) => {
+            control.override_status_code(1);
+            match e.downcast::<openpgp::Error>() {
+                Ok(oe) => {
+                    // Map our errors to the way GnuPG reports errors.
+                    match oe {
+                        openpgp::Error::MalformedPacket(_) =>
+                        {
+                            control.status().emit(Status::NoData(
+                                NoDataReason::ExpectedPacket))?;
+                            control.status().emit(Status::NoData(
+                                NoDataReason::ExpectedSignature))?;
+                        },
+                        openpgp::Error::MalformedMessage(_) => {
+                            control.status().emit(Status::NoData(
+                                NoDataReason::InvalidPacket))?;
+                            control.status().emit(Status::NoData(
+                                NoDataReason::ExpectedSignature))?;
+                        },
+                        _ => (),
+                    }
+                    Err(oe.into())
+                },
+                Err(e) => Err(e),
+            }
+        },
     }
 }
 
