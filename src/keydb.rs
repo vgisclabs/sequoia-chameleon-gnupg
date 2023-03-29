@@ -5,7 +5,7 @@ use std::{
     fs,
     io::Read,
     path::{Path, PathBuf},
-    time::{SystemTime, UNIX_EPOCH},
+    time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
 use anyhow::{anyhow, Context, Result};
@@ -738,8 +738,14 @@ impl<'store> Overlay<'store> {
         // do that yet with the CertBuilder.
         let (root, _) =
             CertBuilder::new()
+            // Set it in the past so that it is possible to use the CA
+            // when the reference time is in the past.  Feb 2002.
+            .set_creation_time(
+                SystemTime::UNIX_EPOCH + Duration::new(1014235320, 0))
+            // CAs should *not* expire.
+            .set_validity_period(None)
             .add_userid_with(
-                "trust-root",
+                "Local Trust Root",
                 SignatureBuilder::new(SignatureType::PositiveCertification)
                     .set_exportable_certification(false)?)?
             .generate()?;
