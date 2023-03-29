@@ -50,6 +50,13 @@ impl Model for WoT {
         // Now we add any roots from the configuration and command line.
         roots.extend_from_slice(&config.trusted_keys);
 
+        // And the local trust root, if any.
+        if let Ok(overlay) = config.keydb.get_certd_overlay() {
+            if let Ok(trust_root) = overlay.trust_root() {
+                roots.push(trust_root.fingerprint());
+            }
+        }
+
         roots.sort_unstable();
         roots.dedup();
 
