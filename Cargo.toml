@@ -11,7 +11,7 @@ documentation = "https://docs.rs/sequoia-chameleon-gnupg"
 homepage = "https://sequoia-pgp.org/"
 repository = "https://gitlab.com/sequoia-pgp/sequoia-chameleon-gnupg"
 readme = "README.md"
-include = ["src", "tests", "AUTHORS.GnuPG", "!/integration/**"]
+include = ["src", "tests", "AUTHORS.GnuPG", "LICENSE.txt", "README.md", "!/integration/**"]
 
 [dependencies]
 anyhow = "1"
