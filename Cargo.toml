@@ -18,7 +18,7 @@ anyhow = "1"
 base64 = "0.13"
 buffered-reader = "1"
 chrono = "0.4"
-dirs = "4"
+dirs = "5"
 fd-lock = { version = "3", default-features = false }
 filetime = "0.2"
 futures = "0.3"
