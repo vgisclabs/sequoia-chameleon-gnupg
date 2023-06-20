@@ -441,6 +441,7 @@ pub enum CmdOrOpt {
     oNoop,
 
     // Our own extensions.
+    aXSequoiaParcimonie,
     oXSequoiaAutostartParcimonie,
     aXSequoiaParcimonieDaemonize,
 
@@ -2258,6 +2259,9 @@ fn real_main() -> anyhow::Result<()> {
             },
 
             // Our own extensions.
+            aXSequoiaParcimonie => {
+                set_cmd(&mut command, aXSequoiaParcimonie)?;
+            },
             oXSequoiaAutostartParcimonie => {
                 opt.autostart_parcimonie = true;
             },
@@ -2441,6 +2445,8 @@ fn real_main() -> anyhow::Result<()> {
         None => commands::cmd_implicit(&opt, &args),
 
         // Our own extensions.
+        Some(aXSequoiaParcimonie) =>
+            parcimonie::cmd_parcimonie(&mut opt, &args),
         Some(aXSequoiaParcimonieDaemonize) =>
             parcimonie::cmd_parcimonie_daemonize(&mut opt, &args),
 

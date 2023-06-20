@@ -115,7 +115,25 @@ $ cat $SEQUOIA_GPG_CHAMELEON_LOG_INVOCATIONS
 
 # Non-Functional Advantages
 
-Sequoia has a number of non-functional advantages relative to GnuPG.
+The Chameleon has a number of non-functional advantages relative to
+GnuPG.
+
+## Automatic discovery of certificate updates
+
+The Chameleon includes a component called Parcimonie (after the
+venerable [Parcimonie](https://salsa.debian.org/intrigeri/parcimonie))
+that will keep your certificates up-to-date, trying to do so in a
+privacy preserving fashion.
+
+It will periodically use any enabled auto-key-locate methods to search
+for updates in the local certificate store using randomized delays
+trying to de-correlate them.  It will use Tor if available.
+
+To enable the Parcimonie component, run `gpg-sq
+--x-sequoia-parcimonie`, either manually or using a service manager (a
+systemd unit file is included in this repository).  Alternatively, you
+can use the `x-sequoia-autostart-parcimonie` option in your
+configuration file to start it on-demand if `gpg-sq` is invoked.
 
 ## OpenPGP Conformance
 

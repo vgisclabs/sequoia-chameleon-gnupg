@@ -1,0 +1,8 @@
+[Unit]
+Description=gpg-sq's parcimonie keeps certs up-to-date
+
+[Service]
+ExecStart=gpg-sq --x-sequoia-parcimonie
+
+[Install]
+WantedBy=default.target
