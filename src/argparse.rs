@@ -222,6 +222,7 @@ impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
         println!();
 
         let mut current_group = None;
+        let mut last_line_was_empty = true;
         for o in self.options {
             if o.flags & OPT_HEADER > 0 {
                 // This is a header, but we only emit the header if we
@@ -243,6 +244,7 @@ impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
                 println!("{}:", group);
             }
 
+            last_line_was_empty = o.description.ends_with("\n");
             if o.description == "@\n" {
                 // Empty line.
                 println!();
@@ -288,6 +290,10 @@ impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
                     }
                 }
             }
+        }
+
+        if ! last_line_was_empty {
+            println!();
         }
 
         println!("Please report bugs to \
