@@ -526,6 +526,7 @@ const OPTIONS: &[Opt<CmdOrOpt>] = &[
 
   Opt { short_opt: o309, long_opt: "", flags: 0, description: "@Sequoia-specific extensions:\n", },
 
+  Opt { short_opt: oXSequoiaOnly, long_opt: "x-sequoia-only", flags: TYPE_NONE, description: "no effect, but makes stock GnuPG fail", },
   Opt { short_opt: aXSequoiaParcimonie, long_opt: "x-sequoia-parcimonie", flags: (TYPE_NONE | OPT_COMMAND), description: "continuously update certificates", },
   Opt { short_opt: oXSequoiaAutostartParcimonie, long_opt: "x-sequoia-autostart-parcimonie", flags: TYPE_NONE, description: "automatically start daemon to update certs", },
   Opt { short_opt: aXSequoiaParcimonieDaemonize, long_opt: "x-sequoia-parcimonie-daemonize", flags: (TYPE_NONE | OPT_COMMAND), description: "@", },
