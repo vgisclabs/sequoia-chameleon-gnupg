@@ -15,7 +15,7 @@ include = ["src", "tests", "AUTHORS.GnuPG", "LICENSE.txt", "README.md", "!/integ
 
 [dependencies]
 anyhow = "1"
-base64 = "0.13"
+base64 = "0.21"
 buffered-reader = "1"
 chrono = "0.4"
 dirs = "5"

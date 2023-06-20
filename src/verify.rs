@@ -261,7 +261,8 @@ impl<'a, 'store> VHelper<'a, 'store> {
         sig.mpis().serialize(&mut h)?;
 
         // Now base64-encode to form the Signature ID.
-        Ok(base64::encode_config(h.into_digest()?, base64::STANDARD_NO_PAD))
+        use base64::prelude::{BASE64_STANDARD_NO_PAD, Engine};
+        Ok(BASE64_STANDARD_NO_PAD.encode(h.into_digest()?))
     }
 
     fn emit_signature<'c, C, K, E>(&mut self, sig: &Signature,
