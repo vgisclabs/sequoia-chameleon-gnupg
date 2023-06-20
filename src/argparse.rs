@@ -2,6 +2,7 @@
 
 use std::{
     collections::BTreeSet,
+    fmt::Debug,
     io::{self, BufRead, BufReader},
     path::Path,
 };
@@ -11,7 +12,8 @@ use flags::*;
 pub mod utils;
 
 /// A command or option with long option, flags, and description.
-pub struct Opt<T> {
+#[derive(Debug)]
+pub struct Opt<T: Debug> {
     pub short_opt: T,
     pub long_opt: &'static str,
     pub flags: u32,
@@ -19,7 +21,7 @@ pub struct Opt<T> {
 }
 
 #[derive(Debug, PartialEq, Eq)]
-pub enum Argument<T> {
+pub enum Argument<T: Debug> {
     Option(T, Value),
     Positional(String),
 }
@@ -73,14 +75,14 @@ impl Value {
 }
 
 /// Arguments can be read from the command line or a file.
-pub struct Parser<T: Copy + PartialEq + Eq + Into<isize> + 'static> {
+pub struct Parser<T: Copy + Debug + PartialEq + Eq + Into<isize> + 'static> {
     name: &'static str,
     synopsis: &'static str,
     additional_version: Box<dyn Fn(&crate::Config)>,
     options: &'static [Opt<T>],
 }
 
-impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
+impl<T: Copy + Debug + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
     /// Creates a new parser for the given options.
     pub fn new(name: &'static str,
                synopsis: &'static str,
@@ -335,7 +337,7 @@ GNU General Public License for more details.");
 }
 
 /// Iterator over the command line arguments.
-pub struct Iter<T: Copy + PartialEq + Eq + Into<isize> + 'static> {
+pub struct Iter<T: Copy + Debug + PartialEq + Eq + Into<isize> + 'static> {
     options: &'static [Opt<T>],
     line: Box<dyn Iterator<Item = Box<dyn Iterator<Item = String>>>>,
     current: Option<Box<dyn Iterator<Item = String>>>,
@@ -353,7 +355,7 @@ pub struct Iter<T: Copy + PartialEq + Eq + Into<isize> + 'static> {
     ignore_arguments: BTreeSet<String>,
 }
 
-impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Iter<T> {
+impl<T: Copy + Debug + PartialEq + Eq + Into<isize> + 'static> Iter<T> {
     /// Don't emit warnings on stderr.
     pub fn quietly(mut self) -> Self {
         self.quiet = true;
@@ -406,7 +408,7 @@ impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Iter<T> {
     }
 }
 
-impl<T: Copy + PartialEq + Eq + Into<isize> + 'static> Iterator for Iter<T> {
+impl<T: Copy + Debug + PartialEq + Eq + Into<isize> + 'static> Iterator for Iter<T> {
     type Item = Result<Argument<T>>;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -803,7 +805,7 @@ mod tests {
                        -> anyhow::Result<Box<dyn Iterator<Item = Result<Argument<T>>>>>
         where
             F: Fn(&mut tempfile::NamedTempFile) -> anyhow::Result<()>,
-            T: Copy + PartialEq + Eq + Into<isize> + 'static,
+            T: Copy + Debug + PartialEq + Eq + Into<isize> + 'static,
         {
             let mut f = tempfile::NamedTempFile::new()?;
             fun(&mut f)?;
