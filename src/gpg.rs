@@ -104,6 +104,7 @@ pub enum CmdOrOpt {
     o301,
     o302,
     o303,
+    o309 = 309,
     oBatch	  = 500,
     oMaxOutput,
     oInputSizeHint,
@@ -440,6 +441,7 @@ pub enum CmdOrOpt {
     oNoop,
 
     // Our own extensions.
+    oXSequoiaAutostartParcimonie,
     aXSequoiaParcimonie,
 
     // Special, implicit commands.
@@ -572,6 +574,9 @@ pub struct Config<'store> {
     with_tofu_info: bool,
     with_wkd_hash: bool,
 
+    // Extension.
+    autostart_parcimonie: bool,
+
     // Streams.
     attribute_fd: Box<dyn io::Write>,
     command_fd: interactive::Fd,
@@ -694,6 +699,9 @@ impl<'store> Config<'store> {
             with_subkey_fingerprint: false,
             with_tofu_info: false,
             with_wkd_hash: false,
+
+            // Extensions.
+            autostart_parcimonie: false,
 
             // Streams.
             attribute_fd: Box::new(io::sink()),
@@ -2250,6 +2258,9 @@ fn real_main() -> anyhow::Result<()> {
             },
 
             // Our own extensions.
+            oXSequoiaAutostartParcimonie => {
+                opt.autostart_parcimonie = true;
+            },
             aXSequoiaParcimonie => {
                 set_cmd(&mut command, aXSequoiaParcimonie)?;
             },

@@ -126,6 +126,11 @@ fn keep_running(config: &crate::Config) -> bool {
 pub fn start(config: &crate::Config, command: Option<CmdOrOpt>) {
     tracer!(TRACE, "parcimonie::start");
 
+    if ! config.autostart_parcimonie {
+        t!("Not starting parcimonie, not enabled");
+        return;
+    }
+
     match std::fs::metadata(&config.homedir) {
         Err(err) => {
             // Home directory doesn't exist.
