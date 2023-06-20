@@ -148,7 +148,7 @@ pub fn start(config: &crate::Config, command: Option<CmdOrOpt>) {
         }
     }
 
-    if command == Some(CmdOrOpt::aXSequoiaParcimonie) {
+    if command == Some(CmdOrOpt::aXSequoiaParcimonieDaemonize) {
         // Prevent recursing to avoid fork-bombing.
         return;
     }
@@ -191,7 +191,7 @@ fn real_start(config: &crate::Config) -> Result<()> {
     p.stdin(Stdio::null())
         .stdout(Stdio::null())
         .stderr(Stdio::null())
-        .arg("--x-sequoia-parcimonie")
+        .arg("--x-sequoia-parcimonie-daemonize")
         .arg("--auto-key-locate").arg(akl)
         .arg("--homedir").arg(&config.homedir);
 
@@ -215,6 +215,20 @@ fn real_start(config: &crate::Config) -> Result<()> {
     p.spawn()?;
 
     Ok(())
+}
+
+/// Dispatches the Parcimonie command.
+pub fn cmd_parcimonie_daemonize(config: &mut crate::Config, args: &[String])
+                                -> Result<()>
+{
+    if args.len() > 0 {
+        return Err(anyhow::anyhow!("Expected no argument"));
+    }
+
+    // Daemonize now.  On success, the current process will terminate.
+    daemonize::Daemonize::new().start()?;
+
+    cmd_parcimonie(config, args)
 }
 
 /// Dispatches the Parcimonie command.

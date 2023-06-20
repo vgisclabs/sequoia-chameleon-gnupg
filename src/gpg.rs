@@ -442,7 +442,7 @@ pub enum CmdOrOpt {
 
     // Our own extensions.
     oXSequoiaAutostartParcimonie,
-    aXSequoiaParcimonie,
+    aXSequoiaParcimonieDaemonize,
 
     // Special, implicit commands.
     aHelp = 'h' as isize,
@@ -2261,8 +2261,8 @@ fn real_main() -> anyhow::Result<()> {
             oXSequoiaAutostartParcimonie => {
                 opt.autostart_parcimonie = true;
             },
-            aXSequoiaParcimonie => {
-                set_cmd(&mut command, aXSequoiaParcimonie)?;
+            aXSequoiaParcimonieDaemonize => {
+                set_cmd(&mut command, aXSequoiaParcimonieDaemonize)?;
             },
 
             _ => (),
@@ -2441,8 +2441,8 @@ fn real_main() -> anyhow::Result<()> {
         None => commands::cmd_implicit(&opt, &args),
 
         // Our own extensions.
-        Some(aXSequoiaParcimonie) =>
-            parcimonie::cmd_parcimonie(&mut opt, &args),
+        Some(aXSequoiaParcimonieDaemonize) =>
+            parcimonie::cmd_parcimonie_daemonize(&mut opt, &args),
 
         Some(c) => Err(anyhow::anyhow!("Command {:?} is not implemented.", c)),
     };

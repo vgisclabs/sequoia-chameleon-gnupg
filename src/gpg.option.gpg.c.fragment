@@ -526,7 +526,7 @@
   ARGPARSE_group (309, N_("@Sequoia-specific extensions:\n")),
 
   ARGPARSE_s_n (oXSequoiaAutostartParcimonie, "x-sequoia-autostart-parcimonie", "automatically start daemon to update certs"),
-  ARGPARSE_c (aXSequoiaParcimonie, "x-sequoia-parcimonie", "@"),
+  ARGPARSE_c (aXSequoiaParcimonieDaemonize, "x-sequoia-parcimonie-daemonize", "@"),
   /* Our own extensions.  Do not strip them while updating!!! */
 
   ARGPARSE_end ()
