@@ -441,7 +441,6 @@ pub enum CmdOrOpt {
     oNoop,
 
     // Our own extensions.
-    oXSequoiaOnly,
     aXSequoiaParcimonie,
     oXSequoiaAutostartParcimonie,
     aXSequoiaParcimonieDaemonize,
