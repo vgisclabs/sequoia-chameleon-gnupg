@@ -6,6 +6,7 @@ use sequoia_openpgp as openpgp;
 use openpgp::{
     cert::{
         Cert,
+        raw::RawCertParser,
     },
     packet::prelude::*,
     types::*,
@@ -13,6 +14,7 @@ use openpgp::{
         Parse,
         PacketParser,
         PacketParserResult,
+        buffered_reader::{self, BufferedReader},
     },
 };
 
@@ -51,8 +53,11 @@ async fn real_cmd_import(config: &mut crate::Config<'_>, args: &[String])
 
     // Parse every cert from every file.
     for filename in filenames {
-        let mut ppr = match
-            PacketParser::from_reader(utils::open(config, &filename)?)
+        let mut saw_failures = false;
+
+        // XXX: Would be nice to mmap the file.
+        let reader = match utils::open(config, &filename)
+            .map(|f| buffered_reader::Generic::new(f, None))
         {
             Ok(c) => c,
             Err(e) => {
@@ -60,29 +65,41 @@ async fn real_cmd_import(config: &mut crate::Config<'_>, args: &[String])
                 continue;
             },
         };
-
-        let mut acc = Vec::new();
-        while let PacketParserResult::Some(pp) = ppr {
-            let (packet, next_ppr) = pp.next()?;
-            ppr = next_ppr;
-
-            if ! acc.is_empty() && packet.tag() == Tag::PublicKey {
-                s.count += 1;
-                let packets = std::mem::take(&mut acc);
-                match Cert::from_packets(packets.clone().into_iter()) {
-                    Ok(c) => do_import_cert(config, &mut s, c).await?,
-                    Err(e) => do_import_failed(config, &mut s, e, packets).await?,
-                }
-            }
-            acc.push(packet);
-        }
-        if ! acc.is_empty() {
+        let mut dup = buffered_reader::Dup::new(reader);
+        for cert in RawCertParser::from_reader(&mut dup)? {
             s.count += 1;
-            let packets = std::mem::take(&mut acc);
-            match Cert::from_packets(packets.clone().into_iter()) {
+
+            // Ignore corrupt and invalid certificates.
+            match cert.and_then(TryInto::try_into) {
                 Ok(c) => do_import_cert(config, &mut s, c).await?,
-                Err(e) => do_import_failed(config, &mut s, e, packets).await?,
+                Err(e) => {
+                    // XXX: This is awkward.  It'd be nice if we'd get
+                    // the vector of packets that failed to parse into
+                    // a cert here.
+                    saw_failures = true;
+                    do_import_failed(config, &mut s, e, vec![]).await?;
+                },
             }
+        }
+
+        if saw_failures {
+            // Try again, this time comb only for revocations.  This
+            // is not ideal, because we don't handle concatenated
+            // armored revocations this way.
+            let reader = Box::new(dup).into_inner()
+                .expect("it's the Dup reader");
+            let mut ppr = PacketParser::from_reader(reader)?;
+            let mut packets = vec![];
+            while let PacketParserResult::Some(pp) = ppr {
+                let (packet, next_ppr) = pp.next()?;
+                packets.push(packet);
+                ppr = next_ppr;
+            }
+            do_import_failed(
+                config, &mut s,
+                // Fake error that selects revocation handling.
+                openpgp::Error::MalformedCert("".into()).into(),
+                packets).await?;
         }
     }
 
