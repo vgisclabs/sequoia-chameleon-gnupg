@@ -41,6 +41,7 @@ mod gpg {
     mod version;
     mod trust_models;
     mod status_fd;
+    mod print_mds;
 }
 
 lazy_static::lazy_static! {
@@ -733,6 +734,20 @@ pub struct Diff<'a> {
 }
 
 impl Diff<'_> {
+    /// Canonicalizes the outputs with the given function.
+    pub fn canonicalize_with<F>(&mut self, mut fun: F)
+        -> Result<()>
+    where
+        F: FnMut(&mut Output) -> Result<()>,
+    {
+        fun(&mut self.oracle)?;
+        fun(&mut self.us)?;
+        if let Some(former_us) = self.former_us.as_mut() {
+            fun(former_us)?;
+        }
+        Ok(())
+    }
+
     /// Asserts that both implementations returned success.
     ///
     /// Panics otherwise.

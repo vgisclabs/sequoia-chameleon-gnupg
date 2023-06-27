@@ -2442,6 +2442,8 @@ fn real_main() -> anyhow::Result<()> {
         Some(aDeArmor) => commands::cmd_dearmor(&opt, &args),
         Some(aRecvKeys) => keyserver::cmd_receive_keys(&mut opt, &args),
         Some(aRefreshKeys) => keyserver::cmd_refresh_keys(&mut opt, &args),
+        Some(aPrintMD) => commands::print_md(&opt, &args),
+        Some(aPrintMDs) => commands::print_mds(&opt, &args),
         None => commands::cmd_implicit(&opt, &args),
 
         // Our own extensions.

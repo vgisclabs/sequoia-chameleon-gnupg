@@ -1,0 +1,129 @@
+{
+  "outputs": [
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--print-md\"",
+        "\"sha224\"",
+        "\"/EXPERIMENT/foo\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: keybox '/HOMEDIR/pubring.kbx' created\\n",
+      "stdout": "/EXPERIMENT/foo: 0808F64E 60D58979 FCB676C9 6EC93827 0DEA4244 5AEEFCD3\\n                     A4E6F8DB\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--print-md\"",
+        "\"sha224\"",
+        "\"/EXPERIMENT/foo\"",
+        "\"/EXPERIMENT/bar\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/EXPERIMENT/foo: 0808F64E 60D58979 FCB676C9 6EC93827 0DEA4244 5AEEFCD3\\n                     A4E6F8DB\\n/EXPERIMENT/bar: 07DAF010 DE7F7F0D 8D76A76E B8D1EB40 182C8D1E 7A3877A6\\n                     686C9BF0\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--with-colons\"",
+        "\"--print-md\"",
+        "\"sha224\"",
+        "\"/EXPERIMENT/foo\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/EXPERIMENT/foo:11:0808F64E60D58979FCB676C96EC938270DEA42445AEEFCD3A4E6F8DB:\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--with-colons\"",
+        "\"--print-md\"",
+        "\"sha224\"",
+        "\"/EXPERIMENT/foo\"",
+        "\"/EXPERIMENT/bar\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/EXPERIMENT/foo:11:0808F64E60D58979FCB676C96EC938270DEA42445AEEFCD3A4E6F8DB:\\n/EXPERIMENT/bar:11:07DAF010DE7F7F0D8D76A76EB8D1EB40182C8D1E7A3877A6686C9BF0:\\n",
+      "status": "exit status: 0",
+      "files": {}
+    }
+  ],
+  "former_us_outputs": [
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--print-md\"",
+        "\"sha224\"",
+        "\"/EXPERIMENT/foo\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/EXPERIMENT/foo: 0808F64E 60D58979 FCB676C9 6EC93827 0DEA4244 5AEEFCD3\\n                     A4E6F8DB\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--print-md\"",
+        "\"sha224\"",
+        "\"/EXPERIMENT/foo\"",
+        "\"/EXPERIMENT/bar\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/EXPERIMENT/foo: 0808F64E 60D58979 FCB676C9 6EC93827 0DEA4244 5AEEFCD3\\n                     A4E6F8DB\\n/EXPERIMENT/bar: 07DAF010 DE7F7F0D 8D76A76E B8D1EB40 182C8D1E 7A3877A6\\n                     686C9BF0\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--with-colons\"",
+        "\"--print-md\"",
+        "\"sha224\"",
+        "\"/EXPERIMENT/foo\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/EXPERIMENT/foo:11:0808F64E60D58979FCB676C96EC938270DEA42445AEEFCD3A4E6F8DB:\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--with-colons\"",
+        "\"--print-md\"",
+        "\"sha224\"",
+        "\"/EXPERIMENT/foo\"",
+        "\"/EXPERIMENT/bar\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/EXPERIMENT/foo:11:0808F64E60D58979FCB676C96EC938270DEA42445AEEFCD3A4E6F8DB:\\n/EXPERIMENT/bar:11:07DAF010DE7F7F0D8D76A76EB8D1EB40182C8D1E7A3877A6686C9BF0:\\n",
+      "status": "exit status: 0",
+      "files": {}
+    }
+  ],
+  "artifacts": {},
+  "dynamic_upper_bounds": [
+    [
+      0,
+      43
+    ],
+    [
+      0,
+      0
+    ],
+    [
+      0,
+      0
+    ],
+    [
+      0,
+      0
+    ]
+  ]
+}

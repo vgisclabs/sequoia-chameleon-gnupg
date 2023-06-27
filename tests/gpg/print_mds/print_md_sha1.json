@@ -1,0 +1,129 @@
+{
+  "outputs": [
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--print-md\"",
+        "\"sha1\"",
+        "\"/EXPERIMENT/foo\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: keybox '/HOMEDIR/pubring.kbx' created\\n",
+      "stdout": "/EXPERIMENT/foo: 0BEE C7B5 EA3F 0FDB C95D  0DD4 7F3C 5BC2 75DA 8A33\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--print-md\"",
+        "\"sha1\"",
+        "\"/EXPERIMENT/foo\"",
+        "\"/EXPERIMENT/bar\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/EXPERIMENT/foo: 0BEE C7B5 EA3F 0FDB C95D  0DD4 7F3C 5BC2 75DA 8A33\\n/EXPERIMENT/bar: 62CD B702 0FF9 20E5 AA64  2C3D 4066 950D D1F0 1F4D\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--with-colons\"",
+        "\"--print-md\"",
+        "\"sha1\"",
+        "\"/EXPERIMENT/foo\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/EXPERIMENT/foo:2:0BEEC7B5EA3F0FDBC95D0DD47F3C5BC275DA8A33:\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--with-colons\"",
+        "\"--print-md\"",
+        "\"sha1\"",
+        "\"/EXPERIMENT/foo\"",
+        "\"/EXPERIMENT/bar\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/EXPERIMENT/foo:2:0BEEC7B5EA3F0FDBC95D0DD47F3C5BC275DA8A33:\\n/EXPERIMENT/bar:2:62CDB7020FF920E5AA642C3D4066950DD1F01F4D:\\n",
+      "status": "exit status: 0",
+      "files": {}
+    }
+  ],
+  "former_us_outputs": [
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--print-md\"",
+        "\"sha1\"",
+        "\"/EXPERIMENT/foo\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/EXPERIMENT/foo: 0BEE C7B5 EA3F 0FDB C95D  0DD4 7F3C 5BC2 75DA 8A33\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--print-md\"",
+        "\"sha1\"",
+        "\"/EXPERIMENT/foo\"",
+        "\"/EXPERIMENT/bar\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/EXPERIMENT/foo: 0BEE C7B5 EA3F 0FDB C95D  0DD4 7F3C 5BC2 75DA 8A33\\n/EXPERIMENT/bar: 62CD B702 0FF9 20E5 AA64  2C3D 4066 950D D1F0 1F4D\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--with-colons\"",
+        "\"--print-md\"",
+        "\"sha1\"",
+        "\"/EXPERIMENT/foo\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/EXPERIMENT/foo:2:0BEEC7B5EA3F0FDBC95D0DD47F3C5BC275DA8A33:\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--with-colons\"",
+        "\"--print-md\"",
+        "\"sha1\"",
+        "\"/EXPERIMENT/foo\"",
+        "\"/EXPERIMENT/bar\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/EXPERIMENT/foo:2:0BEEC7B5EA3F0FDBC95D0DD47F3C5BC275DA8A33:\\n/EXPERIMENT/bar:2:62CDB7020FF920E5AA642C3D4066950DD1F01F4D:\\n",
+      "status": "exit status: 0",
+      "files": {}
+    }
+  ],
+  "artifacts": {},
+  "dynamic_upper_bounds": [
+    [
+      0,
+      43
+    ],
+    [
+      0,
+      0
+    ],
+    [
+      0,
+      0
+    ],
+    [
+      0,
+      0
+    ]
+  ]
+}

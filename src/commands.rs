@@ -503,3 +503,161 @@ pub fn cmd_dearmor(config: &crate::Config, args: &[String])
     std::io::copy(&mut source, &mut sink)?;
     Ok(())
 }
+
+/// Dispatches the --print-md command.
+pub fn print_md(config: &crate::Config, args: &[String]) -> Result<()>
+{
+    let (args, algo) = if args.is_empty() {
+        (args, None)
+    } else if &args[0] == "*" {
+        (&args[1..], None)
+    } else {
+        (&args[1..], Some(crate::argparse::utils::parse_digest(&args[0])?))
+    };
+    _print_mds(config, algo, args)
+}
+
+/// Dispatches the --print-mds command.
+pub fn print_mds(config: &crate::Config, args: &[String]) -> Result<()>
+{
+    _print_mds(config, None, args)
+}
+
+pub fn _print_mds(config: &crate::Config, algo: Option<HashAlgorithm>,
+                  args: &[String]) -> Result<()>
+{
+    // Break on long file names.
+    const INDENT_LIMIT: usize = 40;
+    const INDENT: &'static str =
+        "                                        ";
+    assert_eq!(INDENT.len(), INDENT_LIMIT);
+
+    let filename = args.get(0).cloned().unwrap_or_else(|| "-".into());
+    for f in std::iter::once(&filename).chain(args.iter().skip(1)) {
+        let mut source = utils::open(config, &f)?;
+
+        if let Some(algo) = algo {
+            let mut hash = algo.context()?;
+            std::io::copy(&mut source, &mut hash)?;
+            let mut digest = vec![0; hash.digest_size()];
+            hash.digest(&mut digest)?;
+
+            let mut offset = 0;
+            if f != "-" {
+                print!("{}:", f);
+                offset += f.chars().count() + 1;
+            } else {
+                if config.with_colons {
+                    print!(":");
+                }
+            }
+            if offset > INDENT_LIMIT {
+                println!();
+                offset = 0;
+            }
+
+
+            if config.with_colons {
+                println!("{}:{}:", u8::from(algo),
+                         openpgp::fmt::hex::encode(digest));
+            } else {
+                let indent = offset;
+
+                let (chunk_len, center_space) = match digest.len() {
+                    16 => (1, Some(8)),
+                    20 => (2, Some(5)),
+                    _ => (4, None),
+                };
+                for (i, chunk) in digest.chunks(chunk_len).enumerate() {
+                    if offset + chunk_len * 2 > 79 {
+                        print!("\n{}", &INDENT[..indent]);
+                        offset = indent;
+                    }
+
+                    if center_space.map(|at| i == at).unwrap_or(false) {
+                        print!(" ");
+                        offset += 1;
+                    }
+
+                    print!(" {}", openpgp::fmt::hex::encode(chunk));
+                    offset += 1 + chunk_len * 2;
+                }
+                println!();
+            }
+        } else {
+            // Sort the hash algorithms in a particular way.
+            use HashAlgorithm::{SHA224, SHA256};
+            let mut hashes = (0..SHA256.into()).into_iter()
+                .chain(std::iter::once(SHA224.into()))
+                .chain((SHA256.into()..SHA224.into()).into_iter())
+                .chain((u8::from(SHA224) + 1..0xFF).into_iter())
+                .map(HashAlgorithm::from)
+                .filter(|a| a.is_supported())
+                .map(|h| h.context())
+                .collect::<Result<Vec<_>>>()?;
+
+            let mut buf = vec![0; 4096];
+            loop {
+                let l = source.read(&mut buf)?;
+                if l == 0 {
+                    break;
+                }
+                hashes.iter_mut().for_each(|h| h.update(&buf[..l]));
+            }
+
+            for mut hash in hashes {
+                let algo = hash.algo();
+                let mut digest = vec![0; hash.digest_size()];
+                hash.digest(&mut digest)?;
+
+                let mut offset = 0;
+                if f != "-" {
+                    print!("{}:", f);
+                    offset += f.chars().count() + 1;
+                } else {
+                    if config.with_colons {
+                        print!(":");
+                    }
+                }
+
+                if offset > INDENT_LIMIT {
+                    println!();
+                    offset = 0;
+                }
+
+                if config.with_colons {
+                    println!("{}:{}:", u8::from(algo),
+                             openpgp::fmt::hex::encode(digest));
+                } else {
+                    print!("{:>6} =", babel::Fish(algo).to_string()
+                           .replace("RIPEMD160", "RMD160"));
+                    offset += 8;
+                    let indent = offset;
+
+                    let (chunk_len, center_space) = match digest.len() {
+                        16 => (1, Some(8)),
+                        20 => (2, Some(5)),
+                        _ => (4, None),
+                    };
+                    for (i, chunk) in digest.chunks(chunk_len).enumerate() {
+                        if offset + chunk_len * 2 > 79 {
+                            print!("\n{}", &INDENT[..indent]);
+                            offset = indent;
+                        }
+
+                        if center_space.map(|at| i == at).unwrap_or(false) {
+                            print!(" ");
+                            offset += 1;
+                        }
+
+                        print!(" {}", openpgp::fmt::hex::encode(chunk));
+                        offset += 1 + chunk_len * 2;
+                    }
+                    println!();
+                }
+            }
+        }
+    }
+
+    Ok(())
+}
