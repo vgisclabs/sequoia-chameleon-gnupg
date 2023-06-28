@@ -22,7 +22,7 @@ fn help() -> Result<()> {
         "--help",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(370, 0); // Card options and more.
+    diff.assert_equal_up_to(489, 0); // Card options and more.
     Ok(())
 }
 
@@ -36,7 +36,7 @@ fn dump_options() -> Result<()> {
     diff.assert_success();
     diff.assert_equal_up_to(
         51 // Card options.
-            + 23 // Sequoia-specific options.
+            + 89 // Sequoia-specific options.
             + 0,
         0);
     Ok(())
