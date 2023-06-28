@@ -60,6 +60,10 @@ fn print_md_star() -> Result<()> {
 
 fn print_md<A: Into<Option<&'static str>>>(mut e: Experiment, arg: A) -> Result<()>
 {
+    // Create the keyring stores.  Reduces the noise in the upcoming
+    // experiments.
+    e.invoke(&["--list-keys"])?.assert_success();
+
     let arg = arg.into();
     let foo = e.store("foo", "foo")?;
     let bar = e.store("bar", "bar")?;
@@ -96,6 +100,10 @@ fn print_md<A: Into<Option<&'static str>>>(mut e: Experiment, arg: A) -> Result<
 #[ntest::timeout(60000)]
 fn print_mds() -> Result<()> {
     let mut e = make_experiment!()?;
+
+    // Create the keyring stores.  Reduces the noise in the upcoming
+    // experiments.
+    e.invoke(&["--list-keys"])?.assert_success();
 
     let foo = e.store("foo", "foo")?;
     let bar = e.store("bar", "bar")?;
