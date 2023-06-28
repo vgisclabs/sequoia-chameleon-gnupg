@@ -2539,9 +2539,9 @@ fn print_error_chain(err: &anyhow::Error) {
 /// Prints the error and causes, if any.
 fn write_error_chain_into(sink: &mut dyn io::Write, err: &anyhow::Error)
                           -> Result<()> {
-    writeln!(sink, "           {}", err)?;
+    writeln!(sink, "gpg:   error: {}", err)?;
     for cause in err.chain().skip(1) {
-        writeln!(sink, "  because: {}", cause)?;
+        writeln!(sink, "gpg: because: {}", cause)?;
     }
     Ok(())
 }

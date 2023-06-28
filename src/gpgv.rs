@@ -358,8 +358,17 @@ fn main() {
 
 /// Prints the error and causes, if any.
 fn print_error_chain(err: &anyhow::Error) {
-    eprintln!("           {}", err);
-    err.chain().skip(1).for_each(|cause| eprintln!("  because: {}", cause));
+    let _ = write_error_chain_into(&mut io::stderr(), err);
+}
+
+/// Prints the error and causes, if any.
+fn write_error_chain_into(sink: &mut dyn io::Write, err: &anyhow::Error)
+                          -> Result<()> {
+    writeln!(sink, "gpgv:   error: {}", err)?;
+    for cause in err.chain().skip(1) {
+        writeln!(sink, "gpgv: because: {}", cause)?;
+    }
+    Ok(())
 }
 
 pub fn with_invocation_log<F>(_: F)
