@@ -719,11 +719,10 @@ impl<'store> Config<'store> {
 
     /// Returns a connection to the GnuPG agent.
     pub async fn connect_agent(&self) -> Result<ipc::gnupg::Agent> {
-        use agent::send_simple;
+        use agent::{connect, send_simple};
 
         let ctx = self.ipc()?;
-        ctx.start("gpg-agent")?;
-        let mut agent = ipc::gnupg::Agent::connect(&ctx).await?;
+        let mut agent = connect(ctx).await?;
 
         send_simple(&mut agent, "RESET").await?;
 

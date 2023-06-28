@@ -24,6 +24,7 @@ pub fn parse_command_line() {
 
 /// Enables tracing in all modules.
 pub fn enable_all() {
+    enable("ipc");
     enable("dirmngr");
     enable("keydb");
     enable("keyserver");
@@ -35,6 +36,7 @@ pub fn enable_all() {
 /// If the module is unknown, nothing happens.
 pub fn enable(module: &str) {
     match module {
+        "ipc" => crate::agent::trace(true),
         "dirmngr" => crate::dirmngr::trace(true),
         "keydb" => crate::keydb::trace(true),
         "keyserver" => crate::keyserver::trace(true),
@@ -50,6 +52,7 @@ pub fn enable(module: &str) {
 pub fn enabled_modules() -> Option<String> {
     let mut r = vec![];
 
+    if crate::agent::traced() { r.push("ipc"); }
     if crate::dirmngr::traced() { r.push("dirmngr"); }
     if crate::keydb::traced() { r.push("keydb"); }
     if crate::keyserver::traced() { r.push("keyserver"); }

@@ -38,6 +38,8 @@ use cert_store::LazyCert;
 
 use futures::stream::StreamExt;
 
+trace_module!(TRACE);
+
 /// Controls how gpg-agent inquires passwords.
 pub enum PinentryMode {
     /// Ask using pinentry.  This is the default.
@@ -83,16 +85,39 @@ impl std::str::FromStr for PinentryMode {
     }
 }
 
+pub async fn connect(ctx: ipc::gnupg::Context) -> Result<Agent> {
+    tracer!(TRACE, "connect");
+
+    async fn transaction(ctx: ipc::gnupg::Context) -> Result<Agent> {
+        t!("Starting daemon if not running");
+        ctx.start("gpg-agent")?;
+
+        t!("Connecting to daemon");
+        Ok(ipc::gnupg::Agent::connect(&ctx).await?)
+    }
+
+    transaction(ctx).await.map_err(|e| {
+        t!("failed: {}", e);
+        e
+    })
+}
+
 /// Returns a convenient Err value for use in the state machines
 /// below.
 async fn operation_failed<T>(agent: &mut Agent, message: &Option<String>)
                        -> Result<T>
 {
+    tracer!(TRACE, "operation_failed");
+
     if let Some(response) = agent.next().await {
+        t!("Got unexpected response {:?}", response);
         Err(ipc::gnupg::Error::ProtocolError(
             format!("Got unexpected response {:?}", response))
             .into())
     } else {
+        t!("Operation failed: {}",
+           message.as_ref().map(|e| e.as_str())
+           .unwrap_or_else(|| "Unknown reason"));
         Err(ipc::gnupg::Error::OperationFailed(
             message.as_ref().map(|e| e.to_string())
                 .unwrap_or_else(|| "Unknown reason".into()))
@@ -103,6 +128,9 @@ async fn operation_failed<T>(agent: &mut Agent, message: &Option<String>)
 /// Returns a convenient Err value for use in the state machines
 /// below.
 fn protocol_error<T>(response: &Response) -> Result<T> {
+    tracer!(TRACE, "operation_failed");
+
+    t!("Got unexpected response {:?}", response);
     Err(ipc::gnupg::Error::ProtocolError(
         format!("Got unexpected response {:?}", response))
         .into())
@@ -119,6 +147,9 @@ pub async fn send_simple<C>(agent: &mut ipc::gnupg::Agent, cmd: C)
 where
     C: AsRef<str>,
 {
+    tracer!(TRACE, "send_simple");
+
+    t!("> {}", cmd.as_ref());
     agent.send(cmd.as_ref())?;
     let mut data = Vec::new();
     while let Some(response) = agent.next().await {
@@ -139,6 +170,7 @@ where
         }
     }
 
+    t!("< {}", String::from_utf8_lossy(&data));
     Ok(data.into())
 }
 
