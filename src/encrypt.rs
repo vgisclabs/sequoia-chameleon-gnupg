@@ -14,6 +14,7 @@ use openpgp::{
         Key,
         skesk::SKESK4,
     },
+    parse::Parse,
     policy::Policy,
     serialize::{Serialize, stream::*},
     types::SignatureType,
@@ -116,7 +117,13 @@ fn do_encrypt(config: &crate::Config, args: &[String],
         let mut invalid_key_reason = InvalidKeyReason::Unspecified;
 
         // Get the candidates, and sort by descending validity.
-        let mut candidates = config.lookup_certs(&query)?;
+        let mut candidates = if recipient.from_file {
+            use std::borrow::Cow;
+            vec![(Validity::Fully,
+                  Cow::Owned(openpgp::Cert::from_file(&recipient.name)?.into()))]
+        } else {
+            config.lookup_certs(&query)?
+        };
         candidates.sort_by(|a, b| a.0.cmp(&b.0).reverse());
 
         for (validity, cert) in candidates {
