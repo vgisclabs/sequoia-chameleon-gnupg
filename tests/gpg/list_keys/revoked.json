@@ -111,6 +111,7 @@
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
+        "\"--batch\"",
         "\"--import\"",
         "\"/EXPERIMENT/cert\""
       ],
@@ -297,6 +298,7 @@
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
+        "\"--batch\"",
         "\"--import\"",
         "\"/EXPERIMENT/cert\""
       ],

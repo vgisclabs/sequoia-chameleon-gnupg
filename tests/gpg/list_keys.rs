@@ -380,6 +380,7 @@ fn test_key_cert_imported(cert: Cert, mut experiment: Experiment) -> Result<()>
 
     eprintln!("Importing TSK...");
     let diff = experiment.invoke(&[
+        "--batch",
         "--import",
         &experiment.store("cert", &cert.as_tsk().to_vec()?)?,
     ])?;
