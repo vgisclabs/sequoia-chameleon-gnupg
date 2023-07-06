@@ -11,14 +11,32 @@ pub fn parse_command_line() {
 
         if arg == "--debug" {
             if let Some(v) = args.get(i + 1) {
-                enable(v);
+                handle_command_line_flag(v);
             }
             continue;
         }
 
         if arg.starts_with("--debug=") {
-            enable(&arg["--debug=".len()..]);
+            handle_command_line_flag(&arg["--debug=".len()..]);
         }
+    }
+}
+
+/// Dispatches the flag given on the command line.
+fn handle_command_line_flag(f: &str) {
+    match f {
+        "help" => {
+            eprintln!("gpg: available debug flags:");
+            eprintln!("gpg:        all");
+            eprintln!("gpg:        dirmngr");
+            eprintln!("gpg:        ipc");
+            eprintln!("gpg:        keydb");
+            eprintln!("gpg:        keyserver");
+            eprintln!("gpg:        parcimonie");
+            std::process::exit(0);
+        },
+        "all" => enable_all(),
+        _ => enable(f),
     }
 }
 
@@ -41,7 +59,7 @@ pub fn enable(module: &str) {
         "keydb" => crate::keydb::trace(true),
         "keyserver" => crate::keyserver::trace(true),
         "parcimonie" => crate::parcimonie::trace(true),
-        _ => (),
+        _ => eprintln!("gpg: unknown debug flag '{}' ignored", module),
     }
 }
 
