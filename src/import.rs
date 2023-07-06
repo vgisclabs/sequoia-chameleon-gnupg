@@ -290,12 +290,12 @@ pub async fn do_import_cert(config: &mut crate::Config<'_>,
         let mut changed = false;
         let mut unchanged = false;
 
-        // XXX: allow importing encrypted keys
-        for subkey in key.keys().secret().unencrypted_secret() {
+        for subkey in key.keys().secret() {
             // See if we import a new key or subkey.
             let c = crate::agent::import(&mut agent,
                                          config.policy(),
-                                         &key, &subkey).await?;
+                                         &key, &subkey,
+                                         config.batch).await?;
 
             changed |= c;
             unchanged |= !c;

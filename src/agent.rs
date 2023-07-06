@@ -14,6 +14,7 @@ use openpgp::{
         Password,
         S2K,
         mem::Protected,
+        mpi::SecretKeyChecksum,
     },
     packet::{
         Key,
@@ -37,6 +38,10 @@ use sequoia_cert_store as cert_store;
 use cert_store::LazyCert;
 
 use futures::stream::StreamExt;
+
+use crate::{
+    babel,
+};
 
 trace_module!(TRACE);
 
@@ -357,7 +362,8 @@ pub async fn has_keys(agent: &mut Agent,
 pub async fn import(agent: &mut Agent,
                     policy: &dyn Policy,
                     cert: &Cert,
-                    key: &Key<SecretParts, UnspecifiedRole>)
+                    key: &Key<SecretParts, UnspecifiedRole>,
+                    unattended: bool)
                     -> Result<bool>
 {
     use ipc::sexp::*;
@@ -446,8 +452,57 @@ pub async fn import(agent: &mut Agent,
     // the MPIs.
     let mut checksum = 0u16;
     let protection = match key.secret() {
-        SecretKeyMaterial::Encrypted(_e) => {
-            unimplemented!()
+        SecretKeyMaterial::Encrypted(e) => {
+            let mut p =
+                vec![Sexp::String("protection".into())];
+            p.push(Sexp::String(match e.checksum() {
+                Some(SecretKeyChecksum::SHA1) => "sha1",
+                Some(SecretKeyChecksum::Sum16) => "sum",
+                None => "none", // XXX: does that happen?
+            }.into()));
+            p.push(Sexp::String(babel::Fish(e.algo()).to_string().as_str().into()));
+
+            let iv_len = e.algo().block_size().unwrap_or(0);
+            let iv = e.ciphertext().map(|c| &c[..iv_len.min(c.len())])
+                .unwrap_or(&[]);
+            p.push(Sexp::String(iv.into()));
+
+            #[allow(deprecated)]
+            match e.s2k() {
+                S2K::Iterated { hash, salt, hash_bytes, } => {
+                    p.push(Sexp::String("3".into()));
+                    p.push(Sexp::String(babel::Fish(*hash).to_string().as_str().into()));
+                    p.push(Sexp::String(salt[..].into()));
+                    p.push(Sexp::String(
+                        crate::utils::s2k_encode_iteration_count(*hash_bytes)
+                            .unwrap_or_default().to_string().as_str().into()));
+                },
+                S2K::Salted { hash, salt } => {
+                    p.push(Sexp::String("1".into()));
+                    p.push(Sexp::String(babel::Fish(*hash).to_string().as_str().into()));
+                    p.push(Sexp::String(salt[..].into()));
+                    p.push(Sexp::String("0".into()));
+                },
+                S2K::Simple { hash } => {
+                    p.push(Sexp::String("0".into()));
+                    p.push(Sexp::String(babel::Fish(*hash).to_string().as_str().into()));
+                    p.push(Sexp::String([][..].into()));
+                    p.push(Sexp::String("0".into()));
+                },
+                S2K::Private { .. } | S2K::Unknown { .. } | _ => {
+                    return Err(anyhow::anyhow!("Unsupported protection mode"));
+                },
+            }
+
+            if let Ok(c) = e.ciphertext() {
+                skey.push(Sexp::String("e".into()));
+                // We must omit the IV here.
+                skey.push(Sexp::String(c[iv_len.min(c.len())..].into()));
+            } else {
+                return Err(anyhow::anyhow!("Failed to parse ciphertext"));
+            }
+
+            Sexp::List(p)
         },
         SecretKeyMaterial::Unencrypted(u) => {
             u.map(|s| match s {
@@ -519,9 +574,11 @@ pub async fn import(agent: &mut Agent,
     let mut imported = false;
 
     // And send it!
-    agent.send(format!("IMPORT_KEY --timestamp={}",
+    agent.send(format!("IMPORT_KEY --timestamp={}{}",
                        chrono::DateTime::<chrono::Utc>::from(key.creation_time())
-                       .format("%Y%m%dT%H%M%S")))?;
+                       .format("%Y%m%dT%H%M%S"),
+                      if unattended { " --unattended" } else { "" },
+    ))?;
     while let Some(response) = agent.next().await {
         match response? {
             Response::Ok { .. }
@@ -538,10 +595,17 @@ pub async fn import(agent: &mut Agent,
                         // Then, handle the inquiry.
                         while let Some(r) = agent.next().await {
                             match r? {
+                                // May send CACHE_NONCE
+                                Response::Status { .. } =>
+                                    (), // Ignore.
                                 Response::Ok { .. } => {
                                     imported = true;
                                     break;
                                 },
+                                // May send PINENTRY_LAUNCHED when
+                                // importing locked keys.
+                                Response::Inquire { .. } =>
+                                    acknowledge_inquiry(agent).await?,
                                 Response::Error { code, message } => {
                                     match code {
                                         0x4008023 => // File exists.

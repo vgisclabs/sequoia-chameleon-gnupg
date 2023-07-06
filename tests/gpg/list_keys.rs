@@ -259,6 +259,25 @@ fn expired_subkey() -> Result<()> {
 
 #[test]
 #[ntest::timeout(60000)]
+fn locked() -> Result<()> {
+    let mut experiment = make_experiment!()?;
+    let cert = experiment.artifact(
+        "cert",
+        ||  CertBuilder::new()
+            .set_creation_time(Experiment::now())
+            .add_userid("Alice Lovelace <alice@lovelace.name>")
+            .add_signing_subkey()
+            .set_password(Some("password".into()))
+            .generate()
+            .map(|(cert, _rev)| cert),
+        |a, f| a.as_tsk().serialize(f),
+        |b| Cert::from_bytes(&b))?;
+
+    test_key(cert, experiment)
+}
+
+#[test]
+#[ntest::timeout(60000)]
 fn disabled() -> Result<()> {
     let mut experiment = make_experiment!()?;
     let cert = experiment.artifact(
