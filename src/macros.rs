@@ -19,7 +19,7 @@ macro_rules! trace {
     ( $TRACE:expr, $fmt:expr, $($pargs:expr),* ) => {
         if $TRACE.load(std::sync::atomic::Ordering::Relaxed) {
             let m = format!($fmt, $($pargs),*);
-            eprintln!("{}", m);
+            eprintln!("gpg: DBG: {}", m);
             crate::with_invocation_log(|w| Ok(writeln!(w, "{}", m)?));
         }
     };
