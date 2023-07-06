@@ -272,6 +272,47 @@ pub fn make_outfile_name<S: AsRef<str>>(name: S) -> Result<String> {
     }
 }
 
+/// Converts S2K::Iterated's `hash_bytes` into coded count
+/// representation.
+///
+/// # Errors
+///
+/// Fails with `Error::InvalidArgument` if `hash_bytes` cannot be
+/// encoded. See also [`S2K::nearest_hash_count()`].
+///
+// Notes: Copied from S2K::encode_count.
+#[allow(dead_code)]
+pub fn s2k_encode_iteration_count(hash_bytes: u32) -> Result<u8> {
+    use openpgp::Error;
+    // eeee.mmmm -> (16 + mmmm) * 2^(6 + e)
+
+    let msb = 32 - hash_bytes.leading_zeros();
+    let (mantissa_mask, tail_mask) = match msb {
+        0..=10 => {
+            return Err(Error::InvalidArgument(
+                format!("S2K: cannot encode iteration count of {}",
+                        hash_bytes)).into());
+        }
+        11..=32 => {
+            let m = 0b11_1100_0000 << (msb - 11);
+            let t = 1 << (msb - 11);
+
+            (m, t - 1)
+        }
+        _ => unreachable!()
+    };
+    let exp = if msb < 11 { 0 } else { msb - 11 };
+    let mantissa = (hash_bytes & mantissa_mask) >> (msb - 5);
+
+    if tail_mask & hash_bytes != 0 {
+        return Err(Error::InvalidArgument(
+            format!("S2K: cannot encode iteration count of {}",
+                    hash_bytes)).into());
+    }
+
+    Ok(mantissa as u8 | (exp as u8) << 4)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
