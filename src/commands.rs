@@ -551,16 +551,16 @@ pub fn _print_mds(config: &crate::Config, algo: Option<HashAlgorithm>,
                     print!(":");
                 }
             }
-            if offset > INDENT_LIMIT {
-                println!();
-                offset = 0;
-            }
-
 
             if config.with_colons {
                 println!("{}:{}:", u8::from(algo),
                          openpgp::fmt::hex::encode(digest));
             } else {
+                if offset > INDENT_LIMIT {
+                    println!();
+                    offset = 0;
+                }
+
                 let indent = offset;
 
                 let (chunk_len, center_space) = match digest.len() {
