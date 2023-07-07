@@ -1,0 +1,50 @@
+[asymmetric_algorithms]
+rsa1024 = "always"
+rsa2048 = "always"
+rsa3072 = "always"
+rsa4096 = "always"
+elgamal1024 = "always"
+elgamal2048 = "always"
+elgamal3072 = "always"
+elgamal4096 = "always"
+dsa1024 = "always"
+dsa2048 = "always"
+dsa3072 = "always"
+dsa4096 = "always"
+nistp256 = "always"
+nistp384 = "always"
+nistp521 = "always"
+brainpoolp256 = "always"
+brainpoolp512 = "always"
+
+[symmetric_algorithms]
+idea = "always"
+tripledes = "always"
+cast5 = "always"
+blowfish = "always"
+aes128 = "always"
+aes192 = "always"
+aes256 = "always"
+twofish = "always"
+camellia128 = "always"
+camellia192 = "always"
+camellia256 = "always"
+
+[aead_algorithms]
+eax = "always"
+ocb = "always"
+
+[hash_algorithms]
+md5 = "never" # Null policy, but MD5 is a step too far.
+sha1 = "always"
+ripemd160 = "always"
+sha256 = "always"
+sha384 = "always"
+sha512 = "always"
+sha224 = "always"
+
+[packets]
+sed = "always"
+seip = "always"
+signature.v3 = "always"
+signature.v4 = "always"

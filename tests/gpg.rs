@@ -200,7 +200,9 @@ impl Context {
         let mut c = Command::new(&executable[0]);
         c.env("LC_ALL", "C");
         c.env("TZ", "Africa/Nairobi"); // EAT, no DST.
-        c.env("SEQUOIA_CRYPTO_POLICY", ""); // Disable policy.
+        c.env("SEQUOIA_CRYPTO_POLICY", // Use a null policy.
+              format!("{}/tests/null-policy.toml",
+                      env!("CARGO_MANIFEST_DIR")));
         let workdir = tempfile::TempDir::new()?;
         c.current_dir(workdir.path());
         for arg in &executable[1..] {
