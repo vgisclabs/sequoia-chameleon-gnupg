@@ -1,0 +1,447 @@
+{
+  "outputs": [
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--import\"",
+        "\"/EXPERIMENT/cert\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: keybox '/HOMEDIR/pubring.kbx' created\\ngpg: /HOMEDIR/trustdb.gpg: trustdb created\\ngpg: key 34B7D10BC108E83A: public key \"Test Key Demonstrating Revoker Trouble (DO NOT USE) <test@example.net>\" imported\\ngpg: Total number processed: 1\\ngpg:               imported: 1\\n",
+      "stdout": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n--------------------\\npub   rsa1024 2010-05-07 [SC] [expired: 2010-05-14]\\n      8E854AAC5A2BAB8E83DC3D4434B7D10BC108E83A\\nuid           [ expired] Test Key Demonstrating Revoker Trouble (DO NOT USE) <test@example.net>\\n\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:e:1024:1:34B7D10BC108E83A:1273210953:1273815753::-:::sc::::::::0:\\nrvk:::1::::::0EE5BE979282D80B9F7540F1CCD2ED94D21739E9:80:\\nfpr:::::::::8E854AAC5A2BAB8E83DC3D4434B7D10BC108E83A:\\nuid:e::::1273210953::628C39B0018C3CAD88B9E1A73AC7C15FADA3B13C::Test Key Demonstrating Revoker Trouble (DO NOT USE) <test@example.net>::::::::::0:\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--fingerprint\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n--------------------\\npub   rsa1024 2010-05-07 [SC] [expired: 2010-05-14]\\n      8E85 4AAC 5A2B AB8E 83DC  3D44 34B7 D10B C108 E83A\\nuid           [ expired] Test Key Demonstrating Revoker Trouble (DO NOT USE) <test@example.net>\\n\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--fingerprint\"",
+        "\"--fingerprint\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n--------------------\\npub   rsa1024 2010-05-07 [SC] [expired: 2010-05-14]\\n      8E85 4AAC 5A2B AB8E 83DC  3D44 34B7 D10B C108 E83A\\nuid           [ expired] Test Key Demonstrating Revoker Trouble (DO NOT USE) <test@example.net>\\n\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--fingerprint\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:e:1024:1:34B7D10BC108E83A:1273210953:1273815753::-:::sc::::::::0:\\nrvk:::1::::::0EE5BE979282D80B9F7540F1CCD2ED94D21739E9:80:\\nfpr:::::::::8E854AAC5A2BAB8E83DC3D4434B7D10BC108E83A:\\nuid:e::::1273210953::628C39B0018C3CAD88B9E1A73AC7C15FADA3B13C::Test Key Demonstrating Revoker Trouble (DO NOT USE) <test@example.net>::::::::::0:\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-secret\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n--------------------\\npub   rsa1024 2010-05-07 [SC] [expired: 2010-05-14]\\n      8E854AAC5A2BAB8E83DC3D4434B7D10BC108E83A\\nuid           [ expired] Test Key Demonstrating Revoker Trouble (DO NOT USE) <test@example.net>\\n\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-secret\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:e:1024:1:34B7D10BC108E83A:1273210953:1273815753::-:::sc::::::::0:\\nrvk:::1::::::0EE5BE979282D80B9F7540F1CCD2ED94D21739E9:80:\\nfpr:::::::::8E854AAC5A2BAB8E83DC3D4434B7D10BC108E83A:\\nuid:e::::1273210953::628C39B0018C3CAD88B9E1A73AC7C15FADA3B13C::Test Key Demonstrating Revoker Trouble (DO NOT USE) <test@example.net>::::::::::0:\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-secret-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-secret-keys\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--batch\"",
+        "\"--import\"",
+        "\"/EXPERIMENT/cert\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: key 34B7D10BC108E83A: \"Test Key Demonstrating Revoker Trouble (DO NOT USE) <test@example.net>\" not changed\\ngpg: Total number processed: 1\\ngpg:              unchanged: 1\\n",
+      "stdout": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n--------------------\\npub   rsa1024 2010-05-07 [SC] [expired: 2010-05-14]\\n      8E854AAC5A2BAB8E83DC3D4434B7D10BC108E83A\\nuid           [ expired] Test Key Demonstrating Revoker Trouble (DO NOT USE) <test@example.net>\\n\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:e:1024:1:34B7D10BC108E83A:1273210953:1273815753::-:::sc::::::::0:\\nrvk:::1::::::0EE5BE979282D80B9F7540F1CCD2ED94D21739E9:80:\\nfpr:::::::::8E854AAC5A2BAB8E83DC3D4434B7D10BC108E83A:\\nuid:e::::1273210953::628C39B0018C3CAD88B9E1A73AC7C15FADA3B13C::Test Key Demonstrating Revoker Trouble (DO NOT USE) <test@example.net>::::::::::0:\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-secret\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n--------------------\\npub   rsa1024 2010-05-07 [SC] [expired: 2010-05-14]\\n      8E854AAC5A2BAB8E83DC3D4434B7D10BC108E83A\\nuid           [ expired] Test Key Demonstrating Revoker Trouble (DO NOT USE) <test@example.net>\\n\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-secret\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:e:1024:1:34B7D10BC108E83A:1273210953:1273815753::-:::sc::::::::0:\\nrvk:::1::::::0EE5BE979282D80B9F7540F1CCD2ED94D21739E9:80:\\nfpr:::::::::8E854AAC5A2BAB8E83DC3D4434B7D10BC108E83A:\\nuid:e::::1273210953::628C39B0018C3CAD88B9E1A73AC7C15FADA3B13C::Test Key Demonstrating Revoker Trouble (DO NOT USE) <test@example.net>::::::::::0:\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-secret-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-secret-keys\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "status": "exit status: 0",
+      "files": {}
+    }
+  ],
+  "former_us_outputs": [
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--import\"",
+        "\"/EXPERIMENT/cert\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: key 34B7D10BC108E83A: public key \"Test Key Demonstrating Revoker Trouble (DO NOT USE) <test@example.net>\" imported\\ngpg: Total number processed: 1\\ngpg:               imported: 1\\n",
+      "stdout": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.cert.d\\n-----------------------\\npub   rsa1024 2010-05-07 [SC] [expired: 2010-05-14]\\n      8E854AAC5A2BAB8E83DC3D4434B7D10BC108E83A\\nuid           [ expired] Test Key Demonstrating Revoker Trouble (DO NOT USE) <test@example.net>\\n\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:e:1024:1:34B7D10BC108E83A:1273210953:1273815753::-:::sc::::::::0:\\nrvk:::1::::::0EE5BE979282D80B9F7540F1CCD2ED94D21739E9:80:\\nfpr:::::::::8E854AAC5A2BAB8E83DC3D4434B7D10BC108E83A:\\nuid:e::::1273210953::628C39B0018C3CAD88B9E1A73AC7C15FADA3B13C::Test Key Demonstrating Revoker Trouble (DO NOT USE) <test@example.net>::::::::::0:\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--fingerprint\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.cert.d\\n-----------------------\\npub   rsa1024 2010-05-07 [SC] [expired: 2010-05-14]\\n      8E85 4AAC 5A2B AB8E 83DC  3D44 34B7 D10B C108 E83A\\nuid           [ expired] Test Key Demonstrating Revoker Trouble (DO NOT USE) <test@example.net>\\n\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--fingerprint\"",
+        "\"--fingerprint\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.cert.d\\n-----------------------\\npub   rsa1024 2010-05-07 [SC] [expired: 2010-05-14]\\n      8E85 4AAC 5A2B AB8E 83DC  3D44 34B7 D10B C108 E83A\\nuid           [ expired] Test Key Demonstrating Revoker Trouble (DO NOT USE) <test@example.net>\\n\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--fingerprint\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:e:1024:1:34B7D10BC108E83A:1273210953:1273815753::-:::sc::::::::0:\\nrvk:::1::::::0EE5BE979282D80B9F7540F1CCD2ED94D21739E9:80:\\nfpr:::::::::8E854AAC5A2BAB8E83DC3D4434B7D10BC108E83A:\\nuid:e::::1273210953::628C39B0018C3CAD88B9E1A73AC7C15FADA3B13C::Test Key Demonstrating Revoker Trouble (DO NOT USE) <test@example.net>::::::::::0:\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-secret\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.cert.d\\n-----------------------\\npub   rsa1024 2010-05-07 [SC] [expired: 2010-05-14]\\n      8E854AAC5A2BAB8E83DC3D4434B7D10BC108E83A\\nuid           [ expired] Test Key Demonstrating Revoker Trouble (DO NOT USE) <test@example.net>\\n\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-secret\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:e:1024:1:34B7D10BC108E83A:1273210953:1273815753::-:::sc::::::::0:\\nrvk:::1::::::0EE5BE979282D80B9F7540F1CCD2ED94D21739E9:80:\\nfpr:::::::::8E854AAC5A2BAB8E83DC3D4434B7D10BC108E83A:\\nuid:e::::1273210953::628C39B0018C3CAD88B9E1A73AC7C15FADA3B13C::Test Key Demonstrating Revoker Trouble (DO NOT USE) <test@example.net>::::::::::0:\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-secret-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-secret-keys\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--batch\"",
+        "\"--import\"",
+        "\"/EXPERIMENT/cert\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: key 34B7D10BC108E83A: \"Test Key Demonstrating Revoker Trouble (DO NOT USE) <test@example.net>\" not changed\\ngpg: Total number processed: 1\\ngpg:              unchanged: 1\\n",
+      "stdout": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.cert.d\\n-----------------------\\npub   rsa1024 2010-05-07 [SC] [expired: 2010-05-14]\\n      8E854AAC5A2BAB8E83DC3D4434B7D10BC108E83A\\nuid           [ expired] Test Key Demonstrating Revoker Trouble (DO NOT USE) <test@example.net>\\n\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:e:1024:1:34B7D10BC108E83A:1273210953:1273815753::-:::sc::::::::0:\\nrvk:::1::::::0EE5BE979282D80B9F7540F1CCD2ED94D21739E9:80:\\nfpr:::::::::8E854AAC5A2BAB8E83DC3D4434B7D10BC108E83A:\\nuid:e::::1273210953::628C39B0018C3CAD88B9E1A73AC7C15FADA3B13C::Test Key Demonstrating Revoker Trouble (DO NOT USE) <test@example.net>::::::::::0:\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-secret\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.cert.d\\n-----------------------\\npub   rsa1024 2010-05-07 [SC] [expired: 2010-05-14]\\n      8E854AAC5A2BAB8E83DC3D4434B7D10BC108E83A\\nuid           [ expired] Test Key Demonstrating Revoker Trouble (DO NOT USE) <test@example.net>\\n\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-secret\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:e:1024:1:34B7D10BC108E83A:1273210953:1273815753::-:::sc::::::::0:\\nrvk:::1::::::0EE5BE979282D80B9F7540F1CCD2ED94D21739E9:80:\\nfpr:::::::::8E854AAC5A2BAB8E83DC3D4434B7D10BC108E83A:\\nuid:e::::1273210953::628C39B0018C3CAD88B9E1A73AC7C15FADA3B13C::Test Key Demonstrating Revoker Trouble (DO NOT USE) <test@example.net>::::::::::0:\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-secret-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-secret-keys\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "status": "exit status: 0",
+      "files": {}
+    }
+  ],
+  "artifacts": {},
+  "dynamic_upper_bounds": [
+    [
+      0,
+      86
+    ],
+    [
+      9,
+      0
+    ],
+    [
+      0,
+      0
+    ],
+    [
+      9,
+      0
+    ],
+    [
+      9,
+      0
+    ],
+    [
+      0,
+      0
+    ],
+    [
+      9,
+      0
+    ],
+    [
+      0,
+      0
+    ],
+    [
+      0,
+      0
+    ],
+    [
+      0,
+      0
+    ],
+    [
+      0,
+      0
+    ],
+    [
+      9,
+      0
+    ],
+    [
+      0,
+      0
+    ],
+    [
+      9,
+      0
+    ],
+    [
+      0,
+      0
+    ],
+    [
+      0,
+      0
+    ],
+    [
+      0,
+      0
+    ]
+  ]
+}

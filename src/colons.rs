@@ -70,6 +70,14 @@ pub enum Record {
         userid: UserID,
     },
 
+    /// rvk: Revocation key
+    RevocationKey {
+        pk_algo: PublicKeyAlgorithm,
+        revoker: Fingerprint,
+        class: u8,
+        sensitive: bool,
+    },
+
     TrustDBInformation {
         old: bool,
         changed_model: bool,
@@ -311,6 +319,21 @@ impl Record {
                     writeln!(w, "uid           {} {}",
                              BoxedValidity(*validity),
                              String::from_utf8_lossy(userid.value()))?;
+                }
+            },
+
+            RevocationKey {
+                pk_algo,
+                revoker,
+                class,
+                sensitive,
+            } => {
+                if mr {
+                    writeln!(w, "rvk:::{}::::::{:X}:{:02x}{}:",
+                             u8::from(*pk_algo),
+                             revoker,
+                             class,
+                             if *sensitive { "s" } else { "" })?;
                 }
             },
 

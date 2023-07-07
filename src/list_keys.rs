@@ -201,6 +201,16 @@ where
             compliance: cert.primary_key().compliance(config),
         }.emit(config, &mut sink)?;
 
+        for r in cert.revocation_keys(config.policy()) {
+            let (algo, fp) = r.revoker();
+            Record::RevocationKey {
+                pk_algo: algo,
+                revoker: fp.clone(),
+                class: r.class(),
+                sensitive: r.sensitive(),
+            }.emit(config, &mut sink)?;
+        }
+
         Record::Fingerprint(cert_fp)
             .emit(config, &mut sink)?;
         if config.with_keygrip
