@@ -39,7 +39,7 @@ impl DeVSProducer {
             RSA { n, .. } => {
                 let l = n.bits();
                 if (l == 2048 || l == 3072 || l == 4096)
-                    || l >= self.min_rsa_bits
+                    && l >= self.min_rsa_bits
                 {
                     Ok(())
                 } else {
