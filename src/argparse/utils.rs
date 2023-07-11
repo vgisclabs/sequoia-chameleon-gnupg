@@ -101,7 +101,7 @@ pub fn parse_expiration(s: &str) -> Result<Option<time::Duration>> {
             // "yyyymmddThhmmss[Z]" delimited by white space, nul, a
             // colon or a comma.
             if let Ok(dt) = chrono::NaiveDateTime::parse_from_str(
-                &s[..15], "%Y%m%dT%H%M%S")
+                &s[..15.min(s.len())], "%Y%m%dT%H%M%S")
             {
                 let dtu = chrono::DateTime::from_utc(dt, chrono::Utc);
                 if dtu > now {
@@ -125,7 +125,7 @@ pub fn parse_expiration(s: &str) -> Result<Option<time::Duration>> {
                 if last_is_digit {
                     return Ok(Some(time::Duration::new(s.parse()?, 0)));
                 } else {
-                    let multiplier = match s.chars().last().unwrap()
+                    let days = match s.chars().last().unwrap()
                         .to_ascii_lowercase()
                     {
                         'd' => 1,
@@ -135,7 +135,7 @@ pub fn parse_expiration(s: &str) -> Result<Option<time::Duration>> {
                         _ => unreachable!("checked above"),
                     };
                     return Ok(Some(time::Duration::new(
-                        s[..s.len()-1].parse::<u64>()? * multiplier, 0)));
+                        s[..s.len()-1].parse::<u64>()? * days * 24 * 60 * 60, 0)));
                 }
             }
 
@@ -146,4 +146,36 @@ pub fn parse_expiration(s: &str) -> Result<Option<time::Duration>> {
 
 pub fn mailbox_from_userid(s: &str) -> Result<Option<String>> {
     openpgp::packet::UserID::from(s).email()
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn parse_expiration() {
+        use std::time::Duration;
+        use super::parse_expiration as pe;
+        assert_eq!(pe("").unwrap(), None);
+        assert_eq!(pe("0").unwrap(), None);
+        assert_eq!(pe("none").unwrap(), None);
+        assert_eq!(pe("never").unwrap(), None);
+        assert_eq!(pe("-").unwrap(), None);
+        assert_eq!(pe("1").unwrap().unwrap(),
+                   Duration::new(1, 0));
+        assert_eq!(pe("1d").unwrap().unwrap(),
+                   Duration::new(1 * 24 * 60 * 60 , 0));
+        assert_eq!(pe("1D").unwrap().unwrap(),
+                   Duration::new(1 * 24 * 60 * 60, 0));
+        assert_eq!(pe("1w").unwrap().unwrap(),
+                   Duration::new(7 * 24 * 60 * 60 , 0));
+        assert_eq!(pe("1W").unwrap().unwrap(),
+                   Duration::new(7 * 24 * 60 * 60, 0));
+        assert_eq!(pe("1m").unwrap().unwrap(),
+                   Duration::new(30 * 24 * 60 * 60 , 0));
+        assert_eq!(pe("1M").unwrap().unwrap(),
+                   Duration::new(30 * 24 * 60 * 60, 0));
+        assert_eq!(pe("1y").unwrap().unwrap(),
+                   Duration::new(365 * 24 * 60 * 60 , 0));
+        assert_eq!(pe("1Y").unwrap().unwrap(),
+                   Duration::new(365 * 24 * 60 * 60, 0));
+    }
 }
