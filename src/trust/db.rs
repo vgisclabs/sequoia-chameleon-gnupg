@@ -56,20 +56,7 @@ pub fn cmd_import_ownertrust(config: &mut crate::Config, args: &[String])
     let filename = args.get(0).cloned().unwrap_or_else(|| "-".into());
     let mut source = crate::utils::open(config, &filename)?;
     config.trustdb.import_ownertrust(config, &mut source)?;
-
-    // Write the owner-trusts to our DB.
-    // XXX: Currently, this is a plain text file.
-    let overlay = config.keydb.get_certd_overlay()?;
-    if ! overlay.path().exists() {
-        // Importing ownertrust should work before the overlay has
-        // been created.
-        std::fs::create_dir(overlay.path())?;
-    }
-    let ownertrust_overlay =
-        overlay.path().join("_sequoia_gpg_chameleon_ownertrust");
-    config.trustdb.export_ownertrust(
-        &mut std::fs::File::create(ownertrust_overlay)?)?;
-
+    config.trustdb.commit_overlay(config.keydb())?;
     Ok(())
 }
 
@@ -234,6 +221,26 @@ impl TrustDB {
                 None
             })
             .collect()
+    }
+
+    /// Writes the in-memory database into our overlay.
+    pub fn commit_overlay(&self, keydb: &crate::keydb::KeyDB) -> Result<()> {
+        // Write the owner-trusts to our DB.
+        // XXX: Currently, this is a plain text file.
+        let overlay = keydb.get_certd_overlay()?;
+        if ! overlay.path().exists() {
+            // Importing ownertrust should work before the overlay has
+            // been created.
+            std::fs::create_dir(overlay.path())?;
+        }
+
+        let path =
+            overlay.path().join("_sequoia_gpg_chameleon_ownertrust");
+        let mut tmp = tempfile::NamedTempFile::new_in(overlay.path())?;
+        self.export_ownertrust(&mut tmp)?;
+        tmp.persist(path)?;
+
+        Ok(())
     }
 }
 
