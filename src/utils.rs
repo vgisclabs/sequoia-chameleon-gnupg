@@ -30,7 +30,7 @@ pub fn open(control: &dyn common::Common, name: &str)
         && special_filename_fd(name).is_some()
     {
         let fd = special_filename_fd(name).expect("checked above");
-        source_from_fd(fd)
+        Ok(Box::new(source_from_fd(fd)?))
     } else {
         Ok(Box::new(fs::File::open(name)?))
     }
@@ -78,6 +78,7 @@ impl io::Read for MultiReader {
                 {
                     let fd = special_filename_fd(&name).expect("checked above");
                     source_from_fd(fd)
+                        .map(|f| Box::new(f))
                         .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?
                 } else {
                     Box::new(fs::File::open(name)?)
@@ -138,15 +139,15 @@ pub fn sink_from_fd(fd: i64) -> Result<Box<dyn io::Write + Send + Sync>> {
 }
 
 /// Creates an io::Read from the given file descriptor.
-pub fn source_from_fd(fd: i64) -> Result<Box<dyn io::Read + Send + Sync>> {
+pub fn source_from_fd(fd: i64) -> Result<fs::File> {
     platform! {
         unix => {
             use std::os::unix::io::FromRawFd;
             let fd = fd.try_into().context(
                 format!("Not a valid file descriptor: {}", fd))?;
-            Ok(Box::new(unsafe {
+            Ok(unsafe {
                 fs::File::from_raw_fd(fd)
-            }))
+            })
         },
         windows => {
             unimplemented!()

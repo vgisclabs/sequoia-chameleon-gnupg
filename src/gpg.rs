@@ -3,7 +3,7 @@ use std::{
     collections::BTreeMap,
     fmt,
     fs,
-    io::{self, Write},
+    io::{self, Read, Write},
     path::{Path, PathBuf},
     time,
 };
@@ -1355,7 +1355,7 @@ fn real_main() -> anyhow::Result<()> {
     let mut eyes_only = false;
     let mut s2k_digest: Option<HashAlgorithm> = None;
     let mut s2k_cipher: Option<SymmetricAlgorithm> = None;
-    let mut pwfd: Option<Box<dyn io::Read>> = None;
+    let mut pwfd: Option<fs::File> = None;
 
     // First pass: check special options.
     for rarg in parser.parse_command_line().quietly() {
@@ -2105,7 +2105,7 @@ fn real_main() -> anyhow::Result<()> {
                 pwfd = Some(utils::source_from_fd(value.as_int().unwrap())?);
             },
 	    oPassphraseFile => {
-                pwfd = Some(Box::new(fs::File::open(value.as_str().unwrap())?));
+                pwfd = Some(fs::File::open(value.as_str().unwrap())?);
             },
 	    oPassphraseRepeat => {
                 opt.passphrase_repeat = value.as_int().unwrap();
@@ -2389,8 +2389,34 @@ fn real_main() -> anyhow::Result<()> {
     if let Some(mut pwfd) = pwfd {
         // Read the passphrase now.
         let mut password = Vec::new();
-        pwfd.read_to_end(&mut password)?;
+
+        // We do this very carefully, one byte at a time, to support
+        // the time-honored tradition of stuffing your password in
+        // front of the data stream read from stdin.
+        let mut buf = [0; 1];
+        loop {
+            match pwfd.read_exact(&mut buf) {
+                Ok(_) => if buf[0] == '\n' as u8 {
+                    break;
+                } else {
+                    password.push(buf[0]);
+                },
+                Err(e) => if e.kind() == io::ErrorKind::UnexpectedEof {
+                    break;
+                } else {
+                    // Securely erase what we read so far.
+                    let _ = Password::from(password);
+                    return Err(e.into());
+                },
+            }
+        }
         opt.static_passprase = Some(password.into()).into();
+
+        // Explicitly leak the File here by turning it into a file
+        // descriptor to avoid closing the stream.  We may still want
+        // to read data from this stream later.
+        use std::os::unix::io::IntoRawFd;
+        pwfd.into_raw_fd();
     }
 
     // Read dirmngr's configuration.  We honor some of the options
