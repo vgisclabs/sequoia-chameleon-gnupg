@@ -469,10 +469,20 @@ impl<'a, 'store> DHelper<'a, 'store> {
             };
 
             // And just try to decrypt it using the agent.
-            let keypair = KeyPair::new(&ctx, &key)?
+            let mut pair = KeyPair::new(&ctx, &key)?
                 .with_cert(&vcert);
+
+            // See if we have a static password to loop back to the
+            // agent.
+            if let (crate::agent::PinentryMode::Loopback, Some(p)) =
+                (&self.config.pinentry_mode,
+                 self.config.static_passphrase.borrow().as_ref())
+            {
+                pair = pair.with_password(p.clone());
+            }
+
             if let Ok(maybe_fp) = self.try_decrypt(
-                &mut agent, &cert, pkesk, sym_algo, keypair, &mut decrypt)
+                &mut agent, &cert, pkesk, sym_algo, pair, &mut decrypt)
                 .await
             {
                 // Success!
@@ -530,7 +540,7 @@ impl<'a, 'store> DHelper<'a, 'store> {
                                 None
                             },
                             "PASSPHRASE" =>
-                                self.config.static_passphrase.take()
+                                self.config.static_passphrase.borrow().as_ref()
                                 .map(|encrypted| encrypted.map(
                                     |decrypted| decrypted.clone())),
                             _ => None,

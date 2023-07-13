@@ -557,7 +557,7 @@ pub struct Config<'store> {
     skip_hidden_recipients: bool,
     skip_verify: bool,
     special_filenames: bool,
-    static_passphrase: std::cell::Cell<Option<Password>>,
+    static_passphrase: std::cell::RefCell<Option<Password>>,
     textmode: usize,
     throw_keyids: bool,
     tofu_default_policy: trust::TofuPolicy,
@@ -850,8 +850,17 @@ impl<'store> Config<'store> {
         agent::has_key(&mut agent, subkey).await?;
 
         let ctx = self.ipc()?;
-        Ok(Box::new(ipc::gnupg::KeyPair::new(&ctx, subkey)?
-                    .with_cert(vcert)))
+        let mut pair = ipc::gnupg::KeyPair::new(&ctx, subkey)?
+            .with_cert(vcert);
+
+        // See if we have a static password to loop back to the agent.
+        if let (agent::PinentryMode::Loopback, Some(p)) =
+            (&self.pinentry_mode, self.static_passphrase.borrow().as_ref())
+        {
+            pair = pair.with_password(p.clone());
+        }
+
+        Ok(Box::new(pair))
     }
 
     /// Returns the local users used e.g. in signing operations.

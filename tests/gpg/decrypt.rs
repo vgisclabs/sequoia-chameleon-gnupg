@@ -141,6 +141,49 @@ fn simple() -> Result<()> {
 
 #[test]
 #[ntest::timeout(600000)]
+fn locked_loopback() -> Result<()> {
+    let mut experiment = make_experiment!()?;
+    let cert = experiment.artifact(
+        "cert",
+        || CertBuilder::new()
+            .set_creation_time(Experiment::now())
+            .add_userid("Alice Lovelace <alice@lovelace.name>")
+            .add_transport_encryption_subkey()
+            .set_password(Some("streng geheim".into()))
+            .generate()
+            .map(|(cert, _rev)| cert),
+        |a, f| a.as_tsk().serialize(f),
+        |b| Cert::from_bytes(&b))?;
+
+    let ciphertext = encrypt_for(&[&cert])?;
+
+    eprintln!("Importing key...");
+    let diff = experiment.invoke(&[
+        "--import",
+        "--batch",
+        &experiment.store("key", &cert.as_tsk().to_vec()?)?,
+    ])?;
+    diff.assert_success();
+
+    let diff = experiment.invoke(&[
+        "--pinentry-mode=loopback",
+        "--passphrase", "streng geheim",
+        "--decrypt",
+        "--output", "decrypted-plaintext",
+        &experiment.store("ciphertext", &ciphertext)?,
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(0, 1, 140);
+    diff.with_working_dir(|p| {
+        assert_eq!(p.get("decrypted-plaintext").expect("no output"), PLAINTEXT);
+        Ok(())
+    })?;
+
+    Ok(())
+}
+
+#[test]
+#[ntest::timeout(600000)]
 fn general_purpose_cv25519() -> Result<()> {
     general_purpose(CipherSuite::Cv25519)
 }

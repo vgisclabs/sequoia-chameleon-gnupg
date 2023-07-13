@@ -184,6 +184,9 @@ pub struct Context {
 }
 
 impl Context {
+    const GPG_AGENT_CONF: &str = "allow-loopback-pinentry\n\
+                                  ";
+
     /// Returns a context for the reference GnuPG implementation.
     pub fn gnupg() -> Result<Self> {
         Context::new(GPG.clone(), GPGV.clone())
@@ -197,11 +200,13 @@ impl Context {
 
     /// Returns a custom context for the given GnuPG-like executable.
     pub fn new(gpg: Vec<String>, gpgv: Vec<String>) -> Result<Self> {
-        Ok(Context {
+        let ctx = Context {
             gpg,
             gpgv,
             home: tempfile::tempdir()?,
-        })
+        };
+        ctx.store("gpg-agent.conf", Self::GPG_AGENT_CONF)?;
+        Ok(ctx)
     }
 
     /// Stores the given data in the home directory, and returns the
@@ -806,6 +811,8 @@ impl Experiment {
     /// Writes a reproducer to `sink`.
     pub fn reproducer(&self, mut sink: &mut dyn io::Write) -> Result<()> {
         writeln!(&mut sink, "export GNUPGHOME=$(mktemp -d)")?;
+        writeln!(&mut sink, "echo -e {:?} > $GNUPGHOME/gpg-agent.conf",
+                 Context::GPG_AGENT_CONF)?;
         writeln!(&mut sink, "mkdir -p {}", self.wd.path().display())?;
         for a in self.log.borrow().iter() {
             writeln!(&mut sink)?;
