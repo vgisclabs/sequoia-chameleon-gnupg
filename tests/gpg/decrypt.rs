@@ -103,36 +103,32 @@ fn test_key(cert: Cert, ciphertext: Vec<u8>, mut experiment: Experiment)
             -> Result<()>
 {
     let diff = experiment.invoke(&[
-        "--status-fd=1",
         "--decrypt",
         &experiment.store("ciphertext", &ciphertext)?,
     ])?;
-    diff.assert_equal_up_to(0, 60);
+    diff.assert_limits(0, 60, 0);
 
     let diff = experiment.invoke(&[
-        "--status-fd=1",
         "--decrypt",
         "--verbose",
         &experiment.store("ciphertext", &ciphertext)?,
     ])?;
-    diff.assert_equal_up_to(0, 0);
+    diff.assert_limits(0, 0, 0);
 
     let diff = experiment.invoke(&[
-        "--status-fd=1",
         "--decrypt",
         "--list-only",
         &experiment.store("ciphertext", &ciphertext)?,
     ])?;
-    diff.assert_equal_up_to(0, 0);
+    diff.assert_limits(0, 0, 0);
 
     let diff = experiment.invoke(&[
-        "--status-fd=1",
         "--decrypt",
         "--list-only",
         "--verbose",
         &experiment.store("ciphertext", &ciphertext)?,
     ])?;
-    diff.assert_equal_up_to(0, 0);
+    diff.assert_limits(0, 0, 0);
 
     eprintln!("Importing cert...");
     let diff = experiment.invoke(&[
@@ -143,36 +139,32 @@ fn test_key(cert: Cert, ciphertext: Vec<u8>, mut experiment: Experiment)
     diff.assert_equal_up_to(0, 60);
 
     let diff = experiment.invoke(&[
-        "--status-fd=1",
         "--decrypt",
         &experiment.store("ciphertext", &ciphertext)?,
     ])?;
-    diff.assert_equal_up_to(0, 1);
+    diff.assert_limits(0, 1, 0);
 
     let diff = experiment.invoke(&[
-        "--status-fd=1",
         "--decrypt",
         "--verbose",
         &experiment.store("ciphertext", &ciphertext)?,
     ])?;
-    diff.assert_equal_up_to(0, 1);
+    diff.assert_limits(0, 1, 0);
 
     let diff = experiment.invoke(&[
-        "--status-fd=1",
         "--decrypt",
         "--list-only",
         &experiment.store("ciphertext", &ciphertext)?,
     ])?;
-    diff.assert_equal_up_to(0, 1);
+    diff.assert_limits(0, 1, 0);
 
     let diff = experiment.invoke(&[
-        "--status-fd=1",
         "--decrypt",
         "--list-only",
         "--verbose",
         &experiment.store("ciphertext", &ciphertext)?,
     ])?;
-    diff.assert_equal_up_to(0, 1);
+    diff.assert_limits(0, 1, 0);
 
     eprintln!("Importing key...");
     let diff = experiment.invoke(&[
@@ -180,44 +172,41 @@ fn test_key(cert: Cert, ciphertext: Vec<u8>, mut experiment: Experiment)
         &experiment.store("key", &cert.as_tsk().to_vec()?)?,
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(0, 0);
+    diff.assert_limits(0, 0, 78);
 
     let diff = experiment.invoke(&[
-        "--status-fd=1",
         "--decrypt",
         "--output", "decrypted-plaintext",
         &experiment.store("ciphertext", &ciphertext)?,
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(140, 1);
+    diff.assert_limits(0, 1, 140);
     diff.with_working_dir(|p| {
         assert_eq!(p.get("decrypted-plaintext").expect("no output"), PLAINTEXT);
         Ok(())
     })?;
 
     let diff = experiment.invoke(&[
-        "--status-fd=1",
         "--decrypt",
         "--output", "decrypted-plaintext",
         "--verbose",
         &experiment.store("ciphertext", &ciphertext)?,
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(140, 110);
+    diff.assert_limits(0, 110, 140);
     diff.with_working_dir(|p| {
         assert_eq!(p.get("decrypted-plaintext").expect("no output"), PLAINTEXT);
         Ok(())
     })?;
 
     let diff = experiment.invoke(&[
-        "--status-fd=1",
         "--decrypt",
         "--list-only",
         "--output", "nothing",
         &experiment.store("ciphertext", &ciphertext)?,
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(0, 1);
+    diff.assert_limits(0, 1, 0);
     diff.with_working_dir(|p| {
         if let Some(o) = p.get("nothing") {
             assert_eq!(o, b"");
@@ -226,7 +215,6 @@ fn test_key(cert: Cert, ciphertext: Vec<u8>, mut experiment: Experiment)
     })?;
 
     let diff = experiment.invoke(&[
-        "--status-fd=1",
         "--decrypt",
         "--list-only",
         "--output", "nothing",
@@ -234,7 +222,7 @@ fn test_key(cert: Cert, ciphertext: Vec<u8>, mut experiment: Experiment)
         &experiment.store("ciphertext", &ciphertext)?,
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(0, 1);
+    diff.assert_limits(0, 1, 0);
     diff.with_working_dir(|p| {
         if let Some(o) = p.get("nothing") {
             assert_eq!(o, b"");

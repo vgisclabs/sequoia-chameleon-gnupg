@@ -8,13 +8,13 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: keybox '/HOMEDIR/pubring.kbx' created\\ngpg: /HOMEDIR/trustdb.gpg: trustdb created\\ngpg: key 62CCAE6F2CDBDCAF: public key \"Alice Lovelace <alice@lovelace.name>\" imported\\ngpg: Total number processed: 1\\ngpg:               imported: 1\\n",
       "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 1A68B515BF2881A82CE6A52262CCAE6F2CDBDCAF 0\\n[GNUPG:] IMPORTED 62CCAE6F2CDBDCAF Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] IMPORT_OK 1 1A68B515BF2881A82CE6A52262CCAE6F2CDBDCAF\\n[GNUPG:] IMPORT_RES 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0\\n",
       "status": "exit status: 0",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--command-fd=0\"",
         "\"--encrypt\"",
         "\"--recipient\"",
@@ -24,7 +24,8 @@
         "\"/EXPERIMENT/plaintext\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: E2852F6AC1873EFD: There is no assurance this key belongs to the named user\\ngpg: /EXPERIMENT/plaintext: encryption failed: Unusable public key\\n",
-      "stdout": "[GNUPG:] KEY_CONSIDERED 1A68B515BF2881A82CE6A52262CCAE6F2CDBDCAF 0\\n[GNUPG:] KEY_CONSIDERED 1A68B515BF2881A82CE6A52262CCAE6F2CDBDCAF 0\\n[GNUPG:] KEY_CONSIDERED 1A68B515BF2881A82CE6A52262CCAE6F2CDBDCAF 0\\n[GNUPG:] USERID_HINT E2852F6AC1873EFD Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] GET_BOOL untrusted_key.override\\n[GNUPG:] GOT_IT\\n[GNUPG:] INV_RECP 10 <alice@lovelace.name>\\n[GNUPG:] FAILURE encrypt 53\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 1A68B515BF2881A82CE6A52262CCAE6F2CDBDCAF 0\\n[GNUPG:] KEY_CONSIDERED 1A68B515BF2881A82CE6A52262CCAE6F2CDBDCAF 0\\n[GNUPG:] KEY_CONSIDERED 1A68B515BF2881A82CE6A52262CCAE6F2CDBDCAF 0\\n[GNUPG:] USERID_HINT E2852F6AC1873EFD Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] GET_BOOL untrusted_key.override\\n[GNUPG:] GOT_IT\\n[GNUPG:] INV_RECP 10 <alice@lovelace.name>\\n[GNUPG:] FAILURE encrypt 53\\n",
       "status": "exit status: 2",
       "files": {}
     }
@@ -38,13 +39,13 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: key 62CCAE6F2CDBDCAF: public key \"Alice Lovelace <alice@lovelace.name>\" imported\\ngpg: Total number processed: 1\\ngpg:               imported: 1\\n",
       "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 1A68B515BF2881A82CE6A52262CCAE6F2CDBDCAF 0\\n[GNUPG:] IMPORTED 62CCAE6F2CDBDCAF Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] IMPORT_OK 1 1A68B515BF2881A82CE6A52262CCAE6F2CDBDCAF\\n[GNUPG:] IMPORT_RES 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0\\n",
       "status": "exit status: 0",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--command-fd=0\"",
         "\"--encrypt\"",
         "\"--recipient\"",
@@ -54,7 +55,8 @@
         "\"/EXPERIMENT/plaintext\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: E2852F6AC1873EFD: There is no assurance this key belongs to the named user\\n\\nsub  cv25519/E2852F6AC1873EFD 2022-12-20 Alice Lovelace <alice@lovelace.name>\\n Primary key fingerprint: 1A68 B515 BF28 81A8 2CE6  A522 62CC AE6F 2CDB DCAF\\n      Subkey fingerprint: 699F D7DF 7BFF 3277 BC8F  4503 E285 2F6A C187 3EFD\\n\\nIt is NOT certain that the key belongs to the person named\\nin the user ID.  If you *really* know what you are doing,\\nyou may answer the next question with yes.\\n\\ngpg: /EXPERIMENT/plaintext: encryption failed: Unusable public key\\n",
-      "stdout": "[GNUPG:] USERID_HINT E2852F6AC1873EFD Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] GET_BOOL untrusted_key.override\\n[GNUPG:] GOT_IT\\n[GNUPG:] KEY_CONSIDERED 1A68B515BF2881A82CE6A52262CCAE6F2CDBDCAF 0\\n[GNUPG:] INV_RECP 10 <alice@lovelace.name>\\n[GNUPG:] FAILURE encrypt 53\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] USERID_HINT E2852F6AC1873EFD Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] GET_BOOL untrusted_key.override\\n[GNUPG:] GOT_IT\\n[GNUPG:] KEY_CONSIDERED 1A68B515BF2881A82CE6A52262CCAE6F2CDBDCAF 0\\n[GNUPG:] INV_RECP 10 <alice@lovelace.name>\\n[GNUPG:] FAILURE encrypt 53\\n",
       "status": "exit status: 2",
       "files": {}
     }
@@ -65,11 +67,13 @@
   "dynamic_upper_bounds": [
     [
       0,
-      86
+      86,
+      0
     ],
     [
-      245,
-      395
+      0,
+      395,
+      245
     ]
   ]
 }

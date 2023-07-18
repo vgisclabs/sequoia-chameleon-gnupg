@@ -7,13 +7,13 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: keybox '/HOMEDIR/pubring.kbx' created\\ngpg: /HOMEDIR/trustdb.gpg: trustdb created\\n",
       "stdout": "",
+      "statusfd": "",
       "status": "exit status: 0",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--verify\"",
         "\"--weak-digest\"",
         "\"MD5\"",
@@ -21,14 +21,14 @@
         "\"/EXPERIMENT/msg\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpg:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpg: Can't check signature: No public key\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 1 00 1671553073 9 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n[GNUPG:] NO_PUBKEY DBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 1 00 1671553073 9 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n[GNUPG:] NO_PUBKEY DBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--verify\"",
         "\"--weak-digest\"",
         "\"MD5\"",
@@ -36,7 +36,8 @@
         "\"/EXPERIMENT/msg_bad\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpg:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpg: Can't check signature: No public key\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 1 00 1671553073 9 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n[GNUPG:] NO_PUBKEY DBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 1 00 1671553073 9 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n[GNUPG:] NO_PUBKEY DBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
@@ -45,14 +46,14 @@
         "\"gpgv\"",
         "\"--keyring\"",
         "\"/EXPERIMENT/empty\"",
-        "\"--status-fd=1\"",
         "\"--weak-digest\"",
         "\"MD5\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg\""
       ],
       "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpgv:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpgv: Can't check signature: No public key\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 1 00 1671553073 9 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n[GNUPG:] NO_PUBKEY DBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 1 00 1671553073 9 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n[GNUPG:] NO_PUBKEY DBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
@@ -61,14 +62,14 @@
         "\"gpgv\"",
         "\"--keyring\"",
         "\"/EXPERIMENT/empty\"",
-        "\"--status-fd=1\"",
         "\"--weak-digest\"",
         "\"MD5\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg_bad\""
       ],
       "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpgv:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpgv: Can't check signature: No public key\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 1 00 1671553073 9 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n[GNUPG:] NO_PUBKEY DBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 1 00 1671553073 9 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n[GNUPG:] NO_PUBKEY DBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
@@ -80,13 +81,13 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: key 4779DF3971E4C36A: public key \"Alice Lovelace <alice@lovelace.name>\" imported\\ngpg: Total number processed: 1\\ngpg:               imported: 1\\n",
       "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] IMPORTED 4779DF3971E4C36A Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] IMPORT_OK 1 3A6803B343789A0CC1C310E54779DF3971E4C36A\\n[GNUPG:] IMPORT_RES 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0\\n",
       "status": "exit status: 0",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--verify\"",
         "\"--weak-digest\"",
         "\"MD5\"",
@@ -94,14 +95,14 @@
         "\"/EXPERIMENT/msg\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpg:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpg: Note: signatures using the MD5 algorithm are rejected\\ngpg: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 1 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 1 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--verify\"",
         "\"--weak-digest\"",
         "\"MD5\"",
@@ -109,7 +110,8 @@
         "\"/EXPERIMENT/msg_bad\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpg:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpg: Note: signatures using the MD5 algorithm are rejected\\ngpg: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 1 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 1 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
@@ -118,14 +120,14 @@
         "\"gpgv\"",
         "\"--keyring\"",
         "\"/EXPERIMENT/cert\"",
-        "\"--status-fd=1\"",
         "\"--weak-digest\"",
         "\"MD5\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg\""
       ],
       "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpgv:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpgv: Note: signatures using the MD5 algorithm are rejected\\ngpgv: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 1 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 1 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
@@ -134,21 +136,20 @@
         "\"gpgv\"",
         "\"--keyring\"",
         "\"/EXPERIMENT/cert\"",
-        "\"--status-fd=1\"",
         "\"--weak-digest\"",
         "\"MD5\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg_bad\""
       ],
       "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpgv:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpgv: Note: signatures using the MD5 algorithm are rejected\\ngpgv: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 1 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 1 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--verify\"",
         "\"--weak-digest\"",
         "\"SHA1\"",
@@ -156,14 +157,14 @@
         "\"/EXPERIMENT/msg\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpg:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpg: Note: signatures using the SHA1 algorithm are rejected\\ngpg: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 2 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 2 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--verify\"",
         "\"--weak-digest\"",
         "\"SHA1\"",
@@ -171,7 +172,8 @@
         "\"/EXPERIMENT/msg_bad\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpg:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpg: Note: signatures using the SHA1 algorithm are rejected\\ngpg: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 2 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 2 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
@@ -180,14 +182,14 @@
         "\"gpgv\"",
         "\"--keyring\"",
         "\"/EXPERIMENT/cert\"",
-        "\"--status-fd=1\"",
         "\"--weak-digest\"",
         "\"SHA1\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg\""
       ],
       "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpgv:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpgv: Note: signatures using the SHA1 algorithm are rejected\\ngpgv: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 2 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 2 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
@@ -196,21 +198,20 @@
         "\"gpgv\"",
         "\"--keyring\"",
         "\"/EXPERIMENT/cert\"",
-        "\"--status-fd=1\"",
         "\"--weak-digest\"",
         "\"SHA1\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg_bad\""
       ],
       "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpgv:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpgv: Note: signatures using the SHA1 algorithm are rejected\\ngpgv: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 2 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 2 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--verify\"",
         "\"--weak-digest\"",
         "\"RipeMD160\"",
@@ -218,14 +219,14 @@
         "\"/EXPERIMENT/msg\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpg:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpg: Note: signatures using the RIPEMD160 algorithm are rejected\\ngpg: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 3 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 3 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--verify\"",
         "\"--weak-digest\"",
         "\"RipeMD160\"",
@@ -233,7 +234,8 @@
         "\"/EXPERIMENT/msg_bad\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpg:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpg: Note: signatures using the RIPEMD160 algorithm are rejected\\ngpg: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 3 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 3 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
@@ -242,14 +244,14 @@
         "\"gpgv\"",
         "\"--keyring\"",
         "\"/EXPERIMENT/cert\"",
-        "\"--status-fd=1\"",
         "\"--weak-digest\"",
         "\"RipeMD160\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg\""
       ],
       "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpgv:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpgv: Note: signatures using the RIPEMD160 algorithm are rejected\\ngpgv: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 3 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 3 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
@@ -258,21 +260,20 @@
         "\"gpgv\"",
         "\"--keyring\"",
         "\"/EXPERIMENT/cert\"",
-        "\"--status-fd=1\"",
         "\"--weak-digest\"",
         "\"RipeMD160\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg_bad\""
       ],
       "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpgv:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpgv: Note: signatures using the RIPEMD160 algorithm are rejected\\ngpgv: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 3 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 3 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--verify\"",
         "\"--weak-digest\"",
         "\"SHA256\"",
@@ -280,14 +281,14 @@
         "\"/EXPERIMENT/msg\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpg:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpg: Note: signatures using the SHA256 algorithm are rejected\\ngpg: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 8 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 8 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--verify\"",
         "\"--weak-digest\"",
         "\"SHA256\"",
@@ -295,7 +296,8 @@
         "\"/EXPERIMENT/msg_bad\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpg:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpg: Note: signatures using the SHA256 algorithm are rejected\\ngpg: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 8 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 8 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
@@ -304,14 +306,14 @@
         "\"gpgv\"",
         "\"--keyring\"",
         "\"/EXPERIMENT/cert\"",
-        "\"--status-fd=1\"",
         "\"--weak-digest\"",
         "\"SHA256\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg\""
       ],
       "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpgv:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpgv: Note: signatures using the SHA256 algorithm are rejected\\ngpgv: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 8 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 8 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
@@ -320,21 +322,20 @@
         "\"gpgv\"",
         "\"--keyring\"",
         "\"/EXPERIMENT/cert\"",
-        "\"--status-fd=1\"",
         "\"--weak-digest\"",
         "\"SHA256\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg_bad\""
       ],
       "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpgv:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpgv: Note: signatures using the SHA256 algorithm are rejected\\ngpgv: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 8 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 8 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--verify\"",
         "\"--weak-digest\"",
         "\"SHA384\"",
@@ -342,14 +343,14 @@
         "\"/EXPERIMENT/msg\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpg:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpg: Note: signatures using the SHA384 algorithm are rejected\\ngpg: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 9 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 9 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--verify\"",
         "\"--weak-digest\"",
         "\"SHA384\"",
@@ -357,7 +358,8 @@
         "\"/EXPERIMENT/msg_bad\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpg:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpg: Note: signatures using the SHA384 algorithm are rejected\\ngpg: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 9 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 9 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
@@ -366,14 +368,14 @@
         "\"gpgv\"",
         "\"--keyring\"",
         "\"/EXPERIMENT/cert\"",
-        "\"--status-fd=1\"",
         "\"--weak-digest\"",
         "\"SHA384\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg\""
       ],
       "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpgv:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpgv: Note: signatures using the SHA384 algorithm are rejected\\ngpgv: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 9 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 9 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
@@ -382,21 +384,20 @@
         "\"gpgv\"",
         "\"--keyring\"",
         "\"/EXPERIMENT/cert\"",
-        "\"--status-fd=1\"",
         "\"--weak-digest\"",
         "\"SHA384\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg_bad\""
       ],
       "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpgv:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpgv: Note: signatures using the SHA384 algorithm are rejected\\ngpgv: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 9 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 9 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--verify\"",
         "\"--weak-digest\"",
         "\"SHA224\"",
@@ -404,14 +405,14 @@
         "\"/EXPERIMENT/msg\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpg:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpg: Note: signatures using the SHA224 algorithm are rejected\\ngpg: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 11 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 11 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--verify\"",
         "\"--weak-digest\"",
         "\"SHA224\"",
@@ -419,7 +420,8 @@
         "\"/EXPERIMENT/msg_bad\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpg:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpg: Note: signatures using the SHA224 algorithm are rejected\\ngpg: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 11 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 11 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
@@ -428,14 +430,14 @@
         "\"gpgv\"",
         "\"--keyring\"",
         "\"/EXPERIMENT/cert\"",
-        "\"--status-fd=1\"",
         "\"--weak-digest\"",
         "\"SHA224\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg\""
       ],
       "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpgv:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpgv: Note: signatures using the SHA224 algorithm are rejected\\ngpgv: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 11 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 11 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
@@ -444,14 +446,14 @@
         "\"gpgv\"",
         "\"--keyring\"",
         "\"/EXPERIMENT/cert\"",
-        "\"--status-fd=1\"",
         "\"--weak-digest\"",
         "\"SHA224\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg_bad\""
       ],
       "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpgv:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpgv: Note: signatures using the SHA224 algorithm are rejected\\ngpgv: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 11 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 11 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     }
@@ -464,13 +466,13 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "",
+      "statusfd": "",
       "status": "exit status: 0",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--verify\"",
         "\"--weak-digest\"",
         "\"MD5\"",
@@ -478,14 +480,14 @@
         "\"/EXPERIMENT/msg\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpg: Can't check signature: No public key\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 1 00 1671553073 9 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n[GNUPG:] NO_PUBKEY DBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 1 00 1671553073 9 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n[GNUPG:] NO_PUBKEY DBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--verify\"",
         "\"--weak-digest\"",
         "\"MD5\"",
@@ -493,7 +495,8 @@
         "\"/EXPERIMENT/msg_bad\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpg: Can't check signature: No public key\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 1 00 1671553073 9 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n[GNUPG:] NO_PUBKEY DBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 1 00 1671553073 9 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n[GNUPG:] NO_PUBKEY DBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
@@ -502,14 +505,14 @@
         "\"gpgv\"",
         "\"--keyring\"",
         "\"/EXPERIMENT/empty\"",
-        "\"--status-fd=1\"",
         "\"--weak-digest\"",
         "\"MD5\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg\""
       ],
       "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpgv: Can't check signature: No public key\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 1 00 1671553073 9 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n[GNUPG:] NO_PUBKEY DBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 1 00 1671553073 9 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n[GNUPG:] NO_PUBKEY DBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
@@ -518,14 +521,14 @@
         "\"gpgv\"",
         "\"--keyring\"",
         "\"/EXPERIMENT/empty\"",
-        "\"--status-fd=1\"",
         "\"--weak-digest\"",
         "\"MD5\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg_bad\""
       ],
       "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpgv: Can't check signature: No public key\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 1 00 1671553073 9 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n[GNUPG:] NO_PUBKEY DBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 1 00 1671553073 9 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n[GNUPG:] NO_PUBKEY DBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
@@ -537,13 +540,13 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: key 4779DF3971E4C36A: public key \"Alice Lovelace <alice@lovelace.name>\" imported\\ngpg: Total number processed: 1\\ngpg:               imported: 1\\n",
       "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] IMPORTED 4779DF3971E4C36A Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] IMPORT_OK 1 3A6803B343789A0CC1C310E54779DF3971E4C36A\\n[GNUPG:] IMPORT_RES 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0\\n",
       "status": "exit status: 0",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--verify\"",
         "\"--weak-digest\"",
         "\"MD5\"",
@@ -551,14 +554,14 @@
         "\"/EXPERIMENT/msg\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpg: Note: signatures using the MD5 algorithm are rejected\\ngpg: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 1 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 1 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--verify\"",
         "\"--weak-digest\"",
         "\"MD5\"",
@@ -566,7 +569,8 @@
         "\"/EXPERIMENT/msg_bad\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpg: Note: signatures using the MD5 algorithm are rejected\\ngpg: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 1 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 1 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
@@ -575,14 +579,14 @@
         "\"gpgv\"",
         "\"--keyring\"",
         "\"/EXPERIMENT/cert\"",
-        "\"--status-fd=1\"",
         "\"--weak-digest\"",
         "\"MD5\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg\""
       ],
       "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpgv: Note: signatures using the MD5 algorithm are rejected\\ngpgv: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 1 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 1 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
@@ -591,21 +595,20 @@
         "\"gpgv\"",
         "\"--keyring\"",
         "\"/EXPERIMENT/cert\"",
-        "\"--status-fd=1\"",
         "\"--weak-digest\"",
         "\"MD5\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg_bad\""
       ],
       "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpgv: Note: signatures using the MD5 algorithm are rejected\\ngpgv: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 1 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 1 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--verify\"",
         "\"--weak-digest\"",
         "\"SHA1\"",
@@ -613,14 +616,14 @@
         "\"/EXPERIMENT/msg\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpg: Note: signatures using the SHA1 algorithm are rejected\\ngpg: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 2 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 2 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--verify\"",
         "\"--weak-digest\"",
         "\"SHA1\"",
@@ -628,7 +631,8 @@
         "\"/EXPERIMENT/msg_bad\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpg: Note: signatures using the SHA1 algorithm are rejected\\ngpg: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 2 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 2 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
@@ -637,14 +641,14 @@
         "\"gpgv\"",
         "\"--keyring\"",
         "\"/EXPERIMENT/cert\"",
-        "\"--status-fd=1\"",
         "\"--weak-digest\"",
         "\"SHA1\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg\""
       ],
       "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpgv: Note: signatures using the SHA1 algorithm are rejected\\ngpgv: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 2 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 2 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
@@ -653,21 +657,20 @@
         "\"gpgv\"",
         "\"--keyring\"",
         "\"/EXPERIMENT/cert\"",
-        "\"--status-fd=1\"",
         "\"--weak-digest\"",
         "\"SHA1\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg_bad\""
       ],
       "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpgv: Note: signatures using the SHA1 algorithm are rejected\\ngpgv: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 2 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 2 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--verify\"",
         "\"--weak-digest\"",
         "\"RipeMD160\"",
@@ -675,14 +678,14 @@
         "\"/EXPERIMENT/msg\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpg: Note: signatures using the RIPEMD160 algorithm are rejected\\ngpg: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 3 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 3 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--verify\"",
         "\"--weak-digest\"",
         "\"RipeMD160\"",
@@ -690,7 +693,8 @@
         "\"/EXPERIMENT/msg_bad\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpg: Note: signatures using the RIPEMD160 algorithm are rejected\\ngpg: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 3 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 3 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
@@ -699,14 +703,14 @@
         "\"gpgv\"",
         "\"--keyring\"",
         "\"/EXPERIMENT/cert\"",
-        "\"--status-fd=1\"",
         "\"--weak-digest\"",
         "\"RipeMD160\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg\""
       ],
       "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpgv: Note: signatures using the RIPEMD160 algorithm are rejected\\ngpgv: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 3 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 3 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
@@ -715,21 +719,20 @@
         "\"gpgv\"",
         "\"--keyring\"",
         "\"/EXPERIMENT/cert\"",
-        "\"--status-fd=1\"",
         "\"--weak-digest\"",
         "\"RipeMD160\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg_bad\""
       ],
       "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpgv: Note: signatures using the RIPEMD160 algorithm are rejected\\ngpgv: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 3 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 3 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--verify\"",
         "\"--weak-digest\"",
         "\"SHA256\"",
@@ -737,14 +740,14 @@
         "\"/EXPERIMENT/msg\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpg: Note: signatures using the SHA256 algorithm are rejected\\ngpg: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 8 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 8 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--verify\"",
         "\"--weak-digest\"",
         "\"SHA256\"",
@@ -752,7 +755,8 @@
         "\"/EXPERIMENT/msg_bad\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpg: Note: signatures using the SHA256 algorithm are rejected\\ngpg: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 8 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 8 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
@@ -761,14 +765,14 @@
         "\"gpgv\"",
         "\"--keyring\"",
         "\"/EXPERIMENT/cert\"",
-        "\"--status-fd=1\"",
         "\"--weak-digest\"",
         "\"SHA256\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg\""
       ],
       "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpgv: Note: signatures using the SHA256 algorithm are rejected\\ngpgv: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 8 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 8 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
@@ -777,21 +781,20 @@
         "\"gpgv\"",
         "\"--keyring\"",
         "\"/EXPERIMENT/cert\"",
-        "\"--status-fd=1\"",
         "\"--weak-digest\"",
         "\"SHA256\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg_bad\""
       ],
       "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpgv: Note: signatures using the SHA256 algorithm are rejected\\ngpgv: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 8 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 8 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--verify\"",
         "\"--weak-digest\"",
         "\"SHA384\"",
@@ -799,14 +802,14 @@
         "\"/EXPERIMENT/msg\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpg: Note: signatures using the SHA384 algorithm are rejected\\ngpg: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 9 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 9 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--verify\"",
         "\"--weak-digest\"",
         "\"SHA384\"",
@@ -814,7 +817,8 @@
         "\"/EXPERIMENT/msg_bad\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpg: Note: signatures using the SHA384 algorithm are rejected\\ngpg: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 9 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 9 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
@@ -823,14 +827,14 @@
         "\"gpgv\"",
         "\"--keyring\"",
         "\"/EXPERIMENT/cert\"",
-        "\"--status-fd=1\"",
         "\"--weak-digest\"",
         "\"SHA384\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg\""
       ],
       "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpgv: Note: signatures using the SHA384 algorithm are rejected\\ngpgv: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 9 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 9 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
@@ -839,21 +843,20 @@
         "\"gpgv\"",
         "\"--keyring\"",
         "\"/EXPERIMENT/cert\"",
-        "\"--status-fd=1\"",
         "\"--weak-digest\"",
         "\"SHA384\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg_bad\""
       ],
       "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpgv: Note: signatures using the SHA384 algorithm are rejected\\ngpgv: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 9 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 9 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--verify\"",
         "\"--weak-digest\"",
         "\"SHA224\"",
@@ -861,14 +864,14 @@
         "\"/EXPERIMENT/msg\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpg: Note: signatures using the SHA224 algorithm are rejected\\ngpg: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 11 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 11 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--verify\"",
         "\"--weak-digest\"",
         "\"SHA224\"",
@@ -876,7 +879,8 @@
         "\"/EXPERIMENT/msg_bad\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpg: Note: signatures using the SHA224 algorithm are rejected\\ngpg: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 11 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 11 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
@@ -885,14 +889,14 @@
         "\"gpgv\"",
         "\"--keyring\"",
         "\"/EXPERIMENT/cert\"",
-        "\"--status-fd=1\"",
         "\"--weak-digest\"",
         "\"SHA224\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg\""
       ],
       "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpgv: Note: signatures using the SHA224 algorithm are rejected\\ngpgv: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 11 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 11 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     },
@@ -901,14 +905,14 @@
         "\"gpgv\"",
         "\"--keyring\"",
         "\"/EXPERIMENT/cert\"",
-        "\"--status-fd=1\"",
         "\"--weak-digest\"",
         "\"SHA224\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg_bad\""
       ],
       "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using ECDSA key 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\ngpgv: Note: signatures using the SHA224 algorithm are rejected\\ngpgv: Can't check signature: Invalid digest algorithm\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 11 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED 3A6803B343789A0CC1C310E54779DF3971E4C36A 0\\n[GNUPG:] ERRSIG DBAE5DC8BD8317E2 19 11 00 1671553073 5 11EBA6F0CACAAC2B689D1E1ADBAE5DC8BD8317E2\\n",
       "status": "exit status: 2",
       "files": {}
     }
@@ -925,123 +929,153 @@
   "dynamic_upper_bounds": [
     [
       0,
-      86
+      86,
+      0
     ],
     [
       0,
-      6
+      6,
+      0
     ],
     [
       0,
-      6
+      6,
+      0
     ],
     [
       0,
-      6
+      6,
+      0
     ],
     [
       0,
-      6
+      6,
+      0
     ],
     [
+      0,
       0,
       0
     ],
     [
       0,
-      6
+      6,
+      0
     ],
     [
       0,
-      6
+      6,
+      0
     ],
     [
       0,
-      6
+      6,
+      0
     ],
     [
       0,
-      6
+      6,
+      0
     ],
     [
       0,
-      6
+      6,
+      0
     ],
     [
       0,
-      6
+      6,
+      0
     ],
     [
       0,
-      6
+      6,
+      0
     ],
     [
       0,
-      6
+      6,
+      0
     ],
     [
       0,
-      6
+      6,
+      0
     ],
     [
       0,
-      6
+      6,
+      0
     ],
     [
       0,
-      6
+      6,
+      0
     ],
     [
       0,
-      6
+      6,
+      0
     ],
     [
       0,
-      6
+      6,
+      0
     ],
     [
       0,
-      6
+      6,
+      0
     ],
     [
       0,
-      6
+      6,
+      0
     ],
     [
       0,
-      6
+      6,
+      0
     ],
     [
       0,
-      6
+      6,
+      0
     ],
     [
       0,
-      6
+      6,
+      0
     ],
     [
       0,
-      6
+      6,
+      0
     ],
     [
       0,
-      6
+      6,
+      0
     ],
     [
       0,
-      6
+      6,
+      0
     ],
     [
       0,
-      6
+      6,
+      0
     ],
     [
       0,
-      6
+      6,
+      0
     ],
     [
       0,
-      6
+      6,
+      0
     ]
   ]
 }

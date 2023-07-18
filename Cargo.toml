@@ -49,6 +49,7 @@ zbase32 = "0.1.2"
 anyhow = { version = "1", features = ["backtrace"] }
 diff = "0.1"
 edit-distance = "2"
+interprocess = { version = "1", default-features = false }
 lazy_static = "1"
 ntest = "0.9"
 regex = "1"

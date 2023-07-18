@@ -8,13 +8,13 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: keybox '/HOMEDIR/pubring.kbx' created\\ngpg: /HOMEDIR/trustdb.gpg: trustdb created\\ngpg: key D549EFC2952CCDCD: public key \"Alice Lovelace <alice@lovelace.name>\" imported\\ngpg: Total number processed: 1\\ngpg:               imported: 1\\n",
       "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 48034B7798889D3D62C026F1D549EFC2952CCDCD 0\\n[GNUPG:] IMPORTED D549EFC2952CCDCD Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] IMPORT_OK 1 48034B7798889D3D62C026F1D549EFC2952CCDCD\\n[GNUPG:] IMPORT_RES 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0\\n",
       "status": "exit status: 0",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--no-auto-key-locate\"",
         "\"--always-trust\"",
         "\"--encrypt\"",
@@ -25,7 +25,8 @@
         "\"/EXPERIMENT/plaintext\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: <alice@lovelace.name>: skipped: Unusable public key\\ngpg: /EXPERIMENT/plaintext: encryption failed: Unusable public key\\n",
-      "stdout": "[GNUPG:] KEY_CONSIDERED 48034B7798889D3D62C026F1D549EFC2952CCDCD 0\\n[GNUPG:] KEY_CONSIDERED 48034B7798889D3D62C026F1D549EFC2952CCDCD 3\\n[GNUPG:] INV_RECP 0 <alice@lovelace.name>\\n[GNUPG:] FAILURE encrypt 53\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 48034B7798889D3D62C026F1D549EFC2952CCDCD 0\\n[GNUPG:] KEY_CONSIDERED 48034B7798889D3D62C026F1D549EFC2952CCDCD 3\\n[GNUPG:] INV_RECP 0 <alice@lovelace.name>\\n[GNUPG:] FAILURE encrypt 53\\n",
       "status": "exit status: 2",
       "files": {}
     }
@@ -39,13 +40,13 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: key D549EFC2952CCDCD: public key \"Alice Lovelace <alice@lovelace.name>\" imported\\ngpg: Total number processed: 1\\ngpg:               imported: 1\\n",
       "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 48034B7798889D3D62C026F1D549EFC2952CCDCD 0\\n[GNUPG:] IMPORTED D549EFC2952CCDCD Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] IMPORT_OK 1 48034B7798889D3D62C026F1D549EFC2952CCDCD\\n[GNUPG:] IMPORT_RES 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0\\n",
       "status": "exit status: 0",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--no-auto-key-locate\"",
         "\"--always-trust\"",
         "\"--encrypt\"",
@@ -56,7 +57,8 @@
         "\"/EXPERIMENT/plaintext\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: <alice@lovelace.name>: skipped: Unusable public key\\ngpg: /EXPERIMENT/plaintext: encryption failed: Unusable public key\\n",
-      "stdout": "[GNUPG:] KEY_CONSIDERED 48034B7798889D3D62C026F1D549EFC2952CCDCD 0\\n[GNUPG:] INV_RECP 0 <alice@lovelace.name>\\n[GNUPG:] FAILURE encrypt 53\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 48034B7798889D3D62C026F1D549EFC2952CCDCD 0\\n[GNUPG:] INV_RECP 0 <alice@lovelace.name>\\n[GNUPG:] FAILURE encrypt 53\\n",
       "status": "exit status: 2",
       "files": {}
     }
@@ -67,11 +69,13 @@
   "dynamic_upper_bounds": [
     [
       0,
-      86
+      86,
+      0
     ],
     [
-      67,
-      0
+      0,
+      0,
+      67
     ]
   ]
 }

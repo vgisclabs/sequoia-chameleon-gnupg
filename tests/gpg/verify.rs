@@ -523,14 +523,12 @@ fn test_detached_sig_with<'a>(experiment: &mut Experiment,
     ];
 
     let mut args_good = vec![
-        "--status-fd=1",
         "--verify",
     ];
     args_good.extend_from_slice(&extra_args);
     data_good.iter().for_each(|a| args_good.push(a));
 
     let mut args_bad = vec![
-        "--status-fd=1",
         "--verify",
     ];
     args_bad.extend_from_slice(&extra_args);
@@ -559,8 +557,7 @@ fn test_detached_sig_with<'a>(experiment: &mut Experiment,
         let mut args_good = vec![
             "gpgv",
             "--keyring", &empty_keyring,
-            "--status-fd=1",
-        ];
+            ];
         args_good.extend_from_slice(&extra_args);
         data_good.iter().for_each(|a| args_good.push(a));
         let diff = experiment.invoke(&args_good)?;
@@ -570,8 +567,7 @@ fn test_detached_sig_with<'a>(experiment: &mut Experiment,
         let mut args_bad = vec![
             "gpgv",
             "--keyring", &empty_keyring,
-            "--status-fd=1",
-        ];
+            ];
         args_bad.extend_from_slice(&extra_args);
         data_bad.iter().for_each(|a| args_bad.push(a));
         let diff = experiment.invoke(&args_bad)?;
@@ -590,7 +586,7 @@ fn test_detached_sig_with<'a>(experiment: &mut Experiment,
     let diff = experiment.invoke(&args_good)?;
     if expect_success {
         diff.assert_success();
-        diff.assert_equal_up_to(134, 10);
+        diff.assert_limits(0, 10, 134);
     } else {
         diff.assert_failure();
         diff.assert_equal_up_to(0, 10);
@@ -599,7 +595,7 @@ fn test_detached_sig_with<'a>(experiment: &mut Experiment,
     let diff = experiment.invoke(&args_bad)?;
     diff.assert_failure();
     if expect_success {
-        diff.assert_equal_up_to(134, 10);
+        diff.assert_limits(0, 10, 134);
     } else {
         diff.assert_equal_up_to(0, 10);
     }
@@ -609,7 +605,6 @@ fn test_detached_sig_with<'a>(experiment: &mut Experiment,
     let mut args_good = vec![
         "gpgv",
         "--keyring", &cert,
-        "--status-fd=1",
     ];
     args_good.extend_from_slice(&extra_args);
     data_good.iter().for_each(|a| args_good.push(a));
@@ -625,7 +620,6 @@ fn test_detached_sig_with<'a>(experiment: &mut Experiment,
     let mut args_bad = vec![
         "gpgv",
         "--keyring", &cert,
-        "--status-fd=1",
     ];
     args_bad.extend_from_slice(&extra_args);
     data_bad.iter().for_each(|a| args_bad.push(a));

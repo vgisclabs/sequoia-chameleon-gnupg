@@ -168,7 +168,6 @@ fn run_test(cert: Cert, mut experiment: Experiment, model: &'static str,
     // Try to authenticate the certificate as a recipient.
     let diff = experiment.invoke(&[
         "--batch",
-        "--status-fd=1",
         "--no-auto-key-locate",
         "--trust-model", model,
         "--encrypt",
@@ -178,7 +177,7 @@ fn run_test(cert: Cert, mut experiment: Experiment, model: &'static str,
     ])?;
     if expect_success {
         diff.assert_success();
-        diff.assert_equal_up_to(70, 0);
+        diff.assert_limits(0, 0, 70);
         let ciphertexts =
             diff.with_working_dir(|p| p.get("ciphertext").cloned().ok_or_else(
                 || anyhow::anyhow!("no ciphertext produced")))?;
@@ -189,17 +188,16 @@ fn run_test(cert: Cert, mut experiment: Experiment, model: &'static str,
             &experiment.store("key", &cert.as_tsk().to_vec()?)?,
         ])?;
         diff.assert_success();
-        diff.assert_equal_up_to(0, 0);
+        diff.assert_limits(0, 0, 78);
 
         for ciphertext in ciphertexts {
             let diff = experiment.invoke(&[
-                "--status-fd=1",
                 "--decrypt",
                 "--output", "plaintext",
                 &experiment.store("ciphertext", &ciphertext)?,
             ])?;
             diff.assert_success();
-            diff.assert_equal_up_to(140, 1);
+            diff.assert_limits(0, 1, 140);
             diff.with_working_dir(|p| {
                 assert_eq!(p.get("plaintext").expect("no output"), PLAINTEXT);
                 Ok(())
@@ -207,7 +205,7 @@ fn run_test(cert: Cert, mut experiment: Experiment, model: &'static str,
         }
     } else {
         diff.assert_failure();
-        diff.assert_equal_up_to(67, 0);
+        diff.assert_limits(0, 0, 67);
         assert!(diff.with_working_dir(
             |p| Ok(p.get("ciphertext").is_some()))?
                 .iter().all(|&exists| exists == false));

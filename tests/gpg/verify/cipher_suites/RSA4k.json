@@ -7,32 +7,33 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: keybox '/HOMEDIR/pubring.kbx' created\\ngpg: /HOMEDIR/trustdb.gpg: trustdb created\\n",
       "stdout": "",
+      "statusfd": "",
       "status": "exit status: 0",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--verify\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpg:                using RSA key E2C5BA4C08DCF08EC54E65937C73E82399D65220\\ngpg: Can't check signature: No public key\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG 7C73E82399D65220 1 10 00 1671553073 9 E2C5BA4C08DCF08EC54E65937C73E82399D65220\\n[GNUPG:] NO_PUBKEY 7C73E82399D65220\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG 7C73E82399D65220 1 10 00 1671553073 9 E2C5BA4C08DCF08EC54E65937C73E82399D65220\\n[GNUPG:] NO_PUBKEY 7C73E82399D65220\\n",
       "status": "exit status: 2",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--verify\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg_bad\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpg:                using RSA key E2C5BA4C08DCF08EC54E65937C73E82399D65220\\ngpg: Can't check signature: No public key\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG 7C73E82399D65220 1 10 00 1671553073 9 E2C5BA4C08DCF08EC54E65937C73E82399D65220\\n[GNUPG:] NO_PUBKEY 7C73E82399D65220\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG 7C73E82399D65220 1 10 00 1671553073 9 E2C5BA4C08DCF08EC54E65937C73E82399D65220\\n[GNUPG:] NO_PUBKEY 7C73E82399D65220\\n",
       "status": "exit status: 2",
       "files": {}
     },
@@ -41,12 +42,12 @@
         "\"gpgv\"",
         "\"--keyring\"",
         "\"/EXPERIMENT/empty\"",
-        "\"--status-fd=1\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg\""
       ],
       "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpgv:                using RSA key E2C5BA4C08DCF08EC54E65937C73E82399D65220\\ngpgv: Can't check signature: No public key\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG 7C73E82399D65220 1 10 00 1671553073 9 E2C5BA4C08DCF08EC54E65937C73E82399D65220\\n[GNUPG:] NO_PUBKEY 7C73E82399D65220\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG 7C73E82399D65220 1 10 00 1671553073 9 E2C5BA4C08DCF08EC54E65937C73E82399D65220\\n[GNUPG:] NO_PUBKEY 7C73E82399D65220\\n",
       "status": "exit status: 2",
       "files": {}
     },
@@ -55,12 +56,12 @@
         "\"gpgv\"",
         "\"--keyring\"",
         "\"/EXPERIMENT/empty\"",
-        "\"--status-fd=1\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg_bad\""
       ],
       "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpgv:                using RSA key E2C5BA4C08DCF08EC54E65937C73E82399D65220\\ngpgv: Can't check signature: No public key\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG 7C73E82399D65220 1 10 00 1671553073 9 E2C5BA4C08DCF08EC54E65937C73E82399D65220\\n[GNUPG:] NO_PUBKEY 7C73E82399D65220\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG 7C73E82399D65220 1 10 00 1671553073 9 E2C5BA4C08DCF08EC54E65937C73E82399D65220\\n[GNUPG:] NO_PUBKEY 7C73E82399D65220\\n",
       "status": "exit status: 2",
       "files": {}
     },
@@ -72,32 +73,33 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: key 64E713157E37C4BF: public key \"Alice Lovelace <alice@lovelace.name>\" imported\\ngpg: Total number processed: 1\\ngpg:               imported: 1\\n",
       "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED BEC2AD32D4D3E63A788AA5A464E713157E37C4BF 0\\n[GNUPG:] IMPORTED 64E713157E37C4BF Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] IMPORT_OK 1 BEC2AD32D4D3E63A788AA5A464E713157E37C4BF\\n[GNUPG:] IMPORT_RES 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0\\n",
       "status": "exit status: 0",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--verify\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpg:                using RSA key E2C5BA4C08DCF08EC54E65937C73E82399D65220\\ngpg: Good signature from \"Alice Lovelace <alice@lovelace.name>\" [unknown]\\ngpg: WARNING: This key is not certified with a trusted signature!\\ngpg:          There is no indication that the signature belongs to the owner.\\nPrimary key fingerprint: BEC2 AD32 D4D3 E63A 788A  A5A4 64E7 1315 7E37 C4BF\\n     Subkey fingerprint: E2C5 BA4C 08DC F08E C54E  6593 7C73 E823 99D6 5220\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED BEC2AD32D4D3E63A788AA5A464E713157E37C4BF 0\\n[GNUPG:] SIG_ID Tw2kXAEDzGOOCP83T4kL5apFuJI 2022-12-20 1671553073\\n[GNUPG:] KEY_CONSIDERED BEC2AD32D4D3E63A788AA5A464E713157E37C4BF 0\\n[GNUPG:] GOODSIG 7C73E82399D65220 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org\\n[GNUPG:] NOTATION_DATA \\xE6\\xE2\\xB1\\xB2\\xC1\\\\`=\\xEE%00Y%20\\xFD\\xA8\\xE8cyH|%16\\xB1r`\\x9F\\xFCH\\xDA3hYf\\x8E\\n[GNUPG:] VALIDSIG E2C5BA4C08DCF08EC54E65937C73E82399D65220 2022-12-20 1671553073 0 4 0 1 10 00 BEC2AD32D4D3E63A788AA5A464E713157E37C4BF\\n[GNUPG:] KEY_CONSIDERED BEC2AD32D4D3E63A788AA5A464E713157E37C4BF 0\\n[GNUPG:] KEY_CONSIDERED BEC2AD32D4D3E63A788AA5A464E713157E37C4BF 0\\n[GNUPG:] TRUST_UNDEFINED 0 pgp\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED BEC2AD32D4D3E63A788AA5A464E713157E37C4BF 0\\n[GNUPG:] SIG_ID Tw2kXAEDzGOOCP83T4kL5apFuJI 2022-12-20 1671553073\\n[GNUPG:] KEY_CONSIDERED BEC2AD32D4D3E63A788AA5A464E713157E37C4BF 0\\n[GNUPG:] GOODSIG 7C73E82399D65220 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org\\n[GNUPG:] NOTATION_DATA \\xE6\\xE2\\xB1\\xB2\\xC1\\\\`=\\xEE%00Y%20\\xFD\\xA8\\xE8cyH|%16\\xB1r`\\x9F\\xFCH\\xDA3hYf\\x8E\\n[GNUPG:] VALIDSIG E2C5BA4C08DCF08EC54E65937C73E82399D65220 2022-12-20 1671553073 0 4 0 1 10 00 BEC2AD32D4D3E63A788AA5A464E713157E37C4BF\\n[GNUPG:] KEY_CONSIDERED BEC2AD32D4D3E63A788AA5A464E713157E37C4BF 0\\n[GNUPG:] KEY_CONSIDERED BEC2AD32D4D3E63A788AA5A464E713157E37C4BF 0\\n[GNUPG:] TRUST_UNDEFINED 0 pgp\\n",
       "status": "exit status: 0",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--verify\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg_bad\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpg:                using RSA key E2C5BA4C08DCF08EC54E65937C73E82399D65220\\ngpg: BAD signature from \"Alice Lovelace <alice@lovelace.name>\" [unknown]\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED BEC2AD32D4D3E63A788AA5A464E713157E37C4BF 0\\n[GNUPG:] KEY_CONSIDERED BEC2AD32D4D3E63A788AA5A464E713157E37C4BF 0\\n[GNUPG:] BADSIG 7C73E82399D65220 Alice Lovelace <alice@lovelace.name>\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED BEC2AD32D4D3E63A788AA5A464E713157E37C4BF 0\\n[GNUPG:] KEY_CONSIDERED BEC2AD32D4D3E63A788AA5A464E713157E37C4BF 0\\n[GNUPG:] BADSIG 7C73E82399D65220 Alice Lovelace <alice@lovelace.name>\\n",
       "status": "exit status: 1",
       "files": {}
     },
@@ -106,12 +108,12 @@
         "\"gpgv\"",
         "\"--keyring\"",
         "\"/EXPERIMENT/cert\"",
-        "\"--status-fd=1\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg\""
       ],
       "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpgv:                using RSA key E2C5BA4C08DCF08EC54E65937C73E82399D65220\\ngpgv: Good signature from \"Alice Lovelace <alice@lovelace.name>\"\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED BEC2AD32D4D3E63A788AA5A464E713157E37C4BF 0\\n[GNUPG:] SIG_ID Tw2kXAEDzGOOCP83T4kL5apFuJI 2022-12-20 1671553073\\n[GNUPG:] KEY_CONSIDERED BEC2AD32D4D3E63A788AA5A464E713157E37C4BF 0\\n[GNUPG:] GOODSIG 7C73E82399D65220 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org\\n[GNUPG:] NOTATION_DATA \\xE6\\xE2\\xB1\\xB2\\xC1\\\\`=\\xEE%00Y%20\\xFD\\xA8\\xE8cyH|%16\\xB1r`\\x9F\\xFCH\\xDA3hYf\\x8E\\n[GNUPG:] VALIDSIG E2C5BA4C08DCF08EC54E65937C73E82399D65220 2022-12-20 1671553073 0 4 0 1 10 00 BEC2AD32D4D3E63A788AA5A464E713157E37C4BF\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED BEC2AD32D4D3E63A788AA5A464E713157E37C4BF 0\\n[GNUPG:] SIG_ID Tw2kXAEDzGOOCP83T4kL5apFuJI 2022-12-20 1671553073\\n[GNUPG:] KEY_CONSIDERED BEC2AD32D4D3E63A788AA5A464E713157E37C4BF 0\\n[GNUPG:] GOODSIG 7C73E82399D65220 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org\\n[GNUPG:] NOTATION_DATA \\xE6\\xE2\\xB1\\xB2\\xC1\\\\`=\\xEE%00Y%20\\xFD\\xA8\\xE8cyH|%16\\xB1r`\\x9F\\xFCH\\xDA3hYf\\x8E\\n[GNUPG:] VALIDSIG E2C5BA4C08DCF08EC54E65937C73E82399D65220 2022-12-20 1671553073 0 4 0 1 10 00 BEC2AD32D4D3E63A788AA5A464E713157E37C4BF\\n",
       "status": "exit status: 0",
       "files": {}
     },
@@ -120,12 +122,12 @@
         "\"gpgv\"",
         "\"--keyring\"",
         "\"/EXPERIMENT/cert\"",
-        "\"--status-fd=1\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg_bad\""
       ],
       "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpgv:                using RSA key E2C5BA4C08DCF08EC54E65937C73E82399D65220\\ngpgv: BAD signature from \"Alice Lovelace <alice@lovelace.name>\"\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED BEC2AD32D4D3E63A788AA5A464E713157E37C4BF 0\\n[GNUPG:] KEY_CONSIDERED BEC2AD32D4D3E63A788AA5A464E713157E37C4BF 0\\n[GNUPG:] BADSIG 7C73E82399D65220 Alice Lovelace <alice@lovelace.name>\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED BEC2AD32D4D3E63A788AA5A464E713157E37C4BF 0\\n[GNUPG:] KEY_CONSIDERED BEC2AD32D4D3E63A788AA5A464E713157E37C4BF 0\\n[GNUPG:] BADSIG 7C73E82399D65220 Alice Lovelace <alice@lovelace.name>\\n",
       "status": "exit status: 1",
       "files": {}
     }
@@ -138,32 +140,33 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "",
+      "statusfd": "",
       "status": "exit status: 0",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--verify\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using RSA key E2C5BA4C08DCF08EC54E65937C73E82399D65220\\ngpg: Can't check signature: No public key\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG 7C73E82399D65220 1 10 00 1671553073 9 E2C5BA4C08DCF08EC54E65937C73E82399D65220\\n[GNUPG:] NO_PUBKEY 7C73E82399D65220\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG 7C73E82399D65220 1 10 00 1671553073 9 E2C5BA4C08DCF08EC54E65937C73E82399D65220\\n[GNUPG:] NO_PUBKEY 7C73E82399D65220\\n",
       "status": "exit status: 2",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--verify\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg_bad\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using RSA key E2C5BA4C08DCF08EC54E65937C73E82399D65220\\ngpg: Can't check signature: No public key\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG 7C73E82399D65220 1 10 00 1671553073 9 E2C5BA4C08DCF08EC54E65937C73E82399D65220\\n[GNUPG:] NO_PUBKEY 7C73E82399D65220\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG 7C73E82399D65220 1 10 00 1671553073 9 E2C5BA4C08DCF08EC54E65937C73E82399D65220\\n[GNUPG:] NO_PUBKEY 7C73E82399D65220\\n",
       "status": "exit status: 2",
       "files": {}
     },
@@ -172,12 +175,12 @@
         "\"gpgv\"",
         "\"--keyring\"",
         "\"/EXPERIMENT/empty\"",
-        "\"--status-fd=1\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg\""
       ],
       "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using RSA key E2C5BA4C08DCF08EC54E65937C73E82399D65220\\ngpgv: Can't check signature: No public key\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG 7C73E82399D65220 1 10 00 1671553073 9 E2C5BA4C08DCF08EC54E65937C73E82399D65220\\n[GNUPG:] NO_PUBKEY 7C73E82399D65220\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG 7C73E82399D65220 1 10 00 1671553073 9 E2C5BA4C08DCF08EC54E65937C73E82399D65220\\n[GNUPG:] NO_PUBKEY 7C73E82399D65220\\n",
       "status": "exit status: 2",
       "files": {}
     },
@@ -186,12 +189,12 @@
         "\"gpgv\"",
         "\"--keyring\"",
         "\"/EXPERIMENT/empty\"",
-        "\"--status-fd=1\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg_bad\""
       ],
       "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using RSA key E2C5BA4C08DCF08EC54E65937C73E82399D65220\\ngpgv: Can't check signature: No public key\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG 7C73E82399D65220 1 10 00 1671553073 9 E2C5BA4C08DCF08EC54E65937C73E82399D65220\\n[GNUPG:] NO_PUBKEY 7C73E82399D65220\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] ERRSIG 7C73E82399D65220 1 10 00 1671553073 9 E2C5BA4C08DCF08EC54E65937C73E82399D65220\\n[GNUPG:] NO_PUBKEY 7C73E82399D65220\\n",
       "status": "exit status: 2",
       "files": {}
     },
@@ -203,32 +206,33 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: key 64E713157E37C4BF: public key \"Alice Lovelace <alice@lovelace.name>\" imported\\ngpg: Total number processed: 1\\ngpg:               imported: 1\\n",
       "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED BEC2AD32D4D3E63A788AA5A464E713157E37C4BF 0\\n[GNUPG:] IMPORTED 64E713157E37C4BF Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] IMPORT_OK 1 BEC2AD32D4D3E63A788AA5A464E713157E37C4BF\\n[GNUPG:] IMPORT_RES 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0\\n",
       "status": "exit status: 0",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--verify\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using RSA key E2C5BA4C08DCF08EC54E65937C73E82399D65220\\ngpg: Good signature from \"Alice Lovelace <alice@lovelace.name>\" [unknown]\\ngpg: WARNING: This key is not certified with a trusted signature!\\ngpg:          There is no indication that the signature belongs to the owner.\\nPrimary key fingerprint: BEC2 AD32 D4D3 E63A 788A  A5A4 64E7 1315 7E37 C4BF\\n     Subkey fingerprint: E2C5 BA4C 08DC F08E C54E  6593 7C73 E823 99D6 5220\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED BEC2AD32D4D3E63A788AA5A464E713157E37C4BF 0\\n[GNUPG:] SIG_ID Tw2kXAEDzGOOCP83T4kL5apFuJI 2022-12-20 1671553073\\n[GNUPG:] KEY_CONSIDERED BEC2AD32D4D3E63A788AA5A464E713157E37C4BF 0\\n[GNUPG:] GOODSIG 7C73E82399D65220 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org\\n[GNUPG:] NOTATION_DATA \\xE6\\xE2\\xB1\\xB2\\xC1\\\\`=\\xEE%00Y%20\\xFD\\xA8\\xE8cyH|%16\\xB1r`\\x9F\\xFCH\\xDA3hYf\\x8E\\n[GNUPG:] VALIDSIG E2C5BA4C08DCF08EC54E65937C73E82399D65220 2022-12-20 1671553073 0 4 0 1 10 00 BEC2AD32D4D3E63A788AA5A464E713157E37C4BF\\n[GNUPG:] TRUST_UNDEFINED 0 pgp\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED BEC2AD32D4D3E63A788AA5A464E713157E37C4BF 0\\n[GNUPG:] SIG_ID Tw2kXAEDzGOOCP83T4kL5apFuJI 2022-12-20 1671553073\\n[GNUPG:] KEY_CONSIDERED BEC2AD32D4D3E63A788AA5A464E713157E37C4BF 0\\n[GNUPG:] GOODSIG 7C73E82399D65220 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org\\n[GNUPG:] NOTATION_DATA \\xE6\\xE2\\xB1\\xB2\\xC1\\\\`=\\xEE%00Y%20\\xFD\\xA8\\xE8cyH|%16\\xB1r`\\x9F\\xFCH\\xDA3hYf\\x8E\\n[GNUPG:] VALIDSIG E2C5BA4C08DCF08EC54E65937C73E82399D65220 2022-12-20 1671553073 0 4 0 1 10 00 BEC2AD32D4D3E63A788AA5A464E713157E37C4BF\\n[GNUPG:] TRUST_UNDEFINED 0 pgp\\n",
       "status": "exit status: 0",
       "files": {}
     },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--status-fd=1\"",
         "\"--verify\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg_bad\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using RSA key E2C5BA4C08DCF08EC54E65937C73E82399D65220\\ngpg: BAD signature from \"Alice Lovelace <alice@lovelace.name>\" [unknown]\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED BEC2AD32D4D3E63A788AA5A464E713157E37C4BF 0\\n[GNUPG:] BADSIG 7C73E82399D65220 Alice Lovelace <alice@lovelace.name>\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED BEC2AD32D4D3E63A788AA5A464E713157E37C4BF 0\\n[GNUPG:] BADSIG 7C73E82399D65220 Alice Lovelace <alice@lovelace.name>\\n",
       "status": "exit status: 1",
       "files": {}
     },
@@ -237,12 +241,12 @@
         "\"gpgv\"",
         "\"--keyring\"",
         "\"/EXPERIMENT/cert\"",
-        "\"--status-fd=1\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg\""
       ],
       "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using RSA key E2C5BA4C08DCF08EC54E65937C73E82399D65220\\ngpgv: Good signature from \"Alice Lovelace <alice@lovelace.name>\"\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED BEC2AD32D4D3E63A788AA5A464E713157E37C4BF 0\\n[GNUPG:] SIG_ID Tw2kXAEDzGOOCP83T4kL5apFuJI 2022-12-20 1671553073\\n[GNUPG:] KEY_CONSIDERED BEC2AD32D4D3E63A788AA5A464E713157E37C4BF 0\\n[GNUPG:] GOODSIG 7C73E82399D65220 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org\\n[GNUPG:] NOTATION_DATA \\xE6\\xE2\\xB1\\xB2\\xC1\\\\`=\\xEE%00Y%20\\xFD\\xA8\\xE8cyH|%16\\xB1r`\\x9F\\xFCH\\xDA3hYf\\x8E\\n[GNUPG:] VALIDSIG E2C5BA4C08DCF08EC54E65937C73E82399D65220 2022-12-20 1671553073 0 4 0 1 10 00 BEC2AD32D4D3E63A788AA5A464E713157E37C4BF\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED BEC2AD32D4D3E63A788AA5A464E713157E37C4BF 0\\n[GNUPG:] SIG_ID Tw2kXAEDzGOOCP83T4kL5apFuJI 2022-12-20 1671553073\\n[GNUPG:] KEY_CONSIDERED BEC2AD32D4D3E63A788AA5A464E713157E37C4BF 0\\n[GNUPG:] GOODSIG 7C73E82399D65220 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org\\n[GNUPG:] NOTATION_DATA \\xE6\\xE2\\xB1\\xB2\\xC1\\\\`=\\xEE%00Y%20\\xFD\\xA8\\xE8cyH|%16\\xB1r`\\x9F\\xFCH\\xDA3hYf\\x8E\\n[GNUPG:] VALIDSIG E2C5BA4C08DCF08EC54E65937C73E82399D65220 2022-12-20 1671553073 0 4 0 1 10 00 BEC2AD32D4D3E63A788AA5A464E713157E37C4BF\\n",
       "status": "exit status: 0",
       "files": {}
     },
@@ -251,12 +255,12 @@
         "\"gpgv\"",
         "\"--keyring\"",
         "\"/EXPERIMENT/cert\"",
-        "\"--status-fd=1\"",
         "\"/EXPERIMENT/sig\"",
         "\"/EXPERIMENT/msg_bad\""
       ],
       "stderr": "gpgv: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpgv:                using RSA key E2C5BA4C08DCF08EC54E65937C73E82399D65220\\ngpgv: BAD signature from \"Alice Lovelace <alice@lovelace.name>\"\\n",
-      "stdout": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED BEC2AD32D4D3E63A788AA5A464E713157E37C4BF 0\\n[GNUPG:] BADSIG 7C73E82399D65220 Alice Lovelace <alice@lovelace.name>\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED BEC2AD32D4D3E63A788AA5A464E713157E37C4BF 0\\n[GNUPG:] BADSIG 7C73E82399D65220 Alice Lovelace <alice@lovelace.name>\\n",
       "status": "exit status: 1",
       "files": {}
     }
@@ -268,43 +272,53 @@
   "dynamic_upper_bounds": [
     [
       0,
-      86
+      86,
+      0
     ],
     [
       0,
-      6
+      6,
+      0
     ],
     [
       0,
-      6
+      6,
+      0
     ],
     [
       0,
-      6
+      6,
+      0
     ],
     [
       0,
-      6
+      6,
+      0
     ],
     [
+      0,
       0,
       0
     ],
     [
-      134,
-      6
-    ],
-    [
-      67,
-      6
+      0,
+      6,
+      134
     ],
     [
       0,
-      6
+      6,
+      67
     ],
     [
-      67,
-      6
+      0,
+      6,
+      0
+    ],
+    [
+      0,
+      6,
+      67
     ]
   ]
 }

@@ -8,6 +8,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: keybox '/HOMEDIR/pubring.kbx' created\\ngpg: /HOMEDIR/trustdb.gpg: trustdb created\\ngpg: key A8C387BC41A156B0: public key \"Alice Lovelace <alice@lovelace.name>\" imported\\ngpg: Total number processed: 1\\ngpg:               imported: 1\\n",
       "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 3A25AFD6F469C48F9A088C7DA8C387BC41A156B0 0\\n[GNUPG:] IMPORTED A8C387BC41A156B0 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] IMPORT_OK 1 3A25AFD6F469C48F9A088C7DA8C387BC41A156B0\\n[GNUPG:] IMPORT_RES 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0\\n",
       "status": "exit status: 0",
       "files": {}
     },
@@ -18,6 +19,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: no ultimately trusted keys found\\n",
       "stdout": "",
+      "statusfd": "",
       "status": "exit status: 0",
       "files": {}
     },
@@ -29,6 +31,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:255:22:A8C387BC41A156B0:1671553073:1765901873::-:::cESC:::::ed25519:::0:\\nfpr:::::::::3A25AFD6F469C48F9A088C7DA8C387BC41A156B0:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsub:-:255:22:81DCCFBFED154308:1671553073:1765901873:::::s:::::ed25519::\\nfpr:::::::::D8A15A346CF6A6EF5D31138281DCCFBFED154308:\\nsub:-:255:18:A0CCB1A8DD4B5287:1671553073:1765901873:::::e:::::cv25519::\\nfpr:::::::::679F137B67AF39AFE8C8ED18A0CCB1A8DD4B5287:\\n",
+      "statusfd": "",
       "status": "exit status: 0",
       "files": {}
     },
@@ -36,7 +39,6 @@
       "args": [
         "\"--faked-system-time=1671553073!\"",
         "\"--batch\"",
-        "\"--status-fd=1\"",
         "\"--no-auto-key-locate\"",
         "\"--trust-model\"",
         "\"pgp\"",
@@ -48,7 +50,8 @@
         "\"/EXPERIMENT/plaintext\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: A0CCB1A8DD4B5287: There is no assurance this key belongs to the named user\\ngpg: /EXPERIMENT/plaintext: encryption failed: Unusable public key\\n",
-      "stdout": "[GNUPG:] KEY_CONSIDERED 3A25AFD6F469C48F9A088C7DA8C387BC41A156B0 0\\n[GNUPG:] KEY_CONSIDERED 3A25AFD6F469C48F9A088C7DA8C387BC41A156B0 0\\n[GNUPG:] INV_RECP 10 <alice@lovelace.name>\\n[GNUPG:] FAILURE encrypt 53\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 3A25AFD6F469C48F9A088C7DA8C387BC41A156B0 0\\n[GNUPG:] KEY_CONSIDERED 3A25AFD6F469C48F9A088C7DA8C387BC41A156B0 0\\n[GNUPG:] INV_RECP 10 <alice@lovelace.name>\\n[GNUPG:] FAILURE encrypt 53\\n",
       "status": "exit status: 2",
       "files": {}
     }
@@ -62,6 +65,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: key A8C387BC41A156B0: public key \"Alice Lovelace <alice@lovelace.name>\" imported\\ngpg: Total number processed: 1\\ngpg:               imported: 1\\n",
       "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 3A25AFD6F469C48F9A088C7DA8C387BC41A156B0 0\\n[GNUPG:] IMPORTED A8C387BC41A156B0 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] IMPORT_OK 1 3A25AFD6F469C48F9A088C7DA8C387BC41A156B0\\n[GNUPG:] IMPORT_RES 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0\\n",
       "status": "exit status: 0",
       "files": {}
     },
@@ -72,6 +76,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "",
+      "statusfd": "",
       "status": "exit status: 0",
       "files": {}
     },
@@ -83,6 +88,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:256:22:A8C387BC41A156B0:1671553073:1765901873::-:::cESC:::::ed25519:::0:\\nfpr:::::::::3A25AFD6F469C48F9A088C7DA8C387BC41A156B0:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsub:-:256:22:81DCCFBFED154308:1671553073:1765901873:::::s:::::ed25519::\\nfpr:::::::::D8A15A346CF6A6EF5D31138281DCCFBFED154308:\\nsub:-:256:18:A0CCB1A8DD4B5287:1671553073:1765901873:::::e:::::cv25519::\\nfpr:::::::::679F137B67AF39AFE8C8ED18A0CCB1A8DD4B5287:\\n",
+      "statusfd": "",
       "status": "exit status: 0",
       "files": {}
     },
@@ -90,7 +96,6 @@
       "args": [
         "\"--faked-system-time=1671553073!\"",
         "\"--batch\"",
-        "\"--status-fd=1\"",
         "\"--no-auto-key-locate\"",
         "\"--trust-model\"",
         "\"pgp\"",
@@ -102,7 +107,8 @@
         "\"/EXPERIMENT/plaintext\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: A0CCB1A8DD4B5287: There is no assurance this key belongs to the named user\\ngpg: /EXPERIMENT/plaintext: encryption failed: Unusable public key\\n",
-      "stdout": "[GNUPG:] KEY_CONSIDERED 3A25AFD6F469C48F9A088C7DA8C387BC41A156B0 0\\n[GNUPG:] INV_RECP 10 <alice@lovelace.name>\\n[GNUPG:] FAILURE encrypt 53\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 3A25AFD6F469C48F9A088C7DA8C387BC41A156B0 0\\n[GNUPG:] INV_RECP 10 <alice@lovelace.name>\\n[GNUPG:] FAILURE encrypt 53\\n",
       "status": "exit status: 2",
       "files": {}
     }
@@ -113,19 +119,23 @@
   "dynamic_upper_bounds": [
     [
       0,
-      86
+      86,
+      0
     ],
     [
       0,
-      38
+      38,
+      0
     ],
     [
       3,
+      0,
       0
     ],
     [
-      67,
-      0
+      0,
+      0,
+      67
     ]
   ]
 }

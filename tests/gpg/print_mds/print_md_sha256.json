@@ -7,6 +7,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: keybox '/HOMEDIR/pubring.kbx' created\\ngpg: /HOMEDIR/trustdb.gpg: trustdb created\\n",
       "stdout": "",
+      "statusfd": "",
       "status": "exit status: 0",
       "files": {}
     },
@@ -19,6 +20,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "/EXPERIMENT/foo: 2C26B46B 68FFC68F F99B453C 1D304134 13422D70 6483BFA0\\n                     F98A5E88 6266E7AE\\n",
+      "statusfd": "",
       "status": "exit status: 0",
       "files": {}
     },
@@ -32,6 +34,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "/EXPERIMENT/foo: 2C26B46B 68FFC68F F99B453C 1D304134 13422D70 6483BFA0\\n                     F98A5E88 6266E7AE\\n/EXPERIMENT/bar: FCDE2B2E DBA56BF4 08601FB7 21FE9B5C 338D10EE 429EA04F\\n                     AE5511B6 8FBF8FB9\\n",
+      "statusfd": "",
       "status": "exit status: 0",
       "files": {}
     },
@@ -45,6 +48,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "/EXPERIMENT/foo:8:2C26B46B68FFC68FF99B453C1D30413413422D706483BFA0F98A5E886266E7AE:\\n",
+      "statusfd": "",
       "status": "exit status: 0",
       "files": {}
     },
@@ -59,6 +63,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "/EXPERIMENT/foo:8:2C26B46B68FFC68FF99B453C1D30413413422D706483BFA0F98A5E886266E7AE:\\n/EXPERIMENT/bar:8:FCDE2B2EDBA56BF408601FB721FE9B5C338D10EE429EA04FAE5511B68FBF8FB9:\\n",
+      "statusfd": "",
       "status": "exit status: 0",
       "files": {}
     }
@@ -71,6 +76,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "",
+      "statusfd": "",
       "status": "exit status: 0",
       "files": {}
     },
@@ -83,6 +89,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "/EXPERIMENT/foo: 2C26B46B 68FFC68F F99B453C 1D304134 13422D70 6483BFA0\\n                     F98A5E88 6266E7AE\\n",
+      "statusfd": "",
       "status": "exit status: 0",
       "files": {}
     },
@@ -96,6 +103,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "/EXPERIMENT/foo: 2C26B46B 68FFC68F F99B453C 1D304134 13422D70 6483BFA0\\n                     F98A5E88 6266E7AE\\n/EXPERIMENT/bar: FCDE2B2E DBA56BF4 08601FB7 21FE9B5C 338D10EE 429EA04F\\n                     AE5511B6 8FBF8FB9\\n",
+      "statusfd": "",
       "status": "exit status: 0",
       "files": {}
     },
@@ -109,6 +117,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "/EXPERIMENT/foo:8:2C26B46B68FFC68FF99B453C1D30413413422D706483BFA0F98A5E886266E7AE:\\n",
+      "statusfd": "",
       "status": "exit status: 0",
       "files": {}
     },
@@ -123,6 +132,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "/EXPERIMENT/foo:8:2C26B46B68FFC68FF99B453C1D30413413422D706483BFA0F98A5E886266E7AE:\\n/EXPERIMENT/bar:8:FCDE2B2EDBA56BF408601FB721FE9B5C338D10EE429EA04FAE5511B68FBF8FB9:\\n",
+      "statusfd": "",
       "status": "exit status: 0",
       "files": {}
     }
@@ -131,21 +141,26 @@
   "dynamic_upper_bounds": [
     [
       0,
-      86
+      86,
+      0
     ],
     [
+      0,
       0,
       0
     ],
     [
       0,
-      0
-    ],
-    [
       0,
       0
     ],
     [
+      0,
+      0,
+      0
+    ],
+    [
+      0,
       0,
       0
     ]

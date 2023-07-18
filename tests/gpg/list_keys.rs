@@ -114,7 +114,7 @@ fn queries() -> Result<()> {
             "--list-keys", query,
         ])?;
         diff.assert_success();
-        diff.assert_equal_up_to(9, 0);
+        diff.assert_limits(9, 0, 67);
     }
 
     // It is possible to specify multiple search terms.  In this case
@@ -125,7 +125,7 @@ fn queries() -> Result<()> {
         "not_present2@example.org",
     ])?;
     diff.assert_failure();
-    diff.assert_equal_up_to(0, 0);
+    diff.assert_limits(0, 0, 32);
 
     let diff = experiment.invoke(&[
         "--list-keys",
@@ -134,7 +134,7 @@ fn queries() -> Result<()> {
         "not_present2@example.org",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(0, 0);
+    diff.assert_limits(0, 0, 67);
 
     // If two patterns match the same certificate, the certificate
     // should only be output once.
@@ -146,7 +146,7 @@ fn queries() -> Result<()> {
         "not_present2@example.org",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(0, 0);
+    diff.assert_limits(0, 0, 67);
 
     Ok(())
 }
@@ -311,7 +311,7 @@ fn disabled() -> Result<()> {
         "--check-trustdb",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(0, 150);
+    diff.assert_limits(0, 150, 67);
 
     test_key_cert_imported(cert, experiment)
 }
@@ -359,7 +359,6 @@ fn test_key(cert: Cert, mut experiment: Experiment) -> Result<()>
         &experiment.store("cert", &cert.to_vec()?)?,
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(0, 140);
 
     test_key_cert_imported(cert, experiment)
 }
@@ -434,7 +433,6 @@ fn test_key_cert_imported(cert: Cert, mut experiment: Experiment) -> Result<()>
         &experiment.store("cert", &cert.as_tsk().to_vec()?)?,
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(0, 0);
 
     let diff = experiment.invoke(&[
         "--list-keys",
@@ -540,7 +538,6 @@ fn general_purpose(cs: CipherSuite) -> Result<()> {
         &experiment.store("cert", &cert.to_vec()?)?,
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(0, 120);
 
     let diff = experiment.invoke(&[
         "--list-keys",
@@ -561,7 +558,6 @@ fn general_purpose(cs: CipherSuite) -> Result<()> {
         &experiment.store("cert", &cert.as_tsk().to_vec()?)?,
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(0, 0);
 
     let diff = experiment.invoke(&[
         "--list-secret-keys",

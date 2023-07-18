@@ -7,6 +7,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: keybox '/HOMEDIR/pubring.kbx' created\\ngpg: /HOMEDIR/trustdb.gpg: trustdb created\\n",
       "stdout": "",
+      "statusfd": "",
       "status": "exit status: 0",
       "files": {}
     },
@@ -19,6 +20,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "/EXPERIMENT/foo: AC BD 18 DB 4C C2 F8 5C  ED EF 65 4F CC C4 A4 D8\\n",
+      "statusfd": "",
       "status": "exit status: 0",
       "files": {}
     },
@@ -32,6 +34,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "/EXPERIMENT/foo: AC BD 18 DB 4C C2 F8 5C  ED EF 65 4F CC C4 A4 D8\\n/EXPERIMENT/bar: 37 B5 1D 19 4A 75 13 E4  5B 56 F6 52 4F 2D 51 F2\\n",
+      "statusfd": "",
       "status": "exit status: 0",
       "files": {}
     },
@@ -45,6 +48,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "/EXPERIMENT/foo:1:ACBD18DB4CC2F85CEDEF654FCCC4A4D8:\\n",
+      "statusfd": "",
       "status": "exit status: 0",
       "files": {}
     },
@@ -59,6 +63,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "/EXPERIMENT/foo:1:ACBD18DB4CC2F85CEDEF654FCCC4A4D8:\\n/EXPERIMENT/bar:1:37B51D194A7513E45B56F6524F2D51F2:\\n",
+      "statusfd": "",
       "status": "exit status: 0",
       "files": {}
     }
@@ -71,6 +76,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "",
+      "statusfd": "",
       "status": "exit status: 0",
       "files": {}
     },
@@ -83,6 +89,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "/EXPERIMENT/foo: AC BD 18 DB 4C C2 F8 5C  ED EF 65 4F CC C4 A4 D8\\n",
+      "statusfd": "",
       "status": "exit status: 0",
       "files": {}
     },
@@ -96,6 +103,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "/EXPERIMENT/foo: AC BD 18 DB 4C C2 F8 5C  ED EF 65 4F CC C4 A4 D8\\n/EXPERIMENT/bar: 37 B5 1D 19 4A 75 13 E4  5B 56 F6 52 4F 2D 51 F2\\n",
+      "statusfd": "",
       "status": "exit status: 0",
       "files": {}
     },
@@ -109,6 +117,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "/EXPERIMENT/foo:1:ACBD18DB4CC2F85CEDEF654FCCC4A4D8:\\n",
+      "statusfd": "",
       "status": "exit status: 0",
       "files": {}
     },
@@ -123,6 +132,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "/EXPERIMENT/foo:1:ACBD18DB4CC2F85CEDEF654FCCC4A4D8:\\n/EXPERIMENT/bar:1:37B51D194A7513E45B56F6524F2D51F2:\\n",
+      "statusfd": "",
       "status": "exit status: 0",
       "files": {}
     }
@@ -131,21 +141,26 @@
   "dynamic_upper_bounds": [
     [
       0,
-      86
+      86,
+      0
     ],
     [
+      0,
       0,
       0
     ],
     [
       0,
-      0
-    ],
-    [
       0,
       0
     ],
     [
+      0,
+      0,
+      0
+    ],
+    [
+      0,
       0,
       0
     ]

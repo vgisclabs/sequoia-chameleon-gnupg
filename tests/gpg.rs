@@ -2,7 +2,7 @@ use std::{
     collections::BTreeMap,
     fmt,
     fs,
-    io,
+    io::{self, Read},
     path::{Path, PathBuf},
     process::*,
     time::{Duration, SystemTime, UNIX_EPOCH},
@@ -210,13 +210,50 @@ impl Context {
         }
         c.arg("--homedir").arg(self.home.path());
 
-        // XXX construct an inheritable pipe and pass it in as
-        // status-fd.
+        // IPC.  Stdin, stdout, and stderr we handle using the std
+        // library.
+        c.stdin(Stdio::piped());
+        c.stdout(Stdio::piped());
+        c.stderr(Stdio::piped());
 
+        use interprocess::unnamed_pipe::pipe;
+        use std::os::unix::io::AsRawFd;
+        let (writer, mut reader) = pipe()?;
+        c.arg(format!("--status-fd={}", writer.as_raw_fd()));
+
+        // Be nice and close one end of the pipe in the child process.
+        #[cfg(target_family = "unix")]
+        {
+            use std::os::unix::io::FromRawFd;
+            use std::os::unix::process::CommandExt;
+            let reader_fd = reader.as_raw_fd();
+            unsafe {
+                c.pre_exec(move || {
+                    drop(fs::File::from_raw_fd(reader_fd));
+                    Ok(())
+                });
+            }
+        }
+
+        // Finish the arguments and start the process.
         for arg in args {
             c.arg(arg);
         }
-        let out = c.output()?;
+        let mut child = c.spawn()?;
+
+        // Now handle the status-fd pipe.
+        drop(writer);
+        let status_fd_reader = std::thread::spawn(move || {
+            let mut v = Vec::new();
+            reader.read_to_end(&mut v).map(|_| v)
+        });
+
+        // Handle stdin.
+        drop(child.stdin.take());
+
+        // Collect outputs, synchronize.
+        let out = child.wait_with_output()?;
+        let statusfd = status_fd_reader.join().unwrap()?;
 
         // Collect any output produced in the working directory.
         let mut files = BTreeMap::default();
@@ -230,6 +267,7 @@ impl Context {
             args: args.into_iter().map(ToString::to_string).collect(),
             stdout: out.stdout,
             stderr: out.stderr,
+            statusfd,
             status: out.status.to_string(),
             files,
         })
@@ -363,6 +401,9 @@ pub struct Output {
     stderr: Vec<u8>,
     #[serde_as(as = "Stfu8Bytes")]
     stdout: Vec<u8>,
+    #[serde(default)]
+    #[serde_as(as = "Stfu8Bytes")]
+    statusfd: Vec<u8>,
 
     /// The status code, e.g., "exit status: 0".
     status: String,
@@ -394,6 +435,8 @@ impl Output {
     /// with `"/EXPERIMENT"` in stdout and stderr, and normalizes the
     /// underline decorating `homedir` in key listings in stdout.
     fn canonicalize(mut self, homedir: &Path, experiment: &Path) -> Self {
+        use regex::bytes::Regex;
+
         const DASHES: &str =
             "\n------------------------------------------------------------";
         let d = regex::bytes::Regex::new(
@@ -412,6 +455,18 @@ impl Output {
             e.replace_all(&h.replace_all(&self.stderr, &b"/HOMEDIR"[..]),
                           &b"/EXPERIMENT"[..])
             .into();
+
+        // According to doc/DETAILS, "This [KEYEXPIRED] status line is
+        // not very useful because it will also be emitted for expired
+        // subkeys even if this subkey is not used."  And indeed,
+        // GnuPG emits this left, right, and center whenever it
+        // encounters an expired key, without any context, without
+        // being useful for anyone.  Drop it, as we don't emit it.
+        let keyexpired =
+            Regex::new(r"\[GNUPG:\] KEYEXPIRED [^\n]*\n").unwrap();
+        self.statusfd =
+            keyexpired.replace_all(&self.statusfd, &b""[..]).into();
+
         self
     }
 
@@ -427,6 +482,13 @@ impl Output {
         edit_distance::edit_distance(
             &String::from_utf8_lossy(&self.stderr).to_string(),
             &String::from_utf8_lossy(&to.stderr).to_string())
+    }
+
+    /// Returns the edit distance of run's status-fd with the given one.
+    pub fn statusfd_edit_distance(&self, to: &Self) -> usize {
+        edit_distance::edit_distance(
+            &String::from_utf8_lossy(&self.statusfd).to_string(),
+            &String::from_utf8_lossy(&to.statusfd).to_string())
     }
 
     /// Invokes a callback with the working directory.
@@ -453,7 +515,7 @@ struct ArtifactStore {
     /// Difference to the Chameleon's stderr and stdout at the time
     /// this output was recorded.
     #[serde(default)]
-    dynamic_upper_bounds: Vec<(usize, usize)>,
+    dynamic_upper_bounds: Vec<Vec<usize>>,
 }
 
 impl ArtifactStore {
@@ -629,10 +691,12 @@ impl Experiment {
 
         us.args = normalized_args.clone();
 
+        let use_cache = std::env::var_os("GPG_SQ_IGNORE_CACHE").is_none();
         let former_us = if let Some(o) = self.artifacts
             .former_us_outputs.as_ref()
             .and_then(|o| o.get(n))
             .filter(|v| v.args == normalized_args)
+            .filter(|_| use_cache)
         {
             eprintln!("Have previous output from the chameleon");
             Some(o.clone())
@@ -652,6 +716,7 @@ impl Experiment {
         // Then, invoke GnuPG if we don't have a cached artifact.
         let oracle = if let Some(o) = self.artifacts.outputs.get(n)
             .filter(|v| v.args == normalized_args)
+            .filter(|_| use_cache)
         {
             eprintln!("Not invoking the oracle: using cached results");
             o.clone()
@@ -664,9 +729,11 @@ impl Experiment {
             self.artifacts.outputs.truncate(n);
             self.artifacts.outputs.push(output.clone());
             self.artifacts.dynamic_upper_bounds.truncate(n);
-            self.artifacts.dynamic_upper_bounds.push(
-                (output.stdout_edit_distance(&us),
-                 output.stderr_edit_distance(&us)));
+            self.artifacts.dynamic_upper_bounds.push(vec![
+                output.stdout_edit_distance(&us),
+                output.stderr_edit_distance(&us),
+                output.statusfd_edit_distance(&us),
+            ]);
             output
         };
 
@@ -732,7 +799,7 @@ pub struct Diff<'a> {
     oracle: Output,
     us: Output,
     former_us: Option<Output>,
-    dynamic_upper_bounds: Option<&'a (usize, usize)>,
+    dynamic_upper_bounds: Option<&'a Vec<usize>>,
 }
 
 impl Diff<'_> {
@@ -794,6 +861,10 @@ impl Diff<'_> {
                 pass = false;
                 eprintln!("Stderr changed from last run.");
             }
+            if former_us.statusfd != self.us.statusfd {
+                pass = false;
+                eprintln!("Status-fd changed from last run.");
+            }
             if former_us.status != self.us.status {
                 pass = false;
                 eprintln!("Status changed from last run.");
@@ -816,9 +887,13 @@ impl Diff<'_> {
     /// output on stdout (stderr) does not exceed the recorded limits.
     /// Panics otherwise.
     pub fn assert_dynamic_upper_bounds(&self) {
-        if let Some(&(out_limit, err_limit)) = self.dynamic_upper_bounds {
-            eprintln!("asserting recorded limits of {}, {}", out_limit, err_limit);
-            self.assert_equal_up_to(out_limit, err_limit);
+        if let Some(limits) = &self.dynamic_upper_bounds {
+            let out_limit = limits.get(0).cloned().unwrap_or_default();
+            let err_limit = limits.get(1).cloned().unwrap_or_default();
+            let statusfd_limit = limits.get(2).cloned().unwrap_or_default();
+            eprintln!("Asserting recorded limits of {}, {}, {}",
+                      out_limit, err_limit, statusfd_limit);
+            self._assert_limits(out_limit, err_limit, statusfd_limit);
         }
     }
 
@@ -829,6 +904,18 @@ impl Diff<'_> {
     /// output on stdout (stderr) does not exceed the given
     /// `out_limit` (`err_limit`).  Panics otherwise.
     pub fn assert_equal_up_to(&self, out_limit: usize, err_limit: usize) {
+        self.assert_limits(out_limit, err_limit, 0)
+    }
+
+    pub fn assert_limits(&self, out_limit: usize, err_limit: usize,
+                         statusfd_limit: usize) {
+        eprintln!("Asserting static limits of {}, {}, {}",
+                  out_limit, err_limit, statusfd_limit);
+        self._assert_limits(out_limit, err_limit, statusfd_limit);
+    }
+
+    fn _assert_limits(&self, out_limit: usize, err_limit: usize,
+                         statusfd_limit: usize) {
         let mut pass = true;
 
         let d = self.oracle.stdout_edit_distance(&self.us);
@@ -853,6 +940,18 @@ impl Diff<'_> {
             pass = false;
             eprintln!("Stderr edit distance {} smaller than half of limit {}.",
                       d, err_limit);
+        }
+
+        let d = self.oracle.statusfd_edit_distance(&self.us);
+        if d > statusfd_limit {
+            pass = false;
+            eprintln!("Statusfd_limit edit distance {} exceeds limit of {}.",
+                      d, statusfd_limit);
+        }
+        if statusfd_limit > 20 && d < statusfd_limit / 2 {
+            pass = false;
+            eprintln!("Statusfd_limit edit distance {} smaller than half of limit {}.",
+                      d, statusfd_limit);
         }
 
         if ! pass {
@@ -917,11 +1016,36 @@ impl fmt::Display for Diff<'_> {
 
         if let Some(former_us) = self.former_us.as_ref() {
             if former_us.stderr.len() + self.us.stderr.len() > 0 {
+            writeln!(f, "stderr (edit distance {}):",
+                     former_us.stderr_edit_distance(&self.us))?;
                 udiff(f,
                       "former chameleon stderr",
                       &String::from_utf8_lossy(&former_us.stderr),
                       "chameleon stderr",
                       &String::from_utf8_lossy(&self.us.stderr))?;
+            } else {
+                writeln!(f, "Can't compare to previous run: output not recorded")?;
+            }
+        }
+
+        if self.oracle.statusfd.len() + self.us.statusfd.len() > 0 {
+            writeln!(f, "statusfd (edit distance {}):",
+                     self.oracle.statusfd_edit_distance(&self.us))?;
+            udiff(f, "oracle statusfd",
+                  &String::from_utf8_lossy(&self.oracle.statusfd),
+                  "chameleon statusfd",
+                  &String::from_utf8_lossy(&self.us.statusfd))?;
+        }
+
+        if let Some(former_us) = self.former_us.as_ref() {
+            if former_us.statusfd.len() + self.us.statusfd.len() > 0 {
+            writeln!(f, "statusfd (edit distance {}):",
+                     former_us.statusfd_edit_distance(&self.us))?;
+                udiff(f,
+                      "former chameleon statusfd",
+                      &String::from_utf8_lossy(&former_us.statusfd),
+                      "chameleon statusfd",
+                      &String::from_utf8_lossy(&self.us.statusfd))?;
             } else {
                 writeln!(f, "Can't compare to previous run: output not recorded")?;
             }

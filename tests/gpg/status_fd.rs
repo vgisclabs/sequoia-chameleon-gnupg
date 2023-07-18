@@ -43,7 +43,6 @@ fn untrusted_certificate_prompt() -> Result<()> {
     diff.assert_equal_up_to(0, 110);
 
     let diff = experiment.invoke(&[
-        "--status-fd=1",
         "--command-fd=0",
         "--encrypt",
         "--recipient", "<alice@lovelace.name>",
@@ -58,7 +57,7 @@ fn untrusted_certificate_prompt() -> Result<()> {
     // some warning directly to the tty, but the chameleon prints them
     // to stderr.  This is a bug in the chameleon.  When it is fixed,
     // reduce the expected edit distance for stderr to 0.
-    diff.assert_equal_up_to(245, 395);
+    diff.assert_limits(0, 395, 245);
 
     Ok(())
 }

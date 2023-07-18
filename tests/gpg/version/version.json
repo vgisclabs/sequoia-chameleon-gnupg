@@ -7,6 +7,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\n",
       "stdout": "gpg (GnuPG) 2.2.40\\nlibgcrypt 1.10.1\\nCopyright (C) 2022 g10 Code GmbH\\nLicense GNU GPL-3.0-or-later <https://gnu.org/licenses/gpl.html>\\nThis is free software: you are free to change and redistribute it.\\nThere is NO WARRANTY, to the extent permitted by law.\\n\\nHome: /HOMEDIR\\nSupported algorithms:\\nPubkey: RSA, ELG, DSA, ECDH, ECDSA, EDDSA\\nCipher: IDEA, 3DES, CAST5, BLOWFISH, AES, AES192, AES256, TWOFISH,\\n        CAMELLIA128, CAMELLIA192, CAMELLIA256\\nHash: SHA1, RIPEMD160, SHA256, SHA384, SHA512, SHA224\\nCompression: Uncompressed, ZIP, ZLIB, BZIP2\\n",
+      "statusfd": "",
       "status": "exit status: 0",
       "files": {}
     }
@@ -19,6 +20,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\n",
       "stdout": "gpg (GnuPG-compatible Sequoia Chameleon) 2.2.40\\nSequoia gpg Chameleon 0.2.0\\nsequoia-openpgp 1.16.0\\nCopyright (C) 2022 p≡p foundation\\nLicense GNU GPL-3.0-or-later <https://gnu.org/licenses/gpl.html>\\nThis is free software: you are free to change and redistribute it.\\nThere is NO WARRANTY, to the extent permitted by law.\\n\\nHome: /HOMEDIR\\nSupported algorithms:\\nPubkey: RSA, DSA, ECDH, ECDSA, EDDSA\\nCipher: 3DES, CAST5, BLOWFISH, AES, AES192, AES256, TWOFISH,\\n        CAMELLIA128, CAMELLIA192, CAMELLIA256\\nHash: SHA1, RIPEMD160, SHA256, SHA384, SHA512, SHA224\\nCompression: Uncompressed, ZIP, ZLIB, BZIP2\\n",
+      "statusfd": "",
       "status": "exit status: 0",
       "files": {}
     }
@@ -27,6 +29,7 @@
   "dynamic_upper_bounds": [
     [
       94,
+      0,
       0
     ]
   ]
