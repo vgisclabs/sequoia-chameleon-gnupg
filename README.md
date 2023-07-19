@@ -131,9 +131,10 @@ trying to de-correlate them.  It will use Tor if available.
 
 To enable the Parcimonie component, run `gpg-sq
 --x-sequoia-parcimonie`, either manually or using a service manager (a
-systemd unit file is included in this repository).  Alternatively, you
-can use the `x-sequoia-autostart-parcimonie` option in your
-configuration file to start it on-demand if `gpg-sq` is invoked.
+systemd unit file with the name `gpg-sq-parcimonie.service` is
+included in this repository).  Alternatively, you can use the
+`x-sequoia-autostart-parcimonie` option in your configuration file to
+start it on-demand if `gpg-sq` is invoked.
 
 ## OpenPGP Conformance
 
