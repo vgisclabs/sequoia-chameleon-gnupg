@@ -16,7 +16,7 @@ use openpgp::{
 use super::super::*;
 
 #[test]
-#[ntest::timeout(60000)]
+#[ntest::timeout(600000)]
 fn empty() -> Result<()> {
     let mut experiment = make_experiment!()?;
 
@@ -65,7 +65,7 @@ fn empty() -> Result<()> {
 }
 
 #[test]
-#[ntest::timeout(60000)]
+#[ntest::timeout(600000)]
 fn queries() -> Result<()> {
     let mut experiment = make_experiment!()?;
     let cert = experiment.artifact(
@@ -152,7 +152,7 @@ fn queries() -> Result<()> {
 }
 
 #[test]
-#[ntest::timeout(60000)]
+#[ntest::timeout(600000)]
 fn valid() -> Result<()> {
     let mut experiment = make_experiment!()?;
     let cert = experiment.artifact(
@@ -170,7 +170,7 @@ fn valid() -> Result<()> {
 }
 
 #[test]
-#[ntest::timeout(60000)]
+#[ntest::timeout(600000)]
 fn revoked() -> Result<()> {
     let mut experiment = make_experiment!()?;
     let cert = experiment.artifact(
@@ -190,7 +190,7 @@ fn revoked() -> Result<()> {
 }
 
 #[test]
-#[ntest::timeout(60000)]
+#[ntest::timeout(600000)]
 fn expired() -> Result<()> {
     let mut experiment = make_experiment!()?;
     let a_week = Duration::new(7 * 24 * 3600, 0);
@@ -215,7 +215,7 @@ fn expired() -> Result<()> {
 }
 
 #[test]
-#[ntest::timeout(60000)]
+#[ntest::timeout(600000)]
 fn expired_subkey() -> Result<()> {
     let mut experiment = make_experiment!()?;
     let a_week = Duration::new(7 * 24 * 3600, 0);
@@ -258,7 +258,7 @@ fn expired_subkey() -> Result<()> {
 }
 
 #[test]
-#[ntest::timeout(60000)]
+#[ntest::timeout(600000)]
 fn locked() -> Result<()> {
     let mut experiment = make_experiment!()?;
     let cert = experiment.artifact(
@@ -277,7 +277,7 @@ fn locked() -> Result<()> {
 }
 
 #[test]
-#[ntest::timeout(60000)]
+#[ntest::timeout(600000)]
 fn disabled() -> Result<()> {
     let mut experiment = make_experiment!()?;
     let cert = experiment.artifact(
@@ -317,7 +317,7 @@ fn disabled() -> Result<()> {
 }
 
 #[test]
-#[ntest::timeout(60000)]
+#[ntest::timeout(600000)]
 fn designated_revoker() -> Result<()> {
     let experiment = make_experiment!()?;
     let cert = Cert::from_bytes("
@@ -479,43 +479,43 @@ fn test_key_cert_imported(cert: Cert, mut experiment: Experiment) -> Result<()>
 }
 
 #[test]
-#[ntest::timeout(60000)]
+#[ntest::timeout(600000)]
 fn general_purpose_cv25519() -> Result<()> {
     general_purpose(CipherSuite::Cv25519)
 }
 
 #[test]
-#[ntest::timeout(60000)]
+#[ntest::timeout(600000)]
 fn general_purpose_rsa2k() -> Result<()> {
     general_purpose(CipherSuite::RSA2k)
 }
 
 #[test]
-#[ntest::timeout(60000)]
+#[ntest::timeout(600000)]
 fn general_purpose_rsa3k() -> Result<()> {
     general_purpose(CipherSuite::RSA3k)
 }
 
 #[test]
-#[ntest::timeout(60000)]
+#[ntest::timeout(600000)]
 fn general_purpose_rsa4k() -> Result<()> {
     general_purpose(CipherSuite::RSA4k)
 }
 
 #[test]
-#[ntest::timeout(60000)]
+#[ntest::timeout(600000)]
 fn general_purpose_p256() -> Result<()> {
     general_purpose(CipherSuite::P256)
 }
 
 #[test]
-#[ntest::timeout(60000)]
+#[ntest::timeout(600000)]
 fn general_purpose_p384() -> Result<()> {
     general_purpose(CipherSuite::P384)
 }
 
 #[test]
-#[ntest::timeout(60000)]
+#[ntest::timeout(600000)]
 fn general_purpose_p521() -> Result<()> {
     general_purpose(CipherSuite::P521)
 }

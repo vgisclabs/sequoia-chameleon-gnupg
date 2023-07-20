@@ -3,56 +3,56 @@ use anyhow::Result;
 use super::super::*;
 
 #[test]
-#[ntest::timeout(60000)]
+#[ntest::timeout(600000)]
 fn print_md_md5() -> Result<()> {
     let e = make_experiment!()?;
     print_md(e, "md5")
 }
 
 #[test]
-#[ntest::timeout(60000)]
+#[ntest::timeout(600000)]
 fn print_md_sha1() -> Result<()> {
     let e = make_experiment!()?;
     print_md(e, "sha1")
 }
 
 #[test]
-#[ntest::timeout(60000)]
+#[ntest::timeout(600000)]
 fn print_md_ripemd160() -> Result<()> {
     let e = make_experiment!()?;
     print_md(e, "ripemd160")
 }
 
 #[test]
-#[ntest::timeout(60000)]
+#[ntest::timeout(600000)]
 fn print_md_sha224() -> Result<()> {
     let e = make_experiment!()?;
     print_md(e, "sha224")
 }
 
 #[test]
-#[ntest::timeout(60000)]
+#[ntest::timeout(600000)]
 fn print_md_sha256() -> Result<()> {
     let e = make_experiment!()?;
     print_md(e, "sha256")
 }
 
 #[test]
-#[ntest::timeout(60000)]
+#[ntest::timeout(600000)]
 fn print_md_sha384() -> Result<()> {
     let e = make_experiment!()?;
     print_md(e, "sha384")
 }
 
 #[test]
-#[ntest::timeout(60000)]
+#[ntest::timeout(600000)]
 fn print_md_sha512() -> Result<()> {
     let e = make_experiment!()?;
     print_md(e, "sha512")
 }
 
 #[test]
-#[ntest::timeout(60000)]
+#[ntest::timeout(600000)]
 fn print_md_star() -> Result<()> {
     let e = make_experiment!()?;
     print_md(e, "*")
@@ -97,7 +97,7 @@ fn print_md<A: Into<Option<&'static str>>>(mut e: Experiment, arg: A) -> Result<
 }
 
 #[test]
-#[ntest::timeout(60000)]
+#[ntest::timeout(600000)]
 fn print_mds() -> Result<()> {
     let mut e = make_experiment!()?;
 

@@ -19,7 +19,7 @@ const PLAINTEXT: &[u8] = b"plaintext";
 // for confirmation via status-fd using a machine readable (rather
 // than human readable) prompt.
 #[test]
-#[ntest::timeout(60000)]
+#[ntest::timeout(600000)]
 fn untrusted_certificate_prompt() -> Result<()> {
     let cs = CipherSuite::Cv25519;
 

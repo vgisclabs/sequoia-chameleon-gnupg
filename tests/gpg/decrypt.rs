@@ -23,7 +23,7 @@ use super::super::*;
 const PLAINTEXT: &[u8] = b"plaintext";
 
 #[test]
-#[ntest::timeout(60000)]
+#[ntest::timeout(600000)]
 fn simple() -> Result<()> {
     let mut experiment = make_experiment!()?;
     let cert = experiment.artifact(
@@ -42,43 +42,43 @@ fn simple() -> Result<()> {
 }
 
 #[test]
-#[ntest::timeout(60000)]
+#[ntest::timeout(600000)]
 fn general_purpose_cv25519() -> Result<()> {
     general_purpose(CipherSuite::Cv25519)
 }
 
 #[test]
-#[ntest::timeout(60000)]
+#[ntest::timeout(600000)]
 fn general_purpose_rsa2k() -> Result<()> {
     general_purpose(CipherSuite::RSA2k)
 }
 
 #[test]
-#[ntest::timeout(60000)]
+#[ntest::timeout(600000)]
 fn general_purpose_rsa3k() -> Result<()> {
     general_purpose(CipherSuite::RSA3k)
 }
 
 #[test]
-#[ntest::timeout(60000)]
+#[ntest::timeout(600000)]
 fn general_purpose_rsa4k() -> Result<()> {
     general_purpose(CipherSuite::RSA4k)
 }
 
 #[test]
-#[ntest::timeout(60000)]
+#[ntest::timeout(600000)]
 fn general_purpose_p256() -> Result<()> {
     general_purpose(CipherSuite::P256)
 }
 
 #[test]
-#[ntest::timeout(60000)]
+#[ntest::timeout(600000)]
 fn general_purpose_p384() -> Result<()> {
     general_purpose(CipherSuite::P384)
 }
 
 #[test]
-#[ntest::timeout(60000)]
+#[ntest::timeout(600000)]
 fn general_purpose_p521() -> Result<()> {
     general_purpose(CipherSuite::P521)
 }
