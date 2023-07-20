@@ -91,7 +91,6 @@ pub const STDERR_EDIT_DISTANCE_THRESHOLD: usize = 20;
 
 /// Sets up the test environment.
 fn setup() {
-    check_gpg_oracle();
     build();
 }
 
@@ -722,6 +721,7 @@ impl Experiment {
             o.clone()
         } else {
             // Cache miss or the arguments changed.
+            check_gpg_oracle();
             eprintln!("Invoking the oracle");
             let mut output = self.oracle.invoke(&args)?
                 .canonicalize(self.oracle.home.path(), self.wd.path());
