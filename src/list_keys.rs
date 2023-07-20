@@ -48,8 +48,40 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String], list_secret: bool)
         }.emit(config, &mut sink)?;
     }
 
-    let certs = if args.is_empty() {
-        config.keydb().certs()
+    let certs: Box<dyn Iterator<Item = Cow<LazyCert>>> = if args.is_empty() {
+        // We filter out the trust root.  Not only does including it
+        // mess up the tests, it is also likely surprising and
+        // confusing for users.
+        let trust_root_fp =
+            if let Ok(overlay) = config.keydb().get_certd_overlay()
+        {
+            if let Ok(trust_root) = overlay.trust_root() {
+                // As prior versions of the Chameleon generated a
+                // trust root but didn't insert it into the certd, do
+                // it now.  We have already loaded and parsed the
+                // trust root, and listing all certs is an expensive
+                // operation, so we don't mind the overhead here.
+                if let Some(certd) =
+                    overlay.cert_store.certd().map(|c| c.certd())
+                {
+                    use openpgp::serialize::SerializeInto;
+                    certd.insert(
+                        trust_root.to_vec()?.into(), |new, _| Ok(new))?;
+                }
+
+                Some(trust_root.fingerprint())
+            } else {
+                None // No trust root.
+            }
+        } else {
+            None // No overlay, no trust root.
+        };
+
+        Box::new(
+            config.keydb().certs()
+                .filter(move |c| trust_root_fp.as_ref()
+                        .map(|fp| &c.fingerprint() != fp)
+                        .unwrap_or(true)))
     } else {
         let mut certs = BTreeMap::new();
         for query in args.iter().map(|a| Query::from(&a[..])) {

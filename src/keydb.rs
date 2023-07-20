@@ -638,7 +638,7 @@ impl<'store> KeyDB<'store> {
 
 pub struct Overlay<'store> {
     path: PathBuf,
-    cert_store: CertStore<'store>,
+    pub(crate) cert_store: CertStore<'store>,
     #[allow(dead_code)]
     trust_root: OnceCell<Cert>,
 }
@@ -712,6 +712,7 @@ impl<'store> Overlay<'store> {
                                   0, 0, 0, 0, 0, 0, 0, 0,
                                   0, 0, 0, 0, 0, 0, 0, 0]);
 
+        let mut newly_generated = false;
         let (_, trust_root) = certd.insert_special(
             openpgp_cert_d::TRUST_ROOT,
             dummy.into(),
@@ -719,11 +720,19 @@ impl<'store> Overlay<'store> {
                 if let Some(trust_root) = existing {
                     Ok(trust_root)
                 } else {
+                    newly_generated = true;
                     Self::generate_trust_root().map_err(Into::into)
                 }
             })?;
+        let trust_root = Cert::from_bytes(&trust_root)?;
 
-        Cert::from_bytes(&trust_root)
+        if newly_generated {
+            // Also insert the public bits into the certd for the WoT
+            // algorithm to find.
+            certd.insert(trust_root.to_vec()?.into(), |new, _| Ok(new))?;
+        }
+
+        Ok(trust_root)
     }
 
     fn generate_trust_root() -> Result<openpgp_cert_d::Data> {
