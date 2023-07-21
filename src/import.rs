@@ -104,7 +104,6 @@ async fn real_cmd_import(config: &mut crate::Config<'_>, args: &[String])
     }
 
     s.print_results(config)?;
-    drop(args);
     Ok(())
 }
 
