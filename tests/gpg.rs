@@ -102,14 +102,18 @@ fn check_gpg_oracle() {
     START.call_once(|| {
         let o = Command::new(&GPG[0])
             .arg("--version").output().unwrap();
-        if String::from_utf8_lossy(&o.stdout).contains("equoia") {
+        if String::from_utf8_lossy(&o.stdout[..o.stdout.len().min(256)])
+            .contains("equoia")
+        {
             panic!("The oracle {:?} is Sequoia-based, please provide the \
                     stock gpg in REAL_GPG_BIN", GPG[0]);
         }
 
         let o = Command::new(&GPGV[0])
             .arg("--version").output().unwrap();
-        if String::from_utf8_lossy(&o.stdout).contains("equoia") {
+        if String::from_utf8_lossy(&o.stdout[..o.stdout.len().min(256)])
+            .contains("equoia")
+        {
             panic!("The oracle {:?} is Sequoia-based, please provide the \
                     stock gpg in REAL_GPGV_BIN", GPGV[0]);
         }
