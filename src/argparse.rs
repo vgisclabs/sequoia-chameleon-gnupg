@@ -28,6 +28,16 @@ pub enum Argument<T: Debug> {
     Positional(String),
 }
 
+impl<T: Debug> Argument<T> {
+    /// Returns the option and value, if any.
+    pub fn option(&self) -> Option<(&T, &Value)> {
+        match self {
+            Argument::Option(t, v) => Some((t, v)),
+            Argument::Positional(_) => None,
+        }
+    }
+}
+
 /// Some arguments take a value.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Value {
