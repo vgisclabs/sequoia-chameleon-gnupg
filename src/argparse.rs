@@ -506,7 +506,7 @@ impl<T: Copy + Debug + PartialEq + Eq + Into<isize> + 'static> Iterator for Iter
         }
 
         if ! long && self.special_filenames
-            && crate::utils::special_filename_fd(&arg).is_some()
+            && utils::special_filename_fd(&arg).is_some()
         {
             // This is a named file descriptor as a positional
             // argument.

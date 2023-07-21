@@ -1,13 +1,12 @@
 //! Miscellaneous utilities.
 
 use std::{
-    convert::TryInto,
     fs,
     io,
     path::{Path, PathBuf},
 };
 
-use anyhow::{Context, Result};
+use anyhow::Result;
 
 use sequoia_openpgp as openpgp;
 use openpgp::{
@@ -15,6 +14,13 @@ use openpgp::{
     policy::Policy,
 };
 
+pub use crate::{
+    argparse::utils::{
+        sink_from_fd,
+        source_from_fd,
+        special_filename_fd,
+    },
+};
 use crate::{
     common::{self, Query},
 };
@@ -107,51 +113,6 @@ pub fn create(control: &dyn common::Common, name: &str)
         sink_from_fd(fd)
     } else {
         Ok(Box::new(fs::File::create(name)?))
-    }
-}
-
-
-/// Returns the file descriptor if the given name is a special
-/// filename.
-pub fn special_filename_fd(name: &str) -> Option<i64> {
-    if name.starts_with("-&") {
-        name[2..].parse().ok()
-    } else {
-       None
-    }
-}
-
-/// Creates an io::Write from the given file descriptor.
-pub fn sink_from_fd(fd: i64) -> Result<Box<dyn io::Write + Send + Sync>> {
-    platform! {
-        unix => {
-            use std::os::unix::io::FromRawFd;
-            let fd = fd.try_into().context(
-                format!("Not a valid file descriptor: {}", fd))?;
-            Ok(Box::new(unsafe {
-                fs::File::from_raw_fd(fd)
-            }))
-        },
-        windows => {
-            unimplemented!()
-        },
-    }
-}
-
-/// Creates an io::Read from the given file descriptor.
-pub fn source_from_fd(fd: i64) -> Result<fs::File> {
-    platform! {
-        unix => {
-            use std::os::unix::io::FromRawFd;
-            let fd = fd.try_into().context(
-                format!("Not a valid file descriptor: {}", fd))?;
-            Ok(unsafe {
-                fs::File::from_raw_fd(fd)
-            })
-        },
-        windows => {
-            unimplemented!()
-        },
     }
 }
 
