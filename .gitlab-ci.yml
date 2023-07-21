@@ -1,6 +1,10 @@
+# Default image for jobs
 image: 192.168.122.1:5000/sequoia-pgp/build-docker-image/bookworm-prebuild:latest
 
-test:
+.test:
+  before_script:
+   # The test rely on gpg.  Make sure it is available.
+   - apt-get update -y -qq && apt-get install -y gpg
   script:
     - if [ -d target ]; then find target | wc --lines; du -sh target; fi
     - if [ -d cargo ]; then find cargo | wc --lines; du -sh cargo; fi
@@ -10,6 +14,13 @@ test:
     - gpg --version
     - mkdir -p /run/user/$UID # For GnuPG's socket directories
     - cargo test
+
+test-bookworm:
+  extends: .test
+
+test-rust-stable:
+  image: 192.168.122.1:5000/sequoia-pgp/build-docker-image/rust-stable:latest
+  extends: .test
 
 all_commits:
   # Test each commit up to main, to facilitate bisecting.
