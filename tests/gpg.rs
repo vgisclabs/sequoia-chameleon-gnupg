@@ -100,6 +100,9 @@ fn check_gpg_oracle() {
 
     static START: Once = Once::new();
     START.call_once(|| {
+        eprintln!("Checking that {:?} is the stock GnuPG...",
+                  &GPG[0]);
+
         let o = Command::new(&GPG[0])
             .arg("--version").output().unwrap();
         if String::from_utf8_lossy(&o.stdout[..o.stdout.len().min(256)])
@@ -126,6 +129,9 @@ fn build() {
 
     static START: Once = Once::new();
     START.call_once(|| {
+        eprintln!("Spawning {:?} to build the chameleon...",
+                  GPG_CHAMELEON_BUILD);
+
         let prog = GPG_CHAMELEON_BUILD;
         let mut c = Command::new(&prog[0]);
         for arg in &prog[1..] {
@@ -245,6 +251,7 @@ impl Context {
         for arg in args {
             c.arg(arg);
         }
+        eprintln!("Spawning {:?} {:?}...", exe, c.get_args());
         let mut child = c.spawn()?;
 
         // Now handle the status-fd pipe.
