@@ -200,7 +200,10 @@ impl Context {
                 (&self.gpg, &args[..])
             };
 
-        let mut c = Command::new(&executable[0]);
+        // We're going to change directories before execve(2)ing in
+        // the child, so make sure the path is absolute.
+        let exe = fs::canonicalize(&executable[0])?;
+        let mut c = Command::new(&exe);
         c.env("LC_ALL", "C");
         c.env("TZ", "Africa/Nairobi"); // EAT, no DST.
         c.env("SEQUOIA_CRYPTO_POLICY", // Use a null policy.
