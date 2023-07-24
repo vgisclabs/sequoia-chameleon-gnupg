@@ -137,7 +137,10 @@ fn build() {
         for arg in &prog[1..] {
             c.arg(arg);
         }
-        c.output().unwrap();
+        let status = c.status().unwrap();
+        if ! status.success() {
+            panic!("Building the chameleon failed: {:?}", status);
+        }
     });
 }
 
