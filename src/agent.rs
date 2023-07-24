@@ -95,7 +95,22 @@ pub async fn connect(ctx: ipc::gnupg::Context) -> Result<Agent> {
 
     async fn transaction(ctx: ipc::gnupg::Context) -> Result<Agent> {
         t!("Starting daemon if not running");
-        ctx.start("gpg-agent")?;
+
+        if false {
+            // XXX: Currently, this will invoke gpgconf
+            // --create-socketdir, and fail if that fails.  It will
+            // also spew all sorts of output to stderr.
+            ctx.start("gpg-agent")?;
+        } else {
+            // In the mean time, manually start the agent.
+            let mut c = std::process::Command::new("gpgconf");
+            if let Some(h) = ctx.homedir() {
+                c.env("GNUPGHOME", h);
+                c.arg("--homedir").arg(&h.display().to_string());
+            }
+            c.arg("--launch").arg("gpg-agent");
+            c.status()?;
+        }
 
         t!("Connecting to daemon");
         Ok(ipc::gnupg::Agent::connect(&ctx).await?)
