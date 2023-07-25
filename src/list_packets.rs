@@ -52,6 +52,7 @@ pub fn cmd_list_packets(config: &crate::Config, args: &[String])
 
     let mut ppr
         = self::openpgp::parse::PacketParserBuilder::from_reader(input)?
+        .automatic_hashing(false)
         .map(true).build()?;
 
     // In case we encounter a decryption container, we'll need a
@@ -191,6 +192,7 @@ impl PacketDumper {
 
         write!(output, ":{}:", babel::Fish(p.tag()))?;
 
+        #[allow(deprecated)]
         match p {
             Unknown(_) =>
                 writeln!(output, " [invalid]")?,
@@ -467,6 +469,7 @@ impl PacketDumper {
                u8::from(s.tag()), s.value().serialized_len())?;
 
         let i = "";
+        #[allow(deprecated)]
         match s.value() {
             Unknown { .. } =>
                 writeln!(output, " (?)")?,
