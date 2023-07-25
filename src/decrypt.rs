@@ -314,7 +314,9 @@ impl<'a, 'store> DHelper<'a, 'store> {
     where
         D: FnMut(SymmetricAlgorithm, &SessionKey) -> bool,
     {
-        if ! self.config.quiet && ! skesks.is_empty() {
+        // We provide all the information upfront before we try any
+        // decryption.
+        if ! self.config.quiet {
             for skesk in skesks {
                 let (cipher, aead) = match skesk {
                     SKESK::V4(s) => (s.symmetric_algo(), None),
@@ -329,11 +331,59 @@ impl<'a, 'store> DHelper<'a, 'store> {
                 ));
             }
 
-            self.config.info(format_args!(
-                "encrypted with {} passphrase{}",
-                skesks.len(),
-                if skesks.len() != 1 { "s" } else { "" },
-            ));
+            if ! skesks.is_empty() {
+                self.config.info(format_args!(
+                    "encrypted with {} passphrase{}",
+                    skesks.len(),
+                    if skesks.len() != 1 { "s" } else { "" },
+                ));
+            }
+
+            for pkesk in pkesks {
+                let keyid = pkesk.recipient();
+                let handle = KeyHandle::from(keyid);
+                if self.config.verbose > 0 {
+                    self.config.warn(format_args!(
+                        "public key is {}", handle));
+                }
+
+                if let Some(cert) = self.config.keydb().lookup_by_key(&handle).ok()
+                    .and_then(|certs: Vec<_>| certs.into_iter().next())
+                    .and_then(|cert| cert.as_cert().ok())
+                {
+                    if self.config.verbose > 0 {
+                        self.config.warn(format_args!(
+                            "using subkey {} instead of primary key {}", handle,
+                            cert.keyid()));
+                    }
+
+                    let key = cert.keys().key_handle(handle.clone())
+                        .next().expect("the indices to be consistent");
+                    let creation_time =
+                        chrono::DateTime::<chrono::Utc>::from(key.creation_time());
+
+                    self.config.warn(format_args!(
+                        "encrypted with {}-bit {} key, ID {}, created {}\n      {:?}",
+                        key.mpis().bits().unwrap_or(0),
+                        babel::Fish(pkesk.pk_algo()),
+                        pkesk.recipient(),
+                        creation_time.format("%Y-%m-%d"),
+                        utils::best_effort_primary_uid(self.config.policy(), &cert)));
+                } else {
+                    self.config.warn(format_args!(
+                        "encrypted with {} key, ID {}",
+                        babel::Fish(pkesk.pk_algo()), pkesk.recipient()));
+                }
+
+                self.config.status().emit(
+                    Status::EncTo {
+                        keyid: keyid.clone(),
+                        pk_algo: Some(pkesk.pk_algo()),
+                        // According to doc/DETAILS, GnuPG always
+                        // reports the length as 0.
+                        pk_len: None,
+                    })?;
+            }
         }
 
         // Before doing anything else, try if we were given a session
@@ -364,51 +414,7 @@ impl<'a, 'store> DHelper<'a, 'store> {
             if keyid.is_wildcard() {
                 continue; // XXX
             }
-
             let handle = KeyHandle::from(keyid);
-            if self.config.verbose > 0 {
-                self.config.warn(format_args!(
-                    "public key is {}", handle));
-            }
-
-            if let Some(cert) = self.config.keydb().lookup_by_key(&handle).ok()
-                .and_then(|certs: Vec<_>| certs.into_iter().next())
-                .and_then(|cert| cert.as_cert().ok())
-            {
-                if self.config.verbose > 0 {
-                    self.config.warn(format_args!(
-                        "using subkey {} instead of primary key {}", handle,
-                        cert.keyid()));
-                }
-
-                let key = cert.keys().key_handle(handle.clone())
-                    .next().expect("the indices to be consistent");
-                let creation_time =
-                    chrono::DateTime::<chrono::Utc>::from(key.creation_time());
-
-                self.config.warn(format_args!(
-                    "encrypted with {}-bit {} key, ID {}, created {}\n      {:?}",
-                    key.mpis().bits().unwrap_or(0),
-                    babel::Fish(pkesk.pk_algo()),
-                    pkesk.recipient(),
-                    creation_time.format("%Y-%m-%d"),
-                    utils::best_effort_primary_uid(self.config.policy(), &cert)));
-            } else {
-                self.config.warn(format_args!(
-                    "encrypted with {} key, ID {}",
-                    babel::Fish(pkesk.pk_algo()), pkesk.recipient()));
-            }
-
-            self.config.status().emit(
-                Status::EncTo {
-                    keyid: keyid.clone(),
-                    pk_algo: Some(pkesk.pk_algo()),
-                    pk_len: None,
-                })?;
-
-            if success.is_some() {
-                continue; // No further processing necessary.
-            }
 
             // See if we have the recipient cert.
             let cert = match self.config.keydb().lookup_by_key(&handle).ok()
@@ -460,8 +466,7 @@ impl<'a, 'store> DHelper<'a, 'store> {
             {
                 // Success!
                 success = Some(maybe_fp);
-                // But, we continue the loop for the benefit of
-                // printing recipients and related status codes.
+                break;
             }
         }
 
