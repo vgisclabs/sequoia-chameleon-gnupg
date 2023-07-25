@@ -473,7 +473,7 @@ impl<'a, 'store> DHelper<'a, 'store> {
                                 None
                             },
                             "PASSPHRASE" =>
-                                self.config.static_passprase.take()
+                                self.config.static_passphrase.take()
                                 .map(|encrypted| encrypted.map(
                                     |decrypted| decrypted.clone())),
                             _ => None,

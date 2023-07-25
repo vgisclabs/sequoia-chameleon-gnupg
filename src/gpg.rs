@@ -553,7 +553,7 @@ pub struct Config<'store> {
     skip_hidden_recipients: bool,
     skip_verify: bool,
     special_filenames: bool,
-    static_passprase: std::cell::Cell<Option<Password>>,
+    static_passphrase: std::cell::Cell<Option<Password>>,
     textmode: usize,
     throw_keyids: bool,
     tofu_default_policy: trust::TofuPolicy,
@@ -678,7 +678,7 @@ impl<'store> Config<'store> {
             skip_hidden_recipients: false,
             skip_verify: false,
             special_filenames: false,
-            static_passprase: Default::default(),
+            static_passphrase: Default::default(),
             textmode: 0,
             throw_keyids: false,
             tofu_default_policy: Default::default(),
@@ -2097,7 +2097,7 @@ fn real_main() -> anyhow::Result<()> {
 	    },
 	    oBZ2DecompressLowmem => (),
 	    oPassphrase => {
-                opt.static_passprase =
+                opt.static_passphrase =
                     Some(value.as_str().unwrap().into()).into();
 	    },
 	    oPassphraseFD => {
@@ -2409,7 +2409,7 @@ fn real_main() -> anyhow::Result<()> {
                 },
             }
         }
-        opt.static_passprase = Some(password.into()).into();
+        opt.static_passphrase = Some(password.into()).into();
 
         // Explicitly leak the File here by turning it into a file
         // descriptor to avoid closing the stream.  We may still want
