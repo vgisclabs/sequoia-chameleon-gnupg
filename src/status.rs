@@ -17,7 +17,7 @@ use openpgp::{
     Fingerprint,
     KeyHandle,
     KeyID,
-    crypto::SessionKey,
+    crypto::{S2K, SessionKey},
     fmt::hex,
     packet::UserID,
     types::*,
@@ -259,6 +259,12 @@ pub enum Status<'a> {
     UserIdHint {
         keyid: KeyID,
         userid: Option<&'a UserID>,
+    },
+
+    // Remote control.
+    NeedPassphraseSym {
+        cipher: SymmetricAlgorithm,
+        s2k: S2K,
     },
 
     Imported {
@@ -664,6 +670,22 @@ impl Status<'_> {
                          userid
                          .map(|u| String::from_utf8_lossy(u.value()).to_string())
                          .unwrap_or_else(|| "[?]".into()))?;
+            },
+
+            NeedPassphraseSym {
+                cipher,
+                s2k,
+            } => {
+                #[allow(deprecated)]
+                let (mode, hash) = match s2k {
+                    S2K::Simple { hash, .. } => (1, *hash),
+                    S2K::Salted { hash, .. } => (2, *hash),
+                    S2K::Iterated { hash, .. } => (3, *hash),
+                    _ => (0, HashAlgorithm::Unknown(255)),
+                };
+
+                writeln!(w, "NEED_PASSPHRASE_SYM {} {} {}",
+                         u8::from(*cipher), mode, u8::from(hash))?;
             },
 
             Imported {

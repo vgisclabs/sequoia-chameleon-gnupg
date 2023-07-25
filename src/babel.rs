@@ -92,6 +92,18 @@ impl fmt::Display for Fish<SymmetricAlgorithm> {
     }
 }
 
+impl fmt::Display for Fish<AEADAlgorithm> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        use AEADAlgorithm::*;
+        #[allow(deprecated)]
+        match self.0 {
+            EAX => f.write_str("EAX"),
+            OCB => f.write_str("OCB"),
+            catchall => write!(f, "{:?}", catchall),
+        }
+    }
+}
+
 impl fmt::Display for Fish<HashAlgorithm> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         use HashAlgorithm::*;

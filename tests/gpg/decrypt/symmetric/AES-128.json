@@ -1,0 +1,194 @@
+{
+  "outputs": [
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: keybox '/HOMEDIR/pubring.kbx' created\\ngpg: /HOMEDIR/trustdb.gpg: trustdb created\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--batch\"",
+        "\"--pinentry-mode=loopback\"",
+        "\"--decrypt\"",
+        "\"--passphrase\"",
+        "\"password\"",
+        "\"/EXPERIMENT/ciphertext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: AES.CFB encrypted session key\\ngpg: encrypted with 1 passphrase\\n",
+      "stdout": "plaintext",
+      "statusfd": "[GNUPG:] NEED_PASSPHRASE_SYM 7 3 8\\n[GNUPG:] BEGIN_DECRYPTION\\n[GNUPG:] DECRYPTION_INFO 2 7 0\\n[GNUPG:] PLAINTEXT 62 0 \\n[GNUPG:] PLAINTEXT_LENGTH 9\\n[GNUPG:] DECRYPTION_OKAY\\n[GNUPG:] GOODMDC\\n[GNUPG:] END_DECRYPTION\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--batch\"",
+        "\"--pinentry-mode=loopback\"",
+        "\"--decrypt\"",
+        "\"--verbose\"",
+        "\"--passphrase\"",
+        "\"password\"",
+        "\"/EXPERIMENT/ciphertext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: AES.CFB encrypted session key\\ngpg: encrypted with 1 passphrase\\ngpg: AES encrypted data\\ngpg: original file name=''\\n",
+      "stdout": "plaintext",
+      "statusfd": "[GNUPG:] NEED_PASSPHRASE_SYM 7 3 8\\n[GNUPG:] BEGIN_DECRYPTION\\n[GNUPG:] DECRYPTION_INFO 2 7 0\\n[GNUPG:] PLAINTEXT 62 0 \\n[GNUPG:] PLAINTEXT_LENGTH 9\\n[GNUPG:] DECRYPTION_OKAY\\n[GNUPG:] GOODMDC\\n[GNUPG:] END_DECRYPTION\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--batch\"",
+        "\"--pinentry-mode=loopback\"",
+        "\"--decrypt\"",
+        "\"--list-only\"",
+        "\"--passphrase\"",
+        "\"password\"",
+        "\"/EXPERIMENT/ciphertext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: AES.CFB encrypted session key\\ngpg: encrypted with 1 passphrase\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] BEGIN_DECRYPTION\\n[GNUPG:] END_DECRYPTION\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--batch\"",
+        "\"--pinentry-mode=loopback\"",
+        "\"--decrypt\"",
+        "\"--list-only\"",
+        "\"--verbose\"",
+        "\"--passphrase\"",
+        "\"password\"",
+        "\"/EXPERIMENT/ciphertext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: AES.CFB encrypted session key\\ngpg: encrypted with 1 passphrase\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] BEGIN_DECRYPTION\\n[GNUPG:] END_DECRYPTION\\n",
+      "status": "exit status: 0",
+      "files": {}
+    }
+  ],
+  "former_us_outputs": [
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--batch\"",
+        "\"--pinentry-mode=loopback\"",
+        "\"--decrypt\"",
+        "\"--passphrase\"",
+        "\"password\"",
+        "\"/EXPERIMENT/ciphertext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: AES.CFB encrypted session key\\ngpg: encrypted with 1 passphrase\\n",
+      "stdout": "plaintext",
+      "statusfd": "[GNUPG:] NEED_PASSPHRASE_SYM 7 3 8\\n[GNUPG:] BEGIN_DECRYPTION\\n[GNUPG:] DECRYPTION_INFO 2 7 0\\n[GNUPG:] PLAINTEXT 62 0 \\n[GNUPG:] PLAINTEXT_LENGTH 9\\n[GNUPG:] DECRYPTION_OKAY\\n[GNUPG:] GOODMDC\\n[GNUPG:] END_DECRYPTION\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--batch\"",
+        "\"--pinentry-mode=loopback\"",
+        "\"--decrypt\"",
+        "\"--verbose\"",
+        "\"--passphrase\"",
+        "\"password\"",
+        "\"/EXPERIMENT/ciphertext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: AES.CFB encrypted session key\\ngpg: encrypted with 1 passphrase\\ngpg: AES encrypted data\\ngpg: original file name=''\\n",
+      "stdout": "plaintext",
+      "statusfd": "[GNUPG:] NEED_PASSPHRASE_SYM 7 3 8\\n[GNUPG:] BEGIN_DECRYPTION\\n[GNUPG:] DECRYPTION_INFO 2 7 0\\n[GNUPG:] PLAINTEXT 62 0 \\n[GNUPG:] PLAINTEXT_LENGTH 9\\n[GNUPG:] DECRYPTION_OKAY\\n[GNUPG:] GOODMDC\\n[GNUPG:] END_DECRYPTION\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--batch\"",
+        "\"--pinentry-mode=loopback\"",
+        "\"--decrypt\"",
+        "\"--list-only\"",
+        "\"--passphrase\"",
+        "\"password\"",
+        "\"/EXPERIMENT/ciphertext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: AES.CFB encrypted session key\\ngpg: encrypted with 1 passphrase\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] BEGIN_DECRYPTION\\n[GNUPG:] END_DECRYPTION\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--batch\"",
+        "\"--pinentry-mode=loopback\"",
+        "\"--decrypt\"",
+        "\"--list-only\"",
+        "\"--verbose\"",
+        "\"--passphrase\"",
+        "\"password\"",
+        "\"/EXPERIMENT/ciphertext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: AES.CFB encrypted session key\\ngpg: encrypted with 1 passphrase\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] BEGIN_DECRYPTION\\n[GNUPG:] END_DECRYPTION\\n",
+      "status": "exit status: 0",
+      "files": {}
+    }
+  ],
+  "artifacts": {
+    "ciphertext": "\\xC3\\x1E\\x04\\x07\\x03\\x08^wG\\x97\\xEA3|A\\xFF\\x13~\\xE7\\x16\\x1A;\\x08p\\x8Caq\\x95c\\xB1w\\xD4\\x11\\xD2:\\x01\\x97\\x01W\\xD3A:\\x1BA\\x03$\\xE0\\xA42\\xB9\\x07e\\xE8\\xB1\\xD8\\x8B\\xBA\"\\x11OE\\xB1\\x16\\xF3\\x10\\xA8]%\\x9C\\xE7\\x8A\\x03\\xC0\\xD6r+\\xF9\\x1D\\xDD\\xC4\\xB1Q\\xFA\\x11\\x8F\\xC29\\x0E\\n\\xAB\\x9B\\x10\\x8E"
+  },
+  "dynamic_upper_bounds": [
+    [
+      0,
+      86,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ]
+  ]
+}

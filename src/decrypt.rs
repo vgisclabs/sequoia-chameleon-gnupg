@@ -314,6 +314,28 @@ impl<'a, 'store> DHelper<'a, 'store> {
     where
         D: FnMut(SymmetricAlgorithm, &SessionKey) -> bool,
     {
+        if ! self.config.quiet && ! skesks.is_empty() {
+            for skesk in skesks {
+                let (cipher, aead) = match skesk {
+                    SKESK::V4(s) => (s.symmetric_algo(), None),
+                    SKESK::V5(s) => (s.symmetric_algo(), Some(s.aead_algo())),
+                    _ => continue,
+                };
+                self.config.info(format_args!(
+                    "{}.{} encrypted session key",
+                    babel::Fish(cipher),
+                    aead.map(|a| babel::Fish(a).to_string())
+                        .unwrap_or_else(|| "CFB".into()),
+                ));
+            }
+
+            self.config.info(format_args!(
+                "encrypted with {} passphrase{}",
+                skesks.len(),
+                if skesks.len() != 1 { "s" } else { "" },
+            ));
+        }
+
         // Before doing anything else, try if we were given a session
         // key.
         if let Some(sk) = &self.config.override_session_key {
@@ -457,6 +479,25 @@ impl<'a, 'store> DHelper<'a, 'store> {
 
         let mut error: Option<String> = None;
         loop {
+            // There is a bit of an impedance mismatch because we're
+            // trying to be nicer to the user.  GnuPG loops over the
+            // SKESKs and asks for a passphrase each time.  We ask
+            // once and try it with all SKESKS.  Hence, we emit all
+            // the NEED_PASSPHRASE_SYM lines beforehand.
+            for skesk in skesks {
+                let (cipher, s2k) = match skesk {
+                    SKESK::V4(s) => (s.symmetric_algo(), s.s2k().clone()),
+                    SKESK::V5(s) => (s.symmetric_algo(), s.s2k().clone()),
+                    _ => continue,
+                };
+                if ! self.config.list_only {
+                    self.config.status().emit(Status::NeedPassphraseSym {
+                        cipher,
+                        s2k,
+                    })?;
+                }
+            }
+
             let p =
                 crate::agent::get_passphrase(
                     &mut agent,

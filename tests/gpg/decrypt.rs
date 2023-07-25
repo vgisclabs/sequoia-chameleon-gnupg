@@ -7,6 +7,7 @@ use anyhow::Result;
 use sequoia_openpgp as openpgp;
 use openpgp::{
     cert::prelude::*,
+    crypto::SessionKey,
     policy::StandardPolicy,
     parse::Parse,
     serialize::{
@@ -16,11 +17,108 @@ use openpgp::{
             Message, Encryptor, LiteralWriter,
         },
     },
+    types::SymmetricAlgorithm,
 };
 
 use super::super::*;
 
 const PLAINTEXT: &[u8] = b"plaintext";
+
+#[test]
+#[ntest::timeout(600000)]
+fn symmetric_blowfish() -> Result<()> {
+    symmetric(SymmetricAlgorithm::Blowfish)
+}
+
+#[test]
+#[ntest::timeout(600000)]
+fn symmetric_aes128() -> Result<()> {
+    symmetric(SymmetricAlgorithm::AES128)
+}
+
+#[test]
+#[ntest::timeout(600000)]
+fn symmetric_aes192() -> Result<()> {
+    symmetric(SymmetricAlgorithm::AES192)
+}
+
+#[test]
+#[ntest::timeout(600000)]
+fn symmetric_aes256() -> Result<()> {
+    symmetric(SymmetricAlgorithm::AES256)
+}
+
+#[test]
+#[ntest::timeout(600000)]
+fn symmetric_twofish() -> Result<()> {
+    symmetric(SymmetricAlgorithm::Twofish)
+}
+
+fn symmetric(algo: SymmetricAlgorithm) -> Result<()> {
+    let mut experiment = make_experiment!(algo.to_string())?;
+    // Create the keyring stores.  Reduces the noise in the upcoming
+    // experiments.
+    experiment.invoke(&["--list-keys"])?.assert_success();
+
+    let sk = SessionKey::from(vec![64; algo.key_size()?]);
+    let ciphertext = experiment.artifact(
+        "ciphertext", || {
+            let mut buf = vec![];
+            let message = Message::new(&mut buf);
+            let message = Encryptor::with_session_key(
+                message, algo, sk.clone())?
+                .add_passwords(vec!["password"])
+                .build()?;
+            let mut message = LiteralWriter::new(message).build()?;
+            message.write_all(PLAINTEXT)?;
+            message.finalize()?;
+            Ok(buf)
+        },
+        |a, f| f.write_all(a).map_err(Into::into),
+        |b| Ok(b.to_vec()))?;
+
+    let diff = experiment.invoke(&[
+        "--batch",
+        "--pinentry-mode=loopback",
+        "--decrypt",
+        "--passphrase", "password",
+        &experiment.store("ciphertext", &ciphertext)?,
+    ])?;
+    diff.assert_limits(0, 0, 0);
+
+    let diff = experiment.invoke(&[
+        "--batch",
+        "--pinentry-mode=loopback",
+        "--decrypt",
+        "--verbose",
+        "--passphrase", "password",
+        &experiment.store("ciphertext", &ciphertext)?,
+    ])?;
+    diff.assert_limits(0, 0, 0);
+
+    let diff = experiment.invoke(&[
+        "--batch",
+        "--pinentry-mode=loopback",
+        "--decrypt",
+        "--list-only",
+        "--passphrase", "password",
+        &experiment.store("ciphertext", &ciphertext)?,
+    ])?;
+    diff.assert_limits(0, 0, 0);
+
+    let diff = experiment.invoke(&[
+        "--batch",
+        "--pinentry-mode=loopback",
+        "--decrypt",
+        "--list-only",
+        "--verbose",
+        "--passphrase", "password",
+        &experiment.store("ciphertext", &ciphertext)?,
+    ])?;
+    diff.assert_limits(0, 0, 0);
+
+    Ok(())
+}
 
 #[test]
 #[ntest::timeout(600000)]
