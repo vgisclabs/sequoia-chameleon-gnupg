@@ -535,7 +535,6 @@ pub struct Config<'store> {
     not_dash_escaped: bool,
     outfile: Option<String>,
     override_session_key: Option<SessionKey>,
-    passphrase: Option<String>,
     passphrase_repeat: i64,
     photo_viewer: Option<PathBuf>,
     pinentry_mode: agent::PinentryMode,
@@ -661,7 +660,6 @@ impl<'store> Config<'store> {
             not_dash_escaped: false,
             outfile: None,
             override_session_key: None,
-            passphrase: None,
             passphrase_repeat: 0, // XXX
             photo_viewer: None,
             pinentry_mode: Default::default(),
@@ -2099,7 +2097,8 @@ fn real_main() -> anyhow::Result<()> {
 	    },
 	    oBZ2DecompressLowmem => (),
 	    oPassphrase => {
-                opt.passphrase = Some(value.as_str().unwrap().to_string());
+                opt.static_passprase =
+                    Some(value.as_str().unwrap().into()).into();
 	    },
 	    oPassphraseFD => {
                 pwfd = Some(utils::source_from_fd(value.as_int().unwrap())?);
