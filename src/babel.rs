@@ -128,6 +128,7 @@ impl fmt::Display for Fish<AEADAlgorithm> {
         match self.0 {
             EAX => f.write_str("EAX"),
             OCB => f.write_str("OCB"),
+            GCM => f.write_str("GCM"),
             catchall => write!(f, "{:?}", catchall),
         }
     }
