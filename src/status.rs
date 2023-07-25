@@ -565,12 +565,12 @@ impl Status<'_> {
                 timestamp,
                 filename,
             } => {
-                write!(w, "PLAINTEXT {:x} {}",
+                // Note: GnuPG includes a trailing space.
+                write!(w, "PLAINTEXT {:x} {} ",
                        u8::from(*format),
                        timestamp.as_ref().and_then(|t| Timestamp::try_from(*t).ok())
                        .map(|t| u32::from(t)).unwrap_or(0))?;
                 if let Some(filename) = filename {
-                    write!(w, " ")?;
                     e(w, filename, true /* XXX: double check */)?;
                 }
                 writeln!(w)?;
