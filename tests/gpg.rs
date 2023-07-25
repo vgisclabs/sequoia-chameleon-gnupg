@@ -997,7 +997,7 @@ impl fmt::Display for Diff<'_> {
                      .join(" "))?;
 
         if self.oracle.stdout.len() + self.us.stdout.len() > 0 {
-            writeln!(f, "stdout (edit distance {}):",
+            writeln!(f, "stdout: (edit distance {})",
                      self.oracle.stdout_edit_distance(&self.us))?;
             udiff(f,
                   "oracle stdout",
@@ -1008,7 +1008,7 @@ impl fmt::Display for Diff<'_> {
 
         if let Some(former_us) = self.former_us.as_ref() {
             if former_us.stdout.len() + self.us.stdout.len() > 0 {
-                writeln!(f, "stdout (edit distance {}):",
+                writeln!(f, "stdout: (edit distance {})",
                          former_us.stdout_edit_distance(&self.us))?;
                 udiff(f,
                       "former gpg-chameleon stdout",
@@ -1023,7 +1023,7 @@ impl fmt::Display for Diff<'_> {
         }
 
         if self.oracle.stderr.len() + self.us.stderr.len() > 0 {
-            writeln!(f, "stderr (edit distance {}):",
+            writeln!(f, "stderr: (edit distance {})",
                      self.oracle.stderr_edit_distance(&self.us))?;
             udiff(f, "oracle stderr",
                   &String::from_utf8_lossy(&self.oracle.stderr),
@@ -1033,7 +1033,7 @@ impl fmt::Display for Diff<'_> {
 
         if let Some(former_us) = self.former_us.as_ref() {
             if former_us.stderr.len() + self.us.stderr.len() > 0 {
-            writeln!(f, "stderr (edit distance {}):",
+            writeln!(f, "stderr: (edit distance {})",
                      former_us.stderr_edit_distance(&self.us))?;
                 udiff(f,
                       "former chameleon stderr",
@@ -1046,7 +1046,7 @@ impl fmt::Display for Diff<'_> {
         }
 
         if self.oracle.statusfd.len() + self.us.statusfd.len() > 0 {
-            writeln!(f, "statusfd (edit distance {}):",
+            writeln!(f, "statusfd: (edit distance {})",
                      self.oracle.statusfd_edit_distance(&self.us))?;
             udiff(f, "oracle statusfd",
                   &String::from_utf8_lossy(&self.oracle.statusfd),
@@ -1056,7 +1056,7 @@ impl fmt::Display for Diff<'_> {
 
         if let Some(former_us) = self.former_us.as_ref() {
             if former_us.statusfd.len() + self.us.statusfd.len() > 0 {
-            writeln!(f, "statusfd (edit distance {}):",
+            writeln!(f, "statusfd: (edit distance {})",
                      former_us.statusfd_edit_distance(&self.us))?;
                 udiff(f,
                       "former chameleon statusfd",
@@ -1068,7 +1068,7 @@ impl fmt::Display for Diff<'_> {
             }
         }
 
-        writeln!(f, "status:")?;
+        writeln!(f, "exit status:")?;
         udiff(f, "oracle status",
               &self.oracle.status.to_string(),
               "chameleon status", &self.us.status.to_string())?;
