@@ -68,6 +68,7 @@ pub mod keyserver;
 pub mod sign;
 pub mod encrypt;
 pub mod list_keys;
+pub mod list_packets;
 pub mod locate;
 use locate::AutoKeyLocate;
 pub mod parcimonie;
@@ -2468,6 +2469,7 @@ fn real_main() -> anyhow::Result<()> {
         Some(aRefreshKeys) => keyserver::cmd_refresh_keys(&mut opt, &args),
         Some(aPrintMD) => commands::print_md(&opt, &args),
         Some(aPrintMDs) => commands::print_mds(&opt, &args),
+        Some(aListPackets) => list_packets::cmd_list_packets(&opt, &args),
         None => commands::cmd_implicit(&opt, &args),
 
         // Our own extensions.

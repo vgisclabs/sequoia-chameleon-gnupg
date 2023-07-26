@@ -1,0 +1,214 @@
+{
+  "outputs": [
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: keybox '/HOMEDIR/pubring.kbx' created\\ngpg: /HOMEDIR/trustdb.gpg: trustdb created\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-packets\"",
+        "\"--override-session-key=7:40404040404040404040404040404040\"",
+        "\"/EXPERIMENT/packets\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: AES.CFB encrypted session key\\ngpg: encrypted with 1 passphrase\\n",
+      "stdout": "# off=0 ctb=c3 tag=3 hlen=2 plen=30 new-ctb\\n:symkey enc packet: version 4, cipher 7, aead 0,s2k 3, hash 8, seskey 128 bits\\n\\tsalt 2A156FA92D6E2C28, count 65011712 (255)\\n# off=32 ctb=d2 tag=18 hlen=2 plen=58 new-ctb\\n:encrypted data packet:\\n\\tlength: 58\\n\\tmdc_method: 2\\n# off=53 ctb=cb tag=11 hlen=2 plen=15 new-ctb\\n:literal data packet:\\n\\tmode b (62), created 0, name=\"\",\\n\\traw data: 9 bytes\\n",
+      "statusfd": "[GNUPG:] BEGIN_DECRYPTION\\n[GNUPG:] DECRYPTION_INFO 2 7 0\\n[GNUPG:] DECRYPTION_OKAY\\n[GNUPG:] GOODMDC\\n[GNUPG:] END_DECRYPTION\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-packets\"",
+        "\"--override-session-key=7:40404040404040404040404040404040\"",
+        "\"/EXPERIMENT/packets\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: encrypted with ECDH key, ID FC867308995E4A4A\\n",
+      "stdout": "# off=0 ctb=c1 tag=1 hlen=2 plen=94 new-ctb\\n:pubkey enc packet: version 3, algo 18, keyid FC867308995E4A4A\\n\\tdata: [263 bits]\\n\\tdata: [392 bits]\\n# off=96 ctb=d2 tag=18 hlen=2 plen=58 new-ctb\\n:encrypted data packet:\\n\\tlength: 58\\n\\tmdc_method: 2\\n# off=117 ctb=cb tag=11 hlen=2 plen=15 new-ctb\\n:literal data packet:\\n\\tmode b (62), created 0, name=\"\",\\n\\traw data: 9 bytes\\n",
+      "statusfd": "[GNUPG:] ENC_TO FC867308995E4A4A 18 0\\n[GNUPG:] BEGIN_DECRYPTION\\n[GNUPG:] DECRYPTION_INFO 2 7 0\\n[GNUPG:] DECRYPTION_OKAY\\n[GNUPG:] GOODMDC\\n[GNUPG:] END_DECRYPTION\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--import\"",
+        "\"/EXPERIMENT/key\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: key E4846579CF6EACD4: public key \"Alice Lovelace <alice@lovelace.name>\" imported\\ngpg: key E4846579CF6EACD4: secret key imported\\ngpg: Total number processed: 1\\ngpg:               imported: 1\\ngpg:       secret keys read: 1\\ngpg:   secret keys imported: 1\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 5F722676B85215EDC7495C8DE4846579CF6EACD4 0\\n[GNUPG:] IMPORTED E4846579CF6EACD4 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] IMPORT_OK 1 5F722676B85215EDC7495C8DE4846579CF6EACD4\\n[GNUPG:] KEY_CONSIDERED 5F722676B85215EDC7495C8DE4846579CF6EACD4 0\\n[GNUPG:] IMPORT_OK 17 5F722676B85215EDC7495C8DE4846579CF6EACD4\\n[GNUPG:] IMPORT_RES 1 0 1 0 0 0 0 0 0 1 1 0 0 0 0\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n--------------------\\npub   ed25519 2022-12-20 [C]\\n      5F722676B85215EDC7495C8DE4846579CF6EACD4\\nuid           [ unknown] Alice Lovelace <alice@lovelace.name>\\nsub   cv25519 2022-12-20 [E]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-packets\"",
+        "\"/EXPERIMENT/packets\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: encrypted with 255-bit ECDH key, ID FC867308995E4A4A, created 2022-12-20\\n      \"Alice Lovelace <alice@lovelace.name>\"\\n",
+      "stdout": "# off=0 ctb=c1 tag=1 hlen=2 plen=94 new-ctb\\n:pubkey enc packet: version 3, algo 18, keyid FC867308995E4A4A\\n\\tdata: [263 bits]\\n\\tdata: [392 bits]\\n# off=96 ctb=d2 tag=18 hlen=2 plen=58 new-ctb\\n:encrypted data packet:\\n\\tlength: 58\\n\\tmdc_method: 2\\n# off=117 ctb=cb tag=11 hlen=2 plen=15 new-ctb\\n:literal data packet:\\n\\tmode b (62), created 0, name=\"\",\\n\\traw data: 9 bytes\\n",
+      "statusfd": "[GNUPG:] ENC_TO FC867308995E4A4A 18 0\\n[GNUPG:] KEY_CONSIDERED 5F722676B85215EDC7495C8DE4846579CF6EACD4 0\\n[GNUPG:] KEY_CONSIDERED 5F722676B85215EDC7495C8DE4846579CF6EACD4 0\\n[GNUPG:] DECRYPTION_KEY 71D1E82D843364B9326ACA90FC867308995E4A4A 5F722676B85215EDC7495C8DE4846579CF6EACD4 -\\n[GNUPG:] KEY_CONSIDERED 5F722676B85215EDC7495C8DE4846579CF6EACD4 0\\n[GNUPG:] BEGIN_DECRYPTION\\n[GNUPG:] DECRYPTION_INFO 2 7 0\\n[GNUPG:] DECRYPTION_OKAY\\n[GNUPG:] GOODMDC\\n[GNUPG:] END_DECRYPTION\\n",
+      "status": "exit status: 0",
+      "files": {}
+    }
+  ],
+  "former_us_outputs": [
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-packets\"",
+        "\"--override-session-key=7:40404040404040404040404040404040\"",
+        "\"/EXPERIMENT/packets\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: AES.CFB encrypted session key\\ngpg: encrypted with 1 passphrase\\n",
+      "stdout": "# off=0 ctb=c3 tag=3 hlen=2 plen=30 new-ctb\\n:symkey enc packet: version 4, cipher 7, aead 0,s2k 3, hash 8, seskey 128 bits\\n\\tsalt 2A156FA92D6E2C28, count 65011712 (255)\\n# off=32 ctb=d2 tag=18 hlen=2 plen=58 new-ctb\\n:encrypted data packet:\\n\\tlength: 58\\n\\tmdc_method: 2\\n# off=92 ctb=cb tag=11 hlen=2 plen=15 new-ctb\\n:literal data packet:\\n\\tmode b (62), created 0, name=\"\",\\n\\traw data: 9 bytes\\n",
+      "statusfd": "[GNUPG:] BEGIN_DECRYPTION\\n[GNUPG:] DECRYPTION_INFO 2 7 0\\n[GNUPG:] DECRYPTION_OKAY\\n[GNUPG:] GOODMDC\\n[GNUPG:] END_DECRYPTION\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-packets\"",
+        "\"--override-session-key=7:40404040404040404040404040404040\"",
+        "\"/EXPERIMENT/packets\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: encrypted with ECDH key, ID FC867308995E4A4A\\n",
+      "stdout": "# off=0 ctb=c1 tag=1 hlen=2 plen=94 new-ctb\\n:pubkey enc packet: version 3, algo 18, keyid FC867308995E4A4A\\n\\tdata: [263 bits]\\n\\tdata: [384 bits]\\n# off=96 ctb=d2 tag=18 hlen=2 plen=58 new-ctb\\n:encrypted data packet:\\n\\tlength: 58\\n\\tmdc_method: 2\\n# off=156 ctb=cb tag=11 hlen=2 plen=15 new-ctb\\n:literal data packet:\\n\\tmode b (62), created 0, name=\"\",\\n\\traw data: 9 bytes\\n",
+      "statusfd": "[GNUPG:] ENC_TO FC867308995E4A4A 18 0\\n[GNUPG:] BEGIN_DECRYPTION\\n[GNUPG:] DECRYPTION_INFO 2 7 0\\n[GNUPG:] DECRYPTION_OKAY\\n[GNUPG:] GOODMDC\\n[GNUPG:] END_DECRYPTION\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--import\"",
+        "\"/EXPERIMENT/key\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: key E4846579CF6EACD4: public key \"Alice Lovelace <alice@lovelace.name>\" imported\\ngpg: key E4846579CF6EACD4: secret key imported\\ngpg: Total number processed: 1\\ngpg:               imported: 1\\ngpg:       secret keys read: 1\\ngpg:   secret keys imported: 1\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 5F722676B85215EDC7495C8DE4846579CF6EACD4 0\\n[GNUPG:] IMPORTED E4846579CF6EACD4 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] IMPORT_OK 1 5F722676B85215EDC7495C8DE4846579CF6EACD4\\n[GNUPG:] IMPORT_OK 16 5F722676B85215EDC7495C8DE4846579CF6EACD4\\n[GNUPG:] IMPORT_RES 1 0 1 0 0 0 0 0 0 1 1 0 0 0 0\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.cert.d\\n-----------------------\\npub   ed25519 2022-12-20 [C]\\n      5F722676B85215EDC7495C8DE4846579CF6EACD4\\nuid           [ unknown] Alice Lovelace <alice@lovelace.name>\\nsub   cv25519 2022-12-20 [E]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-packets\"",
+        "\"/EXPERIMENT/packets\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: encrypted with 256-bit ECDH key, ID FC867308995E4A4A, created 2022-12-20\\n      \"Alice Lovelace <alice@lovelace.name>\"\\n",
+      "stdout": "# off=0 ctb=c1 tag=1 hlen=2 plen=94 new-ctb\\n:pubkey enc packet: version 3, algo 18, keyid FC867308995E4A4A\\n\\tdata: [263 bits]\\n\\tdata: [384 bits]\\n# off=96 ctb=d2 tag=18 hlen=2 plen=58 new-ctb\\n:encrypted data packet:\\n\\tlength: 58\\n\\tmdc_method: 2\\n# off=156 ctb=cb tag=11 hlen=2 plen=15 new-ctb\\n:literal data packet:\\n\\tmode b (62), created 0, name=\"\",\\n\\traw data: 9 bytes\\n",
+      "statusfd": "[GNUPG:] ENC_TO FC867308995E4A4A 18 0\\n[GNUPG:] KEY_CONSIDERED 5F722676B85215EDC7495C8DE4846579CF6EACD4 0\\n[GNUPG:] DECRYPTION_KEY 71D1E82D843364B9326ACA90FC867308995E4A4A 5F722676B85215EDC7495C8DE4846579CF6EACD4 -\\n[GNUPG:] BEGIN_DECRYPTION\\n[GNUPG:] DECRYPTION_INFO 2 7 0\\n[GNUPG:] DECRYPTION_OKAY\\n[GNUPG:] GOODMDC\\n[GNUPG:] END_DECRYPTION\\n",
+      "status": "exit status: 0",
+      "files": {}
+    }
+  ],
+  "artifacts": {
+    "for-cert": "\\xC1^\\x03\\xFC\\x86s\\x08\\x99^JJ\\x12\\x01\\x07@m4Q\\xFB\\xEE\\xAD\\xE2\\x05\\x8F\\xDE\\xF8\\xC9\\n֢\\x9CI0?T\\xE9\\xE8Mi\\x97g\\xB3~\\x94\\x05\\xB7X0F\\xBCO\\xEF9\\xB6\\x90\\x83\\xA0a\\x06\\xD0@\\xE6\\x15\\xAD#\\x08\\xFE\\xD8\\xC1\\xC1\\xFC\\xE6+}\\xA0/E\\xE9\\xDDd\\\\\\x99\\x82!V\\xC5x\\xFB\\xCA\\n\\x9Dϕ\\xA5\\x90\\xAC\\xD2:\\x01\\xFE\\xA6\\xB5fww\\xB0\\xCF\\xD3\\x1D{\\xE0E.7\\x08H\\xA9\\x05.ş\\xBF\\xE1\\xD1\\xB9\\xDFZ\\xF5_\\xBC\\xB5\\xC2Y.\\xBA\\x17\\xA4~\\xFA\\xFC\\x9C\\x80r\\xBC\\xBFK,c\\x16\\xFA\\xD0\\xDEH\\xE3\\x15\\x1C",
+    "key": "\\xC5X\\x04c\\xA1\\xE01\\x16\\t+\\x06\\x01\\x04\\x01\\xDAG\\x0F\\x01\\x01\\x07@W&G\\xD6\\xC0S\\xA2\\rΪ\\x9D\\x89\\x81\\xE8Wsy%\\x01\\xBF\\xB0\\xF7\\xAF\\x95\\xC4ZX\\xB6Sm\\x1B\\xB5\\x00\\x01\\x00\\xC2oq^\\r\\x1Fa\\x8C\\x17\\xDF\\xDF\\x84U=\\xAA,3̞\\x8C\\x170X\\xC4\\x0E\\xD6*\\xBD\\xB7,:\\xDE\\x0E-\\xC2\\xC0\\x0B\\x04\\x1F\\x16\\n\\x00}\\x05\\x82c\\xA1\\xE01\\x03\\x0B\\t\\x07\\t\\x10\\xE4\\x84ey\\xCFn\\xAC\\xD4G\\x14\\x00\\x00\\x00\\x00\\x00\\x1E\\x00 salt@notations.sequoia-pgp.org\\xE2<,L@/o\\xA0Y!\\x03\\xFD*\\xCEs\\x11O\\xF4C\\xA9\\xB3\\xABw\\x1C\\xE4.K\\x0B\\x8D\\xDF\\x15\\x93\\x03\\x15\\n\\x08\\x02\\x9B\\x01\\x02\\x1E\\x01\\x16!\\x04_r&v\\xB8R\\x15\\xED\\xC7I\\\\\\x8D\\xE4\\x84ey\\xCFn\\xAC\\xD4\\x00\\x00\\x1F\\x95\\x00\\xFFj\\xB7\\x13\\x8F\\x98\\xCE\\x0E\\xC0\\xB1L\\n~=\\xCF\\xE7Z\\x88\\xA3?\\xDD\\xDBYV\\x8D\\xA7:\\xA9\\x81t\\xC2\"&\\x00\\xFE8\\xA1\\xDEq;E$;8\\x1A\\xC0{3\\xAE\\xCA\\xE7\\xBAX\\x18k\\x80K\\x18\\xFF\\n\\xE6\\x05\\xDB\\tz\\xBB\\x0B\\xCD$Alice Lovelace <alice@lovelace.name>\\xC2\\xC0\\x0E\\x04\\x13\\x16\\n\\x00\\x80\\x05\\x82c\\xA1\\xE01\\x03\\x0B\\t\\x07\\t\\x10\\xE4\\x84ey\\xCFn\\xAC\\xD4G\\x14\\x00\\x00\\x00\\x00\\x00\\x1E\\x00 salt@notations.sequoia-pgp.org\\x0F\\x0B\\xF8Eu^\\t\\\\Dk\\x1D\\xFE\\xE9\\x95\\xF1C\\xB8\\xDE3Ro\\x14>\\xAA\\x15\\xF2E\\x9E\\xB5 2B\\x03\\x15\\n\\x08\\x02\\x99\\x01\\x02\\x9B\\x01\\x02\\x1E\\x01\\x16!\\x04_r&v\\xB8R\\x15\\xED\\xC7I\\\\\\x8D\\xE4\\x84ey\\xCFn\\xAC\\xD4\\x00\\x00\\x86\\x0B\\x00\\xFFhb\\x96Mw\\xC2\\xCF\\x04:\\x0C\\x8C\\xDBq\\xE9\\x81\\x14\\x9D\\xD6\\xC2\\xBB\\xD6\\xE8d̏sO\\x92\\xD6Y#h\\x00\\xFE?\\\\\\xEF\\xD6FJi\\xAA\\xA3\\x13n\\x91\\xE2F\\xF5\\xC0\\x062\\xB4c\\xF5\\xEE\\xBFa@&\\x1DV\\xC1\\xC6Z\\x0E\\xC7]\\x04c\\xA1\\xE01\\x12\\n+\\x06\\x01\\x04\\x01\\x97U\\x01\\x05\\x01\\x01\\x07@V\\xFE\\xC4\\x04\\xBF\\x93\\x89\\xD7\\xC4\\x8B\\x15+\\xBE\\xFAb\\xD2\\x14\\xFC\\xBF\\xBC\\x1D\\x88.N\\xBA+jUT\\x0F\"C\\x03\\x01\\x08\\x07\\x00\\x00\\xFFW\\xA2\\xABH\\xE6\\xC0\\xA4\\xED$+\\x00\\x83\\x87\\x9B\\x16\\xB3\\x07\\xE6\\xE3\\xFD\\xA9\\xE1\\x8E\\xDC\\xC8\\x14\\xE3\\xBBaa\\xD0\\xC8\\x13t\\xC2\\xC0\\x00\\x04\\x18\\x16\\n\\x00r\\x05\\x82c\\xA1\\xE01\\t\\x10\\xE4\\x84ey\\xCFn\\xAC\\xD4G\\x14\\x00\\x00\\x00\\x00\\x00\\x1E\\x00 salt@notations.sequoia-pgp.orgƐ\\x12%\\x80ĕG`\\x98A\\x0CML\\xFA\\x1D\\xE7s\\xDDL\\xBC?\\xBC\\xBFA\\xB8\\xDB\\xC4n\\x01\\xEC\\xBC\\x02\\x9B\\x04\\x16!\\x04_r&v\\xB8R\\x15\\xED\\xC7I\\\\\\x8D\\xE4\\x84ey\\xCFn\\xAC\\xD4\\x00\\x00\\xF0z\\x00\\xFFg\\x99\\xCD\\x06k\\xED\\xB2f^\\xE7\\xD2ƥ:\\xA4\\x8F6\\x19\\x955}\\xE11=\\xF7\\xEA\\x17-\\xD24\\x1DP\\x01\\x00\\xE8K6Py\\xB2\\x97\\x9D\\xF7\\xDA\\xEF,c\\xEFPI\\xEB\\xDE]>\\xB6qQ4\\xC7#\\t\\xF3p9\\x1E\\x08",
+    "with-password": "\\xC3\\x1E\\x04\\x07\\x03\\x08*\\x15o\\xA9-n,(\\xFFkƵ\\xA3\\xB4'\\x87\\xD6\\x18y\\xCDK\\x06\\xF9_M\\x98\\xD2:\\x01\\xE1UK\\x1C\\xDFQ\\x9A\\x19Ǉ\\x1B\\xB5I\\xA0+\\xD4X\\xF3,H\\xA4sg\\x00T\\xCAP\\xA7 \\xB8I\\xBEW\\xFB\\x8F\\x87\\x06\\x9B!\\x02\\xBAA\\xBF\\x8B\\x10\\xC0P#FO!x\\xC0\\xBD\\xCB\\xD8\\xA5"
+  },
+  "dynamic_upper_bounds": [
+    [
+      0,
+      86,
+      0
+    ],
+    [
+      2,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      4,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      68
+    ],
+    [
+      9,
+      0,
+      0
+    ],
+    [
+      4,
+      1,
+      134
+    ]
+  ]
+}

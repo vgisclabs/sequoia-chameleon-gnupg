@@ -7,6 +7,7 @@ use std::{
 use sequoia_openpgp as openpgp;
 use openpgp::{
     types::*,
+    packet::Tag,
 };
 
 /// Translates values to and from human-readable forms.
@@ -17,6 +18,28 @@ impl fmt::Display for Fish<std::time::SystemTime> {
         write!(f, "{}",
                chrono::DateTime::<chrono::Local>::from(self.0)
                .format("%a %b %d %H:%M:%S %Y %Z"))
+    }
+}
+
+impl fmt::Display for Fish<openpgp::types::Duration> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut value = self.0.as_secs();
+        value /= 60;
+        let minutes = value % 60;
+        value /= 60;
+        let hours = value % 24;
+        value /= 24;
+        let days = value % 365;
+        value /= 365;
+        let years = value;
+
+        if days == 0 && years == 0 {
+            write!(f, "{}h{}m", hours, minutes)
+        } else if years == 0 {
+            write!(f, "{}d{}h{}m", days, hours, minutes)
+        } else {
+            write!(f, "{}y{}d{}h{}m", years, days, hours, minutes)
+        }
     }
 }
 
@@ -184,6 +207,55 @@ impl fmt::Display for Fish<ReasonForRevocation> {
             Unknown(u) =>
                 write!(f, "Unknown revocation reason {}", u),
             u => write!(f, "{}", u),
+        }
+    }
+}
+
+impl fmt::Display for Fish<Tag> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self.0 {
+            Tag::Reserved =>
+                f.write_str("Reserved - a packet tag MUST NOT have this value"),
+            Tag::PKESK =>
+                f.write_str("pubkey enc packet"),
+            Tag::Signature =>
+                f.write_str("signature packet"),
+            Tag::SKESK =>
+                f.write_str("symkey enc packet"),
+            Tag::OnePassSig =>
+                f.write_str("onepass_sig packet"),
+            Tag::SecretKey =>
+                f.write_str("secret key packet"),
+            Tag::PublicKey =>
+                f.write_str("public key packet"),
+            Tag::SecretSubkey =>
+                f.write_str("secret sub key packet"),
+            Tag::CompressedData =>
+                f.write_str("compressed packet"),
+            Tag::SED =>
+                f.write_str("encrypted data packet"),
+            Tag::Marker =>
+                f.write_str("marker packet"),
+            Tag::Literal =>
+                f.write_str("literal data packet"),
+            Tag::Trust =>
+                f.write_str("trust packet"),
+            Tag::UserID =>
+                f.write_str("user ID packet"),
+            Tag::PublicSubkey =>
+                f.write_str("public sub key packet"),
+            Tag::UserAttribute =>
+                f.write_str("attribute packet"),
+            Tag::SEIP =>
+                f.write_str("encrypted data packet"),
+            Tag::MDC =>
+                f.write_str("mdc packet"),
+            Tag::AED =>
+                f.write_str("encrypted data packet"),
+            Tag::Private(u) =>
+                f.write_fmt(format_args!("Private/Experimental Packet {}", u)),
+            Tag::Unknown(u) =>
+                f.write_fmt(format_args!("Unknown Packet {}", u)),
         }
     }
 }

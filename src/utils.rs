@@ -275,6 +275,30 @@ pub fn s2k_encode_iteration_count(hash_bytes: u32) -> Result<u8> {
     Ok(mantissa as u8 | (exp as u8) << 4)
 }
 
+/// Sanitizes an ASCII string for display purposes.
+pub fn sanitize_ascii_str(s: &[u8], escape: &[u8]) -> String {
+    let mut o = String::with_capacity(s.len());
+
+    for c in s.iter().cloned() {
+        if c < 0x20 || c == 0x7f || escape.contains(&c) || c == b'\\' {
+            o.push('\\');
+            match c {
+                b'\n' => o.push('n'),
+                b'\r' => o.push('r'),
+                0x0c => o.push('f'),
+                0x0b => o.push('v'),
+                0x08 => o.push('b'),
+                b'\x00' => o.push('0'),
+                _ => o.push_str(&format!("x{:02x}", c)),
+            }
+        } else {
+            o.push(c as char);
+        }
+    }
+
+    o
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

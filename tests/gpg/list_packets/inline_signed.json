@@ -1,0 +1,67 @@
+{
+  "outputs": [
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: keybox '/HOMEDIR/pubring.kbx' created\\ngpg: /HOMEDIR/trustdb.gpg: trustdb created\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-packets\"",
+        "\"/EXPERIMENT/packets\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "# off=0 ctb=c4 tag=4 hlen=2 plen=13 new-ctb\\n:onepass_sig packet: keyid 60520113671F5353\\n\\tversion 3, sigclass 0x00, digest 10, pubkey 22, last=1\\n# off=15 ctb=cb tag=11 hlen=2 plen=15 new-ctb\\n:literal data packet:\\n\\tmode b (62), created 0, name=\"\",\\n\\traw data: 9 bytes\\n# off=32 ctb=c2 tag=2 hlen=2 plen=189 new-ctb\\n:signature packet: algo 22, keyid 60520113671F5353\\n\\tversion 4, created 1688557761, md5len 0, sigclass 0x00\\n\\tdigest algo 10, begin of digest 5f 64\\n\\tcritical hashed subpkt 2 len 4 (sig created 2023-07-05)\\n\\thashed subpkt 16 len 8 (issuer key ID 60520113671F5353)\\n\\thashed subpkt 20 len 70 (notation: salt@notations.sequoia-pgp.org=[not human readable])\\n\\thashed subpkt 33 len 21 (issuer fpr v4 03B9AFB06CE2448D7F256B5360520113671F5353)\\n\\tdata: [256 bits]\\n\\tdata: [251 bits]\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    }
+  ],
+  "former_us_outputs": [
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-packets\"",
+        "\"/EXPERIMENT/packets\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "# off=0 ctb=c4 tag=4 hlen=2 plen=13 new-ctb\\n:onepass_sig packet: keyid 60520113671F5353\\n\\tversion 3, sigclass 0x00, digest 10, pubkey 22, last=1\\n# off=15 ctb=cb tag=11 hlen=2 plen=15 new-ctb\\n:literal data packet:\\n\\tmode b (62), created 0, name=\"\",\\n\\traw data: 9 bytes\\n# off=32 ctb=c2 tag=2 hlen=2 plen=189 new-ctb\\n:signature packet: algo 22, keyid 60520113671F5353\\n\\tversion 4, created 1688557761, md5len 0, sigclass 0x00\\n\\tdigest algo 10, begin of digest 5f 64\\n\\tcritical hashed subpkt 2 len 4 (sig created 2023-07-05)\\n\\thashed subpkt 16 len 8 (issuer key ID 60520113671F5353)\\n\\thashed subpkt 20 len 70 (notation: salt@notations.sequoia-pgp.org=[not human readable])\\n\\thashed subpkt 33 len 21 (issuer fpr v4 03B9AFB06CE2448D7F256B5360520113671F5353)\\n\\tdata: [256 bits]\\n\\tdata: [251 bits]\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    }
+  ],
+  "artifacts": {
+    "inline-signed": "\\xC4\\r\\x03\\x00\\n\\x16`R\\x01\\x13g\\x1FSS\\x01\\xCB\\x0Fb\\x00\\x00\\x00\\x00\\x00plaintext½\\x04\\x00\\x16\\n\\x00o\\x05\\x82d\\xA5X\\xC1\\t\\x10`R\\x01\\x13g\\x1FSSG\\x14\\x00\\x00\\x00\\x00\\x00\\x1E\\x00 salt@notations.sequoia-pgp.org\\xEF\\xBCQ\\x13\\xB0\\x1F\\xD5\\x12\\x05骯\"\\xAAQ\\xDD~L\\xB4\\t6\\xC7'\\xD4W}\\xB9\\xF8\\x1A\\xE9\\xE1\\xE1\\x16!\\x04\\x03\\xB9\\xAF\\xB0l\\xE2D\\x8D\\x7F%kS`R\\x01\\x13g\\x1FSS\\x00\\x00_d\\x01\\x00\\x89\\x82\\xE8\\xE7\\xA1Ŷ\\x92_\\x00ީC\\xCDJ\\xC3e\\x8B\\xB4%\\xAA\\xE0\\x84X\\x10R\\xF8\\xB7洛\\x80\\x00\\xFB\\x06EnI\\x07\\xA8\\xA3\\xF7z\\xB8 \\xBB\\xBB\\xC1Kh\\x14\\x94\\x8C\\xB7\\xA8\\x99Nu\\x9E\\xF0\\\\\\x07^\\xF1g\\x08"
+  },
+  "dynamic_upper_bounds": [
+    [
+      0,
+      86,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ]
+  ]
+}

@@ -42,6 +42,7 @@ mod gpg {
     mod trust_models;
     mod status_fd;
     mod print_mds;
+    mod list_packets;
 }
 
 lazy_static::lazy_static! {

@@ -173,7 +173,7 @@ pub fn cmd_decrypt_files(config: &crate::Config, args: &[String])
     Ok(())
 }
 
-struct DHelper<'a, 'store> {
+pub struct DHelper<'a, 'store> {
     config: &'a crate::Config<'store>,
     vhelper: VHelper<'a, 'store>,
     used_mdc: bool,
@@ -184,8 +184,8 @@ struct DHelper<'a, 'store> {
 }
 
 impl<'a, 'store> DHelper<'a, 'store> {
-    fn new(config: &'a crate::Config<'store>, vhelper: VHelper<'a, 'store>)
-           -> Self {
+    pub fn new(config: &'a crate::Config<'store>, vhelper: VHelper<'a, 'store>)
+               -> Self {
         DHelper {
             config,
             vhelper,
@@ -193,6 +193,11 @@ impl<'a, 'store> DHelper<'a, 'store> {
             filename: Default::default(),
             de_vs_compliant: true,
         }
+    }
+
+    /// Indicates that the encryption container uses MDC.
+    pub fn uses_mdc(&mut self) {
+        self.used_mdc = true;
     }
 
     fn decryption_successful(&self, algo: SymmetricAlgorithm, sk: SessionKey)
