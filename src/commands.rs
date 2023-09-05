@@ -162,7 +162,7 @@ pub fn cmd_list_config(config: &crate::Config, args: &[String])
     }).unwrap_or_else(|| (true, vec![]));
 
     if all || items.iter().any(|i| *i == "group") {
-        for (name, values) in config.groups.iter() {
+        for (name, values) in config.groups.iter().rev() {
             let values =
                 values.iter().map(|h| h.to_string()).collect::<Vec<_>>();
             println!("cfg:group:{}:{}",

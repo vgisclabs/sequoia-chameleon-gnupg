@@ -1,6 +1,5 @@
 use std::{
     borrow::Cow,
-    collections::BTreeMap,
     fmt,
     fs,
     io::{self, Read, Write},
@@ -9,6 +8,7 @@ use std::{
 };
 
 use anyhow::{Context, Result};
+use indexmap::IndexMap;
 use once_cell::unsync::OnceCell;
 
 use sequoia_openpgp as openpgp;
@@ -511,7 +511,7 @@ pub struct Config<'store> {
     fingerprint: usize,
     flags: Flags,
     force_ownertrust: bool,
-    groups: BTreeMap<String, Vec<String>>,
+    groups: IndexMap<String, Vec<String>>,
     homedir: PathBuf,
     import_options: u32,
     input_size_hint: Option<u64>,
@@ -2216,7 +2216,7 @@ fn real_main() -> anyhow::Result<()> {
                 let name = g[0].to_string();
                 for value in g[1].split(" ") {
                     opt.groups.entry(name.clone()).or_default()
-                        .push(value.into());
+                        .insert(0, value.into());
                 }
             },
             oUnGroup => {
