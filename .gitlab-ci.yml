@@ -1,5 +1,5 @@
 # Default image for jobs
-image: 192.168.122.1:5000/sequoia-pgp/build-docker-image/bookworm-prebuild:latest
+image: 192.168.122.1:5000/sequoia-pgp/build-docker-image/trixie-prebuild:latest
 
 .test:
   before_script:
@@ -15,7 +15,7 @@ image: 192.168.122.1:5000/sequoia-pgp/build-docker-image/bookworm-prebuild:lates
     - mkdir -p /run/user/$UID # For GnuPG's socket directories
     - cargo test
 
-test-bookworm:
+test-trixie:
   extends: .test
 
 test-rust-stable:
