@@ -5,10 +5,12 @@ use std::{
     io::{self, Read},
     path::{Path, PathBuf},
     process::*,
+    str::FromStr,
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
 use anyhow::Result;
+use regex::bytes::Regex;
 use serde::{Serialize, Deserialize};
 
 use serde_with::serde_as;
@@ -452,8 +454,6 @@ impl Output {
     /// with `"/EXPERIMENT"` in stdout and stderr, and normalizes the
     /// underline decorating `homedir` in key listings in stdout.
     fn canonicalize(mut self, homedir: &Path, experiment: &Path) -> Self {
-        use regex::bytes::Regex;
-
         const DASHES: &str =
             "\n------------------------------------------------------------";
         let d = regex::bytes::Regex::new(
@@ -586,6 +586,9 @@ pub struct Experiment {
     artifacts_store: PathBuf,
     oracle: Context,
     us: Context,
+
+    /// Canonicalization rules.
+    canonicalizations: Vec<Canonicalization>,
 }
 
 impl Drop for Experiment {
@@ -632,6 +635,7 @@ impl Experiment {
             artifacts_store,
             oracle: Context::gnupg()?,
             us: Context::chameleon()?,
+            canonicalizations: Default::default(),
         })
     }
 
@@ -712,6 +716,7 @@ impl Experiment {
         eprintln!("Invoking the chameleon");
         let mut us = self.us.invoke(&args)?
             .canonicalize(self.us.home.path(), self.wd.path());
+        self.canonicalizations.iter().for_each(|c| c.apply(&mut us));
 
         us.args = normalized_args.clone();
 
@@ -750,6 +755,7 @@ impl Experiment {
             eprintln!("Invoking the oracle");
             let mut output = self.oracle.invoke(&args)?
                 .canonicalize(self.oracle.home.path(), self.wd.path());
+            self.canonicalizations.iter().for_each(|c| c.apply(&mut output));
             output.args = normalized_args;
             self.artifacts.outputs.truncate(n);
             self.artifacts.outputs.push(output.clone());
@@ -816,6 +822,22 @@ impl Experiment {
     }
 }
 
+/// Canonicalizations that are applied to all the (future) outputs of
+/// an experiment.
+struct Canonicalization {
+    re: Regex,
+    substitute: Vec<u8>,
+}
+
+impl Canonicalization {
+    /// Applies the canonicalization rule to the given output.
+    fn apply(&self, o: &mut Output) {
+        o.stdout = self.re.replace_all(&o.stdout, &self.substitute).into();
+        o.stderr = self.re.replace_all(&o.stderr, &self.substitute).into();
+        o.statusfd = self.re.replace_all(&o.statusfd, &self.substitute).into();
+    }
+}
+
 /// The difference between invoking the reference GnuPG & the former
 /// Chameleon and the Chameleon.
 pub struct Diff<'a> {
@@ -850,6 +872,52 @@ impl Diff<'_> {
             ];
         }
 
+        Ok(())
+    }
+
+    /// Canonicalizes the first fingerprints in the outputs.
+    pub fn canonicalize_fingerprints(&mut self, n: usize) -> Result<()> {
+        let find_fp = Regex::new(r"[0-9A-F]{40}")?;
+        let mut canonicalizations =
+            std::mem::take(&mut self.experiment.canonicalizations);
+
+        self.canonicalize_with(|o| {
+            if let Some(fp) = find_fp.find(&o.stdout)
+                .or_else(|| find_fp.find(&o.stderr))
+                .or_else(|| find_fp.find(&o.statusfd))
+            {
+                let fingerprint =
+                    String::from_utf8_lossy(fp.as_bytes()).to_string();
+                let keyid =
+                    String::from_utf8_lossy(&fp.as_bytes()[24..]).to_string();
+
+                let c = Canonicalization {
+                    re: Regex::new(&fingerprint)?,
+                    substitute: format!("[FINGERPRINT-{}]", n).into(),
+                };
+                c.apply(o);
+                canonicalizations.push(c);
+
+                if let Ok(fp) = openpgp::Fingerprint::from_str(&fingerprint) {
+                    let c = Canonicalization {
+                        re: Regex::new(&fp.to_spaced_hex())?,
+                        substitute: format!("[FINGERPRINT-{}]", n).into(),
+                    };
+                    c.apply(o);
+                    canonicalizations.push(c);
+                }
+
+                let c = Canonicalization {
+                    re: Regex::new(&keyid)?,
+                    substitute: format!("[KEYID-{}]", n).into(),
+                };
+                c.apply(o);
+                canonicalizations.push(c);
+            }
+            Ok(())
+        })?;
+
+        self.experiment.canonicalizations = canonicalizations;
         Ok(())
     }
 
