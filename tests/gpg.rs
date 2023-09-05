@@ -763,12 +763,12 @@ impl Experiment {
         };
 
         Ok(Diff {
-            experiment: &*self,
+            experiment: &mut *self,
             args: args.iter().map(ToString::to_string).collect(),
             oracle,
             former_us,
             us,
-            dynamic_upper_bounds: self.artifacts.dynamic_upper_bounds.get(n),
+            index: n,
         })
     }
 
@@ -819,12 +819,12 @@ impl Experiment {
 /// The difference between invoking the reference GnuPG & the former
 /// Chameleon and the Chameleon.
 pub struct Diff<'a> {
-    experiment: &'a Experiment,
+    experiment: &'a mut Experiment,
     args: Vec<String>,
     oracle: Output,
     us: Output,
     former_us: Option<Output>,
-    dynamic_upper_bounds: Option<&'a Vec<usize>>,
+    index: usize,
 }
 
 impl Diff<'_> {
@@ -839,6 +839,17 @@ impl Diff<'_> {
         if let Some(former_us) = self.former_us.as_mut() {
             fun(former_us)?;
         }
+
+        if let Some(bounds) =
+            self.experiment.artifacts.dynamic_upper_bounds.get_mut(self.index)
+        {
+            *bounds = vec![
+                self.oracle.stdout_edit_distance(&self.us),
+                self.oracle.stderr_edit_distance(&self.us),
+                self.oracle.statusfd_edit_distance(&self.us),
+            ];
+        }
+
         Ok(())
     }
 
@@ -912,7 +923,9 @@ impl Diff<'_> {
     /// output on stdout (stderr) does not exceed the recorded limits.
     /// Panics otherwise.
     pub fn assert_dynamic_upper_bounds(&self) {
-        if let Some(limits) = &self.dynamic_upper_bounds {
+        if let Some(limits) =
+            self.experiment.artifacts.dynamic_upper_bounds.get(self.index)
+        {
             let out_limit = limits.get(0).cloned().unwrap_or_default();
             let err_limit = limits.get(1).cloned().unwrap_or_default();
             let statusfd_limit = limits.get(2).cloned().unwrap_or_default();
