@@ -90,7 +90,7 @@
         "\"--list-keys\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "/HOMEDIR/pubring.cert.d\\n-----------------------\\npub   rsa2048 2022-12-20 [C] [expires: 2025-12-16]\\n      1D398D70E9DF8025D875F413043D72510693418A\\nuid           [ unknown] Alice Lovelace <alice@lovelace.name>\\nsub   rsa2048 2022-12-20 [E] [expires: 2025-12-16]\\nsub   rsa2048 2022-12-20 [S] [expires: 2025-12-16]\\n\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   rsa2048 2022-12-20 [C] [expires: 2025-12-16]\\n      1D398D70E9DF8025D875F413043D72510693418A\\nuid           [ unknown] Alice Lovelace <alice@lovelace.name>\\nsub   rsa2048 2022-12-20 [E] [expires: 2025-12-16]\\nsub   rsa2048 2022-12-20 [S] [expires: 2025-12-16]\\n\\n",
       "statusfd": "",
       "status": "exit status: 0",
       "files": {}
@@ -125,7 +125,7 @@
         "\"--list-secret-keys\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "/HOMEDIR/pubring.cert.d\\n-----------------------\\nsec   rsa2048 2022-12-20 [C] [expires: 2025-12-16]\\n      1D398D70E9DF8025D875F413043D72510693418A\\nuid           [ unknown] Alice Lovelace <alice@lovelace.name>\\nssb   rsa2048 2022-12-20 [E] [expires: 2025-12-16]\\nssb   rsa2048 2022-12-20 [S] [expires: 2025-12-16]\\n\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\nsec   rsa2048 2022-12-20 [C] [expires: 2025-12-16]\\n      1D398D70E9DF8025D875F413043D72510693418A\\nuid           [ unknown] Alice Lovelace <alice@lovelace.name>\\nssb   rsa2048 2022-12-20 [E] [expires: 2025-12-16]\\nssb   rsa2048 2022-12-20 [S] [expires: 2025-12-16]\\n\\n",
       "statusfd": "",
       "status": "exit status: 0",
       "files": {}
@@ -153,7 +153,7 @@
       0
     ],
     [
-      9,
+      1,
       0,
       0
     ],
@@ -168,7 +168,7 @@
       78
     ],
     [
-      9,
+      1,
       0,
       0
     ],

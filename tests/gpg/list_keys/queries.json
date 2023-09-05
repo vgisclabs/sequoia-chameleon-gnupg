@@ -227,7 +227,7 @@
         "\"--list-keys\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "/HOMEDIR/pubring.cert.d\\n-----------------------\\npub   ed25519 2022-12-20 [C]\\n      CD2035632108B0281F10C85AC3FAC136891AD7CD\\nuid           [ unknown] Alice Lovelace\\nuid           [ unknown] <alice@lovelace.name>\\nuid           [ unknown] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519 2022-12-20 [S]\\n\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   ed25519 2022-12-20 [C]\\n      CD2035632108B0281F10C85AC3FAC136891AD7CD\\nuid           [ unknown] Alice Lovelace\\nuid           [ unknown] <alice@lovelace.name>\\nuid           [ unknown] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519 2022-12-20 [S]\\n\\n",
       "statusfd": "",
       "status": "exit status: 0",
       "files": {}
@@ -410,7 +410,7 @@
       0
     ],
     [
-      9,
+      1,
       0,
       0
     ],

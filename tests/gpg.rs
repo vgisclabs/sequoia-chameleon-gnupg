@@ -473,6 +473,13 @@ impl Output {
                           &b"/EXPERIMENT"[..])
             .into();
 
+        // Normalize key listing headers.
+        let keylisting = Regex::new("/HOMEDIR/pubring.cert.d\\n\
+                                     -----------------------").unwrap();
+        self.stdout = keylisting.replace(&self.stdout,
+                                         &b"/HOMEDIR/pubring.kbx\n\
+                                            ---------------------"[..]).into();
+
         // According to doc/DETAILS, "This [KEYEXPIRED] status line is
         // not very useful because it will also be emitted for expired
         // subkeys even if this subkey is not used."  And indeed,

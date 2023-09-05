@@ -222,7 +222,7 @@
         "\"--list-keys\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "/HOMEDIR/pubring.cert.d\\n-----------------------\\npub   ed25519 2022-12-06 [SC] [expired: 2022-12-13]\\n      2E141DDC2F0EC5480E4BF16DA9E8EF0F0CF98561\\nuid           [ expired] Alice Lovelace <alice@lovelace.name>\\n\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   ed25519 2022-12-06 [SC] [expired: 2022-12-13]\\n      2E141DDC2F0EC5480E4BF16DA9E8EF0F0CF98561\\nuid           [ expired] Alice Lovelace <alice@lovelace.name>\\n\\n",
       "statusfd": "",
       "status": "exit status: 0",
       "files": {}
@@ -245,7 +245,7 @@
         "\"--fingerprint\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "/HOMEDIR/pubring.cert.d\\n-----------------------\\npub   ed25519 2022-12-06 [SC] [expired: 2022-12-13]\\n      2E14 1DDC 2F0E C548 0E4B  F16D A9E8 EF0F 0CF9 8561\\nuid           [ expired] Alice Lovelace <alice@lovelace.name>\\n\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   ed25519 2022-12-06 [SC] [expired: 2022-12-13]\\n      2E14 1DDC 2F0E C548 0E4B  F16D A9E8 EF0F 0CF9 8561\\nuid           [ expired] Alice Lovelace <alice@lovelace.name>\\n\\n",
       "statusfd": "",
       "status": "exit status: 0",
       "files": {}
@@ -257,7 +257,7 @@
         "\"--fingerprint\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "/HOMEDIR/pubring.cert.d\\n-----------------------\\npub   ed25519 2022-12-06 [SC] [expired: 2022-12-13]\\n      2E14 1DDC 2F0E C548 0E4B  F16D A9E8 EF0F 0CF9 8561\\nuid           [ expired] Alice Lovelace <alice@lovelace.name>\\n\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   ed25519 2022-12-06 [SC] [expired: 2022-12-13]\\n      2E14 1DDC 2F0E C548 0E4B  F16D A9E8 EF0F 0CF9 8561\\nuid           [ expired] Alice Lovelace <alice@lovelace.name>\\n\\n",
       "statusfd": "",
       "status": "exit status: 0",
       "files": {}
@@ -281,7 +281,7 @@
         "\"--with-secret\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "/HOMEDIR/pubring.cert.d\\n-----------------------\\npub   ed25519 2022-12-06 [SC] [expired: 2022-12-13]\\n      2E141DDC2F0EC5480E4BF16DA9E8EF0F0CF98561\\nuid           [ expired] Alice Lovelace <alice@lovelace.name>\\n\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   ed25519 2022-12-06 [SC] [expired: 2022-12-13]\\n      2E141DDC2F0EC5480E4BF16DA9E8EF0F0CF98561\\nuid           [ expired] Alice Lovelace <alice@lovelace.name>\\n\\n",
       "statusfd": "",
       "status": "exit status: 0",
       "files": {}
@@ -341,7 +341,7 @@
         "\"--list-keys\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "/HOMEDIR/pubring.cert.d\\n-----------------------\\npub   ed25519 2022-12-06 [SC] [expired: 2022-12-13]\\n      2E141DDC2F0EC5480E4BF16DA9E8EF0F0CF98561\\nuid           [ expired] Alice Lovelace <alice@lovelace.name>\\n\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   ed25519 2022-12-06 [SC] [expired: 2022-12-13]\\n      2E141DDC2F0EC5480E4BF16DA9E8EF0F0CF98561\\nuid           [ expired] Alice Lovelace <alice@lovelace.name>\\n\\n",
       "statusfd": "",
       "status": "exit status: 0",
       "files": {}
@@ -365,7 +365,7 @@
         "\"--with-secret\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "/HOMEDIR/pubring.cert.d\\n-----------------------\\npub   ed25519 2022-12-06 [SC] [expired: 2022-12-13]\\n      2E141DDC2F0EC5480E4BF16DA9E8EF0F0CF98561\\nuid           [ expired] Alice Lovelace <alice@lovelace.name>\\n\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   ed25519 2022-12-06 [SC] [expired: 2022-12-13]\\n      2E141DDC2F0EC5480E4BF16DA9E8EF0F0CF98561\\nuid           [ expired] Alice Lovelace <alice@lovelace.name>\\n\\n",
       "statusfd": "",
       "status": "exit status: 0",
       "files": {}
@@ -389,7 +389,7 @@
         "\"--list-secret-keys\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "/HOMEDIR/pubring.cert.d\\n-----------------------\\nsec   ed25519 2022-12-06 [SC] [expired: 2022-12-13]\\n      2E141DDC2F0EC5480E4BF16DA9E8EF0F0CF98561\\nuid           [ expired] Alice Lovelace <alice@lovelace.name>\\n\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\nsec   ed25519 2022-12-06 [SC] [expired: 2022-12-13]\\n      2E141DDC2F0EC5480E4BF16DA9E8EF0F0CF98561\\nuid           [ expired] Alice Lovelace <alice@lovelace.name>\\n\\n",
       "statusfd": "",
       "status": "exit status: 0",
       "files": {}
@@ -417,7 +417,7 @@
       0
     ],
     [
-      9,
+      1,
       0,
       0
     ],
@@ -427,12 +427,12 @@
       0
     ],
     [
-      9,
+      1,
       0,
       0
     ],
     [
-      9,
+      1,
       0,
       0
     ],
@@ -442,7 +442,7 @@
       0
     ],
     [
-      9,
+      1,
       0,
       0
     ],
@@ -467,7 +467,7 @@
       78
     ],
     [
-      9,
+      1,
       0,
       0
     ],
@@ -477,7 +477,7 @@
       0
     ],
     [
-      9,
+      1,
       0,
       0
     ],
@@ -487,7 +487,7 @@
       0
     ],
     [
-      9,
+      1,
       0,
       0
     ],

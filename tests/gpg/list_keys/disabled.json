@@ -268,7 +268,7 @@
         "\"--list-keys\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "/HOMEDIR/pubring.cert.d\\n-----------------------\\npub   ed25519 2022-12-20 [C]\\n      FCA1114B6F0595A26028A41F2CB66794733B0D53\\nuid           [ultimate] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519 2022-12-20 [S]\\n\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   ed25519 2022-12-20 [C]\\n      FCA1114B6F0595A26028A41F2CB66794733B0D53\\nuid           [ultimate] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519 2022-12-20 [S]\\n\\n",
       "statusfd": "",
       "status": "exit status: 0",
       "files": {}
@@ -291,7 +291,7 @@
         "\"--fingerprint\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "/HOMEDIR/pubring.cert.d\\n-----------------------\\npub   ed25519 2022-12-20 [C]\\n      FCA1 114B 6F05 95A2 6028  A41F 2CB6 6794 733B 0D53\\nuid           [ultimate] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519 2022-12-20 [S]\\n\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   ed25519 2022-12-20 [C]\\n      FCA1 114B 6F05 95A2 6028  A41F 2CB6 6794 733B 0D53\\nuid           [ultimate] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519 2022-12-20 [S]\\n\\n",
       "statusfd": "",
       "status": "exit status: 0",
       "files": {}
@@ -303,7 +303,7 @@
         "\"--fingerprint\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "/HOMEDIR/pubring.cert.d\\n-----------------------\\npub   ed25519 2022-12-20 [C]\\n      FCA1 114B 6F05 95A2 6028  A41F 2CB6 6794 733B 0D53\\nuid           [ultimate] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519 2022-12-20 [S]\\n      4105 6B63 0D6E 80C8 CDDD  3559 9BF4 AE47 0EFC 24DD\\n\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   ed25519 2022-12-20 [C]\\n      FCA1 114B 6F05 95A2 6028  A41F 2CB6 6794 733B 0D53\\nuid           [ultimate] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519 2022-12-20 [S]\\n      4105 6B63 0D6E 80C8 CDDD  3559 9BF4 AE47 0EFC 24DD\\n\\n",
       "statusfd": "",
       "status": "exit status: 0",
       "files": {}
@@ -327,7 +327,7 @@
         "\"--with-secret\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "/HOMEDIR/pubring.cert.d\\n-----------------------\\npub   ed25519 2022-12-20 [C]\\n      FCA1114B6F0595A26028A41F2CB66794733B0D53\\nuid           [ultimate] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519 2022-12-20 [S]\\n\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   ed25519 2022-12-20 [C]\\n      FCA1114B6F0595A26028A41F2CB66794733B0D53\\nuid           [ultimate] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519 2022-12-20 [S]\\n\\n",
       "statusfd": "",
       "status": "exit status: 0",
       "files": {}
@@ -387,7 +387,7 @@
         "\"--list-keys\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "/HOMEDIR/pubring.cert.d\\n-----------------------\\npub   ed25519 2022-12-20 [C]\\n      FCA1114B6F0595A26028A41F2CB66794733B0D53\\nuid           [ultimate] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519 2022-12-20 [S]\\n\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   ed25519 2022-12-20 [C]\\n      FCA1114B6F0595A26028A41F2CB66794733B0D53\\nuid           [ultimate] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519 2022-12-20 [S]\\n\\n",
       "statusfd": "",
       "status": "exit status: 0",
       "files": {}
@@ -411,7 +411,7 @@
         "\"--with-secret\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "/HOMEDIR/pubring.cert.d\\n-----------------------\\npub   ed25519 2022-12-20 [C]\\n      FCA1114B6F0595A26028A41F2CB66794733B0D53\\nuid           [ultimate] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519 2022-12-20 [S]\\n\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   ed25519 2022-12-20 [C]\\n      FCA1114B6F0595A26028A41F2CB66794733B0D53\\nuid           [ultimate] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519 2022-12-20 [S]\\n\\n",
       "statusfd": "",
       "status": "exit status: 0",
       "files": {}
@@ -435,7 +435,7 @@
         "\"--list-secret-keys\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "/HOMEDIR/pubring.cert.d\\n-----------------------\\nsec   ed25519 2022-12-20 [C]\\n      FCA1114B6F0595A26028A41F2CB66794733B0D53\\nuid           [ultimate] Alice Lovelace <alice@lovelace.name>\\nssb   ed25519 2022-12-20 [S]\\n\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\nsec   ed25519 2022-12-20 [C]\\n      FCA1114B6F0595A26028A41F2CB66794733B0D53\\nuid           [ultimate] Alice Lovelace <alice@lovelace.name>\\nssb   ed25519 2022-12-20 [S]\\n\\n",
       "statusfd": "",
       "status": "exit status: 0",
       "files": {}
@@ -473,7 +473,7 @@
       67
     ],
     [
-      9,
+      1,
       0,
       0
     ],
@@ -483,12 +483,12 @@
       0
     ],
     [
-      9,
+      1,
       0,
       0
     ],
     [
-      9,
+      1,
       0,
       0
     ],
@@ -498,7 +498,7 @@
       0
     ],
     [
-      9,
+      1,
       0,
       0
     ],
@@ -523,7 +523,7 @@
       78
     ],
     [
-      9,
+      1,
       0,
       0
     ],
@@ -533,7 +533,7 @@
       0
     ],
     [
-      9,
+      1,
       0,
       0
     ],
@@ -543,7 +543,7 @@
       0
     ],
     [
-      9,
+      1,
       0,
       0
     ],
