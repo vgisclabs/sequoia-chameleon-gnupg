@@ -571,9 +571,11 @@ impl<'a, 'store> VHelper<'a, 'store> {
             let cert_fp = ka.cert().fingerprint();
             let primary = fp == cert_fp;
 
-            eprintln!("Primary key fingerprint: {}", cert_fp.to_spaced_hex());
+            self.control.log(format_args!(
+                "Primary key fingerprint: {}", cert_fp.to_spaced_hex()));
             if ! primary {
-                eprintln!("     Subkey fingerprint: {}", fp.to_spaced_hex());
+                self.control.log(format_args!(
+                    "     Subkey fingerprint: {}", fp.to_spaced_hex()));
             }
         }
 
