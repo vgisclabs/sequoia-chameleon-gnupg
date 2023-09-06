@@ -318,6 +318,47 @@ fn disabled() -> Result<()> {
 
 #[test]
 #[ntest::timeout(600000)]
+fn dsa_elgamal() -> Result<()> {
+    let experiment = make_experiment!()?;
+    let cert = Cert::from_bytes("
+-----BEGIN PGP PRIVATE KEY BLOCK-----
+Version: GnuPG v1
+
+lQG7BEZnyykRBACzCPjIpTYNL7Y2tQqlEGTTDlvZcWNLjF5f7ZzuyOqNOidLUgFD
+36qch1LZLSZkShdR3Gae+bsolyjxrlFuFP0eXRPMtqK20aLw7WZvPFpEV1ThMne+
+PRJjYrvghWw3L0VVIAIZ8GXwrVBuU99uEjHEI0ojYloOvFc2jVPgSaoBvwCg48Tj
+fol2foSoJa7XUu9yAL8szg8D/RUsTzNF+I9hSRHl7MYKFMYoKEY9BDgrgAujp7YY
+8qdGsiUb0Ggyzp2kRjZFt4lpcvKhGfHn5GEjmtk+fRbD5qPfMqKFW+T0NPfYlYmL
+JJ4fs4qZ8Lx7x6iG6X51u+YNwsQuIGjMCC3CeNi3F7or651kkNYASbaQ1NROkCIN
+NudyA/0aasvoZUoNJAc2cP5Ifs6WhXMWLfMR2p2XbfKwKNYneec60usnSComcKqh
+sJVk0Gytvr3FOYVhRkXnKAbx+0W2urFP8OFVBTEKO6Ts2VygWGgneQYoHnqzwlUE
+yjOjlr+lyf7u2s/KAxpKA6jnttEdRZAmzWkhuox1wwAUkr27/QAAn3TEzKR1pxxR
++R3dHuFpnnfatMIDC5O0IkMgTyBNaXR0ZXIgPGNvbW1pdHRlckBleGFtcGxlLmNv
+bT6IXgQTEQIAHgUCRmfLKQIbAwYLCQgHAwIDFQIDAxYCAQIeAQIXgAAKCRATtvUe
+zd5DDXQdAKC92f+wOrTkbmPEf+u+qA/Gv6BxQwCfQ128JXCi3MpMB8tI2Kmo15tY
+gnmdAj0ERmfLThAIAM65eT9T6+gg0fJn+Qxhs3FFDPjxK6AOBS3SieWWmXO6stZZ
+plvb7r2+sXYp8HMHntnOX3TRPolIx1dsdkv3W3w8yUzf9Lmo2XMPsZ3/isWdEbOI
+A0rO3B1xwbQO7vEoWHeB7uyYIF6YsIH0pMqxkImciwB1tnJPB9OxqPHlD/HyyHr2
+voj6nmEGaPQWj8/dkfyenXm6XmNZUZL/slk6tRhNwv4cW3QQLh39nbiz9rqvZMKF
+XX8wkY4FdQkJjCGwqzG+7yJcyHvem29/iq//jRLZgdiN8BwV3MCTJyDp8/Wb/d9y
+jZcUm1RdtwRiwfhfQ+zmpyspm7OxINfH65rf7f8ABA0IALRiMRs/eOD59jrYXmPS
+ZQUbiALlbJJtuP2c9N3WZ5OgrhDiAW+SDIN+hgDynJ9b7C2dE3xNaud4zaXAAF44
+J4J0bAo2ZtZoJajw+GXwaZfh4Z7nPNHwEcbFD4/uXPCj9jPkcLOJqGmUY1aXdygo
+t3Hn5U/zo8JxPQ83YbJQhkzAOZ/HGowLNqKgGkLLHn1X9qay0CxlfTQeEN5RZyl3
+b4qRzGgGALFvoheyZIUw1TbjRpbn3kqlJooEQY02VwXFXfLI/LwzglilH6sSckvs
+0WHKLZ+0L6b3CgJHN2RsZ7QxwCBi1aemsvr65FeEXp/AYxaG5duUbsugG8PgoJ06
+bsEAAVQNQO3cXWpuiJ/nNLLnWuPunBKJUlurkBdf2GD+m+muF0VpwDchhqqbTO4e
+FqOISQQYEQIACQUCRmfLTgIbDAAKCRATtvUezd5DDcHsAKDQcoAtDWJFupVRqleB
+Cezx4Q2khACcCs+/LtE8Lb9hC+2cvr3uH5p82AI=
+=aEiU
+-----END PGP PRIVATE KEY BLOCK-----
+")?;
+
+    test_key(cert, experiment)
+}
+
+#[test]
+#[ntest::timeout(600000)]
 fn designated_revoker() -> Result<()> {
     let experiment = make_experiment!()?;
     let cert = Cert::from_bytes("

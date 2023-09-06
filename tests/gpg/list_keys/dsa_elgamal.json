@@ -1,0 +1,498 @@
+{
+  "outputs": [
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--import\"",
+        "\"/EXPERIMENT/cert\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: keybox '/HOMEDIR/pubring.kbx' created\\ngpg: /HOMEDIR/trustdb.gpg: trustdb created\\ngpg: key 13B6F51ECDDE430D: public key \"C O Mitter <committer@example.com>\" imported\\ngpg: Total number processed: 1\\ngpg:               imported: 1\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 73D758744BE721698EC54E8713B6F51ECDDE430D 0\\n[GNUPG:] IMPORTED 13B6F51ECDDE430D C O Mitter <committer@example.com>\\n[GNUPG:] IMPORT_OK 1 73D758744BE721698EC54E8713B6F51ECDDE430D\\n[GNUPG:] IMPORT_RES 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n--------------------\\npub   dsa1024 2007-06-07 [SC]\\n      73D758744BE721698EC54E8713B6F51ECDDE430D\\nuid           [ unknown] C O Mitter <committer@example.com>\\nsub   elg2048 2007-06-07 [E]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:1024:17:13B6F51ECDDE430D:1181207337:::-:::scESC::::::::0:\\nfpr:::::::::73D758744BE721698EC54E8713B6F51ECDDE430D:\\nuid:-::::1181207337::2AE72D000EFEBAC29BED4A70447125482FBA5FAE::C O Mitter <committer@example.com>::::::::::0:\\nsub:-:2048:16:7180066D7703B0E5:1181207374::::::e:::::::\\nfpr:::::::::C4D1AEB1BB0323BE610A790A7180066D7703B0E5:\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--fingerprint\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n--------------------\\npub   dsa1024 2007-06-07 [SC]\\n      73D7 5874 4BE7 2169 8EC5  4E87 13B6 F51E CDDE 430D\\nuid           [ unknown] C O Mitter <committer@example.com>\\nsub   elg2048 2007-06-07 [E]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--fingerprint\"",
+        "\"--fingerprint\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n--------------------\\npub   dsa1024 2007-06-07 [SC]\\n      73D7 5874 4BE7 2169 8EC5  4E87 13B6 F51E CDDE 430D\\nuid           [ unknown] C O Mitter <committer@example.com>\\nsub   elg2048 2007-06-07 [E]\\n      C4D1 AEB1 BB03 23BE 610A  790A 7180 066D 7703 B0E5\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--fingerprint\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:1024:17:13B6F51ECDDE430D:1181207337:::-:::scESC::::::::0:\\nfpr:::::::::73D758744BE721698EC54E8713B6F51ECDDE430D:\\nuid:-::::1181207337::2AE72D000EFEBAC29BED4A70447125482FBA5FAE::C O Mitter <committer@example.com>::::::::::0:\\nsub:-:2048:16:7180066D7703B0E5:1181207374::::::e:::::::\\nfpr:::::::::C4D1AEB1BB0323BE610A790A7180066D7703B0E5:\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-secret\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n--------------------\\npub   dsa1024 2007-06-07 [SC]\\n      73D758744BE721698EC54E8713B6F51ECDDE430D\\nuid           [ unknown] C O Mitter <committer@example.com>\\nsub   elg2048 2007-06-07 [E]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-secret\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:1024:17:13B6F51ECDDE430D:1181207337:::-:::scESC::::::::0:\\nfpr:::::::::73D758744BE721698EC54E8713B6F51ECDDE430D:\\nuid:-::::1181207337::2AE72D000EFEBAC29BED4A70447125482FBA5FAE::C O Mitter <committer@example.com>::::::::::0:\\nsub:-:2048:16:7180066D7703B0E5:1181207374::::::e:::::::\\nfpr:::::::::C4D1AEB1BB0323BE610A790A7180066D7703B0E5:\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-secret-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-secret-keys\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--batch\"",
+        "\"--import\"",
+        "\"/EXPERIMENT/cert\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: key 13B6F51ECDDE430D: \"C O Mitter <committer@example.com>\" not changed\\ngpg: key 13B6F51ECDDE430D: secret key imported\\ngpg: Total number processed: 1\\ngpg:              unchanged: 1\\ngpg:       secret keys read: 1\\ngpg:   secret keys imported: 1\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] IMPORT_OK 0 73D758744BE721698EC54E8713B6F51ECDDE430D\\n[GNUPG:] KEY_CONSIDERED 73D758744BE721698EC54E8713B6F51ECDDE430D 0\\n[GNUPG:] KEY_CONSIDERED 73D758744BE721698EC54E8713B6F51ECDDE430D 0\\n[GNUPG:] IMPORT_OK 17 73D758744BE721698EC54E8713B6F51ECDDE430D\\n[GNUPG:] IMPORT_RES 1 0 0 0 1 0 0 0 0 1 1 0 0 0 0\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n--------------------\\npub   dsa1024 2007-06-07 [SC]\\n      73D758744BE721698EC54E8713B6F51ECDDE430D\\nuid           [ unknown] C O Mitter <committer@example.com>\\nsub   elg2048 2007-06-07 [E]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:1024:17:13B6F51ECDDE430D:1181207337:::-:::scESC::::::::0:\\nfpr:::::::::73D758744BE721698EC54E8713B6F51ECDDE430D:\\nuid:-::::1181207337::2AE72D000EFEBAC29BED4A70447125482FBA5FAE::C O Mitter <committer@example.com>::::::::::0:\\nsub:-:2048:16:7180066D7703B0E5:1181207374::::::e:::::::\\nfpr:::::::::C4D1AEB1BB0323BE610A790A7180066D7703B0E5:\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-secret\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n--------------------\\npub   dsa1024 2007-06-07 [SC]\\n      73D758744BE721698EC54E8713B6F51ECDDE430D\\nuid           [ unknown] C O Mitter <committer@example.com>\\nsub   elg2048 2007-06-07 [E]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-secret\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:1024:17:13B6F51ECDDE430D:1181207337:::-:::scESC:::+:::::0:\\nfpr:::::::::73D758744BE721698EC54E8713B6F51ECDDE430D:\\ngrp:::::::::FCFAC48BF12AC0FCC32B69AB90AA7B1891382C29:\\nuid:-::::1181207337::2AE72D000EFEBAC29BED4A70447125482FBA5FAE::C O Mitter <committer@example.com>::::::::::0:\\nsub:-:2048:16:7180066D7703B0E5:1181207374::::::e:::+::::\\nfpr:::::::::C4D1AEB1BB0323BE610A790A7180066D7703B0E5:\\ngrp:::::::::E0C803F8BC3BCC4990E174E05936A7636E888899:\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-secret-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n--------------------\\nsec   dsa1024 2007-06-07 [SC]\\n      73D758744BE721698EC54E8713B6F51ECDDE430D\\nuid           [ unknown] C O Mitter <committer@example.com>\\nssb   elg2048 2007-06-07 [E]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-secret-keys\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "sec:-:1024:17:13B6F51ECDDE430D:1181207337:::-:::scESC:::+:::::0:\\nfpr:::::::::73D758744BE721698EC54E8713B6F51ECDDE430D:\\ngrp:::::::::FCFAC48BF12AC0FCC32B69AB90AA7B1891382C29:\\nuid:-::::1181207337::2AE72D000EFEBAC29BED4A70447125482FBA5FAE::C O Mitter <committer@example.com>::::::::::0:\\nssb:-:2048:16:7180066D7703B0E5:1181207374::::::e:::+::::\\nfpr:::::::::C4D1AEB1BB0323BE610A790A7180066D7703B0E5:\\ngrp:::::::::E0C803F8BC3BCC4990E174E05936A7636E888899:\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    }
+  ],
+  "former_us_outputs": [
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--import\"",
+        "\"/EXPERIMENT/cert\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: key 13B6F51ECDDE430D: public key \"C O Mitter <committer@example.com>\" imported\\ngpg: Total number processed: 1\\ngpg:               imported: 1\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 73D758744BE721698EC54E8713B6F51ECDDE430D 0\\n[GNUPG:] IMPORTED 13B6F51ECDDE430D C O Mitter <committer@example.com>\\n[GNUPG:] IMPORT_OK 1 73D758744BE721698EC54E8713B6F51ECDDE430D\\n[GNUPG:] IMPORT_RES 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   dsa1024 2007-06-07 [SC]\\n      73D758744BE721698EC54E8713B6F51ECDDE430D\\nuid           [ unknown] C O Mitter <committer@example.com>\\nsub   elg2048 2007-06-07 [E]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:1024:17:13B6F51ECDDE430D:1181207337:::-:::scESC::::::::0:\\nfpr:::::::::73D758744BE721698EC54E8713B6F51ECDDE430D:\\nuid:-::::1181207337::2AE72D000EFEBAC29BED4A70447125482FBA5FAE::C O Mitter <committer@example.com>::::::::::0:\\nsub:-:2048:16:7180066D7703B0E5:1181207374::::::e:::::::\\nfpr:::::::::C4D1AEB1BB0323BE610A790A7180066D7703B0E5:\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--fingerprint\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   dsa1024 2007-06-07 [SC]\\n      73D7 5874 4BE7 2169 8EC5  4E87 13B6 F51E CDDE 430D\\nuid           [ unknown] C O Mitter <committer@example.com>\\nsub   elg2048 2007-06-07 [E]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--fingerprint\"",
+        "\"--fingerprint\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   dsa1024 2007-06-07 [SC]\\n      73D7 5874 4BE7 2169 8EC5  4E87 13B6 F51E CDDE 430D\\nuid           [ unknown] C O Mitter <committer@example.com>\\nsub   elg2048 2007-06-07 [E]\\n      C4D1 AEB1 BB03 23BE 610A  790A 7180 066D 7703 B0E5\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--fingerprint\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:1024:17:13B6F51ECDDE430D:1181207337:::-:::scESC::::::::0:\\nfpr:::::::::73D758744BE721698EC54E8713B6F51ECDDE430D:\\nuid:-::::1181207337::2AE72D000EFEBAC29BED4A70447125482FBA5FAE::C O Mitter <committer@example.com>::::::::::0:\\nsub:-:2048:16:7180066D7703B0E5:1181207374::::::e:::::::\\nfpr:::::::::C4D1AEB1BB0323BE610A790A7180066D7703B0E5:\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-secret\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   dsa1024 2007-06-07 [SC]\\n      73D758744BE721698EC54E8713B6F51ECDDE430D\\nuid           [ unknown] C O Mitter <committer@example.com>\\nsub   elg2048 2007-06-07 [E]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-secret\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:1024:17:13B6F51ECDDE430D:1181207337:::-:::scESC::::::::0:\\nfpr:::::::::73D758744BE721698EC54E8713B6F51ECDDE430D:\\nuid:-::::1181207337::2AE72D000EFEBAC29BED4A70447125482FBA5FAE::C O Mitter <committer@example.com>::::::::::0:\\nsub:-:2048:16:7180066D7703B0E5:1181207374::::::e:::::::\\nfpr:::::::::C4D1AEB1BB0323BE610A790A7180066D7703B0E5:\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-secret-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-secret-keys\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--batch\"",
+        "\"--import\"",
+        "\"/EXPERIMENT/cert\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: key 13B6F51ECDDE430D: \"C O Mitter <committer@example.com>\" not changed\\ngpg: key 13B6F51ECDDE430D: secret key imported\\ngpg: Total number processed: 1\\ngpg:              unchanged: 1\\ngpg:       secret keys read: 1\\ngpg:   secret keys imported: 1\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 73D758744BE721698EC54E8713B6F51ECDDE430D 0\\n[GNUPG:] IMPORT_OK 0 73D758744BE721698EC54E8713B6F51ECDDE430D\\n[GNUPG:] IMPORT_OK 16 73D758744BE721698EC54E8713B6F51ECDDE430D\\n[GNUPG:] IMPORT_RES 1 0 0 0 1 0 0 0 0 1 1 0 0 0 0\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   dsa1024 2007-06-07 [SC]\\n      73D758744BE721698EC54E8713B6F51ECDDE430D\\nuid           [ unknown] C O Mitter <committer@example.com>\\nsub   elg2048 2007-06-07 [E]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:1024:17:13B6F51ECDDE430D:1181207337:::-:::scESC::::::::0:\\nfpr:::::::::73D758744BE721698EC54E8713B6F51ECDDE430D:\\nuid:-::::1181207337::2AE72D000EFEBAC29BED4A70447125482FBA5FAE::C O Mitter <committer@example.com>::::::::::0:\\nsub:-:2048:16:7180066D7703B0E5:1181207374::::::e:::::::\\nfpr:::::::::C4D1AEB1BB0323BE610A790A7180066D7703B0E5:\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-secret\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   dsa1024 2007-06-07 [SC]\\n      73D758744BE721698EC54E8713B6F51ECDDE430D\\nuid           [ unknown] C O Mitter <committer@example.com>\\nsub   elg2048 2007-06-07 [E]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-secret\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:1024:17:13B6F51ECDDE430D:1181207337:::-:::scESC:::+:::::0:\\nfpr:::::::::73D758744BE721698EC54E8713B6F51ECDDE430D:\\ngrp:::::::::FCFAC48BF12AC0FCC32B69AB90AA7B1891382C29:\\nuid:-::::1181207337::2AE72D000EFEBAC29BED4A70447125482FBA5FAE::C O Mitter <committer@example.com>::::::::::0:\\nsub:-:2048:16:7180066D7703B0E5:1181207374::::::e:::+::::\\nfpr:::::::::C4D1AEB1BB0323BE610A790A7180066D7703B0E5:\\ngrp:::::::::E0C803F8BC3BCC4990E174E05936A7636E888899:\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-secret-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\nsec   dsa1024 2007-06-07 [SC]\\n      73D758744BE721698EC54E8713B6F51ECDDE430D\\nuid           [ unknown] C O Mitter <committer@example.com>\\nssb   elg2048 2007-06-07 [E]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-secret-keys\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "sec:-:1024:17:13B6F51ECDDE430D:1181207337:::-:::scESC:::+:::::0:\\nfpr:::::::::73D758744BE721698EC54E8713B6F51ECDDE430D:\\ngrp:::::::::FCFAC48BF12AC0FCC32B69AB90AA7B1891382C29:\\nuid:-::::1181207337::2AE72D000EFEBAC29BED4A70447125482FBA5FAE::C O Mitter <committer@example.com>::::::::::0:\\nssb:-:2048:16:7180066D7703B0E5:1181207374::::::e:::+::::\\nfpr:::::::::C4D1AEB1BB0323BE610A790A7180066D7703B0E5:\\ngrp:::::::::E0C803F8BC3BCC4990E174E05936A7636E888899:\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    }
+  ],
+  "artifacts": {},
+  "dynamic_upper_bounds": [
+    [
+      0,
+      86,
+      0
+    ],
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      78
+    ],
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ]
+  ]
+}

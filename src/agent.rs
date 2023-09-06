@@ -552,7 +552,7 @@ pub async fn import(agent: &mut Agent,
     let mut transfer_key = vec![
         Sexp::String("openpgp-private-key".into()),
         s("version", key.version()),
-        s("algo", key.pk_algo()), // XXX does that map correctly?
+        s("algo", babel::Fish(key.pk_algo())), // XXX does that map correctly?
     ];
     if let Some(curve) = curve {
         transfer_key.push(s("curve", curve.to_string()));
