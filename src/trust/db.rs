@@ -25,6 +25,7 @@ use openpgp::{
 use crate::{
     Config,
     common::Common,
+    gnupg_interface::STRICT_OUTPUT,
     trust::{TrustModel, OwnerTrust, OwnerTrustLevel},
 };
 
@@ -177,14 +178,18 @@ impl TrustDB {
             let fp = f[0].parse()
                 .with_context(|| format!("Malformed ownertrust line {}: {}",
                                          i, l))?;
-            let ownertrust = f[1].parse::<u8>()
+            let ownertrust: OwnerTrust = f[1].parse::<u8>()
                 .map_err(Into::into)
                 .and_then(|v| v.try_into())
                 .with_context(|| format!("Malformed ownertrust line {}: {}",
                                          i, l))?;
 
             config.info(format_args!("inserting ownertrust of {}",
-                                     ownertrust));
+                                     if STRICT_OUTPUT {
+                                         u8::from(ownertrust).to_string()
+                                     } else {
+                                         ownertrust.to_string()
+                                     }));
             self.set_ownertrust(fp, ownertrust);
         }
 

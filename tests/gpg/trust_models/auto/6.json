@@ -133,7 +133,7 @@
         "\"--import-ownertrust\"",
         "\"/EXPERIMENT/ownertrust\""
       ],
-      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: inserting ownertrust of ultimate\\n",
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: inserting ownertrust of 6\\n",
       "stdout": "",
       "statusfd": "",
       "status": "exit status: 0",
@@ -240,7 +240,7 @@
     ],
     [
       0,
-      8,
+      0,
       0
     ],
     [
