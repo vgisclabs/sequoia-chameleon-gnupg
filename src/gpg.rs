@@ -1,9 +1,11 @@
 use std::{
     borrow::Cow,
+    cell::RefCell,
     fmt,
     fs,
     io::{self, Read, Write},
     path::{Path, PathBuf},
+    sync::Mutex,
     time,
 };
 
@@ -581,7 +583,7 @@ pub struct Config<'store> {
     // Streams.
     attribute_fd: Box<dyn io::Write>,
     command_fd: interactive::Fd,
-    logger_fd: Box<dyn io::Write>,
+    logger_fd: Mutex<RefCell<Box<dyn io::Write>>>,
     status_fd: status::Fd,
 }
 
@@ -706,7 +708,7 @@ impl<'store> Config<'store> {
             // Streams.
             attribute_fd: Box::new(io::sink()),
             command_fd: io::stdin().into(),
-            logger_fd: Box::new(io::sink()),
+            logger_fd: Mutex::new(RefCell::new(Box::new(io::stderr()))),
             status_fd: status::Fd::sink(),
         })
     }
@@ -981,6 +983,13 @@ impl<'store> common::Common<'store> for Config<'store> {
         "gpg"
     }
 
+    fn warn(&self, msg: fmt::Arguments) {
+        crate::with_invocation_log(
+            |w| Ok(write!(w, "{}: {}", self.argv0(), msg)?));
+        let mut logger = self.logger_fd.lock().expect("not poisoned");
+        let _ = writeln!(logger.get_mut(), "{}: {}", self.argv0(), msg);
+    }
+
     fn error(&self, msg: fmt::Arguments) {
         self.warn(msg);
         self.fail.set(true);
@@ -1026,10 +1035,6 @@ impl<'store> common::Common<'store> for Config<'store> {
 
     fn special_filenames(&self) -> bool {
         self.special_filenames
-    }
-
-    fn logger(&mut self) -> &mut dyn io::Write {
-        &mut self.logger_fd
     }
 
     fn status(&self) -> &status::Fd {
@@ -1679,7 +1684,8 @@ fn real_main() -> anyhow::Result<()> {
                     Box::new(fs::File::create(value.as_str().unwrap())?);
             },
 	    oLoggerFD => {
-                opt.logger_fd = utils::sink_from_fd(value.as_int().unwrap())?;
+                opt.logger_fd = Mutex::new(RefCell::new(
+                    utils::sink_from_fd(value.as_int().unwrap())?));
             },
             oLoggerFile => {
                 // XXX: Why is this different from opt.logger_fd??

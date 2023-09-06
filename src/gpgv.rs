@@ -202,10 +202,6 @@ impl<'store> common::Common<'store> for Config<'store> {
         self.enable_special_filenames
     }
 
-    fn logger(&mut self) -> &mut dyn io::Write {
-        &mut self.logger_fd
-    }
-
     fn status(&self) -> &status::Fd {
         &self.status_fd
     }

@@ -3,7 +3,6 @@
 use std::{
     borrow::Cow,
     fmt,
-    io,
     path::{Path, PathBuf},
     time::SystemTime,
 };
@@ -101,9 +100,6 @@ pub trait Common<'store> {
 
     /// Returns whether special filenames are enabled.
     fn special_filenames(&self) -> bool;
-
-    /// Returns the logger stream.
-    fn logger(&mut self) -> &mut dyn io::Write;
 
     /// Returns the status stream.
     fn status(&self) -> &status::Fd;
