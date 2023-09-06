@@ -40,5 +40,6 @@ pub const EMIT_DECRYPTION_COMPLIANCE: bool = false;
 /// Although, since GnuPG 2.2.28, newer versions of gcrypt are
 /// considered to be non-compliant unless gcrypt claims compliance.
 /// As of this writing, no version of gcrypt claims to be compliant,
-/// but GnuPG 2.2.39 still emits encryption compliance information.
-pub const EMIT_ENCRYPTION_COMPLIANCE: bool = true;
+/// and GnuPG 2.2.40 stopped emitting encryption compliance
+/// information if gcrypt does not claim compliance.
+pub const EMIT_ENCRYPTION_COMPLIANCE: bool = false;
