@@ -317,6 +317,11 @@ impl<'a, 'store> VHelper<'a, 'store> {
             sig.get_issuers().get(0)
                 .map(ToString::to_string)
                 .unwrap_or_else(|| "without issuer information".into())));
+        if let Some(issuer) = sig.signers_user_id() {
+            self.control.warn(format_args!(
+                "               issuer {:?}",
+                String::from_utf8_lossy(issuer)));
+        }
 
         if let Some(cert) = cert.into() {
             if good_signature_type {
