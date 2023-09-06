@@ -16,6 +16,9 @@ pub use crate::common::Compliance;
 
 const STANDARD_POLICY: &dyn Policy = &StandardPolicy::new();
 
+const BRAINPOOL_P384_OID: &[u8] =
+    &[0x2B, 0x24, 0x03, 0x03, 0x02, 0x08, 0x01, 0x01, 0x0B];
+
 #[derive(Debug, Default)]
 pub struct DeVSProducer {
     min_rsa_bits: usize,
@@ -68,6 +71,8 @@ impl DeVSProducer {
                     BrainpoolP256
                     // XXX: | BrainpoolP384
                         | BrainpoolP512 => Ok(()),
+                    // XXX: BrainpoolP384 hack.
+                    Unknown(_) if curve.oid() == BRAINPOOL_P384_OID => Ok(()),
                     a => return
                         Err(Error::PolicyViolation(a.to_string(), None).into()),
                 }
@@ -184,6 +189,8 @@ impl Policy for DeVSConsumer {
                     BrainpoolP256
                     // XXX: | BrainpoolP384
                         | BrainpoolP512 => Ok(()),
+                    // XXX: BrainpoolP384 hack.
+                    Unknown(_) if curve.oid() == BRAINPOOL_P384_OID => Ok(()),
                     a => return
                         Err(Error::PolicyViolation(a.to_string(), None).into()),
                 }
