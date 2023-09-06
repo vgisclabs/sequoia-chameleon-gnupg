@@ -1288,57 +1288,86 @@ fn print_additional_version(config: &Config) {
 
     println!("Supported algorithms:");
 
-    print!("Pubkey: ");
+    struct Writer(String, usize);
+    impl Writer {
+        fn new(label: &str) -> Self {
+            Writer(label.to_string(), label.len())
+        }
+        fn emit(&mut self, msg: fmt::Arguments) {
+            if let Some(", ") = msg.as_str() {
+                self.0.write_fmt(msg).unwrap();
+                return;
+            }
+            if self.0.len() > 60 {
+                self.newline();
+                while self.0.len() < self.1 {
+                    self.0.push(' ');
+                }
+            }
+            use std::fmt::Write;
+            self.0.write_fmt(msg).unwrap();
+        }
+        fn newline(&mut self) {
+            match self.0.pop() {
+                Some(' ') => (), // Swallow.
+                Some(c) => self.0.push(c), // Put back.  Unlikely.
+                None => (),
+            }
+            println!("{}", self.0);
+            self.0.clear();
+        }
+    }
+
+    let mut w = Writer::new("Pubkey: ");
     for (i, a) in (0..0xff).into_iter()
         .filter(|a| *a != 2 && *a != 3) // Skip single-use RSA
+        .filter(|a| *a != 20) // Skip dual-use ElGamal
         .map(PublicKeyAlgorithm::from)
         .filter(|a| a.is_supported()).enumerate()
     {
         if i > 0 {
-            print!(", ");
+            w.emit(format_args!(", "));
         }
-        print!("{}", babel::Fish(a));
+        w.emit(format_args!("{}", babel::Fish(a)));
     }
-    println!();
+    w.newline();
 
-    print!("Cipher: ");
+    let mut w = Writer::new("Cipher: ");
     for (i, a) in (0..0xff).into_iter()
         .map(SymmetricAlgorithm::from)
         .filter(|a| a.is_supported()).enumerate()
     {
-        if i == 7 {
-            print!(",\n        ");
-        } else if i > 0 {
-            print!(", ");
+        if i > 0 {
+            w.emit(format_args!(", "));
         }
-        print!("{}", babel::Fish(a));
+        w.emit(format_args!("{}", babel::Fish(a)));
     }
-    println!();
+    w.newline();
 
-    print!("Hash: ");
+    let mut w = Writer::new("Hash: ");
     for (i, a) in (0..0xff).into_iter()
         .map(HashAlgorithm::from)
         .filter(|a| *a != HashAlgorithm::MD5)
         .filter(|a| a.is_supported()).enumerate()
     {
         if i > 0 {
-            print!(", ");
+            w.emit(format_args!(", "));
         }
-        print!("{}", babel::Fish(a));
+        w.emit(format_args!("{}", babel::Fish(a)));
     }
-    println!();
+    w.newline();
 
-    print!("Compression: ");
+    let mut w = Writer::new("Compression: ");
     for (i, a) in (0..0xff).into_iter()
         .map(CompressionAlgorithm::from)
         .filter(|a| a.is_supported()).enumerate()
     {
         if i > 0 {
-            print!(", ");
+            w.emit(format_args!(", "));
         }
-        print!("{}", babel::Fish(a));
+        w.emit(format_args!("{}", babel::Fish(a)));
     }
-    println!();
+    w.newline();
 }
 
 #[allow(dead_code, unused_variables, unused_assignments)]
