@@ -166,7 +166,7 @@ impl TrustDB {
                              -> Result<()> {
         for (i, line) in io::BufReader::new(source).lines().enumerate() {
             let l = line?;
-            if l.is_empty() || l.starts_with("_") {
+            if l.is_empty() || l.starts_with("#") {
                 continue;
             }
             let f = l.split(':').collect::<Vec<&str>>();
