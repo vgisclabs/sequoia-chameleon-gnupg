@@ -321,13 +321,13 @@ impl<'a, 'store> DHelper<'a, 'store> {
     {
         // We provide all the information upfront before we try any
         // decryption.
-        if ! self.config.quiet {
-            for skesk in skesks {
-                let (cipher, aead) = match skesk {
-                    SKESK::V4(s) => (s.symmetric_algo(), None),
-                    SKESK::V5(s) => (s.symmetric_algo(), Some(s.aead_algo())),
-                    _ => continue,
-                };
+        for skesk in skesks {
+            let (cipher, aead) = match skesk {
+                SKESK::V4(s) => (s.symmetric_algo(), None),
+                SKESK::V5(s) => (s.symmetric_algo(), Some(s.aead_algo())),
+                _ => continue,
+            };
+            if ! self.config.quiet {
                 self.config.info(format_args!(
                     "{}.{} encrypted session key",
                     babel::Fish(cipher),
@@ -335,38 +335,42 @@ impl<'a, 'store> DHelper<'a, 'store> {
                         .unwrap_or_else(|| "CFB".into()),
                 ));
             }
+        }
 
-            if ! skesks.is_empty() {
+        if ! skesks.is_empty() {
+            if ! self.config.quiet {
                 self.config.info(format_args!(
                     "encrypted with {} passphrase{}",
                     skesks.len(),
                     if skesks.len() != 1 { "s" } else { "" },
                 ));
             }
+        }
 
-            for pkesk in pkesks {
-                let keyid = pkesk.recipient();
-                let handle = KeyHandle::from(keyid);
-                if self.config.verbose > 0 {
+        for pkesk in pkesks {
+            let keyid = pkesk.recipient();
+            let handle = KeyHandle::from(keyid);
+            if ! self.config.quiet && self.config.verbose > 0 {
+                self.config.warn(format_args!(
+                    "public key is {}", handle));
+            }
+
+            if let Some(cert) = self.config.keydb().lookup_by_key(&handle).ok()
+                .and_then(|certs: Vec<_>| certs.into_iter().next())
+                .and_then(|cert| cert.as_cert().ok())
+            {
+                if ! self.config.quiet && self.config.verbose > 0 {
                     self.config.warn(format_args!(
-                        "public key is {}", handle));
+                        "using subkey {} instead of primary key {}", handle,
+                        cert.keyid()));
                 }
 
-                if let Some(cert) = self.config.keydb().lookup_by_key(&handle).ok()
-                    .and_then(|certs: Vec<_>| certs.into_iter().next())
-                    .and_then(|cert| cert.as_cert().ok())
-                {
-                    if self.config.verbose > 0 {
-                        self.config.warn(format_args!(
-                            "using subkey {} instead of primary key {}", handle,
-                            cert.keyid()));
-                    }
+                let key = cert.keys().key_handle(handle.clone())
+                    .next().expect("the indices to be consistent");
+                let creation_time =
+                    chrono::DateTime::<chrono::Utc>::from(key.creation_time());
 
-                    let key = cert.keys().key_handle(handle.clone())
-                        .next().expect("the indices to be consistent");
-                    let creation_time =
-                        chrono::DateTime::<chrono::Utc>::from(key.creation_time());
-
+                if ! self.config.quiet {
                     self.config.warn(format_args!(
                         "encrypted with {}-bit {} key, ID {}, created {}\n      {:?}",
                         key.mpis().bits().unwrap_or(0),
@@ -374,21 +378,23 @@ impl<'a, 'store> DHelper<'a, 'store> {
                         pkesk.recipient(),
                         creation_time.format("%Y-%m-%d"),
                         utils::best_effort_primary_uid(self.config.policy(), &cert)));
-                } else {
+                }
+            } else {
+                if ! self.config.quiet {
                     self.config.warn(format_args!(
                         "encrypted with {} key, ID {}",
                         babel::Fish(pkesk.pk_algo()), pkesk.recipient()));
                 }
-
-                self.config.status().emit(
-                    Status::EncTo {
-                        keyid: keyid.clone(),
-                        pk_algo: Some(pkesk.pk_algo()),
-                        // According to doc/DETAILS, GnuPG always
-                        // reports the length as 0.
-                        pk_len: None,
-                    })?;
             }
+
+            self.config.status().emit(
+                Status::EncTo {
+                    keyid: keyid.clone(),
+                    pk_algo: Some(pkesk.pk_algo()),
+                    // According to doc/DETAILS, GnuPG always
+                    // reports the length as 0.
+                    pk_len: None,
+                })?;
         }
 
         // Before doing anything else, try if we were given a session
