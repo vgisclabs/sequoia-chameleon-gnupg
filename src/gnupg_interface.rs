@@ -12,6 +12,18 @@
 /// The GnuPG version we re-implement.
 pub const VERSION: &str = "2.2.40";
 
+/// Match GnuPG's behavior more strictly.
+///
+/// Strictly match GnuPG's output even if the protocol allows other
+/// output as well (e.g. GnuPG may only emit key ids whereas
+/// doc/DETAILS says fingerprints are also allowed), or where a
+/// symbolic output instead of numeric output would be nicer for
+/// humans on human-readable output.
+///
+/// Annoyingly, test suites don't understand how key handles alias, so
+/// aligning more closely with GnuPG avoids a lot of false positives.
+pub const STRICT_OUTPUT: bool = true;
+
 /// Controls emitting of decryption compliance information.
 ///
 /// This compile-time constant controls whether we should claim

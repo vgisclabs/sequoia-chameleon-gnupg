@@ -31,17 +31,8 @@ use crate::{
         Query,
         TrustModel,
     },
+    gnupg_interface::STRICT_OUTPUT,
 };
-
-/// Match GnuPG's behavior more strictly.
-///
-/// Strictly match GnuPG's output even if the protocol allows other
-/// output as well (e.g. GnuPG may only emit key ids whereas
-/// doc/DETAILS says fingerprints are also allowed.
-///
-/// Annoyingly, test suites don't understand how key handles alias, so
-/// aligning more closely with GnuPG avoids a lot of false positives.
-const STRICT_OUTPUT: bool = true;
 
 pub struct Fd(Option<Mutex<RefCell<Box<dyn io::Write + Send + Sync>>>>);
 
