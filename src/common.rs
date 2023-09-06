@@ -32,6 +32,9 @@ pub trait Common<'store> {
     /// Returns the name of the program.
     fn argv0(&self) -> &'static str;
 
+    /// Prints a non-prefixed message to the log stream.
+    fn log(&self, msg: fmt::Arguments);
+
     /// Prints an informative message to stderr if we are not in quiet
     /// operation.
     fn info(&self, msg: fmt::Arguments) {
@@ -44,7 +47,7 @@ pub trait Common<'store> {
     fn warn(&self, msg: fmt::Arguments) {
         crate::with_invocation_log(
             |w| Ok(write!(w, "{}: {}", self.argv0(), msg)?));
-        eprintln!("{}: {}", self.argv0(), msg);
+        self.log(format_args!("{}: {}", self.argv0(), msg));
     }
 
     /// Prints an error to stderr.

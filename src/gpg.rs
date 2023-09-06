@@ -983,11 +983,15 @@ impl<'store> common::Common<'store> for Config<'store> {
         "gpg"
     }
 
+    fn log(&self, msg: fmt::Arguments) {
+        let mut logger = self.logger_fd.lock().expect("not poisoned");
+        let _ = writeln!(logger.get_mut(), "{}", msg);
+    }
+
     fn warn(&self, msg: fmt::Arguments) {
         crate::with_invocation_log(
             |w| Ok(write!(w, "{}: {}", self.argv0(), msg)?));
-        let mut logger = self.logger_fd.lock().expect("not poisoned");
-        let _ = writeln!(logger.get_mut(), "{}: {}", self.argv0(), msg);
+        self.log(format_args!("{}: {}", self.argv0(), msg));
     }
 
     fn error(&self, msg: fmt::Arguments) {

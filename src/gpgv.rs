@@ -1,9 +1,11 @@
 use std::{
     borrow::Cow,
+    cell::RefCell,
     fmt,
     fs,
     io,
     path::{Path, PathBuf},
+    sync::Mutex,
 };
 
 use anyhow::{Context, Result};
@@ -113,7 +115,7 @@ pub struct Config<'store> {
     verify_options: u32,
 
     // Streams.
-    logger_fd: Box<dyn io::Write>,
+    logger_fd: Mutex<RefCell<Box<dyn io::Write>>>,
     status_fd: status::Fd,
 }
 
@@ -142,7 +144,7 @@ impl<'store> Config<'store> {
             verify_options: 0,
 
             // Streams.
-            logger_fd: Box::new(io::sink()),
+            logger_fd: Mutex::new(RefCell::new(Box::new(io::stderr()))),
             status_fd: Box::new(io::sink()).into(),
         })
     }
@@ -151,6 +153,11 @@ impl<'store> Config<'store> {
 impl<'store> common::Common<'store> for Config<'store> {
     fn argv0(&self) -> &'static str {
         "gpgv"
+    }
+
+    fn log(&self, msg: fmt::Arguments) {
+        let mut logger = self.logger_fd.lock().expect("not poisoned");
+        let _ = writeln!(logger.get_mut(), "{}", msg);
     }
 
     fn error(&self, msg: fmt::Arguments) {
@@ -279,11 +286,12 @@ fn real_main() -> anyhow::Result<()> {
             },
 
 	    Argument::Option(oLoggerFD, value) => {
-                opt.logger_fd = utils::sink_from_fd(value.as_int().unwrap())?;
+                opt.logger_fd = Mutex::new(RefCell::new(
+                    utils::sink_from_fd(value.as_int().unwrap())?));
             },
             Argument::Option(oLoggerFile, value) => {
-                opt.logger_fd =
-                    Box::new(fs::File::create(value.as_str().unwrap())?);
+                opt.logger_fd = Mutex::new(RefCell::new(
+                    Box::new(fs::File::create(value.as_str().unwrap())?)));
             },
 
             Argument::Option(oHomedir, value) => {
