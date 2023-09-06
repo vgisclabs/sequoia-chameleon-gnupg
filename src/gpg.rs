@@ -785,6 +785,11 @@ impl<'store> Config<'store> {
     /// Checks whether the permissions on the state directory are
     /// sane.
     fn check_homedir_permissions(&self) -> Result<()> {
+        if self.no_perm_warn {
+            // Opt-out.
+            return Ok(());
+        }
+
         if ! self.homedir.exists() {
             // Not yet created.
             return Ok(());
