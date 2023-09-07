@@ -190,3 +190,46 @@ fn test_decryption(cert: Cert,
 
     Ok(())
 }
+
+#[test]
+fn fingerprint_recipient() -> Result<()> {
+    let mut experiment = make_experiment!()?;
+    // Create the keyring stores.  Reduces the noise in the upcoming
+    // experiments.
+    experiment.invoke(&["--list-keys"])?.assert_success();
+
+    let cert = experiment.artifact(
+        "cert",
+        || CertBuilder::new()
+            .add_userid("Alice Lovelace <alice@lovelace.name>")
+            .set_creation_time(Experiment::now())
+            .add_transport_encryption_subkey()
+            .generate()
+            .map(|(cert, _rev)| cert),
+        |a, f| a.as_tsk().serialize(f),
+        |b| Cert::from_bytes(&b))?;
+
+    eprintln!("Importing cert...");
+    let diff = experiment.invoke(&[
+        "--import",
+        &experiment.store("cert", &cert.to_vec()?)?,
+    ])?;
+    diff.assert_success();
+
+    let fp = cert.fingerprint().to_string();
+    let diff = experiment.invoke(&[
+        "--no-auto-key-locate",
+        "--always-trust",
+        "--encrypt",
+        "--recipient", &fp,
+        "--output", "ciphertext",
+        &experiment.store("plaintext", PLAINTEXT)?,
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(0, 0, 0);
+    let ciphertexts =
+        diff.with_working_dir(|p| p.get("ciphertext").cloned().ok_or_else(
+            || anyhow::anyhow!("no ciphertext produced")))?;
+
+    test_decryption(cert, experiment, ciphertexts)
+}

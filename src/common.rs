@@ -343,6 +343,16 @@ impl Query {
                 },
         }
     }
+
+    /// Returns whether this query uses a fingerprint or key ID.
+    pub fn by_key_handle(&self) -> bool {
+        match self {
+            Query::Key(_) |
+            Query::ExactKey(_) => true,
+            Query::Email(_) |
+            Query::UserIDFragment(_) => false
+        }
+    }
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]

@@ -158,28 +158,34 @@ fn do_encrypt(config: &crate::Config, args: &[String],
                 de_vs_compliant &= config.de_vs_producer.key(&key).is_ok();
             }
 
-            // GnuPG always reports the cert fingerprint even if a
-            // subkey has been given as recipient.
-            config.status().emit(
-                Status::KeyConsidered {
-                    fingerprint: cert.fingerprint(),
-                    not_selected:
-                    if let InvalidKeyReason::NotTrusted = invalid_key_reason {
-                        // If the key is not trusted, GnuPG doesn't
-                        // set the flags.
-                        false
-                    } else {
-                        ! found_one_subkey
-                    },
-                    all_expired_or_revoked:
-                    if let InvalidKeyReason::NotTrusted = invalid_key_reason {
-                        // If the key is not trusted, GnuPG doesn't
-                        // set the flags.
-                        false
-                    } else {
-                        ! found_one_subkey // XXX: not quite
-                    },
-                })?;
+            // Bit of a hack here: if this query is not going thru the
+            // trust model, suppress the KEY_CONSIDERED line.  This
+            // isn't quite the right place to do that, but let's roll
+            // with it for now.
+            if ! query.by_key_handle() {
+                // GnuPG always reports the cert fingerprint even if a
+                // subkey has been given as recipient.
+                config.status().emit(
+                    Status::KeyConsidered {
+                        fingerprint: cert.fingerprint(),
+                        not_selected:
+                        if let InvalidKeyReason::NotTrusted = invalid_key_reason {
+                            // If the key is not trusted, GnuPG doesn't
+                            // set the flags.
+                            false
+                        } else {
+                            ! found_one_subkey
+                        },
+                        all_expired_or_revoked:
+                        if let InvalidKeyReason::NotTrusted = invalid_key_reason {
+                            // If the key is not trusted, GnuPG doesn't
+                            // set the flags.
+                            false
+                        } else {
+                            ! found_one_subkey // XXX: not quite
+                        },
+                    })?;
+            }
 
             found_one |= found_one_subkey;
             if found_one {
