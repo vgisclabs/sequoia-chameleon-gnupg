@@ -219,7 +219,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key E678AE4A007A33EFB0098AA7F0AC6AF7EC9AA061\\ngpg: Good signature from \"Alice Lovelace <alice@lovelace.name>\" [unknown]\\ngpg: WARNING: This key is not certified with a trusted signature!\\ngpg:          There is no indication that the signature belongs to the owner.\\nPrimary key fingerprint: A55A 7FD4 44AB 562E B389  D225 2D34 63AA B1F2 5439\\n     Subkey fingerprint: E678 AE4A 007A 33EF B009  8AA7 F0AC 6AF7 EC9A A061\\n",
       "stdout": "",
-      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED A55A7FD444AB562EB389D2252D3463AAB1F25439 0\\n[GNUPG:] SIG_ID yU93xb0v34/AskAPoT+bqvPwV+c 2022-12-20 1671553073\\n[GNUPG:] KEY_CONSIDERED A55A7FD444AB562EB389D2252D3463AAB1F25439 0\\n[GNUPG:] GOODSIG F0AC6AF7EC9AA061 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org\\n[GNUPG:] NOTATION_DATA ۃ25\\x94\\xE8\\x8B=Gq%18ϛ80\\xCAJ\\xBA\\x80h\\x96\\xD1%15\\xBA|%01\\xEE\\xFB\\xA3\\x81\\xB8\\x8E\\n[GNUPG:] VALIDSIG E678AE4A007A33EFB0098AA7F0AC6AF7EC9AA061 2022-12-20 1671553073 0 4 0 22 10 00 A55A7FD444AB562EB389D2252D3463AAB1F25439\\n[GNUPG:] TRUST_UNDEFINED 0 pgp\\n",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED A55A7FD444AB562EB389D2252D3463AAB1F25439 0\\n[GNUPG:] SIG_ID yU93xb0v34/AskAPoT+bqvPwV+c 2022-12-20 1671553073\\n[GNUPG:] KEY_CONSIDERED A55A7FD444AB562EB389D2252D3463AAB1F25439 0\\n[GNUPG:] GOODSIG F0AC6AF7EC9AA061 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org\\n[GNUPG:] NOTATION_DATA ۃ25\\x94\\xE8\\x8B=Gq%18ϛ80\\xCAJ\\xBA\\x80h\\x96\\xD1%15\\xBA|%01\\xEE\\xFB\\xA3\\x81\\xB8\\x8E\\n[GNUPG:] VALIDSIG E678AE4A007A33EFB0098AA7F0AC6AF7EC9AA061 2022-12-20 1671553073 0 4 0 22 10 00 A55A7FD444AB562EB389D2252D3463AAB1F25439\\n[GNUPG:] KEY_CONSIDERED A55A7FD444AB562EB389D2252D3463AAB1F25439 0\\n[GNUPG:] TRUST_UNDEFINED 0 pgp\\n",
       "status": "exit status: 0",
       "files": {}
     },
@@ -232,7 +232,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key E678AE4A007A33EFB0098AA7F0AC6AF7EC9AA061\\ngpg: BAD signature from \"Alice Lovelace <alice@lovelace.name>\" [unknown]\\n",
       "stdout": "",
-      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED A55A7FD444AB562EB389D2252D3463AAB1F25439 0\\n[GNUPG:] BADSIG F0AC6AF7EC9AA061 Alice Lovelace <alice@lovelace.name>\\n",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED A55A7FD444AB562EB389D2252D3463AAB1F25439 0\\n[GNUPG:] KEY_CONSIDERED A55A7FD444AB562EB389D2252D3463AAB1F25439 0\\n[GNUPG:] BADSIG F0AC6AF7EC9AA061 Alice Lovelace <alice@lovelace.name>\\n",
       "status": "exit status: 1",
       "files": {}
     },

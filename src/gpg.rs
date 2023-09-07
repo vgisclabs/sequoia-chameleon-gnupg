@@ -888,9 +888,21 @@ impl<'store> Config<'store> {
     /// Returns certs matching a given query using groups and the
     /// configured trust model.
     pub fn lookup_certs(&self, query: &Query) -> Result<Vec<(Validity, Cow<LazyCert<'store>>)>> {
-        self.lookup_certs_with(
+        let certs = self.lookup_certs_with(
             self.trust_model_impl.with_policy(self, Some(self.now()))?.as_ref(),
-            query, true)
+            query, true)?;
+
+        // GnuPG emits a key considered status message on every
+        // lookup, even if it is repeated later on.  Do the same.
+        for (_, cert) in &certs {
+            self.status().emit(
+                status::Status::KeyConsidered {
+                    fingerprint: cert.fingerprint(),
+                    not_selected: false,
+                    all_expired_or_revoked: false,
+                })?;
+        }
+        Ok(certs)
     }
 
     /// Returns certs matching a given query using groups and the

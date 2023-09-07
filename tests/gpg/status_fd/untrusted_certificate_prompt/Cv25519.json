@@ -56,7 +56,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: E2852F6AC1873EFD: There is no assurance this key belongs to the named user\\n\\nsub  cv25519/E2852F6AC1873EFD 2022-12-20 Alice Lovelace <alice@lovelace.name>\\n Primary key fingerprint: 1A68 B515 BF28 81A8 2CE6  A522 62CC AE6F 2CDB DCAF\\n      Subkey fingerprint: 699F D7DF 7BFF 3277 BC8F  4503 E285 2F6A C187 3EFD\\n\\nIt is NOT certain that the key belongs to the person named\\nin the user ID.  If you *really* know what you are doing,\\nyou may answer the next question with yes.\\n\\ngpg: /EXPERIMENT/plaintext: encryption failed: Unusable public key\\n",
       "stdout": "",
-      "statusfd": "[GNUPG:] USERID_HINT E2852F6AC1873EFD Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] GET_BOOL untrusted_key.override\\n[GNUPG:] GOT_IT\\n[GNUPG:] KEY_CONSIDERED 1A68B515BF2881A82CE6A52262CCAE6F2CDBDCAF 0\\n[GNUPG:] INV_RECP 10 <alice@lovelace.name>\\n[GNUPG:] FAILURE encrypt 53\\n",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 1A68B515BF2881A82CE6A52262CCAE6F2CDBDCAF 0\\n[GNUPG:] USERID_HINT E2852F6AC1873EFD Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] GET_BOOL untrusted_key.override\\n[GNUPG:] GOT_IT\\n[GNUPG:] KEY_CONSIDERED 1A68B515BF2881A82CE6A52262CCAE6F2CDBDCAF 0\\n[GNUPG:] INV_RECP 10 <alice@lovelace.name>\\n[GNUPG:] FAILURE encrypt 53\\n",
       "status": "exit status: 2",
       "files": {}
     }

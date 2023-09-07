@@ -145,7 +145,7 @@ fn test_key(cert: Cert, mut experiment: Experiment, expect_success: bool)
     ])?;
     if expect_success {
         diff.assert_success();
-        diff.assert_limits(0, 0, 70);
+        diff.assert_limits(0, 0, 0);
         let ciphertexts =
             diff.with_working_dir(|p| p.get("ciphertext").cloned().ok_or_else(
                 || anyhow::anyhow!("no ciphertext produced")))?;
@@ -153,7 +153,7 @@ fn test_key(cert: Cert, mut experiment: Experiment, expect_success: bool)
         test_decryption(cert, experiment, ciphertexts)?;
     } else {
         diff.assert_failure();
-        diff.assert_limits(0, 0, 67);
+        diff.assert_limits(0, 0, 0);
         assert!(diff.with_working_dir(
             |p| Ok(p.get("ciphertext").is_some()))?
                 .iter().all(|&exists| exists == false));

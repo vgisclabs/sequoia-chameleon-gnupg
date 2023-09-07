@@ -1083,7 +1083,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: Good signature from \"Alice Lovelace <alice@lovelace.name>\" [unknown]\\ngpg: WARNING: This key is not certified with a trusted signature!\\ngpg:          There is no indication that the signature belongs to the owner.\\nPrimary key fingerprint: D59B E14B 6459 2232 3843  4784 498B F4FC F23F C83E\\n     Subkey fingerprint: 1C1C B500 9A09 970F 70EE  4775 E2B0 97EC 30C6 894F\\n",
       "stdout": "",
-      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED D59BE14B6459223238434784498BF4FCF23FC83E 0\\n[GNUPG:] SIG_ID 59mVLCKZbt8ajK7y3ITi9BtKuu8 2022-12-20 1671553073\\n[GNUPG:] KEY_CONSIDERED D59BE14B6459223238434784498BF4FCF23FC83E 0\\n[GNUPG:] GOODSIG E2B097EC30C6894F Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org\\n[GNUPG:] NOTATION_DATA \\x82?\\x90-\\xFD\\xECl\\xD86\\xC4.\\xD5\\xFA\"\\xB3T\\xF3Q\\x89Y\\xB2Tqpڢ\\xF7\\x91\\xBD\\xFA\\xF5\\xDB\\n[GNUPG:] VALIDSIG 1C1CB5009A09970F70EE4775E2B097EC30C6894F 2022-12-20 1671553073 0 4 0 22 10 00 D59BE14B6459223238434784498BF4FCF23FC83E\\n[GNUPG:] TRUST_UNDEFINED 0 pgp\\n",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED D59BE14B6459223238434784498BF4FCF23FC83E 0\\n[GNUPG:] SIG_ID 59mVLCKZbt8ajK7y3ITi9BtKuu8 2022-12-20 1671553073\\n[GNUPG:] KEY_CONSIDERED D59BE14B6459223238434784498BF4FCF23FC83E 0\\n[GNUPG:] GOODSIG E2B097EC30C6894F Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org\\n[GNUPG:] NOTATION_DATA \\x82?\\x90-\\xFD\\xECl\\xD86\\xC4.\\xD5\\xFA\"\\xB3T\\xF3Q\\x89Y\\xB2Tqpڢ\\xF7\\x91\\xBD\\xFA\\xF5\\xDB\\n[GNUPG:] VALIDSIG 1C1CB5009A09970F70EE4775E2B097EC30C6894F 2022-12-20 1671553073 0 4 0 22 10 00 D59BE14B6459223238434784498BF4FCF23FC83E\\n[GNUPG:] KEY_CONSIDERED D59BE14B6459223238434784498BF4FCF23FC83E 0\\n[GNUPG:] TRUST_UNDEFINED 0 pgp\\n",
       "status": "exit status: 0",
       "files": {}
     },
@@ -1096,7 +1096,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: BAD signature from \"Alice Lovelace <alice@lovelace.name>\" [unknown]\\n",
       "stdout": "",
-      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED D59BE14B6459223238434784498BF4FCF23FC83E 0\\n[GNUPG:] BADSIG E2B097EC30C6894F Alice Lovelace <alice@lovelace.name>\\n",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED D59BE14B6459223238434784498BF4FCF23FC83E 0\\n[GNUPG:] KEY_CONSIDERED D59BE14B6459223238434784498BF4FCF23FC83E 0\\n[GNUPG:] BADSIG E2B097EC30C6894F Alice Lovelace <alice@lovelace.name>\\n",
       "status": "exit status: 1",
       "files": {}
     },
@@ -1137,7 +1137,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: Good signature from \"Alice Lovelace <alice@lovelace.name>\" [unknown]\\ngpg: WARNING: This key is not certified with a trusted signature!\\ngpg:          There is no indication that the signature belongs to the owner.\\nPrimary key fingerprint: D59B E14B 6459 2232 3843  4784 498B F4FC F23F C83E\\n     Subkey fingerprint: 1C1C B500 9A09 970F 70EE  4775 E2B0 97EC 30C6 894F\\n",
       "stdout": "",
-      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED D59BE14B6459223238434784498BF4FCF23FC83E 0\\n[GNUPG:] SIG_ID 96DHVLZ2TsY7rxO4FoyyBH08Neg 2022-12-20 1671553073\\n[GNUPG:] KEY_CONSIDERED D59BE14B6459223238434784498BF4FCF23FC83E 0\\n[GNUPG:] GOODSIG E2B097EC30C6894F Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org\\n[GNUPG:] NOTATION_DATA \\x89L\\xE2o΍\\xF4\\xF8\\x88\\xCB>*u\\x82\\xFA%0F%1B\\xCF\\xCF\\xEF\\xD6\\xF3\\xCB*\\x8Cm:!\\xEE$]\\xD9\\n[GNUPG:] VALIDSIG 1C1CB5009A09970F70EE4775E2B097EC30C6894F 2022-12-20 1671553073 0 4 0 22 10 01 D59BE14B6459223238434784498BF4FCF23FC83E\\n[GNUPG:] TRUST_UNDEFINED 0 pgp\\n",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED D59BE14B6459223238434784498BF4FCF23FC83E 0\\n[GNUPG:] SIG_ID 96DHVLZ2TsY7rxO4FoyyBH08Neg 2022-12-20 1671553073\\n[GNUPG:] KEY_CONSIDERED D59BE14B6459223238434784498BF4FCF23FC83E 0\\n[GNUPG:] GOODSIG E2B097EC30C6894F Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org\\n[GNUPG:] NOTATION_DATA \\x89L\\xE2o΍\\xF4\\xF8\\x88\\xCB>*u\\x82\\xFA%0F%1B\\xCF\\xCF\\xEF\\xD6\\xF3\\xCB*\\x8Cm:!\\xEE$]\\xD9\\n[GNUPG:] VALIDSIG 1C1CB5009A09970F70EE4775E2B097EC30C6894F 2022-12-20 1671553073 0 4 0 22 10 01 D59BE14B6459223238434784498BF4FCF23FC83E\\n[GNUPG:] KEY_CONSIDERED D59BE14B6459223238434784498BF4FCF23FC83E 0\\n[GNUPG:] TRUST_UNDEFINED 0 pgp\\n",
       "status": "exit status: 0",
       "files": {}
     },
@@ -1150,7 +1150,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using EDDSA key 1C1CB5009A09970F70EE4775E2B097EC30C6894F\\ngpg: BAD signature from \"Alice Lovelace <alice@lovelace.name>\" [unknown]\\n",
       "stdout": "",
-      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED D59BE14B6459223238434784498BF4FCF23FC83E 0\\n[GNUPG:] BADSIG E2B097EC30C6894F Alice Lovelace <alice@lovelace.name>\\n",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED D59BE14B6459223238434784498BF4FCF23FC83E 0\\n[GNUPG:] KEY_CONSIDERED D59BE14B6459223238434784498BF4FCF23FC83E 0\\n[GNUPG:] BADSIG E2B097EC30C6894F Alice Lovelace <alice@lovelace.name>\\n",
       "status": "exit status: 1",
       "files": {}
     },

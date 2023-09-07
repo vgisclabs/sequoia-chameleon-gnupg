@@ -586,7 +586,7 @@ fn test_detached_sig_with<'a>(experiment: &mut Experiment,
     let diff = experiment.invoke(&args_good)?;
     if expect_success {
         diff.assert_success();
-        diff.assert_limits(0, 10, 134);
+        diff.assert_limits(0, 10, 67);
     } else {
         diff.assert_failure();
         diff.assert_equal_up_to(0, 10);
@@ -595,7 +595,7 @@ fn test_detached_sig_with<'a>(experiment: &mut Experiment,
     let diff = experiment.invoke(&args_bad)?;
     diff.assert_failure();
     if expect_success {
-        diff.assert_limits(0, 10, 134);
+        diff.assert_limits(0, 10, 0);
     } else {
         diff.assert_equal_up_to(0, 10);
     }

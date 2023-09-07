@@ -108,7 +108,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: A0CCB1A8DD4B5287: There is no assurance this key belongs to the named user\\ngpg: /EXPERIMENT/plaintext: encryption failed: Unusable public key\\n",
       "stdout": "",
-      "statusfd": "[GNUPG:] KEY_CONSIDERED 3A25AFD6F469C48F9A088C7DA8C387BC41A156B0 0\\n[GNUPG:] INV_RECP 10 <alice@lovelace.name>\\n[GNUPG:] FAILURE encrypt 53\\n",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 3A25AFD6F469C48F9A088C7DA8C387BC41A156B0 0\\n[GNUPG:] KEY_CONSIDERED 3A25AFD6F469C48F9A088C7DA8C387BC41A156B0 0\\n[GNUPG:] INV_RECP 10 <alice@lovelace.name>\\n[GNUPG:] FAILURE encrypt 53\\n",
       "status": "exit status: 2",
       "files": {}
     }

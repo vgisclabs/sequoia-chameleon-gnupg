@@ -57,7 +57,7 @@ fn untrusted_certificate_prompt() -> Result<()> {
     // some warning directly to the tty, but the chameleon prints them
     // to stderr.  This is a bug in the chameleon.  When it is fixed,
     // reduce the expected edit distance for stderr to 0.
-    diff.assert_limits(0, 395, 245);
+    diff.assert_limits(0, 395, 201);
 
     Ok(())
 }

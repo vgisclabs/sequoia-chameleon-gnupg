@@ -502,6 +502,37 @@ impl<'a, 'store> VHelper<'a, 'store> {
             e => unimplemented!("{:?}", e),
         }
 
+        // Dump notations.
+        for notation in sig.notation_data() {
+            self.control.status().emit(Status::NotationName {
+                name: notation.name().into(),
+            })?;
+            if notation.flags().human_readable() {
+                self.control.status().emit(Status::NotationFlags {
+                    // If it were critical, the sig would
+                    // not have checked out
+                    critical: false,
+                    human_readable: true,
+                })?;
+            }
+            self.control.status().emit(Status::NotationData {
+                data: notation.value().into(),
+            })?;
+        }
+
+        // Cryptographically valid.
+        self.control.status().emit(Status::ValidSig {
+            issuer: ka.fingerprint(),
+            creation_time: sig.signature_creation_time()
+                .expect("every well-formed signature has one"),
+            expire_time: sig.signature_expiration_time(),
+            version: sig.version(),
+            pk_algo: sig.pk_algo(),
+            hash_algo: sig.hash_algo(),
+            sig_class: sig.typ(),
+            primary: ka.cert().fingerprint(),
+        })?;
+
         let validity =
             self.control.lookup_certs(
                 &Query::ExactKey(ka.cert().key_handle()))?
@@ -584,37 +615,6 @@ impl<'a, 'store> VHelper<'a, 'store> {
             }
         }
 
-        // Dump notations.
-        for notation in sig.notation_data() {
-            self.control.status().emit(Status::NotationName {
-                name: notation.name().into(),
-            })?;
-            if notation.flags().human_readable() {
-                self.control.status().emit(Status::NotationFlags {
-                    // If it were critical, the sig would
-                    // not have checked out
-                    critical: false,
-                    human_readable: true,
-                })?;
-            }
-            self.control.status().emit(Status::NotationData {
-                data: notation.value().into(),
-            })?;
-        }
-
-        // Cryptographically valid.
-        self.control.status().emit(Status::ValidSig {
-            issuer: ka.fingerprint(),
-            creation_time: sig.signature_creation_time()
-                .expect("every well-formed signature has one"),
-            expire_time: sig.signature_expiration_time(),
-            version: sig.version(),
-            pk_algo: sig.pk_algo(),
-            hash_algo: sig.hash_algo(),
-            sig_class: sig.typ(),
-            primary: ka.cert().fingerprint(),
-        })?;
-
         // Compute validity information.
 
         // If we are gpg, we want to emit the validity of the cert.
@@ -658,6 +658,12 @@ impl<'a, 'store> VHelper<'a, 'store> {
                           ka: &ValidErasedKeyAmalgamation<key::PublicParts>,
                           error: Option<&openpgp::Error>)
                           -> Result<()> {
+        let validity =
+            self.control.lookup_certs(
+                &Query::ExactKey(ka.cert().key_handle()))?
+            .get(0)
+            .map(|(validity, _cert)| *validity);
+
         match error {
             Some(openpgp::Error::Expired(at)) => {
                 self.control.status().emit(Status::KeyExpired {
@@ -673,12 +679,6 @@ impl<'a, 'store> VHelper<'a, 'store> {
             issuer: ka.fingerprint().into(),
             primary_uid: primary_uid.as_bytes().to_vec().into(),
         })?;
-
-        let validity =
-            self.control.lookup_certs(
-                &Query::ExactKey(ka.cert().key_handle()))?
-            .get(0)
-            .map(|(validity, _cert)| *validity);
 
         if let Some(v) = &validity {
             self.control.warn(format_args!(

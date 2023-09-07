@@ -177,7 +177,7 @@ fn run_test(cert: Cert, mut experiment: Experiment, model: &'static str,
     ])?;
     if expect_success {
         diff.assert_success();
-        diff.assert_limits(0, 0, 70);
+        diff.assert_limits(0, 0, 0);
         let ciphertexts =
             diff.with_working_dir(|p| p.get("ciphertext").cloned().ok_or_else(
                 || anyhow::anyhow!("no ciphertext produced")))?;
@@ -205,7 +205,7 @@ fn run_test(cert: Cert, mut experiment: Experiment, model: &'static str,
         }
     } else {
         diff.assert_failure();
-        diff.assert_limits(0, 0, 67);
+        diff.assert_limits(0, 0, 0);
         assert!(diff.with_working_dir(
             |p| Ok(p.get("ciphertext").is_some()))?
                 .iter().all(|&exists| exists == false));
