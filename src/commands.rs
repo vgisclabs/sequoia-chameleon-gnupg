@@ -34,7 +34,10 @@ use cert_store::LazyCert;
 use crate::{
     babel,
     colons,
-    common::Common,
+    common::{
+        BRAINPOOL_P384_OID,
+        Common,
+    },
     status::{Status, NoDataReason},
     utils,
 };
@@ -299,6 +302,7 @@ pub fn cmd_list_config(config: &crate::Config, args: &[String])
             NistP384,
             NistP521,
             BrainpoolP256,
+            Unknown(BRAINPOOL_P384_OID.into()),
             BrainpoolP512,
             Ed25519,
             Cv25519,

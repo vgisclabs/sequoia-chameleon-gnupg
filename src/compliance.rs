@@ -12,12 +12,12 @@ use openpgp::{
     types::*,
 };
 
-pub use crate::common::Compliance;
+pub use crate::common::{
+    BRAINPOOL_P384_OID,
+    Compliance,
+};
 
 const STANDARD_POLICY: &dyn Policy = &StandardPolicy::new();
-
-const BRAINPOOL_P384_OID: &[u8] =
-    &[0x2B, 0x24, 0x03, 0x03, 0x02, 0x08, 0x01, 0x01, 0x0B];
 
 #[derive(Debug, Default)]
 pub struct DeVSProducer {

@@ -10,6 +10,10 @@ use openpgp::{
     packet::Tag,
 };
 
+use crate::{
+    common::BRAINPOOL_P384_OID,
+};
+
 /// Translates values to and from human-readable forms.
 pub struct Fish<T>(pub T);
 
@@ -72,6 +76,8 @@ impl fmt::Display for Fish<&Curve> {
             NistP384 => f.write_str("nistp384"),
             NistP521 => f.write_str("nistp521"),
             BrainpoolP256 => f.write_str("brainpoolP256r1"),
+            Unknown(oid) if &oid[..] == BRAINPOOL_P384_OID =>
+                f.write_str("brainpoolP384r1"),
             BrainpoolP512 => f.write_str("brainpoolP512r1"),
             Ed25519 => f.write_str("ed25519"),
             Cv25519 => f.write_str("cv25519"),

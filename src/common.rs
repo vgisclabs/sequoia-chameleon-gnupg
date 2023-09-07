@@ -27,6 +27,11 @@ use crate::{
 
 pub mod cert;
 
+/// Until Sequoia 2.0, we have to match on the OID to recognize this
+/// curve.
+pub const BRAINPOOL_P384_OID: &[u8] =
+    &[0x2B, 0x24, 0x03, 0x03, 0x02, 0x08, 0x01, 0x01, 0x0B];
+
 /// Controls common to gpgv and gpg.
 pub trait Common<'store> {
     /// Returns the name of the program.
