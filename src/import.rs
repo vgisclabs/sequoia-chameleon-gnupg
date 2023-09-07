@@ -301,6 +301,7 @@ pub async fn do_import_cert(config: &mut crate::Config<'_>,
         }
 
         if changed {
+            flags.set(IMPORT_OK_NEW_KEY);
             s.sec_imported += 1;
         }
         if unchanged {
