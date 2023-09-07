@@ -17,7 +17,7 @@ impl fmt::Display for Fish<std::time::SystemTime> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}",
                chrono::DateTime::<chrono::Local>::from(self.0)
-               .format("%a %b %d %H:%M:%S %Y %Z"))
+               .format("%a %b %e %H:%M:%S %Y %Z"))
     }
 }
 
