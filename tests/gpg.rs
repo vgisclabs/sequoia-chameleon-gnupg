@@ -1,4 +1,5 @@
 use std::{
+    cell::RefCell,
     collections::BTreeMap,
     fmt,
     fs,
@@ -769,7 +770,7 @@ impl Experiment {
         };
 
         Ok(Diff {
-            experiment: &mut *self,
+            experiment: RefCell::new(&mut *self),
             args: args.iter().map(ToString::to_string).collect(),
             oracle,
             former_us,
@@ -841,7 +842,7 @@ impl Canonicalization {
 /// The difference between invoking the reference GnuPG & the former
 /// Chameleon and the Chameleon.
 pub struct Diff<'a> {
-    experiment: &'a mut Experiment,
+    experiment: RefCell<&'a mut Experiment>,
     args: Vec<String>,
     oracle: Output,
     us: Output,
@@ -862,8 +863,8 @@ impl Diff<'_> {
             fun(former_us)?;
         }
 
-        if let Some(bounds) =
-            self.experiment.artifacts.dynamic_upper_bounds.get_mut(self.index)
+        if let Some(bounds) = self.experiment.get_mut()
+            .artifacts.dynamic_upper_bounds.get_mut(self.index)
         {
             *bounds = vec![
                 self.oracle.stdout_edit_distance(&self.us),
@@ -879,7 +880,7 @@ impl Diff<'_> {
     pub fn canonicalize_fingerprints(&mut self, n: usize) -> Result<()> {
         let find_fp = Regex::new(r"[0-9A-F]{40}")?;
         let mut canonicalizations =
-            std::mem::take(&mut self.experiment.canonicalizations);
+            std::mem::take(&mut self.experiment.get_mut().canonicalizations);
 
         self.canonicalize_with(|o| {
             if let Some(fp) = find_fp.find(&o.stdout)
@@ -917,7 +918,7 @@ impl Diff<'_> {
             Ok(())
         })?;
 
-        self.experiment.canonicalizations = canonicalizations;
+        self.experiment.get_mut().canonicalizations = canonicalizations;
         Ok(())
     }
 
@@ -991,15 +992,16 @@ impl Diff<'_> {
     /// output on stdout (stderr) does not exceed the recorded limits.
     /// Panics otherwise.
     pub fn assert_dynamic_upper_bounds(&self) {
-        if let Some(limits) =
-            self.experiment.artifacts.dynamic_upper_bounds.get(self.index)
+        if let Some(limits) = self.experiment.borrow_mut()
+            .artifacts.dynamic_upper_bounds.get_mut(self.index)
         {
             let out_limit = limits.get(0).cloned().unwrap_or_default();
             let err_limit = limits.get(1).cloned().unwrap_or_default();
             let statusfd_limit = limits.get(2).cloned().unwrap_or_default();
             eprintln!("Asserting recorded limits of {}, {}, {}",
                       out_limit, err_limit, statusfd_limit);
-            self._assert_limits(false, out_limit, err_limit, statusfd_limit);
+            *limits =
+                self._assert_limits(false, out_limit, err_limit, statusfd_limit);
         }
     }
 
@@ -1025,10 +1027,14 @@ impl Diff<'_> {
                       static_limits: bool,
                       out_limit: usize,
                       err_limit: usize,
-                      statusfd_limit: usize) {
+                      statusfd_limit: usize)
+                      -> Vec<usize>
+    {
+        let mut limits = Vec::new();
         let mut pass = true;
 
         let d = self.oracle.stdout_edit_distance(&self.us);
+        limits.push(d);
         if d > out_limit {
             pass = false;
             eprintln!("Stdout edit distance {} exceeds limit of {}.",
@@ -1041,6 +1047,7 @@ impl Diff<'_> {
         }
 
         let d = self.oracle.stderr_edit_distance(&self.us);
+        limits.push(d);
         if d > err_limit {
             pass = false;
             eprintln!("Stderr edit distance {} exceeds limit of {}.",
@@ -1053,6 +1060,7 @@ impl Diff<'_> {
         }
 
         let d = self.oracle.statusfd_edit_distance(&self.us);
+        limits.push(d);
         if d > statusfd_limit {
             pass = false;
             eprintln!("Statusfd_limit edit distance {} exceeds limit of {}.",
@@ -1068,6 +1076,8 @@ impl Diff<'_> {
             eprintln!("\n{}", self);
             panic!();
         }
+
+        limits
     }
 
     /// Invokes a callback with the working directory.
@@ -1174,7 +1184,7 @@ impl fmt::Display for Diff<'_> {
         }
 
         let mut r = Vec::new();
-        self.experiment.reproducer(&mut r).unwrap();
+        self.experiment.borrow().reproducer(&mut r).unwrap();
         writeln!(f, "reproducer:\n")?;
         writeln!(f, "{}", String::from_utf8_lossy(&r))?;
         Ok(())
