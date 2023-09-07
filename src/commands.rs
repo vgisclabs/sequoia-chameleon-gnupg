@@ -182,6 +182,7 @@ pub fn cmd_list_config(config: &crate::Config, args: &[String])
         print!("cfg:pubkey:");
         for (i, a) in (0..0xff).into_iter()
             .filter(|a| *a != 2 && *a != 3) // Skip single-use RSA
+            .filter(|a| *a != 20) // Skip dual-use ElGamal
             .map(PublicKeyAlgorithm::from)
             .filter(|a| a.is_supported()).enumerate()
         {
@@ -197,6 +198,7 @@ pub fn cmd_list_config(config: &crate::Config, args: &[String])
         print!("cfg:pubkeyname:");
         for (i, a) in (0..0xff).into_iter()
             .filter(|a| *a != 2 && *a != 3) // Skip single-use RSA
+            .filter(|a| *a != 20) // Skip dual-use ElGamal
             .map(PublicKeyAlgorithm::from)
             .filter(|a| a.is_supported()).enumerate()
         {
@@ -298,14 +300,14 @@ pub fn cmd_list_config(config: &crate::Config, args: &[String])
         print!("cfg:curve:");
         use Curve::*;
         for (i, cv) in [
+            Cv25519,
+            Ed25519,
             NistP256,
             NistP384,
             NistP521,
             BrainpoolP256,
             Unknown(BRAINPOOL_P384_OID.into()),
             BrainpoolP512,
-            Ed25519,
-            Cv25519,
         ].iter().filter(|a| a.is_supported()).enumerate()
         {
             if i > 0 {
