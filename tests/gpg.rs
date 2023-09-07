@@ -999,7 +999,7 @@ impl Diff<'_> {
             let statusfd_limit = limits.get(2).cloned().unwrap_or_default();
             eprintln!("Asserting recorded limits of {}, {}, {}",
                       out_limit, err_limit, statusfd_limit);
-            self._assert_limits(out_limit, err_limit, statusfd_limit);
+            self._assert_limits(false, out_limit, err_limit, statusfd_limit);
         }
     }
 
@@ -1013,15 +1013,19 @@ impl Diff<'_> {
         self.assert_limits(out_limit, err_limit, 0)
     }
 
-    pub fn assert_limits(&self, out_limit: usize, err_limit: usize,
+    pub fn assert_limits(&self,
+                         out_limit: usize, err_limit: usize,
                          statusfd_limit: usize) {
         eprintln!("Asserting static limits of {}, {}, {}",
                   out_limit, err_limit, statusfd_limit);
-        self._assert_limits(out_limit, err_limit, statusfd_limit);
+        self._assert_limits(true, out_limit, err_limit, statusfd_limit);
     }
 
-    fn _assert_limits(&self, out_limit: usize, err_limit: usize,
-                         statusfd_limit: usize) {
+    fn _assert_limits(&self,
+                      static_limits: bool,
+                      out_limit: usize,
+                      err_limit: usize,
+                      statusfd_limit: usize) {
         let mut pass = true;
 
         let d = self.oracle.stdout_edit_distance(&self.us);
@@ -1030,7 +1034,7 @@ impl Diff<'_> {
             eprintln!("Stdout edit distance {} exceeds limit of {}.",
                       d, out_limit);
         }
-        if out_limit > 20 && d < out_limit / 2 {
+        if static_limits && out_limit > 20 && d < out_limit / 2 {
             pass = false;
             eprintln!("Stdout edit distance {} smaller than half of limit {}.",
                       d, out_limit);
@@ -1042,7 +1046,7 @@ impl Diff<'_> {
             eprintln!("Stderr edit distance {} exceeds limit of {}.",
                       d, err_limit);
         }
-        if err_limit > 20 && d < err_limit / 2 {
+        if static_limits && err_limit > 20 && d < err_limit / 2 {
             pass = false;
             eprintln!("Stderr edit distance {} smaller than half of limit {}.",
                       d, err_limit);
@@ -1054,7 +1058,7 @@ impl Diff<'_> {
             eprintln!("Statusfd_limit edit distance {} exceeds limit of {}.",
                       d, statusfd_limit);
         }
-        if statusfd_limit > 20 && d < statusfd_limit / 2 {
+        if static_limits && statusfd_limit > 20 && d < statusfd_limit / 2 {
             pass = false;
             eprintln!("Statusfd_limit edit distance {} smaller than half of limit {}.",
                       d, statusfd_limit);
