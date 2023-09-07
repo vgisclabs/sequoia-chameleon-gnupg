@@ -58,7 +58,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: <alice@lovelace.name>: skipped: Unusable public key\\ngpg: /EXPERIMENT/plaintext: encryption failed: Unusable public key\\n",
       "stdout": "",
-      "statusfd": "[GNUPG:] KEY_CONSIDERED 48034B7798889D3D62C026F1D549EFC2952CCDCD 0\\n[GNUPG:] INV_RECP 0 <alice@lovelace.name>\\n[GNUPG:] FAILURE encrypt 53\\n",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 48034B7798889D3D62C026F1D549EFC2952CCDCD 3\\n[GNUPG:] INV_RECP 0 <alice@lovelace.name>\\n[GNUPG:] FAILURE encrypt 53\\n",
       "status": "exit status: 2",
       "files": {}
     }

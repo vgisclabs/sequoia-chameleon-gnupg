@@ -169,7 +169,7 @@ fn do_encrypt(config: &crate::Config, args: &[String],
                         // set the flags.
                         false
                     } else {
-                        found_one_subkey
+                        ! found_one_subkey
                     },
                     all_expired_or_revoked:
                     if let InvalidKeyReason::NotTrusted = invalid_key_reason {
@@ -177,7 +177,7 @@ fn do_encrypt(config: &crate::Config, args: &[String],
                         // set the flags.
                         false
                     } else {
-                        found_one_subkey // XXX: not quite
+                        ! found_one_subkey // XXX: not quite
                     },
                 })?;
 

@@ -178,7 +178,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "",
-      "statusfd": "[GNUPG:] KEY_CONSIDERED FD56D8D2DF1989C7518FDFD57AEDB9BDEA62E208 3\\n[GNUPG:] BEGIN_ENCRYPTION 2 9\\n[GNUPG:] END_ENCRYPTION\\n",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED FD56D8D2DF1989C7518FDFD57AEDB9BDEA62E208 0\\n[GNUPG:] BEGIN_ENCRYPTION 2 9\\n[GNUPG:] END_ENCRYPTION\\n",
       "status": "exit status: 0",
       "files": {
         "ciphertext": "\\xC1^\\x03\\x80Z\\xA2%d\\xD5Y\\r\\x12\\x01\\x07@}\\xFE*\\x94ԛ(\\x0C\\x01\\x0C`\\x16]\\x8DK\\xE0\\xAEr\\xE4\\xD9P\\x87\\x977\\xA1\\xECtU\\x8B\\x8A\\x01w0\\xA6\\xEB\\x99\\xC1v8\\x93ڄ'\\xC5\\xF8~\\x0E\\xE0$\\x82\\xFF\\xBEv\\x16ߤ\\x08X9%\\xA1\\xD9s\\x0E\\xADs\\x9Cڔ\\x1E\\xCCiˑ\\x0F\\x12*(f\\x87\\xAF\\xD2:\\x01\\xBD\\xE6\\xDD\\xAAQ\\x03\\xD9\\xD1\\x9D\\xAB\\xE3P\\n\\xDB\\xC0\\x06g\\x8C\\x17\\xF8_Lpg\\xF5\\x06\\xDD\\xF2\\xCAq\\xF9f\\xFBh\\xE1[\\xEBE\\xDD-e\\xC1@\\xA9\\xD8\\xE9.;>\\rȊ\\r_\\xF1\\x0C\\xA9"
