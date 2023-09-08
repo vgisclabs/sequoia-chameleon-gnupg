@@ -70,7 +70,7 @@ pub fn cmd_sign(config: &crate::Config, args: &[String],
     } else {
         SignatureType::Binary
     };
-    let timestamp = openpgp::types::Timestamp::now();
+    let timestamp = config.now().try_into()?;
     let hash_algo = config.def_digest;
 
     let mut signer = Signer::with_template(
