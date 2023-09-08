@@ -992,16 +992,27 @@ impl Diff<'_> {
     /// output on stdout (stderr) does not exceed the recorded limits.
     /// Panics otherwise.
     pub fn assert_dynamic_upper_bounds(&self) {
-        if let Some(limits) = self.experiment.borrow_mut()
-            .artifacts.dynamic_upper_bounds.get_mut(self.index)
+        // We need to do a little dance to avoid borrowing
+        // self.experiment twice, once here and once in _assert_limits
+        // when producing a reproducer.
+        let mut new_limits = None;
+        if let Some(limits) = self.experiment.borrow()
+            .artifacts.dynamic_upper_bounds.get(self.index).clone()
         {
             let out_limit = limits.get(0).cloned().unwrap_or_default();
             let err_limit = limits.get(1).cloned().unwrap_or_default();
             let statusfd_limit = limits.get(2).cloned().unwrap_or_default();
             eprintln!("Asserting recorded limits of {}, {}, {}",
                       out_limit, err_limit, statusfd_limit);
-            *limits =
-                self._assert_limits(false, out_limit, err_limit, statusfd_limit);
+            new_limits = Some(
+                self._assert_limits(false, out_limit, err_limit, statusfd_limit)
+            );
+        }
+
+        if let Some(l) = new_limits {
+            *self.experiment.borrow_mut()
+                .artifacts.dynamic_upper_bounds.get_mut(self.index).unwrap()
+                = l;
         }
     }
 
