@@ -1,0 +1,509 @@
+{
+  "outputs": [
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: keybox '/HOMEDIR/pubring.kbx' created\\ngpg: /HOMEDIR/trustdb.gpg: trustdb created\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--import\"",
+        "\"/EXPERIMENT/key\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: key 48B4B9E4C5633092: public key \"Alice Lovelace <alice@lovelace.name>\" imported\\ngpg: key 48B4B9E4C5633092: secret key imported\\ngpg: Total number processed: 1\\ngpg:               imported: 1\\ngpg:       secret keys read: 1\\ngpg:   secret keys imported: 1\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] IMPORTED 48B4B9E4C5633092 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] IMPORT_OK 1 C322BA74736C3F65B560586348B4B9E4C5633092\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] IMPORT_OK 17 C322BA74736C3F65B560586348B4B9E4C5633092\\n[GNUPG:] IMPORT_RES 1 0 1 0 0 0 0 0 0 1 1 0 0 0 0\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--digest-algo=SHA512\"",
+        "\"--sign\"",
+        "\"--output\"",
+        "\"signature\"",
+        "\"/EXPERIMENT/plaintext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] BEGIN_SIGNING H10\\n[GNUPG:] SIG_CREATED S 1 10 00 1671553073 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62\\n",
+      "status": "exit status: 0",
+      "files": {
+        "signature": "\\xA3\\x01\\x9B\\xC0\\xCB\\xCC\\xC0\\xC5\\xF8\\xC1\\xE2\\xAC8w\\xF0\\xEF$\\xC65\\x12I\\x9C\\x059\\x89\\x99y%\\xA9\\x15%\\xC9\\x0B\\x1F\\x18\\xC29\\x9D\\x8C\\x9BY\\x18\\x18\\xB9\\x18d\\xC5\\x14Y\\x04\\xBF9\\xEFn9\\xBD\\xF7\\xE8\\xDD3u{aZY\\x99@\\xCA\\x19\\xB88\\x05`\"\\x117\\xB8\\xFF\\xFBh*\\x9Dj\\xE3f\\x8A\\x08\\x8Dcz<a\"o\\x86kn\\xEF1I߅\\x8E/M=\\x8Cj\\x04\\xA5\\xA6\\xDF\\xE3\\n\\xD8\\x1F\\xE0hxV\\xF5\\xA5\\xD6\\xEEC\\xC6\\xFE\\xB5\\xE5\\x9B\\xF6\\xFAwk\\xCFO3J?\\xB6dK\\xAB\\x97\\xD7\\r#\\x91\\xF3\\xDC\\xA5\";\\xFF\\x7F\\xCE\\xC9\\x9C\\x10ꡦ\\xFF\\xB3hW\\xC7m\\xAB\\x9F\\xCB\\xF3\\xB8\\xBB$\\xFB\\xE7\\xEE\\xDE9\\xFB\\xF9\\x8E\\x8B\\xCB\\xFB\\xB4\\x84e\\xDE\\xDB>\\xAE\\ny\\xBC\\xF3M\\xD7\\xDBM\\x1C\\x8523\\xD7\\x1B\\xA9\\xC9\\x1E8\\x92Ҷ\\xE9CZ\\xF5\\x8AϢ\\xD5w>rI\\xBB\\xAF\\xCB]#z\\xC8cY\\x8E\\x07\\x93q\\xFF\\x04v\\xBD#\\x965\\xB7\\xF8\\xF5\\x7Ft\\x9C\\xAD\\xD4\\xD3ec/\\xDF=\\xBB\\xFE]\\xFB\\xFC5\\x91J:\"{\\xFF]\\xE8\\xFF\\x94^\\xDD\\xE0\\xBB\\xF5\\xFA\\xFB\\xEBUo\\xD6\\x04\\xC5\\xCF\\xB7M\\xB8\\xF4\\xFB\\xFA\\xAD\\x9B\\x19\\xE5\\x8CUzz\\x92\\xB3\\xF3\\xBC\\xF2\\xC3\\x15\\xF3\\x19\\xBF\\xE8\\xED\\x9Ec{\\xC32$|]\\xB4\\x15\\xEF\\xFC\\t\\xDFO\\xE4\\xDB\\x9F\\xB3?\\x7FMT\\xEDs\\xE6\\xAD7\\x9Eon\\xFD\\xF6\\xEAJ{\\xF7zr⪴Ջ,\\xCF\\xDA]\\xB9`\\xC0\\xF9\\xFC^\\xEF\\xA4\\xFA\\xF4\\xD8\\x88\\x8F\\x8B&\\xEB\\xF6\\xB3\\x06O3\\xE6\\xF2\\x95P\\x8F\\x0C|\\xE2\\xF3\\xE4^\\x98\\x9B\\xA9N\\x91\\xC0\\xFF\\xDAM\\xAB\\xAE\\xFC\\xACz\\xE4Pnz\\xF2\\xCB\\xE1\\xB7L\\xEBj\\xE6\\xCF\\xE2L93\\xEDQL\\xF0\\x03\\x87'\\xFF\\xE3cx\\xCEO｢\\xF2\\xC1nB`Fl\\xD7\\xF2j\\xD6\\xDF\\\\\\xB9\\xF7\\x8DJvT\\xF17\\xEF\\xB5\\xD3\\xDC\\x1B\\xB9\\xD7$\\xDBH\\xD1\\xE9\\xAD첶k\\x13\\x00"
+      }
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--verify\"",
+        "\"--output\"",
+        "\"output\"",
+        "\"/EXPERIMENT/signature\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpg:                using RSA key 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62\\ngpg: Good signature from \"Alice Lovelace <alice@lovelace.name>\" [unknown]\\ngpg: WARNING: This key is not certified with a trusted signature!\\ngpg:          There is no indication that the signature belongs to the owner.\\nPrimary key fingerprint: C322 BA74 736C 3F65 B560  5863 48B4 B9E4 C563 3092\\n     Subkey fingerprint: 11F6 43BB 84CB BDC5 DDCC  7EBD F038 CD17 0B53 FB62\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] PLAINTEXT 62 1671553073 plaintext\\n[GNUPG:] PLAINTEXT_LENGTH 9\\n[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] SIG_ID P/0vSMVrTCG7YMyXeHMmxBKsAY4 2022-12-20 1671553073\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] GOODSIG F038CD170B53FB62 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] VALIDSIG 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62 2022-12-20 1671553073 0 4 0 1 10 00 C322BA74736C3F65B560586348B4B9E4C5633092\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] TRUST_UNDEFINED 0 pgp\\n",
+      "status": "exit status: 0",
+      "files": {
+        "output": "plaintext"
+      }
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--verify\"",
+        "\"--output\"",
+        "\"output\"",
+        "\"/EXPERIMENT/signature\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpg:                using RSA key 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62\\ngpg: Good signature from \"Alice Lovelace <alice@lovelace.name>\" [unknown]\\ngpg: WARNING: This key is not certified with a trusted signature!\\ngpg:          There is no indication that the signature belongs to the owner.\\nPrimary key fingerprint: C322 BA74 736C 3F65 B560  5863 48B4 B9E4 C563 3092\\n     Subkey fingerprint: 11F6 43BB 84CB BDC5 DDCC  7EBD F038 CD17 0B53 FB62\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] PLAINTEXT 62 0 \\n[GNUPG:] PLAINTEXT_LENGTH 9\\n[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] SIG_ID phAkqJDtRfPU10J4yfvD3lt2IPg 2022-12-20 1671553073\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] GOODSIG F038CD170B53FB62 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org\\n[GNUPG:] NOTATION_DATA d\\xB3\\x8E%00mG\\xB7j\\xED\\xE4\\xE22\\xDD\\xE5\\x82,$%0F_Pա7\\xD2\\xF6\\xF9~%09\\xCF\\xC9\\xF4%08\\n[GNUPG:] VALIDSIG 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62 2022-12-20 1671553073 0 4 0 1 10 00 C322BA74736C3F65B560586348B4B9E4C5633092\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] TRUST_UNDEFINED 0 pgp\\n",
+      "status": "exit status: 0",
+      "files": {
+        "output": "plaintext"
+      }
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--digest-algo=SHA512\"",
+        "\"--sign\"",
+        "\"--textmode\"",
+        "\"--output\"",
+        "\"signature\"",
+        "\"/EXPERIMENT/plaintext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] BEGIN_SIGNING H10\\n[GNUPG:] SIG_CREATED S 1 10 01 1671553073 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62\\n",
+      "status": "exit status: 0",
+      "files": {
+        "signature": "\\xA3\\x01\\x01\\xDF\\x01 \\xFE\\x90\\r\\x03\\x01\\n\\x01\\xF08\\xCD\\x17\\x0BS\\xFBb\\x01\\xCB\\x18t\\tplaintextc\\xA1\\xE01plaintext\\x89\\x01\\xB3\\x04\\x01\\x01\\n\\x00\\x1D\\x16!\\x04\\x11\\xF6C\\xBB\\x84˽\\xC5\\xDD\\xCC~\\xBD\\xF08\\xCD\\x17\\x0BS\\xFBb\\x05\\x02c\\xA1\\xE01\\x00\\n\\t\\x10\\xF08\\xCD\\x17\\x0BS\\xFBbD\\r\\x0B\\xFFdC\\\\n\\xC9\\xDD\\xFF\\x08\\x9E:\\xF9\\x846\\x06G0g5\\xFC\\xE5\\x86y5L\\xEE\\xF5\\x1Dū\\x91i3\\xE4{j\\xD7h\\x7F\\rr\\x88\\xF5ԁ\\xDED\\xCB\\x1B\\x16\\x08\\x8E\\x19\\xB4\\x8De\\xEDo\\x1B\\x99\\x1AP\\xA47\\x8C\\xA9\\x00\\xDA\\xEE\\xF9t\\x82\\xE7;9\\x98䧐棸G\\x14\\xFB\\xAF8\\x84\\t\\xA3\\xD94\\x05\\xB2\\x9F\\xB8#\\xF5\\x1F\\xB3\\xDD\\xD2\\xFCj\\r\\x11\\xB8\\xC8cu\\xF4\\x84b\\xF2k\\xE6PZ\\x97\\x1A\\xA2\\t\\xDC%\\xF0(\\xDDe\\x0BL\\x0F\\x87b\\x05~E_O9\\xCD\\xCA\\xB5\\xA7\\xE70u\\xC7\\xE9\\x87\\x0F\\xC2s\\xA6\\x8E\\x17\\xFEb$\\x85\\xFC\\xE6=\\xA0R\\x92\\xBD\\x00\\x1B\\x80\\x04\\xBF\\xA1\\x8B\\x13\\xD6I\\x98\\xB3\\x83\\xDC1\\x96V\\xCC-0\\xC0w\\xF1\\x8C\\xEF\\xD06\\x96&\\x8A\\xEC\\xCAT\\xF6T\\xC9\\xC2\\xA3Ȥa]\\xBC\\x02\\x8E\\x99+V\\x8Al\\xB8r\\x9F\\x96\\xCE\\x02\\x96\\x02\\xBCk\\xA2\\xAEM\\xD8\\xD2\\xD0\\xE5gs\\x16\\xF5\\xB6\\x11\\x1B\\x84\\x8D\\xFD\\x90\\xDEEaA\\r<\\xE4\\x0E%wc\\xECu=\\xBDx[;N\\x98ŵaВy\\x19󃴍\\x1F\\xE3\\xF8\\xF47.q\\x1F\\xAFZ\\xE0Y\\xA9\\x90\\xF0_F\\x00\\xA6\\x00\\xA3\\x1D\\xC0x)]\\xAF\\x80ʁ\\xF6b\\xC0*\\xAF\\xF0m\\xC3N[\\\\\\xE1$\\x901\\x02\\xB3\\xFCŽ\\xC9\\t6\\nYЖE`\\xF9\\x95<\\xDD\\xC2F\\x95\\xA7d\\r\\x80*\\x01\\x08\\t\\x98\\x02\\xAC\\x80\\x87\\x832\\x07fZ\\x06Σ՗\\x95\\xCCw<W\\xE9\\xDF\\xF2\\x18.\\x05\\x07t\\xB3\\xA9\\x149\\xF5\\x0B\\x07\\xED"
+      }
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--verify\"",
+        "\"--output\"",
+        "\"output\"",
+        "\"/EXPERIMENT/signature\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpg:                using RSA key 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62\\ngpg: Good signature from \"Alice Lovelace <alice@lovelace.name>\" [unknown]\\ngpg: WARNING: This key is not certified with a trusted signature!\\ngpg:          There is no indication that the signature belongs to the owner.\\nPrimary key fingerprint: C322 BA74 736C 3F65 B560  5863 48B4 B9E4 C563 3092\\n     Subkey fingerprint: 11F6 43BB 84CB BDC5 DDCC  7EBD F038 CD17 0B53 FB62\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] PLAINTEXT 74 1671553073 plaintext\\n[GNUPG:] PLAINTEXT_LENGTH 9\\n[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] SIG_ID pk5IfU5kCRl3Z5SBxCGo3UDXY5g 2022-12-20 1671553073\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] GOODSIG F038CD170B53FB62 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] VALIDSIG 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62 2022-12-20 1671553073 0 4 0 1 10 01 C322BA74736C3F65B560586348B4B9E4C5633092\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] TRUST_UNDEFINED 0 pgp\\n",
+      "status": "exit status: 0",
+      "files": {
+        "output": "plaintext"
+      }
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--verify\"",
+        "\"--output\"",
+        "\"output\"",
+        "\"/EXPERIMENT/signature\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpg:                using RSA key 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62\\ngpg: Good signature from \"Alice Lovelace <alice@lovelace.name>\" [unknown]\\ngpg: WARNING: This key is not certified with a trusted signature!\\ngpg:          There is no indication that the signature belongs to the owner.\\nPrimary key fingerprint: C322 BA74 736C 3F65 B560  5863 48B4 B9E4 C563 3092\\n     Subkey fingerprint: 11F6 43BB 84CB BDC5 DDCC  7EBD F038 CD17 0B53 FB62\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] PLAINTEXT 62 0 \\n[GNUPG:] PLAINTEXT_LENGTH 9\\n[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] SIG_ID IBho/LYAkSZbJUzInG+VktHhiFo 2022-12-20 1671553073\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] GOODSIG F038CD170B53FB62 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org\\n[GNUPG:] NOTATION_DATA \\xF4\\x92\\xEA\\xA1*\\xB2%08aN\\xD1\\xF3\\x98%0F\\x8C%0Ã\\xEF%03O\\xCD2\\x98\\xD5\\xDA%05\\x92%1D\\xB0\\x97;Y\\n[GNUPG:] VALIDSIG 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62 2022-12-20 1671553073 0 4 0 1 10 01 C322BA74736C3F65B560586348B4B9E4C5633092\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] TRUST_UNDEFINED 0 pgp\\n",
+      "status": "exit status: 0",
+      "files": {
+        "output": "plaintext"
+      }
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--digest-algo=SHA512\"",
+        "\"--clear-sign\"",
+        "\"--output\"",
+        "\"signature\"",
+        "\"/EXPERIMENT/plaintext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] BEGIN_SIGNING H10\\n[GNUPG:] SIG_CREATED C 1 10 01 1671553073 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62\\n",
+      "status": "exit status: 0",
+      "files": {
+        "signature": "-----BEGIN PGP SIGNED MESSAGE-----\\nHash: SHA512\\n\\nplaintext\\n-----BEGIN PGP SIGNATURE-----\\n\\niQGzBAEBCgAdFiEEEfZDu4TLvcXdzH698DjNFwtT+2IFAmOh4DEACgkQ8DjNFwtT\\n+2JEDQv/ZENcbsnd/wieOvmENgZHMGc1/OWGeTVM7vUdxauRaTPke2rXaH8Ncoj1\\n1IHeRMsbFgiOGbSNZe1vG5kaUKQ3jKkA2u75dILnOzmY5KeQ5qO4RxT7rziECaPZ\\nNAWyn7gj9R+z3dL8ag0RuMhjdfSEYvJr5lBalxqiCdwl8CjdZQtMD4diBX5FX085\\nzcq1p+cwdcfphw/Cc6aOF/5iJIX85j2gUpK9ABuABL+hixPWSZizg9wxllbMLTDA\\nd/GM79A2liaK7MpU9lTJwqPIpGFdvAKOmStWimy4cp+WzgKWArxroq5N2NLQ5Wdz\\nFvW2ERuEjf2Q3kVhQQ085A4ld2PsdT29eFs7TpjFtWHQknkZ84O0jR/j+PQ3LnEf\\nr1rgWamQ8F9GAKYAox3AeCldr4DKgfZiwCqv8G3DTltc4SSQMQKz/MW9yQk2ClnQ\\nlkVg+ZU83cJGladkDYAqAQgJmAKsgIeDMgdmWgbOo9WXlcx3PFfp3/IYLgUHdLOp\\nFDn1Cwft\\n=hlhB\\n-----END PGP SIGNATURE-----\\n"
+      }
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--verify\"",
+        "\"--output\"",
+        "\"output\"",
+        "\"/EXPERIMENT/signature\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpg:                using RSA key 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62\\ngpg: Good signature from \"Alice Lovelace <alice@lovelace.name>\" [unknown]\\ngpg: WARNING: This key is not certified with a trusted signature!\\ngpg:          There is no indication that the signature belongs to the owner.\\nPrimary key fingerprint: C322 BA74 736C 3F65 B560  5863 48B4 B9E4 C563 3092\\n     Subkey fingerprint: 11F6 43BB 84CB BDC5 DDCC  7EBD F038 CD17 0B53 FB62\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] PLAINTEXT 74 0 \\n[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] SIG_ID pk5IfU5kCRl3Z5SBxCGo3UDXY5g 2022-12-20 1671553073\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] GOODSIG F038CD170B53FB62 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] VALIDSIG 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62 2022-12-20 1671553073 0 4 0 1 10 01 C322BA74736C3F65B560586348B4B9E4C5633092\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] TRUST_UNDEFINED 0 pgp\\n",
+      "status": "exit status: 0",
+      "files": {
+        "output": "plaintext\\n"
+      }
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--verify\"",
+        "\"--output\"",
+        "\"output\"",
+        "\"/EXPERIMENT/signature\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpg:                using RSA key 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62\\ngpg: Good signature from \"Alice Lovelace <alice@lovelace.name>\" [unknown]\\ngpg: WARNING: This key is not certified with a trusted signature!\\ngpg:          There is no indication that the signature belongs to the owner.\\nPrimary key fingerprint: C322 BA74 736C 3F65 B560  5863 48B4 B9E4 C563 3092\\n     Subkey fingerprint: 11F6 43BB 84CB BDC5 DDCC  7EBD F038 CD17 0B53 FB62\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] PLAINTEXT 74 0 \\n[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] SIG_ID Cs8vawiZ1RB6zzaah88lywFdH2g 2022-12-20 1671553073\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] GOODSIG F038CD170B53FB62 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org\\n[GNUPG:] NOTATION_DATA >\\xD4_\\xA5\\x83ȿ%10\\xC8R\\xCCw%01\\xE3\\xFF\\x84\\xEA\\x96g\\x9B\\xC6w\\xA0\\xD8\\xEC\\xD7\\xE6^\\xF4\\x81k\\xF4\\n[GNUPG:] VALIDSIG 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62 2022-12-20 1671553073 0 4 0 1 10 01 C322BA74736C3F65B560586348B4B9E4C5633092\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] TRUST_UNDEFINED 0 pgp\\n",
+      "status": "exit status: 0",
+      "files": {
+        "output": "plaintext\\n"
+      }
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--digest-algo=SHA512\"",
+        "\"--detach-sign\"",
+        "\"--output\"",
+        "\"signature\"",
+        "\"/EXPERIMENT/plaintext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] BEGIN_SIGNING H10\\n[GNUPG:] SIG_CREATED D 1 10 00 1671553073 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62\\n",
+      "status": "exit status: 0",
+      "files": {
+        "signature": "\\x89\\x01\\xB3\\x04\\x00\\x01\\n\\x00\\x1D\\x16!\\x04\\x11\\xF6C\\xBB\\x84˽\\xC5\\xDD\\xCC~\\xBD\\xF08\\xCD\\x17\\x0BS\\xFBb\\x05\\x02c\\xA1\\xE01\\x00\\n\\t\\x10\\xF08\\xCD\\x17\\x0BS\\xFBbX\\xD8\\x0B\\xFFL)\"ʆ\\x0B\\x02XU^\\x02㐑\\rhEm\\x8D\\xC6\\x19M\\xA1A\\xE95H2|\\x11\\x1A\\x97\\xDE\\nP\\xBFPA1\\xCD%\\xE9*\\xBB\\xC23O}w\\xB2\\xBDO\\x8B+\\x9Ff2gƤ\\xB4\\x85JJ\\xD82\\x14\\xCF\\x0Bu\\x14\\xB9\\xFF\\xF3li\\x90UH&/\\xF9r\\xBA\\x88\\xDB:\\xF9\\xA7n\\x0B\\x8A\\x19\\x8F\\x9D\\xBB\\xB9\\x9B\\xE7\\xB8\\xD1\\xA7\\x8E*\\x13\\x1C\\xEF=\\xE3zT\\xE3\\xB9\\xEC\\x8A\\xED\\xB2\\x08q\\x1C\\x99\\xAF2&\\x1D\\xC0\\xC4d\\x86\\xB2\\xF0f{\\xA8\\xF3\\x15{\\xDC\\xF1\\n\\x1BG\\xAEm\\xAC\\x15\\xC2H\\xA6lH\\x023\\x8F\\x90\\x07.\\xC49|\\xDA\\x0F/\\xF8\\x88\\xCDy.-\\x06\\x07w\\xBB\\x9B\\x7F\\xACY\",\\x14\\xBD\\xFEЏ\\xF2g{\\x80M\\xB5\\xD7\\xEF\\xD7z\\xEC\\xACR_\\x9F=`\\xD2\\xFB\\xD7\\xDA\\xD9hw\\x01z..\\x19\\x9BnJoW!o\\x01\\xF4.\\xBB\\x9C=\\xD89TW\\xAE[:\\r\\x9F\\x90\\xF7\\xC8o?\\xCE?\\xCF\\xD6\\x15&\\xF3i\\xDA\\xECI\\xEC\\xDA\\xFBJ\\x8Af\\xEE\\xEB\\x93a\\xAAf\\xAB\\xA29\\xCD>\\xD4\\xD00\\t\\xE7\\xDE\\x8D\\x92\\x7Fg]X\\xF1\\xA2\\x93-\\x8F\\x05S\\x963\\nM\\x18'YQ\\xE4L\\xE4\\xDEVF5,r\\x10\\xFF}\\xB2\\xAA\\xD4\\xF9z\\xE2@w5\\xC9\\xF4\\xC3\\xED\\x02\\xAE|\\x9F\\x9A\\td̖\\xE2\\\\S\\xE0@\\xE4\\xFF_\\\\\\x0Cϗ\\x8D\\xD4$\\xF0>\\x90Qh]\\x8A\\xA7{\\x05\\xFB\\nm\\xDF2t\\xB8z\\x0F\\x83\\xBD>)\\xBDY\\xBD4k2!B\\xED\\x1D\\xA6\\x86֐"
+      }
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/signature\"",
+        "\"/EXPERIMENT/data\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpg:                using RSA key 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62\\ngpg: Good signature from \"Alice Lovelace <alice@lovelace.name>\" [unknown]\\ngpg: WARNING: This key is not certified with a trusted signature!\\ngpg:          There is no indication that the signature belongs to the owner.\\nPrimary key fingerprint: C322 BA74 736C 3F65 B560  5863 48B4 B9E4 C563 3092\\n     Subkey fingerprint: 11F6 43BB 84CB BDC5 DDCC  7EBD F038 CD17 0B53 FB62\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] SIG_ID P/0vSMVrTCG7YMyXeHMmxBKsAY4 2022-12-20 1671553073\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] GOODSIG F038CD170B53FB62 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] VALIDSIG 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62 2022-12-20 1671553073 0 4 0 1 10 00 C322BA74736C3F65B560586348B4B9E4C5633092\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] TRUST_UNDEFINED 0 pgp\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/signature\"",
+        "\"/EXPERIMENT/data\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 EAT\\ngpg:                using RSA key 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62\\ngpg: Good signature from \"Alice Lovelace <alice@lovelace.name>\" [unknown]\\ngpg: WARNING: This key is not certified with a trusted signature!\\ngpg:          There is no indication that the signature belongs to the owner.\\nPrimary key fingerprint: C322 BA74 736C 3F65 B560  5863 48B4 B9E4 C563 3092\\n     Subkey fingerprint: 11F6 43BB 84CB BDC5 DDCC  7EBD F038 CD17 0B53 FB62\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] SIG_ID RU+COK9yhzMjg9veZ63VVwP/s3g 2022-12-20 1671553073\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] GOODSIG F038CD170B53FB62 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org\\n[GNUPG:] NOTATION_DATA M\\xAA\\xA9*\\xBE%25\\xC9\\xC8%134ɩ\\xDC%25>c\\xE7<\\xE3'%1C\\xA5n$\\x98\\xB0\\xC6'%15\\xBEi%14\\n[GNUPG:] VALIDSIG 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62 2022-12-20 1671553073 0 4 0 1 10 00 C322BA74736C3F65B560586348B4B9E4C5633092\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] TRUST_UNDEFINED 0 pgp\\n",
+      "status": "exit status: 0",
+      "files": {}
+    }
+  ],
+  "former_us_outputs": [
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--import\"",
+        "\"/EXPERIMENT/key\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: key 48B4B9E4C5633092: public key \"Alice Lovelace <alice@lovelace.name>\" imported\\ngpg: key 48B4B9E4C5633092: secret key imported\\ngpg: Total number processed: 1\\ngpg:               imported: 1\\ngpg:       secret keys read: 1\\ngpg:   secret keys imported: 1\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] IMPORTED 48B4B9E4C5633092 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] IMPORT_OK 1 C322BA74736C3F65B560586348B4B9E4C5633092\\n[GNUPG:] IMPORT_OK 17 C322BA74736C3F65B560586348B4B9E4C5633092\\n[GNUPG:] IMPORT_RES 1 0 1 0 0 0 0 0 0 1 1 0 0 0 0\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--digest-algo=SHA512\"",
+        "\"--sign\"",
+        "\"--output\"",
+        "\"signature\"",
+        "\"/EXPERIMENT/plaintext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] BEGIN_SIGNING H10\\n[GNUPG:] SIG_CREATED S 1 10 00 1671553073 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62\\n",
+      "status": "exit status: 0",
+      "files": {
+        "signature": "\\xC4\\r\\x03\\x00\\n\\x01\\xF08\\xCD\\x17\\x0BS\\xFBb\\x01\\xCB\\x0Fb\\x00\\x00\\x00\\x00\\x00plaintext\\xC2\\xC1;\\x04\\x00\\x01\\n\\x00o\\x05\\x82c\\xA1\\xE01\\t\\x10\\xF08\\xCD\\x17\\x0BS\\xFBbG\\x14\\x00\\x00\\x00\\x00\\x00\\x1E\\x00 salt@notations.sequoia-pgp.orgd\\xB3\\x8E\\x00mG\\xB7j\\xED\\xE4\\xE22\\xDD\\xE5\\x82,$\\x0F_Pա7\\xD2\\xF6\\xF9~\\t\\xCF\\xC9\\xF4\\x08\\x16!\\x04\\x11\\xF6C\\xBB\\x84˽\\xC5\\xDD\\xCC~\\xBD\\xF08\\xCD\\x17\\x0BS\\xFBb\\x00\\x00t\\xA5\\x0C\\x00\\x90\\x9B\\xEF\\xBFPq\\xCEO)Z\\xF6\\x11\\x97U\\xEA\\xC4\\xD1\\xE5.\\x1A\\x19\\xBE\\x95e\\x9D\\x08\\xC6\\x1D!\\xF5\\xD6s\\xD4%Im\\r\\x8D*:\\x17\\x8D]\\x0Bl3U\\xCC\\x17!\\x94Ԭ\\xF4B\\xA8\\x80I\\x15;\\x8Ev\\n\\x8F \\x1E\\xF1F<p\\xA0ɜ2\\xEB\\xDF\\xE9C\\xEC\\xF5\\x05\\xFB\\\\\\xE1 \\xC7\\xFFb\\xBFM\\xD4\\x1CJ\\xE2\\n\\xE1l\\xE2\\xCA\\x13\\xAFz\\x94\\x98\\t\\xD9\\xCEhI\\xC2\\xCE\\xD1Hd\\xF6\\xE7\\xF4]\\xAD\\xD5]g\\x80y\\xF8\\xFC[F\\x1D/r(\\xE0\\x1A5\\xD5Y\\xC9\\x06\\x85\\t`\\xE9lS\\xFB\\x1B]\\xB2\\x9F\\xE2\\x0E\\xEA\\x10\\x13\\x1C\\x85\\xA9\\xC6s\\t\\xBA\\xB3\\xA2M\\xA3\\xAF=L(~T\\\\\\xE7=\\xEEU,\\x02\\x9A\\xA0\\x11\\xDED\\x97A\\x91\\xD6\\x1A\\xE0 >\\x9Ao\\xD3\\xD7gU4E\\xF2U\\x88?\\x08\\x80V\\x93Ç\\x9D\\xE43+[\\x84\\xA2\\x9AѬ\\xBD\\x9D5ޝ\\x1D\\xBB\\xFE\\xB6}7PF\\x0F\\xF6^2`\\x11teʒw5\\x91\\xD26\\xDC nb\\xE0J\\x87\\x1D\\x9Bُ\\xA0\\xDD\\xEC0/\\x8A\\xB0vs\\x8BP$M\\xC8V\\xB3\\xB8\\xF2#5\\x08E\\xFA.\\xE5\\x12\\xB9#6\\xD8\\xDC\\xBE\\x08\\xAD]-\\x8Cw\\x06U\\xC9u\\x87~\\x8CE\\x81Y\\xF7`\\xCEP\\xE9|\\x8A\\xEA\\xAEk\\x03B\\xCD^\\x9B\\xACwF~\\x91Msm\\x0E\\xE6\\xE74\\\\\\x93:S\\xF5\\xA0!{\\x94\\xFAq\\xB9\\xE03\\xDF)\\xB0\\x1F\\x97e\\x92\\x11M\\x02)\\xCD8\\x97\\xE4{\\xB9dH\\x90\\r\\xA0\\x84\\xD2;7\\xE2\\xDBz\\xC4DY)"
+      }
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--verify\"",
+        "\"--output\"",
+        "\"output\"",
+        "\"/EXPERIMENT/signature\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using RSA key 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62\\ngpg: Good signature from \"Alice Lovelace <alice@lovelace.name>\" [unknown]\\ngpg: WARNING: This key is not certified with a trusted signature!\\ngpg:          There is no indication that the signature belongs to the owner.\\nPrimary key fingerprint: C322 BA74 736C 3F65 B560  5863 48B4 B9E4 C563 3092\\n     Subkey fingerprint: 11F6 43BB 84CB BDC5 DDCC  7EBD F038 CD17 0B53 FB62\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] PLAINTEXT 62 1671553073 plaintext\\n[GNUPG:] PLAINTEXT_LENGTH 9\\n[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] SIG_ID P/0vSMVrTCG7YMyXeHMmxBKsAY4 2022-12-20 1671553073\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] GOODSIG F038CD170B53FB62 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] VALIDSIG 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62 2022-12-20 1671553073 0 4 0 1 10 00 C322BA74736C3F65B560586348B4B9E4C5633092\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] TRUST_UNDEFINED 0 pgp\\n",
+      "status": "exit status: 0",
+      "files": {
+        "output": "plaintext"
+      }
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--verify\"",
+        "\"--output\"",
+        "\"output\"",
+        "\"/EXPERIMENT/signature\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using RSA key 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62\\ngpg: Good signature from \"Alice Lovelace <alice@lovelace.name>\" [unknown]\\ngpg: WARNING: This key is not certified with a trusted signature!\\ngpg:          There is no indication that the signature belongs to the owner.\\nPrimary key fingerprint: C322 BA74 736C 3F65 B560  5863 48B4 B9E4 C563 3092\\n     Subkey fingerprint: 11F6 43BB 84CB BDC5 DDCC  7EBD F038 CD17 0B53 FB62\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] PLAINTEXT 62 0 \\n[GNUPG:] PLAINTEXT_LENGTH 9\\n[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] SIG_ID phAkqJDtRfPU10J4yfvD3lt2IPg 2022-12-20 1671553073\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] GOODSIG F038CD170B53FB62 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org\\n[GNUPG:] NOTATION_DATA d\\xB3\\x8E%00mG\\xB7j\\xED\\xE4\\xE22\\xDD\\xE5\\x82,$%0F_Pա7\\xD2\\xF6\\xF9~%09\\xCF\\xC9\\xF4%08\\n[GNUPG:] VALIDSIG 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62 2022-12-20 1671553073 0 4 0 1 10 00 C322BA74736C3F65B560586348B4B9E4C5633092\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] TRUST_UNDEFINED 0 pgp\\n",
+      "status": "exit status: 0",
+      "files": {
+        "output": "plaintext"
+      }
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--digest-algo=SHA512\"",
+        "\"--sign\"",
+        "\"--textmode\"",
+        "\"--output\"",
+        "\"signature\"",
+        "\"/EXPERIMENT/plaintext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] BEGIN_SIGNING H10\\n[GNUPG:] SIG_CREATED S 1 10 01 1671553073 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62\\n",
+      "status": "exit status: 0",
+      "files": {
+        "signature": "\\xC4\\r\\x03\\x01\\n\\x01\\xF08\\xCD\\x17\\x0BS\\xFBb\\x01\\xCB\\x0Fb\\x00\\x00\\x00\\x00\\x00plaintext\\xC2\\xC1;\\x04\\x01\\x01\\n\\x00o\\x05\\x82c\\xA1\\xE01\\t\\x10\\xF08\\xCD\\x17\\x0BS\\xFBbG\\x14\\x00\\x00\\x00\\x00\\x00\\x1E\\x00 salt@notations.sequoia-pgp.org\\xF4\\x92\\xEA\\xA1*\\xB2\\x08aN\\xD1\\xF3\\x98\\x0F\\x8C\\ñ\\xEF\\x03O\\xCD2\\x98\\xD5\\xDA\\x05\\x92\\x1D\\xB0\\x97;Y\\x16!\\x04\\x11\\xF6C\\xBB\\x84˽\\xC5\\xDD\\xCC~\\xBD\\xF08\\xCD\\x17\\x0BS\\xFBb\\x00\\x00DD\\x0B\\xFFK*\\x9E\\x16\\xEASBx\\x1Dܥ\\xACOV\\x1F\\xCB\\x04\\xDBL\\x85\\x18K\\xBF<\\x95\\xEE\\xDD\\x9Bu\\xFC\\x0Fq\\x1F\\x1A\\xA8\\xAD\\x95\\xD1R\\x8A!\\x0F\\xB6\\x01i\\xE1&1\\x86\\x14<,\\x94f\\n\\r\\x90\\xC7\\xE9\\xD0\\x10\\x92\\x1D\\xC0XS\\xF0\\xB0;$\\x19\\xA9_\\xB7\\x1E\\x9B#\\x8BV\\x96\\xB9_\\x90;\\xD7\\xCBy\\xE6\\xEE\\xC7\\xE8\\x03\\xAE\\xC7q\\x80\\xC3`v4\\x18d\\xE6\\xD1\\x9E6\\x9AD\\xAD\\xBC\\xCCJ\\x82\\xC1c\\x8Do\\x0E\\xECL/\\x98\\x163\\xCFq\\x15\\x08#\\x1FȄ\\xE2g\\xF4\\tI\\xDB\\xC8]*\\xFA\\x86\\x87\\x00\\xA9ǳ\\xFB\\x81\\xB6\\x01lF'\\xE1\\xA8VQ\\x7F+\\xB8l\\xB3\\xAAX\\x1D\\xAB\\x0C\\xBD\\x1F\\xE4\\xE2\\xBD\\x05\\xFB\\xF6}\\x84\\x11ؽN\\xC1`\\xCD\\x19\\xA1Q\\xBD\\xCEL\\xD8\\x04\\x983.\\n\\x03\\x04\\x9A\\xD8 k\\x98\\x0E\\x1A\\x06D\\xB4\\xFAܟ\\x92m\\xCB\\xE5kb\\x9E\\x0C[\\x01ixo\\x90\\xAF\\xEA\\x96*ݦ\\xFB\\xCD\"\\xD1 \\x19\\xE2\\xF0(\\xC2\\xEE\\x1C۳\\x11\\xC0s\\xEF\\xC0,\\xD3l\\xC6\\xE2EF\\xC6\\x0B\\t\\x0E\\xD1\\x11\\xF4\\x82WK\\xD6hl\\xD1NM\\xB5\\r\\x16\\x06\\xAE\\xF2)H\\x84}ΪG\\x86\"\\xB9_\\xA9~\\xCC\\x0C\\x9E\\xAB\\x82\\x84\\xC5\\r\\xF3\\xB4D\\xC4\\xDE5JqN\\x96\\xAAr\\x97\\x81\\xE2\\xF9P`\\xF9\\x07\\x0B\\xA0,\\xE1d\\x04\\xC9\\xE6\\x9Aojg\\x97\\xE2\\xE5h\\\\\\xDDR\\x99^T\\xA3\\x0BW\\xD1\\xE7y\\x06\\xF6٬=\\xBF\\x12\\xB7l\\x10\\xEA\\x9AVa\\xFA\\x0B\\x8C\\x7F\\x7F\\x12\\xE4\\xA63\\xB2\\x83\\r\\xA1\\xD0o\\xF5\\xC6\\x19An"
+      }
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--verify\"",
+        "\"--output\"",
+        "\"output\"",
+        "\"/EXPERIMENT/signature\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using RSA key 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62\\ngpg: Good signature from \"Alice Lovelace <alice@lovelace.name>\" [unknown]\\ngpg: WARNING: This key is not certified with a trusted signature!\\ngpg:          There is no indication that the signature belongs to the owner.\\nPrimary key fingerprint: C322 BA74 736C 3F65 B560  5863 48B4 B9E4 C563 3092\\n     Subkey fingerprint: 11F6 43BB 84CB BDC5 DDCC  7EBD F038 CD17 0B53 FB62\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] PLAINTEXT 74 1671553073 plaintext\\n[GNUPG:] PLAINTEXT_LENGTH 9\\n[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] SIG_ID pk5IfU5kCRl3Z5SBxCGo3UDXY5g 2022-12-20 1671553073\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] GOODSIG F038CD170B53FB62 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] VALIDSIG 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62 2022-12-20 1671553073 0 4 0 1 10 01 C322BA74736C3F65B560586348B4B9E4C5633092\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] TRUST_UNDEFINED 0 pgp\\n",
+      "status": "exit status: 0",
+      "files": {
+        "output": "plaintext"
+      }
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--verify\"",
+        "\"--output\"",
+        "\"output\"",
+        "\"/EXPERIMENT/signature\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using RSA key 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62\\ngpg: Good signature from \"Alice Lovelace <alice@lovelace.name>\" [unknown]\\ngpg: WARNING: This key is not certified with a trusted signature!\\ngpg:          There is no indication that the signature belongs to the owner.\\nPrimary key fingerprint: C322 BA74 736C 3F65 B560  5863 48B4 B9E4 C563 3092\\n     Subkey fingerprint: 11F6 43BB 84CB BDC5 DDCC  7EBD F038 CD17 0B53 FB62\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] PLAINTEXT 62 0 \\n[GNUPG:] PLAINTEXT_LENGTH 9\\n[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] SIG_ID IBho/LYAkSZbJUzInG+VktHhiFo 2022-12-20 1671553073\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] GOODSIG F038CD170B53FB62 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org\\n[GNUPG:] NOTATION_DATA \\xF4\\x92\\xEA\\xA1*\\xB2%08aN\\xD1\\xF3\\x98%0F\\x8C%0Ã\\xEF%03O\\xCD2\\x98\\xD5\\xDA%05\\x92%1D\\xB0\\x97;Y\\n[GNUPG:] VALIDSIG 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62 2022-12-20 1671553073 0 4 0 1 10 01 C322BA74736C3F65B560586348B4B9E4C5633092\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] TRUST_UNDEFINED 0 pgp\\n",
+      "status": "exit status: 0",
+      "files": {
+        "output": "plaintext"
+      }
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--digest-algo=SHA512\"",
+        "\"--clear-sign\"",
+        "\"--output\"",
+        "\"signature\"",
+        "\"/EXPERIMENT/plaintext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] BEGIN_SIGNING H10\\n[GNUPG:] SIG_CREATED C 1 10 01 1671553073 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62\\n",
+      "status": "exit status: 0",
+      "files": {
+        "signature": "-----BEGIN PGP SIGNED MESSAGE-----\\nHash: SHA512\\n\\nplaintext\\n-----BEGIN PGP SIGNATURE-----\\n\\nwsE7BAEBCgBvBYJjoeAxCRDwOM0XC1P7YkcUAAAAAAAeACBzYWx0QG5vdGF0aW9u\\ncy5zZXF1b2lhLXBncC5vcmc+1F+lg8i/EMhSzHcB4/+E6pZnm8Z3oNjs1+Ze9IFr\\n9BYhBBH2Q7uEy73F3cx+vfA4zRcLU/tiAAAUPQwAirXb7LoJhbVMGebDQY/kE1a8\\nK8sqOSeA31YG2cE9qh+li1FnBKz1oVg5G5znVcSnBpFPoDxj3sLBvGN2V0+Afsmz\\nc9vINBUirK+1Ajjkl9/uosjjgECjmBeDIJXeuIi2CJYKbl6SnhXQmWmrTvNo52tE\\nXC0/Rk8W43ZzJk3R6ABI1lpYE0zwgCexZMHTwomJX3jlG5YznsTXKHswYWFFQ7/g\\nchD/vMVk3nGpV3UbmvXF4/UNp7HffGre4Az8oH99GM4rjQEN4nIAADjmLv049HOn\\n10bq1f1PdGsqLLTOIzMuMqEiG2mn2u36kGsoNP/jDhOkmi+bBeP1+WRcklUld7E1\\nlmyqAKQh3xosb3YUzzGzxCuAqXiI1USpIsqYokNqJ3XkOX5PiNQU9Br0SXsjh2/7\\ng/+Vr8fj1ngkG+HnpRIK348DDfnKsmwEisumeNymi03Wth0Nrx2imjCyc5K+Ayd4\\n8TrCUUd3LpeEu7oNGRxa6bEF7HAdhWRNVma0bvWp\\n=fp26\\n-----END PGP SIGNATURE-----\\n"
+      }
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--verify\"",
+        "\"--output\"",
+        "\"output\"",
+        "\"/EXPERIMENT/signature\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using RSA key 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62\\ngpg: Good signature from \"Alice Lovelace <alice@lovelace.name>\" [unknown]\\ngpg: WARNING: This key is not certified with a trusted signature!\\ngpg:          There is no indication that the signature belongs to the owner.\\nPrimary key fingerprint: C322 BA74 736C 3F65 B560  5863 48B4 B9E4 C563 3092\\n     Subkey fingerprint: 11F6 43BB 84CB BDC5 DDCC  7EBD F038 CD17 0B53 FB62\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] PLAINTEXT 74 0 \\n[GNUPG:] PLAINTEXT_LENGTH 10\\n[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] SIG_ID pk5IfU5kCRl3Z5SBxCGo3UDXY5g 2022-12-20 1671553073\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] GOODSIG F038CD170B53FB62 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] VALIDSIG 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62 2022-12-20 1671553073 0 4 0 1 10 01 C322BA74736C3F65B560586348B4B9E4C5633092\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] TRUST_UNDEFINED 0 pgp\\n",
+      "status": "exit status: 0",
+      "files": {
+        "output": "plaintext\\n"
+      }
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--verify\"",
+        "\"--output\"",
+        "\"output\"",
+        "\"/EXPERIMENT/signature\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using RSA key 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62\\ngpg: Good signature from \"Alice Lovelace <alice@lovelace.name>\" [unknown]\\ngpg: WARNING: This key is not certified with a trusted signature!\\ngpg:          There is no indication that the signature belongs to the owner.\\nPrimary key fingerprint: C322 BA74 736C 3F65 B560  5863 48B4 B9E4 C563 3092\\n     Subkey fingerprint: 11F6 43BB 84CB BDC5 DDCC  7EBD F038 CD17 0B53 FB62\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] PLAINTEXT 74 0 \\n[GNUPG:] PLAINTEXT_LENGTH 10\\n[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] SIG_ID Cs8vawiZ1RB6zzaah88lywFdH2g 2022-12-20 1671553073\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] GOODSIG F038CD170B53FB62 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org\\n[GNUPG:] NOTATION_DATA >\\xD4_\\xA5\\x83ȿ%10\\xC8R\\xCCw%01\\xE3\\xFF\\x84\\xEA\\x96g\\x9B\\xC6w\\xA0\\xD8\\xEC\\xD7\\xE6^\\xF4\\x81k\\xF4\\n[GNUPG:] VALIDSIG 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62 2022-12-20 1671553073 0 4 0 1 10 01 C322BA74736C3F65B560586348B4B9E4C5633092\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] TRUST_UNDEFINED 0 pgp\\n",
+      "status": "exit status: 0",
+      "files": {
+        "output": "plaintext\\n"
+      }
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--digest-algo=SHA512\"",
+        "\"--detach-sign\"",
+        "\"--output\"",
+        "\"signature\"",
+        "\"/EXPERIMENT/plaintext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] BEGIN_SIGNING H10\\n[GNUPG:] SIG_CREATED D 1 10 00 1671553073 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62\\n",
+      "status": "exit status: 0",
+      "files": {
+        "signature": "\\xC2\\xC1;\\x04\\x00\\x01\\n\\x00o\\x05\\x82c\\xA1\\xE01\\t\\x10\\xF08\\xCD\\x17\\x0BS\\xFBbG\\x14\\x00\\x00\\x00\\x00\\x00\\x1E\\x00 salt@notations.sequoia-pgp.orgM\\xAA\\xA9*\\xBE%\\xC9\\xC8\\x134ɩ\\xDC%>c\\xE7<\\xE3'\\x1C\\xA5n$\\x98\\xB0\\xC6'\\x15\\xBEi\\x14\\x16!\\x04\\x11\\xF6C\\xBB\\x84˽\\xC5\\xDD\\xCC~\\xBD\\xF08\\xCD\\x17\\x0BS\\xFBb\\x00\\x00x\\xFA\\x0B\\xFD\\x1C\\x1F.j\\xC4Z\\x99\\x89f\\x9AnJ\\xD7\\xCEU9\\x1E\\xA7j\\xFCߩRJ\\x92\\x96\\xAE\\xB2\\xED\\xBF\\x08\\x1B\\xB8L9v\\xDCU\\xA9\\x96\\xD0\\xCF(I\\x04 \\xAFl\\xE2f&\\xE0 n\\xA3P7_F\\xD43I׫\\xD7t\\x07;\\xF9_\\x9E吋\\x10H\\x92=+\\x94z\\nXB\\xF2`\\xD9[^q\\x8BPw\\xB3\\xF6\\xA2H,p\\xE4\\x1F\\xF5`\\x1AMs\\x92\\xA6Y\\xE4\\xAF=\\x8Bg\\\\\\x05OM\\x99\\xC8I\\x8D(J\\xDC\\xDE\\xAD\\xD3\\xF9\\x9B)\\x96\\xD8L\\x052\\x99\\xDE6\\xD7\\xC7\\xC1t'\\x93ؙ\\xD5\\xD0l\\xE1\\xCD\\xCBB\\x8D#J\\xE3\\xCA\\xEC\\x03\\x1B\\n\\xF3\\xE6\\xC0\\xF2\\xFC\\xE3\\x1B\\x03\\xB9\\x11\\xF3\\xD1\\x85\\x14~\\xA5\\x07B\\x1E\\xF08\\xA3'E\\x99v\\xC0\\xC4Ud\\xBC\\xFB>\\xAB\\xA7\\xC3\\x06\\x98\\x99\\xB6\\xD2\\xE9k\\xB1^\\x90\\xEC\\xC42\\xF9\\x9EǢa\\x18{h\\xBB\\xBC\\xF6\\x95\\xC6\\x12Z_\\xAF*'\\x7F\\xD7\\xEC\\xFF\\x0F\\xC1\\xB5\\xE7\\xB764b\\xBE;\\xF4\\x92=Hm-\\xF8\\xD1\"\\x86\\xB7-V%\\xCCr#\\xDBz\\xDB\\xEC\\x96l\\xAA\\xFD\\xA1\\x1B\\xBB\\xBE\\xCE\\x1C\\xD5\\x05\\xD5\\x05\\xD0=V\\xA0^\\xE6r\\xB5 \\xBD=\\xAE\\x99y\\x06S\\x9C1\\xE3\\xCF\\x8BR\\xD9\\x13mpf\\x88n\\x17\\xD6\\xD9\\x84e#5\\xDF\\rjn\\xF0i=W\\xC3Ib\\xEF\\xCD\\x82\\xEF\\xDE\\xCD_\\xBEy\\xD59<\\xA8\\xCA1@7\\x0E\\x85O\\x11\\x87\\x0BDdб \\xEC_ҳ\\xDDm=ўw\\xF01T.\\xE3\\x08\\x14\\x8E\\x1A\\x17EL\\xAE\\xC8\\xD7w݀\\x19"
+      }
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/signature\"",
+        "\"/EXPERIMENT/data\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using RSA key 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62\\ngpg: Good signature from \"Alice Lovelace <alice@lovelace.name>\" [unknown]\\ngpg: WARNING: This key is not certified with a trusted signature!\\ngpg:          There is no indication that the signature belongs to the owner.\\nPrimary key fingerprint: C322 BA74 736C 3F65 B560  5863 48B4 B9E4 C563 3092\\n     Subkey fingerprint: 11F6 43BB 84CB BDC5 DDCC  7EBD F038 CD17 0B53 FB62\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] SIG_ID P/0vSMVrTCG7YMyXeHMmxBKsAY4 2022-12-20 1671553073\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] GOODSIG F038CD170B53FB62 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] VALIDSIG 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62 2022-12-20 1671553073 0 4 0 1 10 00 C322BA74736C3F65B560586348B4B9E4C5633092\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] TRUST_UNDEFINED 0 pgp\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--verify\"",
+        "\"/EXPERIMENT/signature\"",
+        "\"/EXPERIMENT/data\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Signature made Tue Dec 20 19:17:53 2022 +03:00\\ngpg:                using RSA key 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62\\ngpg: Good signature from \"Alice Lovelace <alice@lovelace.name>\" [unknown]\\ngpg: WARNING: This key is not certified with a trusted signature!\\ngpg:          There is no indication that the signature belongs to the owner.\\nPrimary key fingerprint: C322 BA74 736C 3F65 B560  5863 48B4 B9E4 C563 3092\\n     Subkey fingerprint: 11F6 43BB 84CB BDC5 DDCC  7EBD F038 CD17 0B53 FB62\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NEWSIG\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] SIG_ID RU+COK9yhzMjg9veZ63VVwP/s3g 2022-12-20 1671553073\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] GOODSIG F038CD170B53FB62 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] NOTATION_NAME salt@notations.sequoia-pgp.org\\n[GNUPG:] NOTATION_DATA M\\xAA\\xA9*\\xBE%25\\xC9\\xC8%134ɩ\\xDC%25>c\\xE7<\\xE3'%1C\\xA5n$\\x98\\xB0\\xC6'%15\\xBEi%14\\n[GNUPG:] VALIDSIG 11F643BB84CBBDC5DDCC7EBDF038CD170B53FB62 2022-12-20 1671553073 0 4 0 1 10 00 C322BA74736C3F65B560586348B4B9E4C5633092\\n[GNUPG:] KEY_CONSIDERED C322BA74736C3F65B560586348B4B9E4C5633092 0\\n[GNUPG:] TRUST_UNDEFINED 0 pgp\\n",
+      "status": "exit status: 0",
+      "files": {}
+    }
+  ],
+  "artifacts": {
+    "cert": "\\xC5\\xC4\\x98\\x04c\\xA1\\xE01\\x01\\x0C\\x00\\xBC\\xB8\\xDE+\\xAC\\xC0\\x98\\xA87o\\xE7%H\\xACsM?&\\xE907l\\x9Eb\\xB5\\x07 `O\\xA7\\x18Hg\\xD6\\xDA\\x1A\\xD04\\xE7p7\\x0C\\xFE\\xABelja\\xAAUU\\xC7C\\x18O\\xD3H|\\xC0\\x91\\xB8\\xBD\\x8C\\xDA<\\x12\\x91r\\xF27BI3\\xF3\\xC8\\xBB\\x16\\xF4\\xBF\\xA1ؼ\\xF3@}\\x8A\\xF6K\\xB2.\\xBE\\x85U򴵹\\x8A\\x8D\\xB8\\xE9\\xCC\\xDF\\x1DA\\x05\\xC15\\xB7\\x85\\xF3W\\\\\\xCA\\r\\xBAA\\x0C\\xD0g\\xD0\\xC2\\xD7\\x07\\x1E\\xFB\\xF4R\\xD8\\x0E\\xAD!\\x02,\\x94e\\x85\\x02M\\x8D\\x02\\x95x\\x94\\xD4\\xDE(\\xFF\\xEE\\xD7[\\xE9\\xC3\\xA1h/\\xE4\\x1B^5\\xE9\\x17\\xBAؕ\\xAC\\x8D\\xB5խ\\x90\\\\\\x92йKC\\x16\\x86\\xAF\\x1F{\\xF02\\xEB\\xCA\\xC9\\rX\\xA2\\x1Dٻ\\x98j\\t\\x8B\\x18\\x01v\\xA96\\x19\\x93g}\\xE6Z'Ia\\x87\\x84\\x9F\\x9A5\\xB5T\\xB3\\x87\\xF0\\xC6\\xB7~\\xA6G\\xF6\\x84\\xC8\\xCAH\\xAB\\xD4;\"\\x9A\\xB4k\\xC3^(19\\x14\\xE4\\xA6\\xC7\\xB5i\\x01\\xAB\\xC1\\xB8\\xF6\\xA1\\x17\\xB3\\xB2\\x04\\xC6\\xCA.ְ\\x86\\xE4 #\\xA8\\xB2\\xA8m\\xFFL0\\x0E\\x07o\\xE8\\xA8z5\\xA7\\xD0\\x03\\xCB(\\x8F*\\xA6\\xD1HO\\x97\\xC0\\xF3\\x91\\xBE? U\\xB2'F\\xB1\\xD3\\\\\\x9D\\xF986<o\\x18\\x8EaX\\x11\\xE6\\xE6\\xCD\\xC07\\x9Dw\\x9EC\\xBA\\x9E\\xA9\\xA1&\\xB7\\x01\\xE6\\x173#];\\x14\\xE9E5Ж\\t\\xA5/\\xE9\\x08\\x16*3\\xA1\\xEAY\\x9A=(K\\xD4<\\xAC\\xA9;|o\\xF3s\\xFDp\\x02\\x12Ѣa\\xBD\\x8F\\x80?\\x96~!\\x00\\x11\\x01\\x00\\x01\\x00\\x0C\\x00\\x8E\\x7F\\x94\\x9A+\\xC5\\xFD>\\xBF%J\\xC6W:\\x87\\x91cF\\xF1:\\x8C\\x0F\\x03\\x05\\x0B%\\xC7g\\x91\\x9D\\\\\\xF3\\x87\\x1C\\xAE\\xF1\"\\x17`M\\xD5\\xF3\\x84\\xF4L\\x0F\\xF1\\xBF\\xAF\\n\\xE2K$9^D\\xED\\xED\\xEC\\xC5\\xDBU\\x9C\\xDEH\\x0F\\xC9-\\x9F\\x00\\xE4\\x97;\\x98/\\x10=\\x84.\\x92y\\x82*\\xB6\\x9ET\\xE8&=\\xF3\\x97\\xBE<(\\x98\\x14\\xC3u\\x80\\x0F\\x88\\xD2>\\x01\\xEB\\xCF\\xF9\\x94\\xA2\\xEF\\x8C\\xCF\\x81k\\xBB\\xB3\\xD0\\\\i\\x9C\\x8A\\x00$\\xB6\\xE6\\xC9^1\\x93\\x9CyS|=\\xC7\\x0Bd\\xC4YdH\\xF8-\\xE5KZ8a\\x0F\\xAA#g\\xBEdȳ\\xA8\\xAC\\x95\\x95e\\\\\\x9A\\xA3\\xE1X:d{d\\xA3\\xA5\\x92\\xE1\\xF1\\x97\\x87\\x9F\\xA1\\xB0\\xE7\\xB8\\x00\\xA5\\xA2o+\"]\\xB3\\x83\\x8FQY\\x16o?\\x10?\\xD6?GgB\\xF7\\xA9\\x1B8\\xBB\\xA7\\x8E\\xE0\\x03\\x92\\xB1i\\x9Aٌ\\xFE\\x1E\\xEC\\x07n\\xAFj\\xF6\\x1C樊\\xF6\\xE21vL-ku\\xD9P\\xED?\\x87\\x03\\xF9l\\xB9\\xF0\\xF0\\xD5UR\\xA3\\x0B\\xBE\\xD9e&׾\\x84i\\x1D\\x86+j\\xA5\\x81\\tB\\xF0?ݘ\\x12#\\x88\\xA0\\x1FL;\\xC9\\x1F\\xEB\\x00\\xB8\\x18\\xEE\\xC8=o\\xE4D;\\xE4\\n\\xED_y\\xE7\\xE1 e\\xF2\\xC2\\xE7\\xE5\\xE1\\x04\\t\\\\T\\xEAM\\xA7\\x90\\x11o\\x13Ĭ\\xDF;\\x8F\\xFCbY\\xE8\\x9F \\x86\\x02.\\xFC\\x06\\x08\\x94\\xD0|\\xC2 \\xEB\\xE6 Q}\\x89\\xAC\\x86h;\\xF0\\x02\\xF3b\\x0E8\\x87K\\xE3\\xA2Aw\\xA2\\x9B\\xFC\\xF1\\xD0\\x81\\xF7\\x1DA\\x89\\x03\\xCBx\\\\$W۹M\\x01\\x06\\x00\\xD7.\\x8D+\\x14-yk\\xA3\\x92J\\xE9;\\xF64w\\x1D\\x9A=ʒ\\xA0\\x02%\\xD5\\xCE\\x8A\\xDE\\xE8\\xBF\\xE6\\x9B^|7/-\\xF33\\xE6[l\\x8F'x\\xF5\\xC4\\xEFd\\x9B\\xC0\\xFE\\xCD\\xFD!\\xB8\\xDB\\xC0o\\xCE!\\xA1\\x06;\\xE7cн\\x05\\xA6\\x1Bc\\x9B\\xEAT\\xDA>\\x19YD\\xE4\\x02Q(\\x8B^\\xB6U\\xF6\\xFE\\xAC\\xA5F\\x89\\xAC\\xB1\\xBFs^\\xB03ۦIh\\x9E\\xC9t\\x07\\xDA\\x05 \\x13\\x16x\\x96bH\\x86%\\r\\x15\\xA8-#VI\\x06\\x91\\x95\\xBAќX\\r\\x80\\xFC\\x9B\\xC3\\xDF~;R\\x18,JԼ\\xF9M\\xB6q\\xC0\\x10$\\x1C\\xA0eG-\\x83\\xC2Ql\\x8BH\\x08hI\\x9C/\\xD0\\x11\\xB4m\\xC3D\\xDD\\x0B!\\x90\\xCF\\xCD\\xC4\\xD7\\x8D]C\\xCBk0\\xD1\\x06\\x00\\xE0\\x85h\\r\\xF3\\xE3\\xC95V\\xC2?\\xD0\\x19\\xD8\\xEE{}p\\xA7g\\xD2^\\xD6\\xE3׊v\\xBC\\xB8\\xA8E\\xB9\\x06\\x9DD\\x92\\xB3\\xD8t:\\x03\\xCD\\x0C\\x1D\\x1A\\x8C\\xE3\\xB2\\xC3G\\xE8\\xAA{J\\x88\\xAE\\xE3\\x10\\xB5\\x15K\\x95\\xD2\\xF7\\xF4\\x9D\\x9FO\\xDA\\x7F\\xC3Xb\\xB4\\xE1\\xB7\\xF3P\\x81v\\x83\\xF5\\xDFU\\x15\\xB4a\\x18)F\\xDB'\\xFC\\x86\\xE6\\x01\\xCA\\xF1*\\x97z\\x8E&(\\x864\"\\x9B\\xFE\\xFC\\xDBk\\xDB\\xC5\\xE4\\xDEk\\xC9N(\\xBE3~~\\xEB\\x85C\\xF2\\x99\\xF9\\x99\\xB5\"dE\\xA3\\xD78F2g\\xEFv%p\\xBF\\xBA\\x17Rc\\xA3\\xB6V\\xB4\\xAF>\\x7F\\xE1mnNNSP\\xE6\\x11\\x92\\xD2\\xF5r\\x02\\xDE\\x121z\\\\\\xD7 \\xEE)V\\x15\\xC9\\xDD|\\xBD_\\x1DH\\xCELQ\\x05\\xFC\\x0CU\\x1E$\\xD7Z>=լmRܳF\\x0E}a\\x9D\\x12\\xF8\\xFCA\\x16\\x14\\x93\\xC9\\xCCYu\\x8Dʗ\\xE0]\\xA3\\xA8\\xBC*\\xBF\\x9B\\\\\\xCC\\xC1\\x90\\x7Fo\\xC7&%\\xAFN8\\x15Ϲ\\xAF\\x98p\\xD4\\xDC\\xA0\\x16\\xF9в\\xE5\\x8F\\xCAg޴Ӗ\\xA7\\xF0\\xB5\\xF1k~\\xEFZ\\t\\x89\\x15\\xCB\\xC2T\\xC8\\x0E\\xAE\\xBD\\xC4\\x1F\\x9AR-\\xB3&k\\xB4$$\\\\\\xE9a\\x8B\\xA2\\xF1<\\x1B\\x19\\x91\\xC6[\\x1B.\\xCD\\xF8\\xA7_ԏPL\\xD6\\x18\\xDD6\\x90\\xE4MK\\\\\\xC9Z\\xF5Z\\xB2TG-(8R4\\xA3\\x0F\\xBBSc2.{}4Ɔ\\xB2\\x14o\\x12\\xB8\\xBF\\x11\\x80\\xEC7\\nA\\x8F2\\xD9=\\xC1\\xE5\\x18\\xDFt >\\x84<\\xB5\\x15\\xAE\\x00\\x7FZM\\x8F(ߤ\\xC2\\xC1O\\x04\\x1F\\x01\\n\\x00\\x83\\x05\\x82c\\xA1\\xE01\\x05\\x89\\x05\\x9F\\xA6\\x00\\x03\\x0B\\t\\x07\\t\\x10H\\xB4\\xB9\\xE4\\xC5c0\\x92G\\x14\\x00\\x00\\x00\\x00\\x00\\x1E\\x00 salt@notations.sequoia-pgp.org$X\\x1B\\xF4\\x0F\\x91\\x17\\xB9TK\\x91\\xB7\\xEAwF\\xC3\\xD8|w\\xFC\\x92{e{\\x053\\xA2\\x90\\x89\\xFC{\\x91\\x03\\x15\\n\\x08\\x02\\x9B\\x01\\x02\\x1E\\x01\\x16!\\x04\\xC3\"\\xBAtsl?e\\xB5`XcH\\xB4\\xB9\\xE4\\xC5c0\\x92\\x00\\x00\\xE2\\r\\x0B\\xFC\\t◳\\xEE\\xDE1]\\x9C0\\xC7zڑ\\xE4k\\xFD_\\xE1T?\\xC5g~\\xA0\\xEBn\\x95\\xCFq\\x11^?tV\\xB4\\x1BJ\\xBD\\x9C\\x02\\x08\\x92\\x15\\x940$c\\xD2-\\xF5\\xD9\\x13\\xECjFX\\xB7\\xB9\\xF2\\x9F\\xACBc\\x1Dܲ,\\xB0\\x8E\\x85e\\xAB!\\xFCk\\xBCGw]_0G\\xF6\\xBAf\\xB2\\xCE\\xF3I\\x17\\xCCs\\x8C\\x18\\xE0rR,\\x02\\xC7\\r\\x8Bb\\xED\\xD9\\xB7\\x98\\xC8\\xE2\\x0E\\x0F\\x00\\xBA\\xA9rҕ>\\x8F\\xA8Tt\\xA0\\x0FC\\n\\xEE\\x91\\x0B\\x80\\xF02\\x90\\x90=\\xB5{\\x93\\xB4\\\\\\xD14\\x13̂\\xE1\\xF7\\x8B\\x9E\\xBB\\xFC\\xCB\\x11\\xFA~\\x83z\\x86\\x14]\\xB8\\xA9\\n\\x15@4U\\x9A\\xAD-\\xB2Y8\\x9F\\xA8\\xD3^\\x01\\xA4\\xB7\\xC2\\xDAIɀk&7\\x16\\xA5\\xE0E_J\\xC3\\xE1*\\xCC\\xDEx\\xD4zby\\xC5\\xFA\\xD9\\xE4\\x1C\\x0BO]6\\xF4\\xFA`2{\\x8BT\\xE8%W\\xB3\\x8Ah\\xED\\x8Fq\\x0B^\\x80J\\xDE\\xE4\\xE0%N\\x90j;\\xEF\\xD6\\xD7\\xF0p\\xEC\\xB0\\x1A\\xC1\\x87\\xF3\\xE9\\x1D5,\\xE6\\x9C\\x03հ\\xE9\\xAF\\xC1#\\x9F'\\xF4\\x1Cmu\\t\\xC9c\\x16\\x17PM@\\xAC\\x8F\\x9B\\xA0r\\rk!\\x9Ff\\xF2e\\x03\\xBB=\\x05q\\xAB\\xA5܁\\x87\\xE3J\\x13\\xB0b\\xB9\\x01\\xE8B\\x0B-U\\xB3\\r\\x81R\\xF5?W\\xF8\\x043\\xB9q\\xA3\\x91U\\xE3\\x98\\x18\\xFD\\x8E\\xB5\\x00U'ܒ\\xE0\\xEF\\x8B\\x81\\x11\\xCC\\xED7\\x1F\\xB3J\\x16\\\\\\x05\\xD8:ﲡ\\x025\\x01\\x01|\\xFD\\xFBFi\\xF0V\\x90\\x83?)\\x80\\x9DC9j_`\\xD2D\\xF9\\xCD$Alice Lovelace <alice@lovelace.name>\\xC2\\xC1R\\x04\\x13\\x01\\n\\x00\\x86\\x05\\x82c\\xA1\\xE01\\x05\\x89\\x05\\x9F\\xA6\\x00\\x03\\x0B\\t\\x07\\t\\x10H\\xB4\\xB9\\xE4\\xC5c0\\x92G\\x14\\x00\\x00\\x00\\x00\\x00\\x1E\\x00 salt@notations.sequoia-pgp.org,\\xE2>( \\x15\\x94\\x13\\xBF\\x8AM\\x1E\\x13\\xEA\\x07%\\xA0%1\\x98\\x90a\\x87i\\x9D\\x84\\xC5\\xD5d\\xD3\\xE7H\\x03\\x15\\n\\x08\\x02\\x99\\x01\\x02\\x9B\\x01\\x02\\x1E\\x01\\x16!\\x04\\xC3\"\\xBAtsl?e\\xB5`XcH\\xB4\\xB9\\xE4\\xC5c0\\x92\\x00\\x00\\xA7R\\x0B\\xFE;\\x0F\\xADU\\xD51\\x82\\xA2\\x88F\\x86\\x86+\\xCE\\x06\\x07\\xB9Y\\x15\\xD9r\\xC99D&ы\\xA7\\x8C\\xC8\\xD1gn\\x81\\xC1z\\xA4\\xE5\\xF2\\xB9\\xBCQ*A\\x00\\xDC\\xF0\\xE9\\x19\\x13\\x88̦\\x1Dl\\xC2_\\xB9\\xC7`͂\\xF7\\x07\\x7F\\xF4*Sٔ铂\\x97\\xAB\\xA3\\x80\\xDEOJ\\x94\\x17\\x83\\x07e\\x07矎k0\\xFAj6\\x95\\n\\xFD\\x96+k\\x19\\xC7y\\xCE\\xE1w\\x06@a\\x10\\xB1\\xDB!!\\xA6\\xA6\\xF5G\\xBF\\xA2\\x954\\xFD2HF\\xE4\\xBEo\\xD0\\xF8\\xBB\\x1Bq\\xA8\\xC7\\x12\\x9D\\xB4\\x0C\\xF8\\x7F0\\xCFlt\\xFB\\xCDl{\\xFE\\x04\\xBF\\xD4\\x17Fw[y\\xF2\\x95q`\\xBA\\xA5-\\xB0\\xDB\\xC0\\xF7\\x83\\xA6\\x7F#\\x99@఻\\xDD\\xDC\\xB9\\x81\\xBF\\xB5\\xA1\\x8F\\xEE\\xB1\\x15\\xD0T\\x9B\\xB6\\x92\\x08\\x06ۧ8k<4\\xFA\\x80\\xC4\\x14@a\\xFEW\\xFA\\xB3R\\x8F\\x82\\xB4\\x16*\\x8E4\\xB6\\x95\\xA97\\x83_\\xC8\\\\\\\\廝\\x13\\xF1\\t\\xA3\\xB1\\x01\\xAB\\xFA+$\\xFB\\xD0>\\x9B\\xEC&w\\xA326W\\xB6\\x19\\xC0*l\\xC4\\xFE%̦\\xA0bxe@N\\x83)\\xB1xu\\xD1\\xFB\\xB0\\xE6l~L\\x15oEH\\xBF&\\xCB \\x18\\xB6\\xC70\\xBA\\x1A3\\x18\\xFD\\xE8E¾\\xAF\\xEB\\tV\\xB7u\\xF8\\x86\\xA3#tn<\\x07=K\\xAA\\xE8\\xA7\\x14\\xB3\\x9DƆQ\\xCFP?\\xED\\xD9\\xFD\\xBC\\x03\\xB5\\x04eoA\\xAF\\xC5\\x06E\\x9D\\x18`\\x7F\\xD4\\xD8\\xA1Y1 ,<\\xCB\\xC4\\xC1=\\xC5\\xC9\\x98\\x89\\xFA \\xCB\\xE5S\\xA2\\x83\\xC1\\xB6V\\x18\\x12,\\xE9\\x91c\\xE9\\x06\\x8B\\xC7\\xC4\\x98\\x04c\\xA1\\xE01\\x01\\x0C\\x00\\xD6@\\x99\\xF3bVd\\x0E\\x92\\xF6\\xFD/\\x02&uſ\\x84\\xFD\\x1A\\x99\\xED\\xA8P_\\xEE\\xF6\\x96졲\\x83i\\xF8\\xD3\\xCCs\\x1B\\xCC1h\\xFF\\xC31\\xC34!F\\x1D\\xC4]Ϗ\\x8C\\x139\\x94{\\x08\\xAE\\x9F\\xBE,f\\xBB>SE\"!\\xBC\\xC0A\\xF5\\x1C\\x98}\\x0BT\\xBE\\x9E\\xA8\\rB\\xBC\\xAE\\xEA\\xCF\\xC24\\x92\\xCD.\\xF3%\\x1B©\\xF3\\xE4\\x7F\\x06}\\xF9\\xB1\\x1Ba\\xFE\\xDF\\xD5 \\xB3\\x07\\xFD\\x1F\\xDD%\\xD2>\\xEE\\xAEH\\xD9\\xEE^\\x99\\xEE\\x19\\x85Ɏ\\xA7\\xD1\\x13\\x03Q\\xBD#\\xD2#(\\x9C\\xDF\\x10\\x95-\\xB5Q\\xD7\\x0B\\xF5\\x9B\\x7F.\\xB2*\\x85F\\xA3TVĘ\\x8F\\xB5զ\\xF2T\\xF5\\x93\\xF3\\xEA\\xD3oi\\xB6\\xA2\\xE9\\x97\\\\\\xBB8\\xCE*\\x8EJHZ\\x9E'M\\x11\\x1B\\n\\xB7\\x88\\xEA\\xCC\\x80_B.H:3P\\xE4$f\\x9D\\x96\\xFE\\x1F\\xFD\\xE60՞^\\xC0\\x1B{n)\\xE3\\xC5\\x01\\x1F\\x10id\\x1C\\xD9hT\\x8CC\\x9A\\ts\\xF5\\x03+f\\x01;XN\\x8C\\xF7\\xCA\\xFDqb\\x17\\xD3h,\\xAF1\\xA8\\xDE-\\x1DN\\xE6$T\\x8A\\x19c\\xE4\\xE1\\xBC\\xAE\\x9F˨\\xB9c\\xBA\\x1B\\xEA\\xE8D\\xD1\\xCA\\xF3\\xD5㟄\\x0B\\xAF\\xB7C\\xDC\\xE0\\xBF\\x01\\xE9\\xE2zm\\xCF[6\\x16Px\\x16\\xF3oD\\xB8\\xC6\\xF5ό\\xA52\\xA0R\\x82\\x9D\\x98'{\\xC4JEI˓_\\xD7\\xF3q\\xD0\\xDE,\\xDB\\x1D\\xA2\\xD1E/W\\x04\\xCB\\xCB\\xF8r\\x118\\x924\\x9AG\\xA8\\xD9\\xECkJ|0@\\xAF\\xF4\\xEC&\\xE8\\x87hN\\x8E\\\\a\\xF8\\xCF\\x00\\x11\\x01\\x00\\x01\\x00\\x0B\\xFFP\\x88sղ.\\xFA\\xE9'\\x80\\xC3f:\\x0E\\xAE\\xD2'\\xCD\\x1B>6\\x81\\xC8t}\\xBA\\xDA\\xE1\\x9C\\x0C\\xA3\\x87\\x15\\xFC;\\xD0k\\xAC\\x152\\xB5^\\xFD\\xC5\\xE4\\xB3\\xE1\\x95\\xF3vn4\\xA8\\xA6dK\\x8En8\\xB3:\\xC4F\\xF8N\\x85|\\xD3M\\xA3\\x14\\xC9\\xC7\\x81\\x14\\xC0\\x94\\xAF\\xFF\\xA8\\xAF\\x06H\\x05\\xBFڗԄ\\x112\\xE5\\x012\\xCF\\xCE\\x01{\\xD4{\\x1C\\xEC\\x19\\xCA\\x132Q\\xC1u\\xED,\\x9F^\\xEF\\\\\\\\\\xC9\\xEC\\x9FO$\\x1F\\xAA\\x1B\\x19`\\x0E\\xC9u*o\\xFE\\xD0m\\xAF\\x1F\\xB8R\\x90\\x98:\\xB8\\x88\\xBD\\xC9\\xE9f\\xD8L\\x18\\r\\xAD!\\x87\\xAEm=\\xE6&ivE\\xCA[\\xDB\\x05\\xE5n\\xD9\\xE2(К\\x86\\x84v\\xCE\\x06\\xE0\\xDB\\x8F\\x9C\\xF2\\x12\\x1F%\\x99\\t\\x11\\xF7\\x05\\xFE\\xA9\\x8E\\xF9\\xF5\\xBA|c\\x7F\\x1AĮ_,$dn\\xBED\\x9E\\xB7\\x17,r\\xB8  \\xF0\\x07\\x8D\\x17\\x8Ah[krL0\\x103\\x10\\xC7@Ŏ0\\xB4\\xE6\\x9A$\\x06\\xDC\\t\\xA0\\xE4\\xF7\\xC1He$\\x13u\\x0CU\\x08Oeyc\\xE4\\xE5\\x92\\\\s\\x110\\xA2\\xF9\\x1D7\\x00Y\\xF5v\\xFBjr,\\xB1\\xBF\\xA6뼰\\x81\\x0C\\xC0\"0`g\\xDE\\x1Fs/\\xA1S\\xE6\\xE8\\xBD7\\xD1O\\xB8\\xD5\\xEC\\xF6\\xAA%\\xFC=\\x14\\xB7\\x1Bp6\\xAF\\xB1\\xC2\\t\\xFAi\\xA73\\xB4\\xFE5\\xDEm\\x8Ba\\xFA\\x1B\\xD75\\x07\\x98\\xBBD\\xA1\\xF2\\xA1\\xC5\\x7F\\x08\\x02\\xA6+\\xB8Ju\\x88\\xE95ŗ\\xF1u\\xBB\\x88\\xEB\\x0B\\xE1\\x18é\\xFBi\\xC1G?Iڲ\\x85\\xA8\\xB4\\xFAp.\\x9C\\xE7\\xE1\\x06\\x00޺f7{%Ӹ\\xFB\\x98\\xF0\\xAFC\\xAE\\nç\\xC0\\x0CY\\xFA0\\x85-=\\x0EײV,)\\xB0\\xC5z\\xAD\\xCEe\\xEA\\xDA9֥\\x18>\\x1F\\xFAR\\x05\\xBE\\xBD\\xB5G\\xC2\\x1B(Q\\x80\\xC8\\xE4\\x1E\\xDF9b/<\\x19\\t\\x86ę\\x0FL\\xC6/\\xF3\\xB4~\\xB1\\n\\xEC\\x02\\xF4\\xF2R@4\\xFF\\n\\xAE\\x1A\\xBFK\\x0C\\xA4I\\xE5\\xF9\\xCC'\\x0F_P\\x82\\xB4\\x01\\xAF\\xEEX\\x16\\xF2\\xD3\\x18\\xE3\\xB1\\xF8c \\x8A\\x1D(\\xFF\\xDE\\xEB\\x1E\\x9A\\xC6\\x1Dz\\xDB2DNw#\\x88\\xE0i\\x1D\\x95\\x94\\x96\\xA6\\xB2\\x10\\x85\\xD4\\x7F=\\x1E\\x90\\x9A\\xF6Ω\\xC0\\xE4\\x18\\rl\\x15\\x04\\xA2\\r\\x08\\xDC\\xE7'X\\xF2\\xD8\\xE6;\\xC2.\\xAB\\xE9~es;\\xC7\\xC7>\\x91\\x97b\\x08>\\x1B\\xBEh\\x17\\x06\\x00\\xF6B\\x12\\x03\\x00_\\x9F\\nՓ\\x9DH+\\xDBT\\xE5\\\\\\x14\\x90A\\x15\\x08n\\xE7\\x1D\\xE8\\x97O\\xDD\\xF61Q\\xDEDHO\\xA9^Ӻ2\\xE9\\xA3'lι\\xEF\\x99\\x08$2\\x8C\\x95\\x93't\\x98{\\xF4\\x0E\\xC4ZU=:*\\x87\\xEE\\xFC\\xD2Q\\x083/3\\xE0\\xDA\\x8Az\\xB4DVu\\xFF\\x05\\xA0s\\xCBm\\xCF(\\xFD\\xA2\\x8Ee\\x0C\\xD9\\xD7oV\\x98@\\xE2\\x08l\\xA6\\x84.׷骾\\x07\\xBD\\xAAb\\n\\xFD\\x8E\\xE8[\\x94u\\xB8\\x1C\\xB3\\xF7<\\x1E\\xB0\\xEC\\t\\x9A\\x1C\\x9E&\\xF4\\xEC\\xA1\\t\\x02nn'\\x19\\xFF/\\xACQF}?\\xEA#{[眀\\x7F\\x8E\\x9A\\xA3\\xE9\\x04\\x0E\\x8F&g\\x98\\xFB\\x82\\x1C\\x16\\x1B\\xBC3\\x9AH\\x84hN\\x02$K\\xC9\\xD9\\xB40\\t\\x05\\xFFB\\x86\\xF3\\xD5ϟ=p4\\xB0\\x0F\\x10\\x83C\\x03\\xA5/\\xC8St\\xC5\\xCC\\x80ۺ4LL\\xA1\\xF7\\xCDi\\x85\\x06\\xE0\\xD9?\\xB0\\x03\\x7F>f\\xF6\\xAE\\x08\\r쎖Bba\\xE4n]\\\\\\xF9!\\x81\\xB3\\xCE[dɎ8\\xB1\\x94e|\\xEA['\\x0E\\xADۥ\\xDFTF\\x1CƜq1\\xEAL\\xB2\\xB3\\x18P\\xFC\\xC2=\\xFF\\xC9\\xD8\\xD8|\\xC5\\xEF\\x1E;uj>\\x99.\\n\\x03;\\xE3\\x90\\x17\\xF7'\\x9DҔ\\xABۻ\\x98s\\x9A\\x86% VKs\\x18\\x11\\x8D\\xD7$\\xA1\\x12\\xE5s\\xF3U\\x87&\\x15\\x9A<=+\\xBD\\xDFC\\xFC\\x9D\\x97D\\x15@\\xE2\\xEA\\xA4M\\x87d2\\xE6\\xAE&J>\\xAD\\x91)\\xA9o\\xC8\\xE60~\\x1E\\x1D[\\xD9\\xE28\\x15-\\x1E\\x99\\xE8\\xF6O\\xDA^\\xC2\\xC1D\\x04\\x18\\x01\\n\\x00x\\x05\\x82c\\xA1\\xE01\\x05\\x89\\x05\\x9F\\xA6\\x00\\t\\x10H\\xB4\\xB9\\xE4\\xC5c0\\x92G\\x14\\x00\\x00\\x00\\x00\\x00\\x1E\\x00 salt@notations.sequoia-pgp.org\\xF1d\\xC84\\xB8\\x0BSo\\x06n]\\x9F\\xCA@\\xAAK(zOu\\xF3+\\x9D\\\\\\xC9\\\\\\xA3v#\\x99_\\xFD\\x02\\x9B\\x0C\\x16!\\x04\\xC3\"\\xBAtsl?e\\xB5`XcH\\xB4\\xB9\\xE4\\xC5c0\\x92\\x00\\x00Ԙ\\x0B\\xFB\\x077\\x8Ao\\xD2\\xF8q\\xF8\\x14a\\xA6\\xA0\\xB8c\\x01\"\\x88\\x1F\\xC4BV\\xE4\\x95E\\xF8\\xFB\\xEF\\xA1L\\xA4\\x9C|\\x0E\\nIr\\xC0$\\xBA2\\xDCpE\\\\\\x91\\rt\\xF5b)G\\xB53\\x9B\\x87)~Y\\x0B\\xBB\\x87\\x91mjn\\xFA^\\xB8\\x81#\\xED|\\xD5\\x0B\\xF9\\x8B\\x8C\\xDB\\x040\\x0E\\xBD\\xFF\\xE8\\xDA\\xFDg\\x85\\xE5s+\\x17\\x05\\xA9\\xD6+\\x18\\x18}\\rz\\xAC \\xD9D*+]\\x07\\x13\\xCA\\x17*(\\x94\\x04b\\xE8\\xF4w\\x9B\\x84\\x0E8\\xC8\\xD0\\x98`\\xBC\\x07\\xFB%V\\xBE\\xC9\\x0B\\xCF\\xEClو\\x9A~?\\xE1\\x9CZ\\xAB\\xB3Ԝ\\x1Dd\\xD9lHh\\xE1\\xF7'\\x05\\xC0\\xC4f5\\xB8e\\x05\\\\\\x18&\\x9B\\x0E\\x8F\\xC9\\x08\\x86S\\xC2i&\\x19\\x00\\x1B\\x14W\\x92\\x9Dy\\x08\\xCB$<E\\xC6Gd\\xE0q\\x18q\\xA4\\r\\x0F\\xC57\\xF6\\x8D\\xFE\\x15\\x01\\xAE)λ(\\xB1\\xBC\\xA1\\x7F\\xCE\\xFDܓ\\xD8\\xD5\\x13\\xDD\\xEAi\\xD2\\xCF\\xB4M\\x08(\\xA2K\\xD9WIl\\xC7(.u\\x89\\x8B\\r\\xB2j\\xC49\\xA9Ry\\x8Ek\\x1B\\x8B2\\xCC\\x11v\\xDBy\\xB1\\xFD\\xB08g]\\x17\\xE5<v\\x00*\\xAB\\xE5\\xFA\\xB2\\xABlB#@\\x94\\xC3N\\xDA\\\\5\\xFA\\x89\\xCE^\\xA3\\xC4\\x08\\xE4\\xC9\\xF8\\x08=i\\x9C\\xFFvf2y\\x14\\nSa[@^T\\xA1\\xBB\\x81X\\x00{m\\x0C\\x15\\x17\\x07of\\xEA\\x8AF\\x01\\xE9..\\xE5\\x99{\\x12CS\\x1B\\xD9\\x12i\\x8D\\xFCNS\\xBE&\\x9B~\\x1B>\\x94\\xA8p#\\x19\\x95\\xB6\\x01<\\xCD\\xE8\\xBEG\\x90\\xA4\\xB1E\\xB0\\xD9\\n\\xE0\\xAE29\\xC7\\xC4\\x98\\x04c\\xA1\\xE01\\x01\\x0C\\x00\\xE4v\\xCD\\xE9\\x84\\xDB)֮(R\\xC5\\xD0T\\x1B\\xC1(.\\x17\\xAEq\\xE5\\x00\\xF3\\xB8[\\xEE\\xE2\\xFDy\\x0C\\xE5\\xC7\\x12\\xC2\\ta@\\xC4\\xFAR\\xDB1\\xC4\\xD5\\xD8\\xD1\\x02\\x9EY\\r\\xDF\\xFA\\xE2\\xBFOi\\x9F\\x9F\\xFC\\xDC:\\xC9\\xCEN\\x9DN\\xF6n\\x94\\xFAf\\x9C'\\xA7\\xF0\\xE4\\x17\\xAF\\xF1R#\\xE0\\xC1K@)=h\\x8CC8n([i\\xB0xO\\xCFL\\x03\\x9C\\x8E\\x7F\\xFE\\xE0t\\x8F\\xD9\\xCB(\\xF3D\\xDF\\xCEJ\\xA2\\xA5\\xC8\\x06\\x8C\\xE5)\\x0By\\x93\\x98\\x04\\xF8\\xEF[i!oR25/\\xCB\\x11XO]\\xBDj\\x1Cߗ֕+\\x7F)9\\xE0Eyg\\xD4 \\xF3\\xAC\\t\\xF7\\xF2\\xA5O\\x02~\\xDD\\xF4TP\\xB4\\xE5\\xDD\\xA6,j\\x8FzOIg1QT\\xBA-Vs\\xF7\\xA2\\xDDE\\x98o\\x17\\x83\\x87&%w\\xBA\\x86w\\x02\\xC8\\x0EJ T\\xFA\\x81ڦ!:,o\\xE3\\x17~\\n\\\\2]5M*L\\xA3\\x92\\x03u\\x05\\xFF\\x16\\x84zHkb\\x8AT\\xC7\\xEA\\xE2\\x12\\xCDz\\xF8\\xA5X&P\\x81/l\\x069<\\xB9\\r\\xF3\\xAAPNֆ/T\\x92N\\xCB--FsCu㐒\\xF8\\xD5\\xC5\\x9F\\x07\\xE2\\xE65z\\xE0\\xC9L3\\xBA\\xF8\\xF0~~\\xE6\\x8C\\xD2\\xCFc\\xEA2\\xA6 6\\xDB\\xFE\\x10\\xDD\\x04\\xD6B\\xC5\\xF0\\xAC\\xCC\\x0C*\\xF7\\x1BZkh\\x97\\x85\\xB0\\xFF\\x83\\xDD\\xC3\\xA7\\xDEmQ6\\xD3u\\xD8?\\xE79^\\x8B\\x1Bob\\xF5<\\x8B|*\\xF1\\xEEN\\x02)<g\\x1D+\\xC4\\xE0;\\xB8u\\xD6#\\x800\\x84\\xC1zĞ{\\xD3\\x00\\x11\\x01\\x00\\x01\\x00\\x0C\\x00\\x9DÌ\\x9D\\xDD(\\x9AӬ\\xA0\\x1Bȍ\\xFC\\x06\\xCEs\\xB8\\xA0\\x91\\xCE\\x04\\x9D\\x8B\\xAF\\x9B\\x8Cs#&\\x1CI\\xF0\\x16{\\xF7\\x8E8\\xF3\\xCD\\x08\\xBAd\\xBB\\xD0\\x10Q\\x04\\xC5\\xE4)8\\xAA?:l\\xD4;nwf}\\x12.m\\x0B$#\\xF8h\\xD8!Sc\\xEF\\x0C\\xE1\\xF5\\x99\\x81\\xC3\\x7F\\x13\\rg\\xB1~\\xC8\\xF1\\x11*\\xBA%\\x17\\xA9Hj\\x9C*@\\xB3\\xF5*\\x7F\\x1C\\xD4\\x1C\\x9BaZ\\xBCx\"\\xC5D\\xE7g\\x92\\xB9xOM\\xACQ\\x93\\xA2\\xF8\\xD0\\xD9^-\\xAB\\xAA\\x05t\\xA2\\x06\\x19\\xC4O.C\\x15K^)\\x90\\x96\\xB6{o\\xB7\\x01\\xB0\\xAEN\\xB8\\xAB\\x05\\x8F\\xEE\\xD1U\\xD3\\xECl\\x9A\\xCA\\xDC\\xA6O\\x0F\\x11\\xCAI\\xA1\\x12VV\\x05\\x9Fގ1\\xDA\\x18\\xACY\\x1Dׁ\\x02u\\x87\\xED\\x03\\x93O\\xDC\\x04c\\x8B&\\xCB}\\xB67K#ر\\x11\\xDE~\\x1E\\xC0;\\xDB\\xE3Y\\xF5s\\xD2\\x07\\xD8y\\xA8\\x13\\x8E\\xF7\\x14Wy\\x84ɪ\\x19P鷍\\xE8\\x08pU\\xDB\\xD5Hlp\\x06;\\xF7<X\\xFAc\\xD2q5\\x98\\xB8\\x1B\\x86\\xBA\\xC9~\\x9AM\\xC3\\xF7\\xD9\\x04T\\xB35E\\xA5m5\\xDEb\\xC8\\x1C\\xC34\\x02\\xD4\\xF5\\x85\\x07ʱm\\x12\\xD6c@\\xD2\\xDDlD\\x936\\x8C֚\\xAE\\xDE<\\x0B\\xB5|j\\x9A\\xBFl\\xD7c[\\xF6\\x91\\xA3\\x95\\xFC.L\\xF7Hѫ\\xE3&\\x89\\xD49\\x05\\x83\\xD0^\\x82u\\x02OR\\xC9`\\xB9\\x17޶c\\xFE\\xE3y\\x16\\xB0\\x8E<\\xCAd\\x9B\\x11\\xC6\\x0C\\x00\\xA7\\x1F\\x8F\\x98\\xF2J^:)u{B\\xADU.\\x82N\\xC1\\x06\\x00\\xE7\\xC5i\\x00\\x8D\\xC1\\x16\\x8A\\x03\\x19G\\t\\xB3z\\xDFvȵ\\xE4f\\x9DH>\\xEFC$\\xB5\\x10\\x10\\xDE\\x11i\\xED\\xB8ȸ\\xC8r\\xF0 \\xB8W\\x17\\xD3\\xCAc<Ԕ\\x872̨.\\x16;&C\\xA3\\xAD\\x12j\\xFB\\x82\\xB5\\xFD\\xC3\\xF5ciMƦ\\x7Fj\\xB4X\\x8B6V\\x1Dz\\xE3\\x15u\\x8D\\x80}MG\\xAB\\x13\\x0F\\xEA\\x0Eư\\xA3\\x8C:d\\xE2\\xF00\\x085\\x9C\\xE5=\\xF2\\xE9\\xC4K\\xAB\\xA9\\t\\xF5-\\xA1ʭ\\x81\\ng60 $\\xAB\\x03\\xBC\\x9E8\\x96\\xF0\\x05\\xD0/\\x9C\\x12\\xDD\\xF1S(F\\xFF\\x19gV\\x17\\xFCZ\\xA5\\xD5}x\"\\x80\\x1F\\xB8{\\xA4\\x8F\\xFC3߸J\\xDF\\xCF\\xC0\\xAC\\x17ϺӺۢ\\x17W\\xFA{ײ\\xA8\\xF7\\xDAO\\x8A\\xEAe\\x06\\x00\\xFCX\\xE4LG\\xCCHE:J\\x15wGn|\\xF9\\xAC\\xB0\\xBF\\xFD\\xF6k\\x00\\xA1ծ_\\x10\\x8E/\\xBF\\x02r\\xE2!\\x91\\xA6}\\x9E\\x98\\xFE\\x08\\x15\";\\xF4+\\x18\\x86\\xADܠ\\xC1\\x00{r\\xCF\\xFDe\\xBE*U=Ȁ\\xDFX\\xC6\\x00\\x00\\xA5\\xC7=\\xDD]h\\xEF\\xBD\\xFF\\x8AP}\\xE0\\xAD\\xED\\xC7\\t\\x8D\\x16\\xABC\\xD9\\xFD\\xDF.|H)\\xF9\\xFEB\\x96\\xBD7X\\xF3\\x16\\x13\\xB3\\xCD\\x11J\\xCD/\\x12h\\xA8\\xCB\\xC2\\x92fꮣ\\xAE6\\xC6cԆ>\\xD4\\xFE\\xAED\\xB0#\\x97\\xC5\\xE2Ey\\x8FI\\xEE \\x12F\\xA7>\\xFEp\\xE8\\xD9\\xE0&\\xD0\\xDC\\xCC\\xD8\\xFD4j\\xCE(m\\xCElfc\\xE1\\xD0\\xF7\\x1EgF|\\xEA\\x06\\x89C\\xD8q\\x95\\x01\\x80%D)ҍ\\xD7\\x05\\xFF}\\xBD\\x9A\\x91\\x9B\\xB7~\\xFAt`A\\x7F\\xEB\\xA7p\\x86\\xA5m\\x19jX\\x01YF\\x01g\\xE4\\x03\\n'\\x87\\x8E\\t|Q2\\xA0\\xAB\\xEA\\xD9\\x02)\\x1F~ƄpbTB}C\\xE7\\x12\\xB1\\xCA\\x1BD\\xBAj\\xD3H$K\\xF7u~\\xB5\\xA0\\xD8Rff\\x17;#e}\\x10:\\r{\\xDEC\\x19\\xC1\\xE0EL,\\xE1_\\xBD?\\xF4S\\x16\\xAE\\xC0Lp#\\xCAxE\\x8E\\xE4+\\xA68\\x13\\xB8|\\xB9\\xE8\\xD12\\n\\xBB\\x1CI\\x9Dȏp\\xF0\\x06\\xD0\\x03\\xE4\\x0B\\xCCv\\xA1\\xEB\\xE3!H\\xF5\\x80\\xA5\\xB1\\xF7B>1\\xA1\\xF7\\x1F\"w\\x1C%K\\xC1|G\\x03!%\\xFEẋ\\xF6\\x0F#\\xC3j\\xBFh\\x7F\\x84\\x94\\x08\\x9E\\x0Fҙ-\\xA5\\x90\\xE1\"n\\xD7&\\x02\\xE7\\xDD\\x08\\xC2\\xC3B\\x04\\x18\\x01\\n\\x02v\\x05\\x82c\\xA1\\xE01\\x05\\x89\\x05\\x9F\\xA6\\x00\\t\\x10H\\xB4\\xB9\\xE4\\xC5c0\\x92G\\x14\\x00\\x00\\x00\\x00\\x00\\x1E\\x00 salt@notations.sequoia-pgp.orgs\\xF6P\\x16?'Go\\x0E\\r\\xED\\x00h\\x89\\xA5\\x0E%\\xFC\\xFF\\x13\\x90\\xF8\\x06ſ*6\\xD0(Z\\x8D_\\x02\\x9B\\x02\\xC1<\\xA0\\x04\\x19\\x01\\n\\x00o\\x05\\x82c\\xA1\\xE01\\t\\x10\\xF08\\xCD\\x17\\x0BS\\xFBbG\\x14\\x00\\x00\\x00\\x00\\x00\\x1E\\x00 salt@notations.sequoia-pgp.org3\\xAE\\x9B\\xFCӊd\\xF58\\xB6|z\\xEEhH8\\xC0\\x15\\xA0P\\xB4\\x8F\\x0F\\xF4\\xBF\\x8F\\x172}\\x17\\x1B\\xB9\\x16!\\x04\\x11\\xF6C\\xBB\\x84˽\\xC5\\xDD\\xCC~\\xBD\\xF08\\xCD\\x17\\x0BS\\xFBb\\x00\\x00\\xE7{\\x0B\\xFFq\\xA3J\\xAE\\xC0h\\xD9~&\\xE0y\\xDEx_\\x8FXM\\x85\\xE2w'\\x02C\\x12\\n+\\x83˵\\xD2\\x16U\\xBE\\x0F\\x01KR\\x82\\xC2\\xE7}+\\x1E;p\\xE7\\x1D\\x8A\\x07\\xDF\\x03\\xAC\\xC0`\\x13\\x12\\xADVD\\x7FV9DD袎\\x17\\xD4\\xF1O\\x86\\x91\\xB4L\\xE9\\xCE\\x86\\xBFA_\\xDEy\\xC9\\xD2\\xFA\\xB9j\\x14\\xFF%\\xE3\\x88G\\x9F2\\x85\\x17\\xA3x\\xB2\\xA6\\xCCz\\xA2\\xFAݼfޤ\\n\\x1Emh!\\x98U\\xF1\\x90\\x15MDs\\n΍\\x03\\xD8\\xE6$ޅ\\xAA\\xA3x[tb\\xE3\\xF5u\\xF7\\xA3\\xE7W\\xDF\\xD1l\\x0B\\xB9K\\xA5\\xE5> n\\xE5\\x0BI\\xDA\\x1D,\\xBA\\x8Bi\\xF1\\xF8m\\xDD\\xEB%41U\\x83_\\x87|Sa\\xB9\\x17\\x11=\\xAC\\\\6\\xC3d\\xB6\\x9Bi\\xBD\\x99=1\\x01\\x99N\\nZ4\\xAF\\x96\\xEF\\n_\\x03+\\xF5\\x95\\x12T\\x19P\\xEE\\xD0jZ\\x87Vy\\x14\\x01*\\x8B\\x1F\\xF3\\x93\\x02\\xA7\\xB0\\xD6\\xEF\\xCE\\xE2\\x06\\xE61\\xD0\\xF4\\xFED\\xA1@\\xCF9\\x19»vs\\xDDx\\xF60\\xB5)p\\xBEwn\\xD5\\x00u\\xFCf\\x98w\\xCBI\\xE7\\x92\\x00\\xB7Z\\xE9\\x12\\x97\\xEB\\xCF\\xA81\\xF0\\xCF\\xEB\\xBDK\\xD4\\x7F\\xEF\\xBFYy\\xF48\\x97\\xCF{\\xD8\\x0FI\\xF86\\xCB\\xFF@O\\xC9\\xC6s\\xC0/\\xEA\\xFB165?\\xF2b\\xAB\\x11\\r\\x98\\xBCH\\x97\\\\t\\xFF\\xC9\\x0F\\xDB\\xCB\\x16\\x92\\x7FaZ}\\xC9\\xF2\\xEF\\xFF\\xF80\\xC3\\xEDAQw/Ӌv\\x9D\\x87\\x05Ϣ\\x0F\\xBE\\xF8\\xB9_uQ\\x99\\x83\\xA1\\xF6\\x050M$\\xFF\\xAF\\xE7\\t\\x16!\\x04\\xC3\"\\xBAtsl?e\\xB5`XcH\\xB4\\xB9\\xE4\\xC5c0\\x92\\x00\\x00\\x9BG\\x0C\\x00\\x9CQ\\x03\\x0F\\x04\\xEF\\xF5\\x90/z8\\xEEl\\x9D\\xAA\\x84\\xE0\\x85\\x8F\\xC3\\x03v\\x00.\\xE1\\x13F\\x9D\\x1F\\xDC\\xDC\\x851\\x0C\\x8D\\xF46;\\xAEw\\x9D\\x94\\x92\\xBF\\xB2Z\\xAC\\xFEy}-\\xF2\\xCB\\xA7\\xB8\\xFB\\x063\\x17\\xDF\\xDCE\\xAFLާ\\x16\\xF5\\x82\\x9C\\xC8\\x01Q\\x01\\x87\\xFE_\\xF0\\xD4๙ݎ\\x7F\\x1B\\x98&-2\\x88O\\x96\\x16\\x9B\\x94\\xB2o\\x84c-\\xE5\\xAD8U\\xA5\\x88\\x8Ay\\xC3\\xFD\\xA64\\xF8I\\x1DO\\xC1\\xB6\\xD4\\xE2\\xAE2\\x11u\\x92}t\\x7F\\xE75Y\\xE9\\x18\\xD7\\x12\\x08\\x90\\x0Fik\\xA1\\xE0\\x84\\xD3x\\xB8\\x97\\xAE\\xAB\\xAAR\\x87\\x05\\xF6\\x12\\xD6\\xF5i\\x8B}Zh\\x0B\\xBF\\xF2\\xD9\\x02\\x95ɘ~qO\\xE4\\xF0\\xA2>;\\r/\\xFF%\\xDB\\x156/\\xFF[\\x88\\x83\\x1D\\xB7\\xD6\\xCB\\xA3\\x15iz.\\x8C9\\x041Q\\x88\\xA8/V\\xCAz\\xA5\\xF8X\\x11p\\xD2\\xEB\\x88\\xF6+Ƌ\\r4\\xF5\\x8C\\xAFߛ\\xDD\\xD9*\\xD8\\xD5\\xA0\\xACkPr\\xA9\\xAE\\xA4\\xE2\\xCF\\x187\\x13\\xFD\\x01\\x89p҂&\\xB0_\\xE9@Q\\xDE\\xC9\\x91\\x85*\\xD5\\xF78\\x82\\xFE\\xEDW]qi\\x9E\\x0CùN\\x99\\x86n'\\x96Iq\\xC4\\xD0\\xE9s\\rScN^\\xF6+\\xD4\\xD4v\\xEC\\x17\\x93\\xF1\\x8B\\xF7j-\\x8D)\\x14A\\xD2\\x17Al\\xB7\\x1F\\x95\\x1C&6\\xF2x\\xE6\\x17\\x15\\x0B\\xF4$1\\x81\\xD9\\xE1\\x88QG\\xF2\\xC9\\xEF\\x820ѻ\\x02\\xD3\\x07\\xD8E?\\x82\\xCBL\\xB4\\xDC\\xD0\\x87\\xAA\\x84\\x15\\x0BLc\\xB5\\xFE\\xC36\\x0F\\x85A7\\xCE\\xF4\\x9B\\xB4M\\xD0\\x15}i\\xBF\\xAB("
+  },
+  "dynamic_upper_bounds": [
+    [
+      0,
+      86,
+      0
+    ],
+    [
+      0,
+      0,
+      67
+    ],
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      6,
+      67
+    ],
+    [
+      0,
+      6,
+      67
+    ],
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      6,
+      67
+    ],
+    [
+      0,
+      6,
+      67
+    ],
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      6,
+      96
+    ],
+    [
+      0,
+      6,
+      96
+    ],
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      6,
+      67
+    ],
+    [
+      0,
+      6,
+      67
+    ]
+  ]
+}

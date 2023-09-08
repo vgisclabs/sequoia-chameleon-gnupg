@@ -39,6 +39,7 @@ macro_rules! make_experiment {
 mod gpg {
     mod decrypt;
     mod encrypt;
+    mod sign;
     mod verify;
     mod list_keys;
     mod version;
