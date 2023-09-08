@@ -114,6 +114,9 @@ pub struct Config<'store> {
     verbose: usize,
     verify_options: u32,
 
+    // For sharing the code with with gpg.rs.
+    list_only: bool,
+
     // Streams.
     logger_fd: Mutex<RefCell<Box<dyn io::Write>>>,
     status_fd: status::Fd,
@@ -142,6 +145,9 @@ impl<'store> Config<'store> {
             quiet: false,
             verbose: 0,
             verify_options: 0,
+
+            // For sharing the code with with gpg.rs.
+            list_only: false,
 
             // Streams.
             logger_fd: Mutex::new(RefCell::new(Box::new(io::stderr()))),

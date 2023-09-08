@@ -10,7 +10,11 @@ use openpgp::{
     Cert,
     KeyID,
     crypto::hash::Digest,
-    packet::Signature,
+    packet::{
+        Packet,
+        Signature,
+        header::BodyLength,
+    },
     packet::signature::subpacket::*,
     packet::key,
     types::*,
@@ -809,6 +813,34 @@ impl<'a, 'store> VHelper<'a, 'store> {
 }
 
 impl<'a, 'store> VerificationHelper for VHelper<'a, 'store> {
+    fn inspect(&mut self, pp: &openpgp::parse::PacketParser) -> Result<()> {
+        match &pp.packet {
+            Packet::Literal(p) if ! self.control.list_only => {
+                self.control.status().emit(
+                    Status::Plaintext {
+                        format: p.format(),
+                        timestamp: p.date(),
+                        filename: p.filename().map(|n| n.to_vec()),
+                    })?;
+
+                if let BodyLength::Full(l) = pp.header().length() {
+                    // Subtract the Literal Data packet's header
+                    // fields from the packet length.
+                    let body_len = *l - (
+                        1
+                            + (1 + p.filename().map(|f| f.len() as u32)
+                               .unwrap_or(0))
+                            + 4);
+                    self.control.status().emit(
+                        Status::PlaintextLength(body_len))?;
+                }
+            },
+            _ => (),
+        }
+
+        Ok(())
+    }
+
     fn get_certs(&mut self, ids: &[openpgp::KeyHandle]) -> Result<Vec<Cert>> {
         Ok(ids.iter().filter_map(|id| self.control.keydb().lookup_by_key(id).ok())
            .flatten()

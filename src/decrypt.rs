@@ -16,7 +16,6 @@ use openpgp::{
     },
     fmt::hex,
     packet::prelude::*,
-    packet::header::BodyLength,
     policy::Policy,
     types::*,
     packet::key::*,
@@ -621,24 +620,6 @@ impl<'a, 'store> VerificationHelper for DHelper<'a, 'store> {
             Packet::Literal(p) if ! self.config.list_only => {
                 self.filename = String::from_utf8_lossy(
                     p.filename().unwrap_or_default()).into();
-                self.config.status().emit(
-                    Status::Plaintext {
-                        format: p.format(),
-                        timestamp: p.date(),
-                        filename: p.filename().map(|n| n.to_vec()),
-                    })?;
-
-                if let BodyLength::Full(l) = pp.header().length() {
-                    // Subtract the Literal Data packet's header
-                    // fields from the packet length.
-                    let body_len = *l - (
-                        1
-                            + (1 + p.filename().map(|f| f.len() as u32)
-                               .unwrap_or(0))
-                            + 4);
-                    self.config.status().emit(
-                        Status::PlaintextLength(body_len))?;
-                }
             },
             _ => (),
         }
