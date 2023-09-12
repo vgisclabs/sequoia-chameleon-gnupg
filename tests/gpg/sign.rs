@@ -72,6 +72,23 @@ fn general_purpose(cs: CipherSuite) -> Result<()> {
     test_key(cert, experiment, true)
 }
 
+#[test]
+#[ntest::timeout(600000)]
+fn no_signing_subkey() -> Result<()> {
+    let mut experiment = make_experiment!()?;
+    let cert = experiment.artifact(
+        "cert",
+        || CertBuilder::new()
+            .add_userid("Alice Lovelace <alice@lovelace.name>")
+            .set_creation_time(Experiment::now())
+            .generate()
+            .map(|(cert, _rev)| cert),
+        |a, f| a.as_tsk().serialize(f),
+        |b| Cert::from_bytes(&b))?;
+
+    test_key(cert, experiment, false)
+}
+
 fn test_key(cert: Cert, mut experiment: Experiment, expect_success: bool)
             -> Result<()>
 {

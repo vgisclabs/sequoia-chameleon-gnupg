@@ -862,7 +862,20 @@ impl<'store> Config<'store> {
                 // usable key.  GnuPG uses the first one it finds.  Do
                 // the same, mostly because this search operation is
                 // so expensive.
-                for cert in self.keydb().certs() {
+                let trust_root =
+                    self.keydb().get_certd_overlay()
+                    .and_then(|o| Ok(o.trust_root()?.fingerprint()))
+                    .ok();
+                for cert in self.keydb().certs()
+                    .filter(|c| Some(c.fingerprint()) != trust_root)
+                {
+                    self.status().emit(
+                        status::Status::KeyConsidered {
+                            fingerprint: cert.fingerprint(),
+                            not_selected: false,
+                            all_expired_or_revoked: false,
+                        })?;
+
                     if let Ok(vcert) = cert.with_policy(self.policy(), None) {
                         for sk in vcert.keys().key_flags(&flags).alive()
                             .revoked(false)
@@ -872,11 +885,19 @@ impl<'store> Config<'store> {
                             }
                         }
                     }
+
+                    self.status().emit(
+                        status::Status::KeyConsidered {
+                            fingerprint: cert.fingerprint(),
+                            not_selected: true,
+                            all_expired_or_revoked: true,
+                        })?;
                 }
 
                 // Heuristic failed to find a usable secret key.
-                Err(anyhow::anyhow!("We did not find a usable secret key, \
-                                     maybe use -u"))
+                self.warn(format_args!("no default secret key: \
+                                        Unusable secret key"));
+                Err(anyhow::anyhow!("Unusable secret key"))
             } else {
                 Ok(self.def_secret_key.clone())
             }

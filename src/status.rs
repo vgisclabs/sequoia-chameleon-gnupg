@@ -210,7 +210,7 @@ pub enum Status<'a> {
 
     InvalidSigner {
         reason: InvalidKeyReason,
-        query: &'a Query,
+        query: Option<&'a Query>,
     },
 
     KeyConsidered {
@@ -595,7 +595,11 @@ impl Status<'_> {
             InvalidSigner {
                 reason,
                 query,
-            } => writeln!(w, "INV_SGNR {} {}", u8::from(*reason), query)?,
+            } => if let Some(q) = query {
+                writeln!(w, "INV_SGNR {} {}", u8::from(*reason), q)?;
+            } else {
+                writeln!(w, "INV_SGNR {}", u8::from(*reason))?;
+            },
 
             KeyConsidered {
                 fingerprint,

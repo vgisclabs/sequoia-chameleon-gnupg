@@ -1,0 +1,209 @@
+{
+  "outputs": [
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: keybox '/HOMEDIR/pubring.kbx' created\\ngpg: /HOMEDIR/trustdb.gpg: trustdb created\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--import\"",
+        "\"/EXPERIMENT/key\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: key 8DF9BD6839A0D603: public key \"Alice Lovelace <alice@lovelace.name>\" imported\\ngpg: key 8DF9BD6839A0D603: secret key imported\\ngpg: Total number processed: 1\\ngpg:               imported: 1\\ngpg:       secret keys read: 1\\ngpg:   secret keys imported: 1\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 315784C40B8CE1F3ED500E598DF9BD6839A0D603 0\\n[GNUPG:] IMPORTED 8DF9BD6839A0D603 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] IMPORT_OK 1 315784C40B8CE1F3ED500E598DF9BD6839A0D603\\n[GNUPG:] KEY_CONSIDERED 315784C40B8CE1F3ED500E598DF9BD6839A0D603 0\\n[GNUPG:] IMPORT_OK 17 315784C40B8CE1F3ED500E598DF9BD6839A0D603\\n[GNUPG:] IMPORT_RES 1 0 1 0 0 0 0 0 0 1 1 0 0 0 0\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--digest-algo=SHA512\"",
+        "\"--sign\"",
+        "\"--output\"",
+        "\"signature\"",
+        "\"/EXPERIMENT/plaintext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: no default secret key: Unusable secret key\\ngpg: signing failed: Unusable secret key\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 315784C40B8CE1F3ED500E598DF9BD6839A0D603 0\\n[GNUPG:] KEY_CONSIDERED 315784C40B8CE1F3ED500E598DF9BD6839A0D603 3\\n[GNUPG:] INV_SGNR 9\\n[GNUPG:] FAILURE sign 54\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--digest-algo=SHA512\"",
+        "\"--sign\"",
+        "\"--textmode\"",
+        "\"--output\"",
+        "\"signature\"",
+        "\"/EXPERIMENT/plaintext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: no default secret key: Unusable secret key\\ngpg: signing failed: Unusable secret key\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 315784C40B8CE1F3ED500E598DF9BD6839A0D603 0\\n[GNUPG:] KEY_CONSIDERED 315784C40B8CE1F3ED500E598DF9BD6839A0D603 3\\n[GNUPG:] INV_SGNR 9\\n[GNUPG:] FAILURE sign 54\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--digest-algo=SHA512\"",
+        "\"--clear-sign\"",
+        "\"--output\"",
+        "\"signature\"",
+        "\"/EXPERIMENT/plaintext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: no default secret key: Unusable secret key\\ngpg: /EXPERIMENT/plaintext: clear-sign failed: Unusable secret key\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 315784C40B8CE1F3ED500E598DF9BD6839A0D603 0\\n[GNUPG:] KEY_CONSIDERED 315784C40B8CE1F3ED500E598DF9BD6839A0D603 3\\n[GNUPG:] INV_SGNR 9\\n[GNUPG:] FAILURE sign 54\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--digest-algo=SHA512\"",
+        "\"--detach-sign\"",
+        "\"--output\"",
+        "\"signature\"",
+        "\"/EXPERIMENT/plaintext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: no default secret key: Unusable secret key\\ngpg: signing failed: Unusable secret key\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 315784C40B8CE1F3ED500E598DF9BD6839A0D603 0\\n[GNUPG:] KEY_CONSIDERED 315784C40B8CE1F3ED500E598DF9BD6839A0D603 3\\n[GNUPG:] INV_SGNR 9\\n[GNUPG:] FAILURE sign 54\\n",
+      "status": "exit status: 2",
+      "files": {}
+    }
+  ],
+  "former_us_outputs": [
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--import\"",
+        "\"/EXPERIMENT/key\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: key 8DF9BD6839A0D603: public key \"Alice Lovelace <alice@lovelace.name>\" imported\\ngpg: key 8DF9BD6839A0D603: secret key imported\\ngpg: Total number processed: 1\\ngpg:               imported: 1\\ngpg:       secret keys read: 1\\ngpg:   secret keys imported: 1\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 315784C40B8CE1F3ED500E598DF9BD6839A0D603 0\\n[GNUPG:] IMPORTED 8DF9BD6839A0D603 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] IMPORT_OK 1 315784C40B8CE1F3ED500E598DF9BD6839A0D603\\n[GNUPG:] IMPORT_OK 17 315784C40B8CE1F3ED500E598DF9BD6839A0D603\\n[GNUPG:] IMPORT_RES 1 0 1 0 0 0 0 0 0 1 1 0 0 0 0\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--digest-algo=SHA512\"",
+        "\"--sign\"",
+        "\"--output\"",
+        "\"signature\"",
+        "\"/EXPERIMENT/plaintext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: no default secret key: Unusable secret key\\ngpg: signing failed: Unusable secret key\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 315784C40B8CE1F3ED500E598DF9BD6839A0D603 0\\n[GNUPG:] KEY_CONSIDERED 315784C40B8CE1F3ED500E598DF9BD6839A0D603 3\\n[GNUPG:] INV_SGNR 9\\n[GNUPG:] FAILURE sign 54\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--digest-algo=SHA512\"",
+        "\"--sign\"",
+        "\"--textmode\"",
+        "\"--output\"",
+        "\"signature\"",
+        "\"/EXPERIMENT/plaintext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: no default secret key: Unusable secret key\\ngpg: signing failed: Unusable secret key\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 315784C40B8CE1F3ED500E598DF9BD6839A0D603 0\\n[GNUPG:] KEY_CONSIDERED 315784C40B8CE1F3ED500E598DF9BD6839A0D603 3\\n[GNUPG:] INV_SGNR 9\\n[GNUPG:] FAILURE sign 54\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--digest-algo=SHA512\"",
+        "\"--clear-sign\"",
+        "\"--output\"",
+        "\"signature\"",
+        "\"/EXPERIMENT/plaintext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: no default secret key: Unusable secret key\\ngpg: /EXPERIMENT/plaintext: clear-sign failed: Unusable secret key\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 315784C40B8CE1F3ED500E598DF9BD6839A0D603 0\\n[GNUPG:] KEY_CONSIDERED 315784C40B8CE1F3ED500E598DF9BD6839A0D603 3\\n[GNUPG:] INV_SGNR 9\\n[GNUPG:] FAILURE sign 54\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--digest-algo=SHA512\"",
+        "\"--detach-sign\"",
+        "\"--output\"",
+        "\"signature\"",
+        "\"/EXPERIMENT/plaintext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: no default secret key: Unusable secret key\\ngpg: signing failed: Unusable secret key\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 315784C40B8CE1F3ED500E598DF9BD6839A0D603 0\\n[GNUPG:] KEY_CONSIDERED 315784C40B8CE1F3ED500E598DF9BD6839A0D603 3\\n[GNUPG:] INV_SGNR 9\\n[GNUPG:] FAILURE sign 54\\n",
+      "status": "exit status: 2",
+      "files": {}
+    }
+  ],
+  "artifacts": {
+    "cert": "\\xC5X\\x04c\\xA1\\xE01\\x16\\t+\\x06\\x01\\x04\\x01\\xDAG\\x0F\\x01\\x01\\x07@\\x15\\xA9\\xCE\\xDB\\xDE\\xD5je\\xA1\\xA2\\xF1g\\x1C\\xC9\\xF8\\x9F6\\x13\\xC2G\\xD9@(\\x8E\\xE9\\x13V5\\xEC\\x97yM\\x00\\x01\\x00\\xB0F\\x05G6c\\xB6\\xF3\\x81\\xF5\\x11\\x9E\\xE2gou\\x9EM`\\xDAcU\\xF6\\xAD?c\\x0C\\x97ʜ~A\\x0F\\xC1\\xC2\\xC0\\x0B\\x04\\x1F\\x16\\n\\x00}\\x05\\x82c\\xA1\\xE01\\x03\\x0B\\t\\x07\\t\\x10\\x8D\\xF9\\xBDh9\\xA0\\xD6\\x03G\\x14\\x00\\x00\\x00\\x00\\x00\\x1E\\x00 salt@notations.sequoia-pgp.orgE`\\xCD\\xCA\\xE4/r5\\x08\\x18\\xAAS\\x05\\xF4U\\xA5\\xC8s\\xB8\\xBC\\x15j\\xA0\\xE3\\xE6>\\xF4d\\x92U\\x03Y\\x03\\x15\\n\\x08\\x02\\x9B\\x01\\x02\\x1E\\x01\\x16!\\x041W\\x84\\xC4\\x0B\\x8C\\xE1\\xF3\\xEDP\\x0EY\\x8D\\xF9\\xBDh9\\xA0\\xD6\\x03\\x00\\x00\\xFEe\\x01\\x00\\xAC\\xDE\\xC0\\xBA\\xA7\\xDAb\\xC7@۞\\xF3O\\x85ۆ\\xD1|\\xE5BE\\x91\\x9B/2ڧS\\xAD\\x86\\x92$\\x00\\xFFj\\x0F\\x075\\xAA䞶\\xBB\\x94u\\xF4)\"\\xA1\\xF4\\xE4i{\\xD6\\x17g\\xA3\\x07\\xE2\\x8D&\\xBF\\xCF\\x13\\xBB\\x00\\xCD$Alice Lovelace <alice@lovelace.name>\\xC2\\xC0\\x0E\\x04\\x13\\x16\\n\\x00\\x80\\x05\\x82c\\xA1\\xE01\\x03\\x0B\\t\\x07\\t\\x10\\x8D\\xF9\\xBDh9\\xA0\\xD6\\x03G\\x14\\x00\\x00\\x00\\x00\\x00\\x1E\\x00 salt@notations.sequoia-pgp.orgR\\xAB\\xF5/\\xE7P9\\\\\\xEA\\xCC\\xE8\\xF4\\xC5[Ԧê\\xCC`\\xC1\\xBEqKD\\x94\\xA83\\\\*'\\x03\\x15\\n\\x08\\x02\\x99\\x01\\x02\\x9B\\x01\\x02\\x1E\\x01\\x16!\\x041W\\x84\\xC4\\x0B\\x8C\\xE1\\xF3\\xEDP\\x0EY\\x8D\\xF9\\xBDh9\\xA0\\xD6\\x03\\x00\\x00\\xB0\\x0C\\x00\\xFFT֒7\\x05i\\xA1\\xFA\\x1Fp\\x95\\x9B\\x90\\x05\\xC9WA \\x1A\\xBF\\xF3u\\xEA\\xEF(fk\\xE4!\\x06n\\x15\\x01\\x00\\xF3\\x9F\\nl֐\\x86\\xD0\\xE9\\xE8\\x1C'\\xF1kӻ\\x17\\xF8\\x8Fc\\x1A#\\xAD\\xED\\x83\\xFAJX\\x182\\x94\\x0B"
+  },
+  "dynamic_upper_bounds": [
+    [
+      0,
+      86,
+      0
+    ],
+    [
+      0,
+      0,
+      67
+    ],
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ]
+  ]
+}

@@ -43,7 +43,14 @@ pub fn cmd_sign(config: &crate::Config, args: &[String],
 
     // First, get the signers.
     let rt = tokio::runtime::Runtime::new()?;
-    let (mut signers, signers_desc) = rt.block_on(get_signers(config))?;
+    let (mut signers, signers_desc) =
+        rt.block_on(get_signers(config)).map_err(|e| {
+            if cleartext {
+                anyhow::anyhow!("{}: clear-sign failed: {}", filenames[0], e)
+            } else {
+                anyhow::anyhow!("signing failed: {}", e)
+            }
+        })?;
 
     let mut sink = if let Some(name) = config.outfile() {
         utils::create(config, name)?
@@ -134,7 +141,23 @@ pub async fn get_signers(config: &crate::Config<'_>)
                                     Vec<(PublicKeyAlgorithm, Fingerprint)>)> {
     let mut signers = vec![];
     let mut signers_desc = vec![];
-    for local_user in config.local_users(KeyFlags::empty().set_signing()).await?
+    for local_user in config.local_users(KeyFlags::empty().set_signing()).await
+        .or_else(|_| {
+            use crate::error_codes;
+
+            config.status().emit(
+                status::Status::InvalidSigner {
+                    reason: status::InvalidKeyReason::NotASecretKey,
+                    query: None,
+                })?;
+            config.status().emit(
+                status::Status::Failure {
+                    location: "sign",
+                    error: error_codes::Error::GPG_ERR_UNUSABLE_SECKEY,
+                 })?;
+
+            Err(anyhow::anyhow!("Unusable secret key"))
+        })?
     {
         let query = crate::trust::Query::from(local_user.as_str());
         let certs = config.lookup_certs(&query)?;
@@ -153,13 +176,6 @@ pub async fn get_signers(config: &crate::Config<'_>)
                 certs.iter().map(|c| c.1.fingerprint().to_string())
                     .collect::<Vec<_>>())),
         };
-
-        config.status().emit(
-            Status::KeyConsidered {
-                fingerprint: cert.fingerprint(),
-                not_selected: false,
-                all_expired_or_revoked: false,
-            })?;
 
         let vcert = cert.with_policy(config.policy(), config.now())
             .context(format!("Key {} is not valid", query))?;
