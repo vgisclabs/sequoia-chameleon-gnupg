@@ -29,6 +29,7 @@ libc = "0.2"
 memchr = "2"
 once_cell = "1.17"
 openpgp-cert-d = "0.1"
+openssh-keys = { version = "0.6", default-features = false }
 percent-encoding = "2"
 rand = "0.8"
 rand_distr = { version = "0.4", default-features = false }

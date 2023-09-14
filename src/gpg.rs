@@ -65,6 +65,7 @@ pub mod commands;
 pub mod verify;
 pub mod decrypt;
 pub mod export;
+pub mod export_ssh_key;
 pub mod import;
 pub mod keyserver;
 pub mod sign;
@@ -711,6 +712,12 @@ impl<'store> Config<'store> {
             logger_fd: Mutex::new(RefCell::new(Box::new(io::stderr()))),
             status_fd: status::Fd::sink(),
         })
+    }
+
+    /// Emits the usage and terminates the process.
+    pub fn wrong_args(&self, msg: fmt::Arguments) -> ! {
+        eprintln!("usage: gpg [options] {}", msg);
+        std::process::exit(2);
     }
 
     /// Returns an IPC context.
@@ -2516,6 +2523,8 @@ fn real_main() -> anyhow::Result<()> {
             decrypt::cmd_decrypt(&opt, &args)
         },
         Some(aExport) => export::cmd_export(&mut opt, &args, false),
+        Some(aExportSshKey) =>
+            export_ssh_key::cmd_export_ssh_key(&mut opt, &args),
         Some(aImport) => import::cmd_import(&mut opt, &args),
         Some(aSign) => sign::cmd_sign(&mut opt, &args, detached_sig, false),
         Some(aClearsign) => sign::cmd_sign(&mut opt, &args, detached_sig, true),

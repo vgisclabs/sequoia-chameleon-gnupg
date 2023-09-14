@@ -47,6 +47,7 @@ mod gpg {
     mod status_fd;
     mod print_mds;
     mod list_packets;
+    mod export_ssh_key;
 }
 
 lazy_static::lazy_static! {
