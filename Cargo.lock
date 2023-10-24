@@ -850,10 +850,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "edit-distance"
-version = "2.1.0"
+name = "editdistancek"
+version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bbbaaaf38131deb9ca518a274a45bfdb8771f139517b073b16c2d3d32ae5037b"
+checksum = "3e02df23d5b1c6f9e69fa603b890378123b93073df998a21e6e33b9db0a32613"
 
 [[package]]
 name = "either"
@@ -2469,7 +2469,7 @@ dependencies = [
  "daemonize",
  "diff",
  "dirs 5.0.1",
- "edit-distance",
+ "editdistancek",
  "fd-lock 4.0.0",
  "filetime",
  "futures",

@@ -22,7 +22,7 @@ fn help() -> Result<()> {
         "--help",
     ])?.ignore_former_us();
     diff.assert_success();
-    diff.assert_equal_up_to(489, 0); // Card options and more.
+    diff.assert_equal_up_to(490, 0); // Card options and more.
     Ok(())
 }
 

@@ -515,23 +515,17 @@ impl Output {
 
     /// Returns the edit distance of run's stdout with the given one.
     pub fn stdout_edit_distance(&self, to: &Self) -> usize {
-        edit_distance::edit_distance(
-            &String::from_utf8_lossy(&self.stdout).to_string(),
-            &String::from_utf8_lossy(&to.stdout).to_string())
+        editdistancek::edit_distance(&self.stdout, &to.stdout)
     }
 
     /// Returns the edit distance of run's stderr with the given one.
     pub fn stderr_edit_distance(&self, to: &Self) -> usize {
-        edit_distance::edit_distance(
-            &String::from_utf8_lossy(&self.stderr).to_string(),
-            &String::from_utf8_lossy(&to.stderr).to_string())
+        editdistancek::edit_distance(&self.stderr, &to.stderr)
     }
 
     /// Returns the edit distance of run's status-fd with the given one.
     pub fn statusfd_edit_distance(&self, to: &Self) -> usize {
-        edit_distance::edit_distance(
-            &String::from_utf8_lossy(&self.statusfd).to_string(),
-            &String::from_utf8_lossy(&to.statusfd).to_string())
+        editdistancek::edit_distance(&self.statusfd, &to.statusfd)
     }
 
     /// Invokes a callback with the working directory.
