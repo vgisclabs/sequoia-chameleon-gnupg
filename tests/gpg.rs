@@ -135,14 +135,30 @@ fn build() {
 
     static START: Once = Once::new();
     START.call_once(|| {
-        eprintln!("Spawning {:?} to build the chameleon...",
-                  GPG_CHAMELEON_BUILD);
+        let mut prog = GPG_CHAMELEON_BUILD.to_vec();
 
-        let prog = GPG_CHAMELEON_BUILD;
-        let mut c = Command::new(&prog[0]);
-        for arg in &prog[1..] {
-            c.arg(arg);
+        if cfg!(feature = "crypto-nettle") {
+            prog.push("--no-default-features");
+            prog.push("--features=crypto-nettle");
+        } else if cfg!(feature = "crypto-openssl") {
+            prog.push("--no-default-features");
+            prog.push("--features=crypto-openssl");
+        } else if cfg!(feature = "crypto-botan") {
+            prog.push("--no-default-features");
+            prog.push("--features=crypto-botan");
+        } else if cfg!(feature = "crypto-botan2") {
+            prog.push("--no-default-features");
+            prog.push("--features=crypto-botan2");
+        } else if cfg!(feature = "crypto-cng") {
+            prog.push("--no-default-features");
+            prog.push("--features=crypto-cng");
         }
+
+        eprintln!("Spawning {:?} to build the chameleon...",
+                  prog);
+
+        let mut c = std::process::Command::new(&prog[0]);
+        c.args(prog[1..].iter());
         let status = c.status().unwrap();
         if ! status.success() {
             panic!("Building the chameleon failed: {:?}", status);
