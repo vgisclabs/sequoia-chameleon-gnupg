@@ -20,7 +20,7 @@ buffered-reader = "1"
 chrono = "0.4"
 daemonize = "0.5"
 dirs = "5"
-fd-lock = { version = "3", default-features = false }
+fd-lock = { version = ">= 3, < 5", default-features = false }
 filetime = "0.2"
 futures = "0.3"
 home-dir = "0.1"
