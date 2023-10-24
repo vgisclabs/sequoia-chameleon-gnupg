@@ -924,6 +924,20 @@ impl Diff<'_> {
         Ok(())
     }
 
+    /// Ignore former us.
+    ///
+    /// On some tests, comparing with the output from ourselves (and
+    /// leaving no slack while doing that!) is counterproductive.
+    ///
+    /// Notably, some outputs include lists of supported algorithms,
+    /// and different cryptographic backends or library versions
+    /// support different sets of algorithms.  Or, they include
+    /// versions of crates or libraries.
+    pub fn ignore_former_us(mut self) -> Self {
+        self.former_us = None;
+        self
+    }
+
     /// Asserts that both implementations returned success.
     ///
     /// Panics otherwise.

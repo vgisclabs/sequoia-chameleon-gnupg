@@ -8,7 +8,7 @@ fn version() -> Result<()> {
     let mut experiment = make_experiment!()?;
     let diff = experiment.invoke(&[
         "--version",
-    ])?;
+    ])?.ignore_former_us();
     diff.assert_success();
     diff.assert_equal_up_to(100, 0); // Different libraries, contact.
     Ok(())
@@ -20,7 +20,7 @@ fn help() -> Result<()> {
     let mut experiment = make_experiment!()?;
     let diff = experiment.invoke(&[
         "--help",
-    ])?;
+    ])?.ignore_former_us();
     diff.assert_success();
     diff.assert_equal_up_to(489, 0); // Card options and more.
     Ok(())
