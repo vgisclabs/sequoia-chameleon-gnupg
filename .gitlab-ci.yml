@@ -3,9 +3,8 @@ image: 192.168.122.1:5000/sequoia-pgp/build-docker-image/trixie-prebuild:latest
 
 .test:
   before_script:
-   # The test rely on gpg.  Make sure it is available.
-   - apt-get update -y -qq && apt-get install -y gpg
-  script:
+    # The test rely on gpg.  Make sure it is available.
+    - apt-get update -y -qq && apt-get install -y gpg
     - if [ -d target ]; then find target | wc --lines; du -sh target; fi
     - if [ -d cargo ]; then find cargo | wc --lines; du -sh cargo; fi
     - rustc --version
@@ -13,6 +12,7 @@ image: 192.168.122.1:5000/sequoia-pgp/build-docker-image/trixie-prebuild:latest
     - apt-cache policy libgcrypt20 gnupg
     - gpg --version
     - mkdir -p /run/user/$UID # For GnuPG's socket directories
+  script:
     - cargo test
 
 test-trixie:
