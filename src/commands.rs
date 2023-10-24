@@ -485,7 +485,9 @@ pub fn cmd_enarmor(config: &crate::Config, args: &[String])
         Box::new(io::stdout())
     };
 
-    let mut sink = Writer::new(sink, Kind::File)?;
+    let mut sink = Writer::with_headers(
+        sink, Kind::File,
+        vec![("Comment", "Use \"gpg --dearmor\" for unpacking")])?;
     std::io::copy(&mut source, &mut sink)?;
     sink.finalize()?;
     Ok(())
