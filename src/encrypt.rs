@@ -6,7 +6,7 @@ use anyhow::{Context, Result};
 
 use sequoia_openpgp as openpgp;
 use openpgp::{
-    cert::ValidCert,
+    cert::{ValidCert, Preferences},
     crypto::{Password, S2K, SessionKey},
     KeyID,
     packet::{
@@ -17,7 +17,7 @@ use openpgp::{
     parse::Parse,
     policy::Policy,
     serialize::{Serialize, stream::*},
-    types::SignatureType,
+    types::{HashAlgorithm, SignatureType, SymmetricAlgorithm},
 };
 use sequoia_ipc as ipc;
 
@@ -104,6 +104,26 @@ fn do_encrypt(config: &crate::Config, args: &[String],
 
     // First, get the recipients.
     let mut keys: Vec<Key<_, _>> = vec![];
+    let mut cipher_preferences: Vec<_> = [
+        SymmetricAlgorithm::AES256,
+        SymmetricAlgorithm::AES192,
+        SymmetricAlgorithm::AES128,
+        SymmetricAlgorithm::Camellia256,
+        SymmetricAlgorithm::Camellia192,
+        SymmetricAlgorithm::Camellia128,
+        SymmetricAlgorithm::Blowfish,
+        SymmetricAlgorithm::Twofish,
+        SymmetricAlgorithm::CAST5,
+        SymmetricAlgorithm::IDEA,
+        SymmetricAlgorithm::TripleDES,
+    ].iter().copied().filter(|a| a.is_supported()).collect();
+    let mut digest_preferences: Vec<_> = [
+        HashAlgorithm::SHA512,
+        HashAlgorithm::SHA384,
+        HashAlgorithm::SHA256,
+        HashAlgorithm::SHA224,
+    ].iter().copied().filter(|a| a.is_supported()).collect();
+
     for recipient in &config.remote_user {
         // XXX: honor constraints
         let query = crate::trust::Query::from(recipient.name.as_str());
@@ -189,6 +209,15 @@ fn do_encrypt(config: &crate::Config, args: &[String],
 
             found_one |= found_one_subkey;
             if found_one {
+                // If the recipients has preferences, compute the
+                // intersection with our list.
+                if let Some(p) = vcert.preferred_hash_algorithms() {
+                    digest_preferences.retain(|a| p.contains(a));
+                }
+                if let Some(p) = vcert.preferred_symmetric_algorithms() {
+                    cipher_preferences.retain(|a| p.contains(a));
+                }
+
                 break;
             }
         }
@@ -257,6 +286,13 @@ fn do_encrypt(config: &crate::Config, args: &[String],
 
         // Symmetric and asymmetric encryption voids compliance.
         de_vs_compliant &= recipients.is_empty();
+    }
+
+    if ! cipher_preferences.contains(&cipher) {
+        config.warn(format_args!(
+            "WARNING: forcing symmetric cipher {} ({}) \
+             violates recipient preferences",
+            babel::Fish(cipher), u8::from(cipher)));
     }
 
     let encryptor = Encryptor2::with_session_key(message, cipher, sk)?
