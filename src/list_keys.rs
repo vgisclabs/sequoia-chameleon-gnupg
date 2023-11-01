@@ -65,8 +65,12 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String], list_secret: bool)
                     overlay.cert_store.certd().map(|c| c.certd())
                 {
                     use openpgp::serialize::SerializeInto;
-                    certd.insert(
-                        trust_root.to_vec()?.into(), |new, _| Ok(new))?;
+                    if certd.get(&trust_root.fingerprint().to_string())?
+                        .is_none()
+                    {
+                        certd.insert(
+                            trust_root.to_vec()?.into(), |new, _| Ok(new))?;
+                    }
                 }
 
                 Some(trust_root.fingerprint())

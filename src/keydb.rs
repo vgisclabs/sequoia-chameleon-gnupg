@@ -20,7 +20,6 @@ use openpgp::{
     cert::raw::RawCertParser,
     crypto::hash::Digest,
     KeyHandle,
-    packet::Tag,
     packet::UserID,
     parse::Parse,
     serialize::SerializeInto,
@@ -693,49 +692,44 @@ impl<'store> Overlay<'store> {
     /// This is done during the insertion, while we hold the exclusive
     /// lock, so this is race free.
     fn load_trust_root(&self) -> Result<Cert> {
+        use fd_lock::RwLock;
+        use openpgp::serialize::Serialize;
+
         let certd = self.cert_store.certd()
             .ok_or_else(|| anyhow::anyhow!("No certd configured"))?;
         let certd = certd.certd();
 
-        // Fabricate a dummy packet header to appease the check in
-        // CertD::insert_special.
-        use openpgp::{
-            packet::header::*,
-            serialize::Marshal,
-        };
-        let mut dummy = Vec::with_capacity(32 + 2);
-        let h = Header::new(CTB::new(Tag::PublicKey),
-                            BodyLength::Full(32));
-        h.serialize(&mut dummy).unwrap();
-        dummy.extend_from_slice(&[0, 0, 0, 0, 0, 0, 0, 0,
-                                  0, 0, 0, 0, 0, 0, 0, 0,
-                                  0, 0, 0, 0, 0, 0, 0, 0,
-                                  0, 0, 0, 0, 0, 0, 0, 0]);
+        // Acquire an exclusive lock on the certd.
+        let lock_path = self.path.join("writelock");
+        // Open the lockfile for writing, and create it if it does not exist yet.
+        let mut lock_file = RwLock::new(std::fs::OpenOptions::new()
+            .write(true)
+            .create(true)
+            .open(&lock_path)?);
+        let exclusive_lock = lock_file.write()?;
 
-        let mut newly_generated = false;
-        let (_, trust_root) = certd.insert_special(
-            openpgp_cert_d::TRUST_ROOT,
-            dummy.into(),
-            |_, existing| {
-                if let Some(trust_root) = existing {
-                    Ok(trust_root)
-                } else {
-                    newly_generated = true;
-                    Self::generate_trust_root().map_err(Into::into)
-                }
-            })?;
-        let trust_root = Cert::from_bytes(&trust_root)?;
-
-        if newly_generated {
-            // Also insert the public bits into the certd for the WoT
-            // algorithm to find.
-            certd.insert(trust_root.to_vec()?.into(), |new, _| Ok(new))?;
+        if let Some((_, trust_root)) = certd.get(openpgp_cert_d::TRUST_ROOT)? {
+            return Ok(Cert::from_bytes(&trust_root)?);
         }
+
+        let mut trust_root_store = std::fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(self.path.join(openpgp_cert_d::TRUST_ROOT))?;
+
+        let trust_root = Self::generate_trust_root()?;
+        trust_root.as_tsk().serialize(&mut trust_root_store)?;
+        drop(trust_root_store);
+        drop(exclusive_lock);
+
+        // Also insert the public bits into the certd for the WoT
+        // algorithm to find.
+        certd.insert(trust_root.to_vec()?.into(), |new, _| Ok(new))?;
 
         Ok(trust_root)
     }
 
-    fn generate_trust_root() -> Result<openpgp_cert_d::Data> {
+    fn generate_trust_root() -> Result<Cert> {
         use openpgp::{
             cert::CertBuilder,
             packet::signature::SignatureBuilder,
@@ -759,8 +753,7 @@ impl<'store> Overlay<'store> {
                     .set_exportable_certification(false)?)?
             .generate()?;
 
-        let tsk = root.as_tsk();
-        Ok(tsk.to_vec()?.into())
+        Ok(root)
     }
 
     pub fn path(&self) -> &Path {
