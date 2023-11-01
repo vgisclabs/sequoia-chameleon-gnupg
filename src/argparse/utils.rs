@@ -147,7 +147,8 @@ pub fn parse_expiration(s: &str) -> Result<Option<time::Duration>> {
 }
 
 pub fn mailbox_from_userid(s: &str) -> Result<Option<String>> {
-    openpgp::packet::UserID::from(s).email()
+    openpgp::packet::UserID::from(s).email2()
+        .map(|o| o.map(ToString::to_string))
 }
 
 /// Returns the file descriptor if the given name is a special

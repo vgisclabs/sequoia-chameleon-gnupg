@@ -13,6 +13,7 @@ use openpgp::{
     serialize::{Serialize, SerializeInto, stream::*},
     types::*,
 };
+use openpgp::serialize::stream::Encryptor2 as Encryptor;
 
 use super::super::*;
 

@@ -14,7 +14,7 @@ use openpgp::{
         Serialize,
         SerializeInto,
         stream::{
-            Message, Encryptor, LiteralWriter,
+            Message, Encryptor2 as Encryptor, LiteralWriter,
         },
     },
     types::SymmetricAlgorithm,

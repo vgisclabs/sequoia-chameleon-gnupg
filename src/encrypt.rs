@@ -259,7 +259,7 @@ fn do_encrypt(config: &crate::Config, args: &[String],
         de_vs_compliant &= recipients.is_empty();
     }
 
-    let encryptor = Encryptor::with_session_key(message, cipher, sk)?
+    let encryptor = Encryptor2::with_session_key(message, cipher, sk)?
         .add_recipients(recipients);
 
     let mut message = encryptor.build()?;

@@ -172,7 +172,7 @@ fn parse_body<S: AsRef<str>>(body: &[u8], email_address: S)
         // method to maintain
         .filter(|cert| {cert.userids()
             .any(|uidb|
-                if let Ok(Some(a)) = uidb.userid().email() {
+                if let Ok(Some(a)) = uidb.userid().email2() {
                     a == email_address
                 } else { false })
         }).cloned().collect();
@@ -249,11 +249,11 @@ pub async fn get<S: AsRef<str>>(c: &reqwest::Client, email_address: S)
 fn get_cert_domains<'a>(domain: &'a str, cert: &ValidCert<'a>) -> impl Iterator<Item = Url> + 'a
 {
     cert.userids().filter_map(move |uidb| {
-        uidb.userid().email().unwrap_or(None).and_then(|addr| {
-            if EmailAddress::from(&addr).ok().map(|e| e.domain == domain)
+        uidb.userid().email2().unwrap_or(None).and_then(|addr| {
+            if EmailAddress::from(addr).ok().map(|e| e.domain == domain)
                 .unwrap_or(false)
             {
-                Url::from(&addr).ok()
+                Url::from(addr).ok()
             } else {
                 None
             }

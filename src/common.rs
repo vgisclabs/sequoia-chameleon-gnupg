@@ -316,7 +316,7 @@ impl Query {
         match self {
             Query::Key(h) | Query::ExactKey(h) =>
                 cert.keys().any(|k| k.key_handle().aliases(h)),
-            Query::Email(e) => cert.userids().any(|u| u.email().ok().flatten().as_ref() == Some(e)),
+            Query::Email(e) => cert.userids().any(|u| u.email2().ok().flatten() == Some(e.as_str())),
             Query::UserIDFragment(f) =>
                 cert.userids().any(|u| {
                     if let Ok(u) = std::str::from_utf8(u.value()) {
@@ -334,7 +334,7 @@ impl Query {
     pub fn matches_userid(&self, uid: &UserID) -> bool {
         match self {
             Query::Key(_) | Query::ExactKey(_) => false,
-            Query::Email(e) => uid.email().ok().flatten().as_ref() == Some(e),
+            Query::Email(e) => uid.email2().ok().flatten() == Some(e.as_str()),
             Query::UserIDFragment(f) =>
                 if let Ok(u) = std::str::from_utf8(uid.value()) {
                     u.to_lowercase().contains(f)

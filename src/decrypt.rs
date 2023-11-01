@@ -254,7 +254,8 @@ impl<'a, 'store> DHelper<'a, 'store> {
                             -> Result<Option<Fingerprint>>
         where D: FnMut(SymmetricAlgorithm, &SessionKey) -> bool
     {
-        let kek = agent.decrypt(&keypair, pkesk.esk()).await
+        let kek = agent.decrypt(&keypair, pkesk.esk(),
+                                sym_algo.and_then(|a| a.key_size().ok())).await
             .map_err(|e| {
                 // XXX: All errors here likely indicate that the key
                 // is not available.  But, there could be other

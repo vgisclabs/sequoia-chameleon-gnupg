@@ -404,18 +404,18 @@ async fn worker(config: &mut crate::Config<'_>) -> openpgp::Result<()> {
             t!("Checking for updates to {}!", fpr);
 
             // Get all of the valid, non-revoked email addresses.
-            let emails: Vec<String> = if akl_wkd {
+            let emails: Vec<_> = if akl_wkd {
                 match cert.with_policy(config.policy(), None)
                 {
                     Ok(vcert) => {
-                        let mut emails: Vec<String> = vcert.userids()
+                        let mut emails: Vec<_> = vcert.userids()
                             .filter_map(|ua| {
                                 if let RevocationStatus::Revoked(_)
                                     = ua.revocation_status()
                                 {
                                     None
                                 } else {
-                                    ua.userid().email().unwrap_or(None)
+                                    ua.userid().email2().unwrap_or(None)
                                 }
                             })
                             .collect();
