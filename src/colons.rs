@@ -181,8 +181,8 @@ impl Record {
                              expiration_date.map(|t| t.format("%s").to_string())
                              .unwrap_or_else(|| "".into()),
                              ownertrust,
-                             babel::Fish(primary_key_flags),
-                             babel::Fish(sum_key_flags).to_string().to_uppercase(),
+                             format!("{:#}", babel::Fish(primary_key_flags)),
+                             format!("{:#}", babel::Fish(sum_key_flags)).to_uppercase(),
                              if ownertrust.disabled() { "D" } else { "" },
                              token_sn.as_ref().map(ToString::to_string)
                              .unwrap_or_default(),
@@ -249,7 +249,7 @@ impl Record {
                              creation_date.format("%s"),
                              expiration_date.map(|t| t.format("%s").to_string())
                              .unwrap_or_else(|| "".into()),
-                             babel::Fish(key_flags),
+                             format!("{:#}", babel::Fish(key_flags)),
                              token_sn.as_ref().map(ToString::to_string)
                              .unwrap_or_default(),
                              curve.as_ref().map(|c| babel::Fish(c).to_string())

@@ -171,8 +171,13 @@ impl fmt::Display for Fish<CompressionAlgorithm> {
 
 impl fmt::Display for Fish<&KeyFlags> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        if self.0.for_storage_encryption()
-            || self.0.for_transport_encryption()
+        // We use the alternate flag to differentiate between
+        // displaying flags for key listing for machine-readable
+        // output (alternate on), and displaying flags for key listing
+        // for human consumption (alternate ff).
+        if f.alternate()
+            && (self.0.for_storage_encryption()
+                || self.0.for_transport_encryption())
         {
             f.write_str("e")?;
         }
@@ -183,6 +188,13 @@ impl fmt::Display for Fish<&KeyFlags> {
 
         if self.0.for_certification() {
             f.write_str("c")?;
+        }
+
+        if ! f.alternate()
+            && (self.0.for_storage_encryption()
+                || self.0.for_transport_encryption())
+        {
+            f.write_str("e")?;
         }
 
         if self.0.for_authentication() {
