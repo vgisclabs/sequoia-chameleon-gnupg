@@ -3,10 +3,21 @@
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: keybox '/HOMEDIR/pubring.kbx' created\\ngpg: /HOMEDIR/trustdb.gpg: trustdb created\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
         "\"--import\"",
         "\"/EXPERIMENT/cert\""
       ],
-      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: keybox '/HOMEDIR/pubring.kbx' created\\ngpg: /HOMEDIR/trustdb.gpg: trustdb created\\ngpg: key EABFBF70D00468C2: public key \"Alice Lovelace <alice@lovelace.name>\" imported\\ngpg: Total number processed: 1\\ngpg:               imported: 1\\n",
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: key EABFBF70D00468C2: public key \"Alice Lovelace <alice@lovelace.name>\" imported\\ngpg: Total number processed: 1\\ngpg:               imported: 1\\n",
       "stdout": "",
       "statusfd": "[GNUPG:] KEY_CONSIDERED CB56A713DFE6A10AA638F886EABFBF70D00468C2 0\\n[GNUPG:] IMPORTED EABFBF70D00468C2 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] IMPORT_OK 1 CB56A713DFE6A10AA638F886EABFBF70D00468C2\\n[GNUPG:] IMPORT_RES 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0\\n",
       "status": "exit status: 0",
@@ -29,7 +40,7 @@
       "statusfd": "[GNUPG:] KEY_CONSIDERED CB56A713DFE6A10AA638F886EABFBF70D00468C2 0\\n[GNUPG:] KEY_CONSIDERED CB56A713DFE6A10AA638F886EABFBF70D00468C2 0\\n[GNUPG:] BEGIN_ENCRYPTION 2 9\\n[GNUPG:] END_ENCRYPTION\\n",
       "status": "exit status: 0",
       "files": {
-        "ciphertext": "\\x84\\xC2\\x03J\\xE4\\x9F\\xF4s\\xBB\\xE6\\x99\\x12\\x04#\\x04\\x01\\xD8E\\xD7\\xEF\\x93\\xFD\\x885p\\xCB\\x1C\\x90\\xC7\\xC6\\xC8t\\x10\\x9A\\x02\\x17\\xA7\\x0F\\x99\\xC4\\r`\\x8AP-\\x8E\\x00\\x10D\\xE7\\xFF\\xB7\\x84\\x97\\x99\\x01\\xB1`\\x03$w\\x97\\x83\\xDD\\xFE\\x91h\\xBE5\\x19\"\\x89Г\\xE7~^Hu\\xEBd\\x01EH\\xD3MeĢ\\xA2D+\\xB7(\\xE5\\x9C\\xDFV\\xB7\\xBD\\xBB\\xDD\\xE3K\\xA4\\xF3#.\\xE1\\t$\\x90\\xC3\\xCB#\\xDCRqG\\x92\\xD6\\x0EC\\x10C\\x97\\x14\\txl\\x8F\\xF3\\xE5\\x8E\\xD1{\\x84ZDC\\xA9\\x87R\\xBB\\x11\\x8D\\xD70D,D\\xC9hC\\xCD\\r[\\xEC\\xBETn\\x9C\\xFEn\\xC8\\xCEO\\xB8\\xAE\\xB8\\x89\\x9E\\xFE\\x8E\\x1FK\\xD5\\xE1\\xB6݂/\\x12\\xD3\\x16\\xF2\\x1B\\x8Alb\\xA7^H\\xFE\\x9C\\x8B\\xD2@\\x01\\x8E\\x14D_\\xA4\\x83\\xC9#\\x8D.۸}\\x04\\xDB\\xFAOP\\x88\\xC9r\\x08\\xF6\\xE1\\x1E\\xE6-\\xFC,[8\\x9DA\\xB7\\x8A\\x88\\xC6bN\\x7F\\xB3\\xB9e\\xA3Y\\xE8= 4\\x05l\\xFA\\x94\\xF2\\x92\\xA7';\\xA5\\xFB\\x92\"["
+        "ciphertext": "\\x84\\xC2\\x03J\\xE4\\x9F\\xF4s\\xBB\\xE6\\x99\\x12\\x04#\\x04\\x01\\xCE&z8\\xC4\\xF91\\xC3\\xDA\\xDDuʔ\\xB0v\\xC4\\xF5O\\x988\\xAB4\\xFB\\xA3\\x12\\xC1+V\\xAB1\\xA0`\\xA5q\\xF2\\x87\\xEB\\xFEa:\\xA7\\x1Cn\\xB8\\x94\\xAE\\x91\\xE5\\x99&\\xD8\\x1A\\xC2\\xDF\\xF2i\\xA4^\\xB7p\\xC2\\xF3\\xA1\\x06\\x07\\x00n\\xA83\\x153B\\xA0\\xF3\\xCF1=0P\\xEA\\x91\\x04\\xA5\\x04\\x1Fn\\xE5\\x04<\\xC8\\xE9\\x96`>ұ\\xD0\\xFC\\xC0H\\xEAT#r\\xB3`\\xF7\\xAE\\x9B\\xB3\\x83\\x882R\\xB2ǡ\\xB9\\x9E\\xFEh2\\x1AO\\xF2v\\x99\\xF69ҥ0\\x8D͚\\x12\\xCC\\xED:\\xBB\\xF1\\xFE\\xCC~F\\x03t\"\\xD8F\\x8Eqh\\xEE\\xC0H\\xA7S\\x0C\\x82\\x17e\\x18$}\\xC2M=\\x9FZV\\x98\\xAD|\\\\\\x854\\x8B\\x05\\xC2\\xD2@\\x01\\x93\\x91\\xA58\\xA8]\\xD1>ۏ\\xE9\\xCBF.\\x9Ab\\xF5\\xB2\\x8FȻ\\xFF\\xE1v8\\xE9%\\x12\\xD6O\\xD6Q\\xFD\\x9A·z\\xF8\\xCEo\\x9E\\x9A[P\\xE4-\\xD5*Gu\\xF8{\\xBB\\xA7\\x1Fڮwx\\xEEV\\xFE\\xEB"
       }
     },
     {
@@ -81,6 +92,17 @@
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
         "\"--import\"",
         "\"/EXPERIMENT/cert\""
       ],
@@ -107,7 +129,7 @@
       "statusfd": "[GNUPG:] KEY_CONSIDERED CB56A713DFE6A10AA638F886EABFBF70D00468C2 0\\n[GNUPG:] KEY_CONSIDERED CB56A713DFE6A10AA638F886EABFBF70D00468C2 0\\n[GNUPG:] BEGIN_ENCRYPTION 2 9\\n[GNUPG:] END_ENCRYPTION\\n",
       "status": "exit status: 0",
       "files": {
-        "ciphertext": "\\xC1\\xC0\\x02\\x03J\\xE4\\x9F\\xF4s\\xBB\\xE6\\x99\\x12\\x04#\\x04\\x01\\x1Ev\\xA8\\x0E,f\\x95G\\xEF\\xCBt\\x1E\\x8C7\\xE1\\xDC\\xF8\\xAC\\xE7\\xEBڶUJR\\x8E\\xBE\\x0BfV\\x90`\\x98\\xE0\\xBF0\\x8AŖH\\x8D\\xFD\\x91\\x88+\\xDB\\x1A\\xE0\\xD5\\xDA\\x1CVUQ\\xB3\"\\x15w\\xD7;\\x16T\\xBFD\\xC5\\x01^\\xBF\\xB8>\\x18\\x17Ȝg\\xD5\\xDA\\x83\\xFE\\xA4\\xDE8ӊ\"\\xBB_\\xE0 .Q:\\x00=\\xF7\\x9E\\xA5\\x1B\\x99\\x1F\\xAB\\x02\\xA5\\xF4\\xD1\\xE8\\xEDf\\xCAF\\xF8\\x91\\xC0\\x8E{\\r\\x02\\x83\\r\\xA1ܵ-˥^\\xFF>p\\x18\\xD30qթ\\x84H\\xEFuX\\xD6NU\\xB8\\xC4\\x14\\xBB\\xD9\\xD5\\xD5\\xE6\\x1C`}~$\\x88\\xE2\\x92\\xF4\\xA7¶\\x1A\\x08\\x90\\x8A\\xEB\\x1C\\xE9$\\x02?mҝb\"\\xBCF\\xD2:\\x01\\x94\\xB8\\\\\\x0BT\\xF5\\xB5\\xA9\\x19ۈ\\x9BS\\xB9\\xED,\\xE6'\\xB3\\xA9;\\x08\\x8E/\\x13\\x02R\\xC9`\\xC6\\xFB\\xF5\\x88{C\"\\xDC\\x08\\xCD$\\xEC\\xDB\\x8EU\\x91\\x94\\xB8u\\x8E\\xE4\\xCDC`\\xD4z\\x85\\x8D"
+        "ciphertext": "\\xC1\\xC0\\x02\\x03J\\xE4\\x9F\\xF4s\\xBB\\xE6\\x99\\x12\\x04#\\x04\\x01\\xF0\\xC7SRB\\xF9\\xFB\\x1E\\x1E\\xF9\\x1E3\\xCA\\x15\\xBC\\x01\\x11Q#\\xC9\\xE1\\x9C84\\x17˘|\\x8C<mqK\\xE0\\xCE߹1\\x87!]\\x92\\xF0\\xB8(W\\x9F\\x0C\\xBC\\x08vFh\\x89tb1\\x0Bo\\xB73Uk8<\\x00BT\\x95nyL*\\x8F'Ɣ\\x82\\x9C5\\x08\\xB1\\xED\\xCA\\x8E\\xD10\\x8A?\\x10\\xEA!\\xC8\\xE6;ø\\xFD\\xC1\\x9A\\xE4\\x02E\\xCE\\xE1\\x06\\x87\\x91\\x9C\\x1A\\x06\\x19!!\\xFD\\xACGA\\xA4S\\xDEUB\\xEF~\\x86\\xE2i\\xB2\\xF5(0\\xBD-R\\xC1\\x90\\x1D\\x1E\\xC7}\\xEB\\n\\xE6\\xF7F\\x8BB\\xDE\\xF1\\xE1\\xC7J\\xAA!v\\xE3\\xC5\\x7F\\t\\xC1S\\xB8N5ٰ\\x05\\x9FZ\\xEC\\\\\\xD1\\xCE^T\\x87\\x1C\\xB5\\xCF\\xD2:\\x015\\x99\\xE7\\x1EJ\\x10X\\x9B\\xC5\\xEE5\\x8Fr\\x8E\\xA8\\xBD\\xFE\\xD0Bc!\\x91g\\n\\x1D\\x1F\\xFFB:\\xB6‍\\xD1\\x1A8u\\xC1\\x999\\x9D\\x13M4d\\xF1\\x1AO\\xD5\\xE8\\x84\\xF9\\xC1\\x9E\\xE9\\x1FP"
       }
     },
     {
@@ -162,6 +184,11 @@
     [
       0,
       86,
+      0
+    ],
+    [
+      0,
+      0,
       0
     ],
     [

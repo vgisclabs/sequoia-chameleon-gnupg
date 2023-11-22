@@ -26,33 +26,11 @@
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--list-keys\""
-      ],
-      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "",
-      "statusfd": "",
-      "status": "exit status: 0",
-      "files": {}
-    },
-    {
-      "args": [
-        "\"--faked-system-time=1671553073!\"",
         "\"--list-packets\"",
         "\"/EXPERIMENT/packets\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "# off=0 ctb=ca tag=10 hlen=6 plen=3 new-ctb\\n:marker packet: PGP\\n",
-      "statusfd": "",
-      "status": "exit status: 0",
-      "files": {}
-    },
-    {
-      "args": [
-        "\"--faked-system-time=1671553073!\"",
-        "\"--list-keys\""
-      ],
-      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "",
       "statusfd": "",
       "status": "exit status: 0",
       "files": {}
@@ -72,33 +50,11 @@
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--list-keys\""
-      ],
-      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "",
-      "statusfd": "",
-      "status": "exit status: 0",
-      "files": {}
-    },
-    {
-      "args": [
-        "\"--faked-system-time=1671553073!\"",
         "\"--list-packets\"",
         "\"/EXPERIMENT/packets\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "# off=0 ctb=a9 tag=10 hlen=3 plen=3\\n:marker packet: PGP\\n",
-      "statusfd": "",
-      "status": "exit status: 0",
-      "files": {}
-    },
-    {
-      "args": [
-        "\"--faked-system-time=1671553073!\"",
-        "\"--list-keys\""
-      ],
-      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "",
       "statusfd": "",
       "status": "exit status: 0",
       "files": {}
@@ -143,33 +99,11 @@
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--list-keys\""
-      ],
-      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "",
-      "statusfd": "",
-      "status": "exit status: 0",
-      "files": {}
-    },
-    {
-      "args": [
-        "\"--faked-system-time=1671553073!\"",
         "\"--list-packets\"",
         "\"/EXPERIMENT/packets\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "# off=0 ctb=ca tag=10 hlen=6 plen=3 new-ctb\\n:marker packet: PGP\\n",
-      "statusfd": "",
-      "status": "exit status: 0",
-      "files": {}
-    },
-    {
-      "args": [
-        "\"--faked-system-time=1671553073!\"",
-        "\"--list-keys\""
-      ],
-      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "",
       "statusfd": "",
       "status": "exit status: 0",
       "files": {}
@@ -189,33 +123,11 @@
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--list-keys\""
-      ],
-      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "",
-      "statusfd": "",
-      "status": "exit status: 0",
-      "files": {}
-    },
-    {
-      "args": [
-        "\"--faked-system-time=1671553073!\"",
         "\"--list-packets\"",
         "\"/EXPERIMENT/packets\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "# off=0 ctb=a9 tag=10 hlen=3 plen=3\\n:marker packet: PGP\\n",
-      "statusfd": "",
-      "status": "exit status: 0",
-      "files": {}
-    },
-    {
-      "args": [
-        "\"--faked-system-time=1671553073!\"",
-        "\"--list-keys\""
-      ],
-      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "",
       "statusfd": "",
       "status": "exit status: 0",
       "files": {}
@@ -238,26 +150,6 @@
     [
       0,
       86,
-      0
-    ],
-    [
-      0,
-      0,
-      0
-    ],
-    [
-      0,
-      0,
-      0
-    ],
-    [
-      0,
-      0,
-      0
-    ],
-    [
-      0,
-      0,
       0
     ],
     [

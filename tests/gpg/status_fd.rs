@@ -40,7 +40,7 @@ fn untrusted_certificate_prompt() -> Result<()> {
         &experiment.store("cert", &cert.to_vec()?)?,
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(0, 110);
+    diff.assert_equal_up_to(0, 0);
 
     let diff = experiment.invoke(&[
         "--command-fd=0",

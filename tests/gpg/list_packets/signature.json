@@ -26,33 +26,11 @@
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--list-keys\""
-      ],
-      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "",
-      "statusfd": "",
-      "status": "exit status: 0",
-      "files": {}
-    },
-    {
-      "args": [
-        "\"--faked-system-time=1671553073!\"",
         "\"--list-packets\"",
         "\"/EXPERIMENT/packets\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "# off=0 ctb=c2 tag=2 hlen=2 plen=189 new-ctb\\n:signature packet: algo 22, keyid 5A952C2DAF4CDA5E\\n\\tversion 4, created 1688059415, md5len 0, sigclass 0x01\\n\\tdigest algo 10, begin of digest 4c 8e\\n\\tcritical hashed subpkt 2 len 4 (sig created 2023-06-29)\\n\\thashed subpkt 16 len 8 (issuer key ID 5A952C2DAF4CDA5E)\\n\\thashed subpkt 20 len 70 (notation: salt@notations.sequoia-pgp.org=[not human readable])\\n\\thashed subpkt 33 len 21 (issuer fpr v4 3F945183AD4972449C31B1455A952C2DAF4CDA5E)\\n\\tdata: [256 bits]\\n\\tdata: [256 bits]\\n",
-      "statusfd": "",
-      "status": "exit status: 0",
-      "files": {}
-    },
-    {
-      "args": [
-        "\"--faked-system-time=1671553073!\"",
-        "\"--list-keys\""
-      ],
-      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "",
       "statusfd": "",
       "status": "exit status: 0",
       "files": {}
@@ -97,33 +75,11 @@
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--list-keys\""
-      ],
-      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "",
-      "statusfd": "",
-      "status": "exit status: 0",
-      "files": {}
-    },
-    {
-      "args": [
-        "\"--faked-system-time=1671553073!\"",
         "\"--list-packets\"",
         "\"/EXPERIMENT/packets\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "# off=0 ctb=c2 tag=2 hlen=2 plen=189 new-ctb\\n:signature packet: algo 22, keyid 5A952C2DAF4CDA5E\\n\\tversion 4, created 1688059415, md5len 0, sigclass 0x01\\n\\tdigest algo 10, begin of digest 4c 8e\\n\\tcritical hashed subpkt 2 len 4 (sig created 2023-06-29)\\n\\thashed subpkt 16 len 8 (issuer key ID 5A952C2DAF4CDA5E)\\n\\thashed subpkt 20 len 70 (notation: salt@notations.sequoia-pgp.org=[not human readable])\\n\\thashed subpkt 33 len 21 (issuer fpr v4 3F945183AD4972449C31B1455A952C2DAF4CDA5E)\\n\\tdata: [256 bits]\\n\\tdata: [256 bits]\\n",
-      "statusfd": "",
-      "status": "exit status: 0",
-      "files": {}
-    },
-    {
-      "args": [
-        "\"--faked-system-time=1671553073!\"",
-        "\"--list-keys\""
-      ],
-      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "",
       "statusfd": "",
       "status": "exit status: 0",
       "files": {}
@@ -150,16 +106,6 @@
     [
       0,
       86,
-      0
-    ],
-    [
-      0,
-      0,
-      0
-    ],
-    [
-      0,
-      0,
       0
     ],
     [

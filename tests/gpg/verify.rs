@@ -538,11 +538,6 @@ fn test_detached_sig_with<'a>(experiment: &mut Experiment,
     // once, and we can only test the failures related to the missing
     // key before we import it.
     if pristine_experiment {
-        // Create the keyring stores.  Reduces the noise in the upcoming
-        // experiments.
-        let diff = experiment.invoke(&["--list-keys"])?;
-        diff.assert_success();
-
         // First without the cert.
         let diff = experiment.invoke(&args_good)?;
         diff.assert_failure();

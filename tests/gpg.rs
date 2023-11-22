@@ -646,7 +646,7 @@ impl Experiment {
         let artifacts =
             ArtifactStore::load(&artifacts_store).unwrap_or_default();
 
-        Ok(Experiment {
+        let mut e = Experiment {
             wd: tempfile::tempdir()?,
             log: Default::default(),
             artifacts,
@@ -654,7 +654,12 @@ impl Experiment {
             oracle: Context::gnupg()?,
             us: Context::chameleon()?,
             canonicalizations: Default::default(),
-        })
+        };
+        // Create the keyring stores.  Reduces the noise in the
+        // upcoming experiments.
+        e.invoke(&["--list-keys"])?.assert_success();
+
+        Ok(e)
     }
 
     /// Creates or loads an artifact for the experiment.

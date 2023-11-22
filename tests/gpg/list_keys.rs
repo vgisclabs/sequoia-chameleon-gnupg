@@ -24,7 +24,7 @@ fn empty() -> Result<()> {
         "--list-keys",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(0, 100);
+    diff.assert_equal_up_to(0, 0);
 
     let diff = experiment.invoke(&[
         "--list-keys",
@@ -80,11 +80,6 @@ fn queries() -> Result<()> {
             .map(|(cert, _rev)| cert),
         |a, f| a.as_tsk().serialize(f),
         |b| Cert::from_bytes(&b))?;
-
-    // Create the keyring stores.  Reduces the noise in the upcoming
-    // experiments.
-    let diff = experiment.invoke(&["--list-keys"])?;
-    diff.assert_success();
 
     let diff = experiment.invoke(&[
         "--import",
@@ -297,7 +292,7 @@ fn disabled() -> Result<()> {
         &experiment.store("cert", &cert.to_vec()?)?,
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(0, 140);
+    diff.assert_equal_up_to(0, 0);
 
     let diff = experiment.invoke(&[
         "--import-ownertrust",

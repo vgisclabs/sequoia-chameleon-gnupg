@@ -92,9 +92,6 @@ fn no_encryption_subkey() -> Result<()> {
 #[ntest::timeout(600000)]
 fn recipient_file() -> Result<()> {
     let mut experiment = make_experiment!()?;
-    // Create the keyring stores.  Reduces the noise in the upcoming
-    // experiments.
-    experiment.invoke(&["--list-keys"])?.assert_success();
 
     let cert = experiment.artifact(
         "cert",
@@ -133,7 +130,7 @@ fn test_key(cert: Cert, mut experiment: Experiment, expect_success: bool)
         &experiment.store("cert", &cert.to_vec()?)?,
     ])?;
     diff.assert_success();
-    diff.assert_limits(0, 110, 0);
+    diff.assert_limits(0, 0, 0);
 
     let diff = experiment.invoke(&[
         "--no-auto-key-locate",
@@ -194,9 +191,6 @@ fn test_decryption(cert: Cert,
 #[test]
 fn fingerprint_recipient() -> Result<()> {
     let mut experiment = make_experiment!()?;
-    // Create the keyring stores.  Reduces the noise in the upcoming
-    // experiments.
-    experiment.invoke(&["--list-keys"])?.assert_success();
 
     let cert = experiment.artifact(
         "cert",

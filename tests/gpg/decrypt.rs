@@ -56,9 +56,6 @@ fn symmetric_twofish() -> Result<()> {
 
 fn symmetric(algo: SymmetricAlgorithm) -> Result<()> {
     let mut experiment = make_experiment!(algo.to_string())?;
-    // Create the keyring stores.  Reduces the noise in the upcoming
-    // experiments.
-    experiment.invoke(&["--list-keys"])?.assert_success();
 
     let sk = SessionKey::from(vec![64; algo.key_size()?]);
     let ciphertext = experiment.artifact(
@@ -247,7 +244,7 @@ fn test_key(cert: Cert, ciphertext: Vec<u8>, mut experiment: Experiment)
         "--decrypt",
         &experiment.store("ciphertext", &ciphertext)?,
     ])?;
-    diff.assert_limits(0, 60, 0);
+    diff.assert_limits(0, 0, 0);
 
     let diff = experiment.invoke(&[
         "--decrypt",
@@ -277,7 +274,7 @@ fn test_key(cert: Cert, ciphertext: Vec<u8>, mut experiment: Experiment)
         &experiment.store("cert", &cert.to_vec()?)?,
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(0, 60);
+    diff.assert_equal_up_to(0, 0);
 
     let diff = experiment.invoke(&[
         "--decrypt",

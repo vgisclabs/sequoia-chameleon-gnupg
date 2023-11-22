@@ -27,17 +27,6 @@
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--list-keys\""
-      ],
-      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "",
-      "statusfd": "",
-      "status": "exit status: 0",
-      "files": {}
-    },
-    {
-      "args": [
-        "\"--faked-system-time=1671553073!\"",
         "\"--list-packets\"",
         "\"--override-session-key=7:40404040404040404040404040404040\"",
         "\"/EXPERIMENT/packets\""
@@ -57,17 +46,6 @@
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: key E4846579CF6EACD4: public key \"Alice Lovelace <alice@lovelace.name>\" imported\\ngpg: key E4846579CF6EACD4: secret key imported\\ngpg: Total number processed: 1\\ngpg:               imported: 1\\ngpg:       secret keys read: 1\\ngpg:   secret keys imported: 1\\n",
       "stdout": "",
       "statusfd": "[GNUPG:] KEY_CONSIDERED 5F722676B85215EDC7495C8DE4846579CF6EACD4 0\\n[GNUPG:] IMPORTED E4846579CF6EACD4 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] IMPORT_OK 1 5F722676B85215EDC7495C8DE4846579CF6EACD4\\n[GNUPG:] KEY_CONSIDERED 5F722676B85215EDC7495C8DE4846579CF6EACD4 0\\n[GNUPG:] IMPORT_OK 17 5F722676B85215EDC7495C8DE4846579CF6EACD4\\n[GNUPG:] IMPORT_RES 1 0 1 0 0 0 0 0 0 1 1 0 0 0 0\\n",
-      "status": "exit status: 0",
-      "files": {}
-    },
-    {
-      "args": [
-        "\"--faked-system-time=1671553073!\"",
-        "\"--list-keys\""
-      ],
-      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "/HOMEDIR/pubring.kbx\\n--------------------\\npub   ed25519 2022-12-20 [C]\\n      5F722676B85215EDC7495C8DE4846579CF6EACD4\\nuid           [ unknown] Alice Lovelace <alice@lovelace.name>\\nsub   cv25519 2022-12-20 [E]\\n\\n",
-      "statusfd": "",
       "status": "exit status: 0",
       "files": {}
     },
@@ -112,17 +90,6 @@
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--list-keys\""
-      ],
-      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "",
-      "statusfd": "",
-      "status": "exit status: 0",
-      "files": {}
-    },
-    {
-      "args": [
-        "\"--faked-system-time=1671553073!\"",
         "\"--list-packets\"",
         "\"--override-session-key=7:40404040404040404040404040404040\"",
         "\"/EXPERIMENT/packets\""
@@ -142,17 +109,6 @@
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: key E4846579CF6EACD4: public key \"Alice Lovelace <alice@lovelace.name>\" imported\\ngpg: key E4846579CF6EACD4: secret key imported\\ngpg: Total number processed: 1\\ngpg:               imported: 1\\ngpg:       secret keys read: 1\\ngpg:   secret keys imported: 1\\n",
       "stdout": "",
       "statusfd": "[GNUPG:] KEY_CONSIDERED 5F722676B85215EDC7495C8DE4846579CF6EACD4 0\\n[GNUPG:] IMPORTED E4846579CF6EACD4 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] IMPORT_OK 1 5F722676B85215EDC7495C8DE4846579CF6EACD4\\n[GNUPG:] IMPORT_OK 17 5F722676B85215EDC7495C8DE4846579CF6EACD4\\n[GNUPG:] IMPORT_RES 1 0 1 0 0 0 0 0 0 1 1 0 0 0 0\\n",
-      "status": "exit status: 0",
-      "files": {}
-    },
-    {
-      "args": [
-        "\"--faked-system-time=1671553073!\"",
-        "\"--list-keys\""
-      ],
-      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   ed25519 2022-12-20 [C]\\n      5F722676B85215EDC7495C8DE4846579CF6EACD4\\nuid           [ unknown] Alice Lovelace <alice@lovelace.name>\\nsub   cv25519 2022-12-20 [E]\\n\\n",
-      "statusfd": "",
       "status": "exit status: 0",
       "files": {}
     },
@@ -186,11 +142,6 @@
       0
     ],
     [
-      0,
-      0,
-      0
-    ],
-    [
       4,
       0,
       0
@@ -199,11 +150,6 @@
       0,
       0,
       67
-    ],
-    [
-      1,
-      0,
-      0
     ],
     [
       4,

@@ -684,10 +684,6 @@ fn list_packets_(experiment: &mut Experiment,
                  statusfd_slack: usize,
                  p: Vec<u8>) -> Result<()>
 {
-    // Create the keyring stores.  Reduces the noise in the upcoming
-    // experiments.
-    experiment.invoke(&["--list-keys"])?.assert_success();
-
     let mut args = vec![
         "--list-packets",
     ];

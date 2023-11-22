@@ -26,33 +26,11 @@
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--list-keys\""
-      ],
-      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "",
-      "statusfd": "",
-      "status": "exit status: 0",
-      "files": {}
-    },
-    {
-      "args": [
-        "\"--faked-system-time=1671553073!\"",
         "\"--list-packets\"",
         "\"/EXPERIMENT/packets\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "# off=0 ctb=c5 tag=5 hlen=3 plen=1368 new-ctb\\n:secret key packet:\\n\\tversion 4, algo 1, created 1671553073, expires 0\\n\\tpkey[0]: [3072 bits]\\n\\tpkey[1]: [17 bits]\\n\\tskey[2]: [3067 bits]\\n\\tskey[3]: [1536 bits]\\n\\tskey[4]: [1536 bits]\\n\\tskey[5]: [1534 bits]\\n\\tchecksum: e089\\n\\tkeyid: 98D8E642BD5E21E5\\n# off=1371 ctb=c2 tag=2 hlen=3 plen=527 new-ctb\\n:signature packet: algo 1, keyid 98D8E642BD5E21E5\\n\\tversion 4, created 1671553073, md5len 0, sigclass 0x1f\\n\\tdigest algo 10, begin of digest 58 2e\\n\\tcritical hashed subpkt 2 len 4 (sig created 2022-12-20)\\n\\tcritical hashed subpkt 9 len 4 (key expires after 2y362d0h0m)\\n\\thashed subpkt 11 len 2 (pref-sym-algos: 9 7)\\n\\thashed subpkt 16 len 8 (issuer key ID 98D8E642BD5E21E5)\\n\\thashed subpkt 20 len 70 (notation: salt@notations.sequoia-pgp.org=[not human readable])\\n\\thashed subpkt 21 len 2 (pref-hash-algos: 10 8)\\n\\tcritical hashed subpkt 27 len 1 (key flags: 01)\\n\\thashed subpkt 30 len 1 (features: 01)\\n\\thashed subpkt 33 len 21 (issuer fpr v4 38952816D13D8CA6BED32FBB98D8E642BD5E21E5)\\n\\tdata: [3068 bits]\\n# off=1901 ctb=cd tag=13 hlen=2 plen=36 new-ctb\\n:user ID packet: \"Alice Lovelace <alice@lovelace.name>\"\\n# off=1939 ctb=c2 tag=2 hlen=3 plen=530 new-ctb\\n:signature packet: algo 1, keyid 98D8E642BD5E21E5\\n\\tversion 4, created 1671553073, md5len 0, sigclass 0x13\\n\\tdigest algo 10, begin of digest 33 bf\\n\\tcritical hashed subpkt 2 len 4 (sig created 2022-12-20)\\n\\tcritical hashed subpkt 9 len 4 (key expires after 2y362d0h0m)\\n\\thashed subpkt 11 len 2 (pref-sym-algos: 9 7)\\n\\thashed subpkt 16 len 8 (issuer key ID 98D8E642BD5E21E5)\\n\\thashed subpkt 20 len 70 (notation: salt@notations.sequoia-pgp.org=[not human readable])\\n\\thashed subpkt 21 len 2 (pref-hash-algos: 10 8)\\n\\tcritical hashed subpkt 25 len 1 (primary user ID)\\n\\tcritical hashed subpkt 27 len 1 (key flags: 01)\\n\\thashed subpkt 30 len 1 (features: 01)\\n\\thashed subpkt 33 len 21 (issuer fpr v4 38952816D13D8CA6BED32FBB98D8E642BD5E21E5)\\n\\tdata: [3070 bits]\\n# off=2472 ctb=c7 tag=7 hlen=3 plen=1368 new-ctb\\n:secret sub key packet:\\n\\tversion 4, algo 1, created 1671553073, expires 0\\n\\tpkey[0]: [3072 bits]\\n\\tpkey[1]: [17 bits]\\n\\tskey[2]: [3071 bits]\\n\\tskey[3]: [1536 bits]\\n\\tskey[4]: [1536 bits]\\n\\tskey[5]: [1536 bits]\\n\\tchecksum: e243\\n\\tkeyid: B3A8A8515DF4036E\\n# off=3843 ctb=c2 tag=2 hlen=3 plen=516 new-ctb\\n:signature packet: algo 1, keyid 98D8E642BD5E21E5\\n\\tversion 4, created 1671553073, md5len 0, sigclass 0x18\\n\\tdigest algo 10, begin of digest 47 ec\\n\\tcritical hashed subpkt 2 len 4 (sig created 2022-12-20)\\n\\tcritical hashed subpkt 9 len 4 (key expires after 2y362d0h0m)\\n\\thashed subpkt 16 len 8 (issuer key ID 98D8E642BD5E21E5)\\n\\thashed subpkt 20 len 70 (notation: salt@notations.sequoia-pgp.org=[not human readable])\\n\\tcritical hashed subpkt 27 len 1 (key flags: 0C)\\n\\thashed subpkt 33 len 21 (issuer fpr v4 38952816D13D8CA6BED32FBB98D8E642BD5E21E5)\\n\\tdata: [3069 bits]\\n# off=4362 ctb=c7 tag=7 hlen=3 plen=1368 new-ctb\\n:secret sub key packet:\\n\\tversion 4, algo 1, created 1671553073, expires 0\\n\\tpkey[0]: [3072 bits]\\n\\tpkey[1]: [17 bits]\\n\\tskey[2]: [3069 bits]\\n\\tskey[3]: [1536 bits]\\n\\tskey[4]: [1536 bits]\\n\\tskey[5]: [1535 bits]\\n\\tchecksum: c826\\n\\tkeyid: 0D654BB15C264793\\n# off=5733 ctb=c2 tag=2 hlen=3 plen=1026 new-ctb\\n:signature packet: algo 1, keyid 98D8E642BD5E21E5\\n\\tversion 4, created 1671553073, md5len 0, sigclass 0x18\\n\\tdigest algo 10, begin of digest 3e cc\\n\\tcritical hashed subpkt 2 len 4 (sig created 2022-12-20)\\n\\tcritical hashed subpkt 9 len 4 (key expires after 2y362d0h0m)\\n\\thashed subpkt 16 len 8 (issuer key ID 98D8E642BD5E21E5)\\n\\thashed subpkt 20 len 70 (notation: salt@notations.sequoia-pgp.org=[not human readable])\\n\\tcritical hashed subpkt 27 len 1 (key flags: 02)\\n\\tcritical hashed subpkt 32 len 507 (signature: v4, class 0x19, algo 1, digest algo 10)\\n\\thashed subpkt 33 len 21 (issuer fpr v4 38952816D13D8CA6BED32FBB98D8E642BD5E21E5)\\n\\tdata: [3071 bits]\\n",
-      "statusfd": "",
-      "status": "exit status: 0",
-      "files": {}
-    },
-    {
-      "args": [
-        "\"--faked-system-time=1671553073!\"",
-        "\"--list-keys\""
-      ],
-      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "",
       "statusfd": "",
       "status": "exit status: 0",
       "files": {}
@@ -97,33 +75,11 @@
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
-        "\"--list-keys\""
-      ],
-      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "",
-      "statusfd": "",
-      "status": "exit status: 0",
-      "files": {}
-    },
-    {
-      "args": [
-        "\"--faked-system-time=1671553073!\"",
         "\"--list-packets\"",
         "\"/EXPERIMENT/packets\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "# off=0 ctb=c5 tag=5 hlen=3 plen=1368 new-ctb\\n:secret key packet:\\n\\tversion 4, algo 1, created 1671553073, expires 0\\n\\tpkey[0]: [3072 bits]\\n\\tpkey[1]: [17 bits]\\n\\tskey[2]: [3067 bits]\\n\\tskey[3]: [1536 bits]\\n\\tskey[4]: [1536 bits]\\n\\tskey[5]: [1534 bits]\\n\\tchecksum: e089\\n\\tkeyid: 98D8E642BD5E21E5\\n# off=1371 ctb=c2 tag=2 hlen=3 plen=527 new-ctb\\n:signature packet: algo 1, keyid 98D8E642BD5E21E5\\n\\tversion 4, created 1671553073, md5len 0, sigclass 0x1f\\n\\tdigest algo 10, begin of digest 58 2e\\n\\tcritical hashed subpkt 2 len 4 (sig created 2022-12-20)\\n\\tcritical hashed subpkt 9 len 4 (key expires after 2y362d0h0m)\\n\\thashed subpkt 11 len 2 (pref-sym-algos: 9 7)\\n\\thashed subpkt 16 len 8 (issuer key ID 98D8E642BD5E21E5)\\n\\thashed subpkt 20 len 70 (notation: salt@notations.sequoia-pgp.org=[not human readable])\\n\\thashed subpkt 21 len 2 (pref-hash-algos: 10 8)\\n\\tcritical hashed subpkt 27 len 1 (key flags: 01)\\n\\thashed subpkt 30 len 1 (features: 01)\\n\\thashed subpkt 33 len 21 (issuer fpr v4 38952816D13D8CA6BED32FBB98D8E642BD5E21E5)\\n\\tdata: [3068 bits]\\n# off=1901 ctb=cd tag=13 hlen=2 plen=36 new-ctb\\n:user ID packet: \"Alice Lovelace <alice@lovelace.name>\"\\n# off=1939 ctb=c2 tag=2 hlen=3 plen=530 new-ctb\\n:signature packet: algo 1, keyid 98D8E642BD5E21E5\\n\\tversion 4, created 1671553073, md5len 0, sigclass 0x13\\n\\tdigest algo 10, begin of digest 33 bf\\n\\tcritical hashed subpkt 2 len 4 (sig created 2022-12-20)\\n\\tcritical hashed subpkt 9 len 4 (key expires after 2y362d0h0m)\\n\\thashed subpkt 11 len 2 (pref-sym-algos: 9 7)\\n\\thashed subpkt 16 len 8 (issuer key ID 98D8E642BD5E21E5)\\n\\thashed subpkt 20 len 70 (notation: salt@notations.sequoia-pgp.org=[not human readable])\\n\\thashed subpkt 21 len 2 (pref-hash-algos: 10 8)\\n\\tcritical hashed subpkt 25 len 1 (primary user ID)\\n\\tcritical hashed subpkt 27 len 1 (key flags: 01)\\n\\thashed subpkt 30 len 1 (features: 01)\\n\\thashed subpkt 33 len 21 (issuer fpr v4 38952816D13D8CA6BED32FBB98D8E642BD5E21E5)\\n\\tdata: [3070 bits]\\n# off=2472 ctb=c7 tag=7 hlen=3 plen=1368 new-ctb\\n:secret sub key packet:\\n\\tversion 4, algo 1, created 1671553073, expires 0\\n\\tpkey[0]: [3072 bits]\\n\\tpkey[1]: [17 bits]\\n\\tskey[2]: [3071 bits]\\n\\tskey[3]: [1536 bits]\\n\\tskey[4]: [1536 bits]\\n\\tskey[5]: [1536 bits]\\n\\tchecksum: e243\\n\\tkeyid: B3A8A8515DF4036E\\n# off=3843 ctb=c2 tag=2 hlen=3 plen=516 new-ctb\\n:signature packet: algo 1, keyid 98D8E642BD5E21E5\\n\\tversion 4, created 1671553073, md5len 0, sigclass 0x18\\n\\tdigest algo 10, begin of digest 47 ec\\n\\tcritical hashed subpkt 2 len 4 (sig created 2022-12-20)\\n\\tcritical hashed subpkt 9 len 4 (key expires after 2y362d0h0m)\\n\\thashed subpkt 16 len 8 (issuer key ID 98D8E642BD5E21E5)\\n\\thashed subpkt 20 len 70 (notation: salt@notations.sequoia-pgp.org=[not human readable])\\n\\tcritical hashed subpkt 27 len 1 (key flags: 0C)\\n\\thashed subpkt 33 len 21 (issuer fpr v4 38952816D13D8CA6BED32FBB98D8E642BD5E21E5)\\n\\tdata: [3069 bits]\\n# off=4362 ctb=c7 tag=7 hlen=3 plen=1368 new-ctb\\n:secret sub key packet:\\n\\tversion 4, algo 1, created 1671553073, expires 0\\n\\tpkey[0]: [3072 bits]\\n\\tpkey[1]: [17 bits]\\n\\tskey[2]: [3069 bits]\\n\\tskey[3]: [1536 bits]\\n\\tskey[4]: [1536 bits]\\n\\tskey[5]: [1535 bits]\\n\\tchecksum: c826\\n\\tkeyid: 0D654BB15C264793\\n# off=5733 ctb=c2 tag=2 hlen=3 plen=1026 new-ctb\\n:signature packet: algo 1, keyid 98D8E642BD5E21E5\\n\\tversion 4, created 1671553073, md5len 0, sigclass 0x18\\n\\tdigest algo 10, begin of digest 3e cc\\n\\tcritical hashed subpkt 2 len 4 (sig created 2022-12-20)\\n\\tcritical hashed subpkt 9 len 4 (key expires after 2y362d0h0m)\\n\\thashed subpkt 16 len 8 (issuer key ID 98D8E642BD5E21E5)\\n\\thashed subpkt 20 len 70 (notation: salt@notations.sequoia-pgp.org=[not human readable])\\n\\tcritical hashed subpkt 27 len 1 (key flags: 02)\\n\\tcritical hashed subpkt 32 len 507 (signature: v4, class 0x19, algo 1, digest algo 10)\\n\\thashed subpkt 33 len 21 (issuer fpr v4 38952816D13D8CA6BED32FBB98D8E642BD5E21E5)\\n\\tdata: [3071 bits]\\n",
-      "statusfd": "",
-      "status": "exit status: 0",
-      "files": {}
-    },
-    {
-      "args": [
-        "\"--faked-system-time=1671553073!\"",
-        "\"--list-keys\""
-      ],
-      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "",
       "statusfd": "",
       "status": "exit status: 0",
       "files": {}
@@ -150,16 +106,6 @@
     [
       0,
       86,
-      0
-    ],
-    [
-      0,
-      0,
-      0
-    ],
-    [
-      0,
-      0,
       0
     ],
     [

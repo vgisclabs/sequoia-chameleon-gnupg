@@ -36,7 +36,7 @@ fn always() -> Result<()> {
         &experiment.store("cert", &cert.to_vec()?)?,
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(0, 110);
+    diff.assert_equal_up_to(0, 0);
 
     run_test(cert, experiment, "always", true)
 }
@@ -71,7 +71,7 @@ fn pgp() -> Result<()> {
             &experiment.store("cert", &cert.to_vec()?)?,
         ])?;
         diff.assert_success();
-        diff.assert_equal_up_to(0, 110);
+        diff.assert_equal_up_to(0, 0);
 
         if let Some(owner_trust) = owner_trust {
             eprintln!("Setting ownertrust to {}...", owner_trust);
@@ -121,7 +121,7 @@ fn auto() -> Result<()> {
             &experiment.store("cert", &cert.to_vec()?)?,
         ])?;
         diff.assert_success();
-        diff.assert_equal_up_to(0, 110);
+        diff.assert_equal_up_to(0, 0);
 
         if let Some(owner_trust) = owner_trust {
             eprintln!("Setting ownertrust to {}...", owner_trust);

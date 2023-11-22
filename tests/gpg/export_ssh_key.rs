@@ -91,10 +91,6 @@ fn no_authentication_subkey() -> Result<()> {
 fn test_key(cert: Cert, mut experiment: Experiment, expect_success: bool)
             -> Result<()>
 {
-    // Create the keyring stores.  Reduces the noise in the upcoming
-    // experiments.
-    experiment.invoke(&["--list-keys"])?.assert_success();
-
     eprintln!("Importing cert...");
     let diff = experiment.invoke(&[
         "--import",

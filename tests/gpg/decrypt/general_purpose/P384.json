@@ -3,10 +3,21 @@
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: keybox '/HOMEDIR/pubring.kbx' created\\ngpg: /HOMEDIR/trustdb.gpg: trustdb created\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
         "\"--decrypt\"",
         "\"/EXPERIMENT/ciphertext\""
       ],
-      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: keybox '/HOMEDIR/pubring.kbx' created\\ngpg: encrypted with ECDH key, ID A8B6C12E80BD6F7B\\ngpg: decryption failed: No secret key\\n",
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: encrypted with ECDH key, ID A8B6C12E80BD6F7B\\ngpg: decryption failed: No secret key\\n",
       "stdout": "",
       "statusfd": "[GNUPG:] ENC_TO A8B6C12E80BD6F7B 18 0\\n[GNUPG:] NO_SECKEY A8B6C12E80BD6F7B\\n[GNUPG:] BEGIN_DECRYPTION\\n[GNUPG:] DECRYPTION_FAILED\\n[GNUPG:] END_DECRYPTION\\n",
       "status": "exit status: 2",
@@ -58,7 +69,7 @@
         "\"--import\"",
         "\"/EXPERIMENT/cert\""
       ],
-      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: /HOMEDIR/trustdb.gpg: trustdb created\\ngpg: key 0F7A4F12F45C509C: public key \"Alice Lovelace <alice@lovelace.name>\" imported\\ngpg: Total number processed: 1\\ngpg:               imported: 1\\n",
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: key 0F7A4F12F45C509C: public key \"Alice Lovelace <alice@lovelace.name>\" imported\\ngpg: Total number processed: 1\\ngpg:               imported: 1\\n",
       "stdout": "",
       "statusfd": "[GNUPG:] KEY_CONSIDERED 360DA85F500879AC9A42A02B0F7A4F12F45C509C 0\\n[GNUPG:] IMPORTED 0F7A4F12F45C509C Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] IMPORT_OK 1 360DA85F500879AC9A42A02B0F7A4F12F45C509C\\n[GNUPG:] IMPORT_RES 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0\\n",
       "status": "exit status: 0",
@@ -194,6 +205,17 @@
     }
   ],
   "former_us_outputs": [
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
@@ -397,7 +419,7 @@
   "dynamic_upper_bounds": [
     [
       0,
-      43,
+      86,
       0
     ],
     [
@@ -417,7 +439,12 @@
     ],
     [
       0,
-      43,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
       0
     ],
     [
