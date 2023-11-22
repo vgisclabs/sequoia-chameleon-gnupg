@@ -140,7 +140,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: key 97B65AF823460A4D: \"Alice Lovelace <alice@lovelace.name>\" not changed\\ngpg: key 97B65AF823460A4D: secret key imported\\ngpg: Total number processed: 1\\ngpg:              unchanged: 1\\ngpg:       secret keys read: 1\\ngpg:   secret keys imported: 1\\n",
       "stdout": "",
-      "statusfd": "[GNUPG:] KEY_CONSIDERED BAFC9785BEFD481270815AC297B65AF823460A4D 0\\n[GNUPG:] IMPORT_OK 0 BAFC9785BEFD481270815AC297B65AF823460A4D\\n[GNUPG:] IMPORT_OK 17 BAFC9785BEFD481270815AC297B65AF823460A4D\\n[GNUPG:] IMPORT_RES 1 0 0 0 1 0 0 0 0 1 1 0 0 0 0\\n",
+      "statusfd": "[GNUPG:] IMPORT_OK 0 BAFC9785BEFD481270815AC297B65AF823460A4D\\n[GNUPG:] KEY_CONSIDERED BAFC9785BEFD481270815AC297B65AF823460A4D 0\\n[GNUPG:] IMPORT_OK 17 BAFC9785BEFD481270815AC297B65AF823460A4D\\n[GNUPG:] IMPORT_RES 1 0 0 0 1 0 0 0 0 1 1 0 0 0 0\\n",
       "status": "exit status: 0",
       "files": {}
     },
@@ -199,7 +199,7 @@
     [
       0,
       0,
-      77
+      67
     ],
     [
       0,

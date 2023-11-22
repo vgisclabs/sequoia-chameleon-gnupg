@@ -19,13 +19,17 @@ use openpgp::{
 };
 
 use sequoia_cert_store as cert_store;
-use cert_store::Store;
-use cert_store::StoreUpdate;
+use cert_store::{
+    LazyCert,
+    Store,
+    StoreUpdate,
+};
 
 use crate::{
     argparse,
     argparse::options::Opt,
     common::Common,
+    list_keys,
     utils,
 };
 
@@ -77,7 +81,7 @@ impl ImportOptions {
             "do not clear the ownertrust values during import",
         },
 
-        opt_todo! {
+        opt! {
             "import-show",
             |o, s, _| Ok({ o.show = s; }),
             "show key during import",
@@ -252,21 +256,11 @@ pub async fn do_import_cert(config: &mut crate::Config<'_>,
     use crate::status::*;
     let mut flags = crate::status::ImportOkFlags::default();
 
-    // Considering the cert.
-    config.status().emit(
-        Status::KeyConsidered {
-            fingerprint: cert.fingerprint(),
-            not_selected: false,
-            all_expired_or_revoked: false,
-        })?;
-
     // We import the cert first, if this is a key, we'll deal
     // with the secrets later.
-    let (cert, key) = if cert.is_tsk() {
-        (cert.clone().strip_secret_key_material(), Some(cert))
-    } else {
-        (cert, None)
-    };
+    let (cert, key) =
+        (cert.clone().strip_secret_key_material(),
+         Arc::new(LazyCert::from(cert)));
 
     // Get a best-effort primary user id for display and
     // status-fd purposes.
@@ -301,8 +295,25 @@ pub async fn do_import_cert(config: &mut crate::Config<'_>,
                     flags,
                     fingerprint: Some(cert.fingerprint()),
                 })?;
-            config.warn(format_args!("key {:X}: {:?} not changed",
-                                     cert.keyid(), primary_uid));
+            // Considering the cert.
+            if ! config.import_options.show {
+                config.status().emit(
+                    Status::KeyConsidered {
+                        fingerprint: cert.fingerprint(),
+                        not_selected: false,
+                        all_expired_or_revoked: false,
+                    })?;
+            }
+            if config.import_options.show {
+                list_keys::async_list_keys(
+                    config,
+                    vec![key.clone()].into_iter(),
+                    true, false, false, false,
+                    std::io::stdout()).await?;
+            } else {
+                config.warn(format_args!("key {:X}: {:?} not changed",
+                                         cert.keyid(), primary_uid));
+            }
         } else {
             // Clone stats so that we can summarize the changes.
             let s_before = s.clone();
@@ -390,14 +401,39 @@ pub async fn do_import_cert(config: &mut crate::Config<'_>,
                     fingerprint: Some(merged.fingerprint()),
                 })?;
 
+            // Considering the cert.
+            if ! config.import_options.show {
+                config.status().emit(
+                    Status::KeyConsidered {
+                        fingerprint: merged.fingerprint(),
+                        not_selected: false,
+                        all_expired_or_revoked: false,
+                    })?;
+            }
+
             // Actually store the cert.
             config.mut_keydb().update(Arc::new(merged.into()))?;
         }
     } else {
+        let cert = Arc::new(LazyCert::from(cert));
         flags.set(IMPORT_OK_NEW_KEY);
         s.imported += 1;
-        config.warn(format_args!("key {:X}: public key {:?} imported",
-                                 cert.keyid(), primary_uid));
+        if config.import_options.show {
+            list_keys::async_list_keys(
+                config, vec![key.clone()].into_iter(),
+                true, false, false, false,
+                std::io::stdout()).await?;
+        } else {
+            config.warn(format_args!("key {:X}: public key {:?} imported",
+                                     cert.keyid(), primary_uid));
+        }
+
+        config.status().emit(
+            Status::KeyConsidered {
+                fingerprint: cert.fingerprint(),
+                not_selected: false,
+                all_expired_or_revoked: false,
+            })?;
         config.status().emit(
             Status::Imported {
                 keyid: cert.keyid(),
@@ -410,10 +446,10 @@ pub async fn do_import_cert(config: &mut crate::Config<'_>,
             })?;
 
         // Actually store the cert.
-        config.mut_keydb().update(Arc::new(cert.into()))?;
+        config.mut_keydb().update(cert)?;
     }
 
-    if let Some(key) = key {
+    if key.is_tsk() {
         let mut agent = config.connect_agent().await?;
 
         // We collect stats for the IMPORT_OK status line.
@@ -427,11 +463,11 @@ pub async fn do_import_cert(config: &mut crate::Config<'_>,
         let mut changed = false;
         let mut unchanged = false;
 
-        for subkey in key.keys().secret() {
+        for subkey in key.to_cert()?.keys().secret() {
             // See if we import a new key or subkey.
             let c = crate::agent::import(&mut agent,
                                          config.policy(),
-                                         &key, &subkey,
+                                         key.to_cert()?, &subkey,
                                          config.batch).await?;
 
             changed |= c;

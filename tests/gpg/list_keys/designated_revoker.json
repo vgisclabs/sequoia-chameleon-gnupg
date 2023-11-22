@@ -353,7 +353,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: key 34B7D10BC108E83A: \"Test Key Demonstrating Revoker Trouble (DO NOT USE) <test@example.net>\" not changed\\ngpg: Total number processed: 1\\ngpg:              unchanged: 1\\n",
       "stdout": "",
-      "statusfd": "[GNUPG:] KEY_CONSIDERED 8E854AAC5A2BAB8E83DC3D4434B7D10BC108E83A 0\\n[GNUPG:] IMPORT_OK 0 8E854AAC5A2BAB8E83DC3D4434B7D10BC108E83A\\n[GNUPG:] IMPORT_RES 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0\\n",
+      "statusfd": "[GNUPG:] IMPORT_OK 0 8E854AAC5A2BAB8E83DC3D4434B7D10BC108E83A\\n[GNUPG:] KEY_CONSIDERED 8E854AAC5A2BAB8E83DC3D4434B7D10BC108E83A 0\\n[GNUPG:] IMPORT_RES 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0\\n",
       "status": "exit status: 0",
       "files": {}
     },
@@ -489,7 +489,7 @@
     [
       0,
       0,
-      30
+      0
     ],
     [
       1,

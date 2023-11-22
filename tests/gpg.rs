@@ -48,6 +48,7 @@ mod gpg {
     mod print_mds;
     mod list_packets;
     mod export_ssh_key;
+    mod import;
 }
 
 use std::sync::OnceLock;
