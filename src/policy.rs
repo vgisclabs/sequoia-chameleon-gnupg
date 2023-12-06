@@ -17,7 +17,7 @@ use sequoia_openpgp::{
 };
 use sequoia_policy_config::ConfiguredStandardPolicy;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct GPGPolicy {
     /// The standard policy that we refine.
     policy: StandardPolicy<'static>,

@@ -54,8 +54,8 @@
 //! hours.
 
 use std::borrow::Cow;
-use std::collections::HashMap;
-use std::collections::hash_map::Entry;
+use std::collections::btree_map::{BTreeMap, Entry};
+use std::fmt;
 use std::fs::File;
 use std::io;
 use std::path::PathBuf;
@@ -63,13 +63,16 @@ use std::process::{self, Command, Stdio};
 use std::thread;
 use std::time::Duration;
 
-use futures::{stream, StreamExt};
+use tokio::task::JoinSet;
 
 use anyhow::Context;
 use fd_lock::RwLock;
 
 use sequoia_openpgp as openpgp;
-use openpgp::Fingerprint;
+use openpgp::{
+    Fingerprint,
+    KeyHandle,
+};
 use openpgp::cert::prelude::*;
 use openpgp::types::RevocationStatus;
 use openpgp::packet::prelude::*;
@@ -78,7 +81,7 @@ use sequoia_cert_store as cert_store;
 use cert_store::Store;
 use cert_store::StoreUpdate;
 
-use crate::net; // XXX
+use sequoia_net as net;
 
 use rand::prelude::*;
 use rand_distr::{Poisson, Distribution};
@@ -287,6 +290,7 @@ async fn worker(config: &mut crate::Config<'_>) -> openpgp::Result<()> {
         config.auto_key_locate.contains(&AutoKeyLocate::Wkd);
     let akl_key_server =
         config.auto_key_locate.contains(&AutoKeyLocate::KeyServer);
+    let policy = config.policy.clone();
 
     let mut rng = rand::thread_rng();
 
@@ -405,7 +409,7 @@ async fn worker(config: &mut crate::Config<'_>) -> openpgp::Result<()> {
 
             // Get all of the valid, non-revoked email addresses.
             let emails: Vec<_> = if akl_wkd {
-                match cert.with_policy(config.policy(), None)
+                match cert.with_policy(&policy, None)
                 {
                     Ok(vcert) => {
                         let mut emails: Vec<_> = vcert.userids()
@@ -416,6 +420,7 @@ async fn worker(config: &mut crate::Config<'_>) -> openpgp::Result<()> {
                                     None
                                 } else {
                                     ua.userid().email2().unwrap_or(None)
+                                        .map(ToString::to_string)
                                 }
                             })
                             .collect();
@@ -434,110 +439,79 @@ async fn worker(config: &mut crate::Config<'_>) -> openpgp::Result<()> {
             (fpr, emails)
         };
 
+        let http_client = config.make_http_client();
         let keyservers = if akl_key_server {
-            config.keyserver.clone()
+            config.keyserver.iter().map(|k| {
+	        let c = http_client
+                    .clone()
+                    .for_url(k.url())?
+                    .build()?;
+	        net::KeyServer::with_client(k.url(), c)
+	    }).collect::<Result<Vec<_>>>()?
         } else {
             t!("No keyserver access allowed.");
             vec![]
         };
-        let http_client = config.make_http_client();
 
         // Do this is parallel.  Not to be fast, but to overlap I/O.
-        let certs: openpgp::Result<Vec<Cert>> = async move {
-            use crate::keyserver::CONCURRENT_REQUESTS;
-            use crate::wkd;
-            let http_client = &http_client;
+        let mut requests = JoinSet::new();
+        for ks in keyservers {
+            let fp = fpr.clone();
+            requests.spawn(async move {
+                let results = ks.get(&fp).await;
+                Response {
+                    query: Query::Handle(fp.into()),
+                    results,
+                    method: Method::KeyServer(
+                        ks.url().as_str().to_string()),
+                }
+            });
+        }
+        for email in emails {
+            let client = http_client.build()?;
+            requests.spawn(async move {
+                let results =
+                    net::wkd::get(&client, &email).await;
+                Response {
+                    query: Query::Address(email.to_string()),
+                    results,
+                    method: Method::WKD,
+                }
+            });
+        }
 
-            let jhs = stream::iter(emails)
-		.map(|email| async move {
-	            let c = http_client.build()?;
-                    let r = wkd::get(&c, email.to_string()).await;
-                    match &r {
-                        Ok(certs) =>
-                            t!("WKD({}): {:?}", email,
-                               certs.iter().map(|cert| cert.keyid())
-                               .collect::<Vec<_>>()),
+        let mut certs = BTreeMap::new();
+        while let Some(response) = requests.join_next().await {
+            let response = response?;
+            match response.results {
+                Ok(returned_certs) => for cert in returned_certs {
+                    match cert {
+                        Ok(cert) => {
+                            t!("{}({}): {:?}",
+                               response.method, response.query,
+                               cert.keyid());
+                            match certs.entry(cert.fingerprint()) {
+                                Entry::Vacant(e) => {
+                                    e.insert(cert);
+                                },
+                                Entry::Occupied(mut e) => {
+                                    let old = e.get().clone();
+                                    e.insert(old.merge_public(cert)?);
+                                },
+                            }
+                        },
                         Err(e) =>
-                            t!("WKD({}): {}", email, e),
+                            t!("{}({}): {:?}",
+                               response.method, response.query, e),
                     }
-                    r
-                })
-		.buffer_unordered(CONCURRENT_REQUESTS)
-		.flat_map(|rcert| stream::iter(match rcert {
-                    Ok(certs) => certs,
-                    Err(_) => vec![],
-                }))
-                .collect::<Vec<_>>();
-
-            let servers =
-	        keyservers.iter().map(|k| {
-	            let c = http_client
-                        .clone()
-                        .for_url(k.url())?
-                        .build()?;
-	            net::KeyServer::with_client(k.url(), c)
-	        })
-	        .collect::<Result<Vec<_>>>()?;
-            let concurrent_requests = servers.len();
-
-            let fpr = &fpr;
-	    let responses = stream::iter(servers)
-		.map(move |server| async move {
-                    let r = server.get(fpr.clone()).await;
-                    match &r {
-			Ok(_) => t!("{}: found", server.url()),
-			Err(e) => t!("{}: {}", server.url(), e),
-                    }
-                    r
-                })
-		.buffer_unordered(concurrent_requests)
-		.filter_map(|rcert| async { match rcert {
-                    Ok(cert) => Some(cert),
-                    Err(_) => None,
-                }})
-                .collect::<Vec<_>>();
-
-            // Evaluate the futures concurrently.
-            let (mut certs, mut responses) = tokio::join!(jhs, responses);
-            certs.append(&mut responses);
-
-            Ok(certs)
-        }.await;
-
-        // Merge the certificates.  Because we also looked up keys
-        // by email address, we may have multiple certificates.
-        let certs = match certs {
-            Ok(mut certs) => {
-                certs.sort_by_key(|cert| cert.fingerprint());
-                let l = certs.len();
-                certs.into_iter().fold(
-                    Vec::with_capacity(l),
-                    |mut agg, cert| {
-                        let l = agg.len();
-                        if l == 0 {
-                            agg.push(cert);
-                        } else if agg[l - 1].fingerprint()
-                            == cert.fingerprint()
-                        {
-                            let r = agg.pop()
-                                .expect("not empty")
-                                .merge_public(cert)
-                                .expect("Same certificate");
-                            agg.push(r);
-                        } else {
-                            agg.push(cert);
-                        }
-                        agg
-                    })
+                },
+                Err(e) =>
+                    t!("{}({}): {:?}", response.method, response.query, e),
             }
-            Err(err) => {
-                t!("Fetching updates: {}", err);
-                continue;
-            }
-        };
+        }
 
         if certs.len() > 0 {
-            let certs = certs.into_iter()
+            let certs = certs.into_values()
                 .filter_map(|cert| {
                     let cert = cert.strip_secret_key_material();
 
@@ -570,6 +544,44 @@ async fn worker(config: &mut crate::Config<'_>) -> openpgp::Result<()> {
     }
 }
 
+#[derive(Clone)]
+enum Query {
+    Handle(KeyHandle),
+    Address(String),
+}
+
+impl fmt::Display for Query {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Query::Handle(h) => write!(f, "{}", h),
+            Query::Address(a) => write!(f, "{}", a),
+        }
+    }
+}
+
+#[derive(Clone)]
+enum Method {
+    KeyServer(String),
+    WKD,
+    #[allow(dead_code)]
+    DANE,
+}
+
+impl fmt::Display for Method {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Method::KeyServer(url) => write!(f, "{}", url),
+            Method::WKD => write!(f, "WKD"),
+            Method::DANE => write!(f, "DANE"),
+        }
+    }
+}
+
+struct Response {
+    query: Query,
+    method: Method,
+    results: Result<Vec<Result<Cert>>>,
+}
 
 /// Cleans a certificate.
 ///
@@ -579,6 +591,8 @@ async fn worker(config: &mut crate::Config<'_>) -> openpgp::Result<()> {
 ///
 /// This function takes a read lock on the keystore.
 fn clean(config: &crate::Config, cert: Cert) -> Option<Cert> {
+    use std::collections::HashMap;
+    use std::collections::hash_map::Entry;
     tracer!(TRACE, "parcimonie::clean");
 
     // Check for an excess of third-party signatures.

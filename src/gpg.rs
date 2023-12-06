@@ -31,9 +31,6 @@ use sequoia_cert_store::{
     Store,
 };
 
-pub mod net; // XXX
-pub mod wkd; // XXX
-
 pub mod gnupg_interface;
 
 #[macro_use]

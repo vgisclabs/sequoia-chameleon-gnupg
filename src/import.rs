@@ -379,7 +379,7 @@ pub async fn do_import_failed(config: &mut crate::Config<'_>,
         _ => (),
     }
 
-    use crate::net;
+    use sequoia_net as net;
     match e.downcast_ref::<net::Error>() {
         Some(net::Error::NotFound) => return Ok(()),
         _ => (),

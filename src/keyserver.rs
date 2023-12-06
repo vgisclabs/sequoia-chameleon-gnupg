@@ -1,4 +1,5 @@
 use std::{
+    collections::btree_map::{BTreeMap, Entry},
     time::Duration,
 };
 
@@ -12,7 +13,7 @@ use sequoia_openpgp::{
     Cert,
     KeyHandle,
 };
-use crate::net; // XXX
+use sequoia_net as net;
 
 use sequoia_cert_store as cert_store;
 use cert_store::Store;
@@ -103,32 +104,51 @@ async fn keyserver_import(config: &mut crate::Config<'_>, args: &[String],
         .map(|(sender, handle)| {
             let servers = &servers;
             async move {
-		let (ocert, errs) = stream::iter(servers)
+		let (certs, errs) = stream::iter(servers)
 		    .map(|server| async {
                         let response = server.get(handle.clone()).await;
                         (server.url().clone(), response)
                     })
 		    .buffer_unordered(servers.len())
-		    .fold((None::<Cert>, vec![]),
-			  |(ocert, mut errs), (url, rcert)| {
-                              async move { match rcert {
-			          Ok(c) => {
+		    .fold((BTreeMap::new(), vec![]),
+			  |(mut certs, mut errs), (url, rrcerts)| {
+                              async move { match rrcerts {
+			          Ok(rcerts) => {
                                       t!("{}: found", url);
-                                      match ocert {
-				          Some(b) => (b.merge_public(c).ok(), errs),
-				          None => (Some(c), errs),
+                                      for c in rcerts {
+                                          match c {
+                                              Ok(c) => {
+                                                  let fp = c.fingerprint();
+                                                  match certs.entry(fp) {
+                                                      Entry::Vacant(e) => {
+                                                          e.insert(c);
+                                                      },
+                                                      Entry::Occupied(mut e) => {
+                                                          let old = e.get().clone();
+                                                          if let Ok(m) = old.merge_public(c) {
+                                                              e.insert(m);
+                                                          }
+                                                      },
+                                                  }
+                                              },
+                                              Err(e) => {
+                                                  t!("{}: {}", url, e);
+				                  errs.push(e);
+                                              },
+                                          }
                                       }
+                                      (certs, errs)
 			          },
 			          Err(e) => {
                                       t!("{}: {}", url, e);
 				      errs.push(e);
-				      (ocert, errs)
+                                      (certs, errs)
 			          }
                               }}
 			  })
 		    .await;
 
-		if let Some(cert) = ocert {
+		for cert in certs.into_values() {
 		    if let Err(e) = sender.send(Ok(cert)).await {
 			eprintln!("gpg: {}", e); // Should not happen.
 		    }
