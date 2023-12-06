@@ -288,6 +288,8 @@ async fn worker(config: &mut crate::Config<'_>) -> openpgp::Result<()> {
     // See which methods we may use to update the certs.
     let akl_wkd =
         config.auto_key_locate.contains(&AutoKeyLocate::Wkd);
+    let akl_dane =
+        config.auto_key_locate.contains(&AutoKeyLocate::Dane);
     let akl_key_server =
         config.auto_key_locate.contains(&AutoKeyLocate::KeyServer);
     let policy = config.policy.clone();
@@ -408,7 +410,7 @@ async fn worker(config: &mut crate::Config<'_>) -> openpgp::Result<()> {
             t!("Checking for updates to {}!", fpr);
 
             // Get all of the valid, non-revoked email addresses.
-            let emails: Vec<_> = if akl_wkd {
+            let emails: Vec<_> = if akl_wkd || akl_dane {
                 match cert.with_policy(&policy, None)
                 {
                     Ok(vcert) => {
@@ -432,7 +434,7 @@ async fn worker(config: &mut crate::Config<'_>) -> openpgp::Result<()> {
                     Err(_) => vec![],
                 }
             } else {
-                t!("No WKD access allowed.");
+                t!("Neither WKD nor DANE access allowed.");
                 vec![]
             };
 
@@ -468,16 +470,31 @@ async fn worker(config: &mut crate::Config<'_>) -> openpgp::Result<()> {
             });
         }
         for email in emails {
-            let client = http_client.build()?;
-            requests.spawn(async move {
-                let results =
-                    net::wkd::get(&client, &email).await;
-                Response {
-                    query: Query::Address(email.to_string()),
-                    results,
-                    method: Method::WKD,
-                }
-            });
+            if akl_wkd {
+                let client = http_client.build()?;
+                let email = email.clone();
+                requests.spawn(async move {
+                    let results =
+                        net::wkd::get(&client, &email).await;
+                    Response {
+                        query: Query::Address(email.to_string()),
+                        results,
+                        method: Method::WKD,
+                    }
+                });
+            }
+
+            if akl_dane {
+                requests.spawn(async move {
+                    let results =
+                        net::dane::get(&email).await;
+                    Response {
+                        query: Query::Address(email.to_string()),
+                        results,
+                        method: Method::DANE,
+                    }
+                });
+            }
         }
 
         let mut certs = BTreeMap::new();
