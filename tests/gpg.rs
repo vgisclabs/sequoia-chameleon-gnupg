@@ -50,20 +50,24 @@ mod gpg {
     mod export_ssh_key;
 }
 
-lazy_static::lazy_static! {
-    static ref GPG: Vec<String> =
+use std::sync::OnceLock;
+fn gpg() -> &'static Vec<String> {
+    static GPG: OnceLock<Vec<String>> = OnceLock::new();
+    GPG.get_or_init(||
         vec![std::env::var("REAL_GPG_BIN")
-             .unwrap_or("/usr/bin/gpg".into())];
+             .unwrap_or_else(|_| "/usr/bin/gpg".into())])
 }
 
-lazy_static::lazy_static! {
-    static ref GPGV: Vec<String> =
+fn gpgv() -> &'static Vec<String> {
+    static GPGV: OnceLock<Vec<String>> = OnceLock::new();
+    GPGV.get_or_init(||
         vec![std::env::var("REAL_GPGV_BIN")
-             .unwrap_or("/usr/bin/gpgv".into())];
+             .unwrap_or_else(|_| "/usr/bin/gpgv".into())])
 }
 
-lazy_static::lazy_static! {
-    static ref GPG_CHAMELEON: Vec<String> =
+fn gpg_chameleon() -> &'static Vec<String> {
+    static GPG_CHAMELEON: OnceLock<Vec<String>> = OnceLock::new();
+    GPG_CHAMELEON.get_or_init(||
         vec![
             if let Ok(target) = std::env::var("CARGO_TARGET_DIR") {
                 PathBuf::from(target)
@@ -73,11 +77,12 @@ lazy_static::lazy_static! {
             }
             .join("debug/gpg-sq")
             .display().to_string()
-        ];
+        ])
 }
 
-lazy_static::lazy_static! {
-    static ref GPGV_CHAMELEON: Vec<String> =
+fn gpgv_chameleon() -> &'static Vec<String> {
+    static GPGV_CHAMELEON: OnceLock<Vec<String>> = OnceLock::new();
+    GPGV_CHAMELEON.get_or_init(||
         vec![
             if let Ok(target) = std::env::var("CARGO_TARGET_DIR") {
                 PathBuf::from(target)
@@ -87,7 +92,7 @@ lazy_static::lazy_static! {
             }
             .join("debug/gpgv-sq")
             .display().to_string()
-        ];
+        ])
 }
 
 const GPG_CHAMELEON_BUILD: &[&str] = &["cargo", "build", "--quiet"];
@@ -107,24 +112,24 @@ fn check_gpg_oracle() {
     static START: Once = Once::new();
     START.call_once(|| {
         eprintln!("Checking that {:?} is the stock GnuPG...",
-                  &GPG[0]);
+                  &gpg()[0]);
 
-        let o = Command::new(&GPG[0])
+        let o = Command::new(&gpg()[0])
             .arg("--version").output().unwrap();
         if String::from_utf8_lossy(&o.stdout[..o.stdout.len().min(256)])
             .contains("equoia")
         {
             panic!("The oracle {:?} is Sequoia-based, please provide the \
-                    stock gpg in REAL_GPG_BIN", GPG[0]);
+                    stock gpg in REAL_GPG_BIN", gpg()[0]);
         }
 
-        let o = Command::new(&GPGV[0])
+        let o = Command::new(&gpgv()[0])
             .arg("--version").output().unwrap();
         if String::from_utf8_lossy(&o.stdout[..o.stdout.len().min(256)])
             .contains("equoia")
         {
             panic!("The oracle {:?} is Sequoia-based, please provide the \
-                    stock gpg in REAL_GPGV_BIN", GPGV[0]);
+                    stock gpg in REAL_GPGV_BIN", gpgv()[0]);
         }
     });
 }
@@ -189,13 +194,13 @@ impl Context {
 
     /// Returns a context for the reference GnuPG implementation.
     pub fn gnupg() -> Result<Self> {
-        Context::new(GPG.clone(), GPGV.clone())
+        Context::new(gpg().clone(), gpgv().clone())
     }
 
     /// Returns a context for the chameleon.
     pub fn chameleon() -> Result<Self> {
         setup();
-        Context::new(GPG_CHAMELEON.clone(), GPGV_CHAMELEON.clone())
+        Context::new(gpg_chameleon().clone(), gpgv_chameleon().clone())
     }
 
     /// Returns a custom context for the given GnuPG-like executable.

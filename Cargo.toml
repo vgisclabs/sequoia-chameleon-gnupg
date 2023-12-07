@@ -53,7 +53,6 @@ anyhow = { version = "1", features = ["backtrace"] }
 diff = "0.1"
 editdistancek = "1"
 interprocess = { version = "1", default-features = false }
-lazy_static = "1"
 ntest = "0.9"
 regex = "1"
 reqwest = "0.11"

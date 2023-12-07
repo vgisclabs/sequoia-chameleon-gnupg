@@ -2555,7 +2555,6 @@ dependencies = [
  "home-dir",
  "indexmap 2.0.2",
  "interprocess",
- "lazy_static",
  "libc",
  "memchr",
  "ntest",
