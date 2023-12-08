@@ -761,11 +761,6 @@ impl<'store> Overlay<'store> {
         self.certd().base_dir()
     }
 
-    #[allow(dead_code)]
-    fn certd_mtime(&self) -> Result<SystemTime> {
-        Ok(std::fs::metadata(self.path())?.modified()?)
-    }
-
     fn mtime_cache_path(&self, of: &Resource) -> PathBuf {
         let mut hash = HashAlgorithm::SHA256.context()
             .expect("MTI hash algorithm");
