@@ -701,7 +701,7 @@ impl<'store> Overlay<'store> {
         let certd = certd.certd();
 
         // Acquire an exclusive lock on the certd.
-        let lock_path = self.path.join("writelock");
+        let lock_path = self.path().join("writelock");
         // Open the lockfile for writing, and create it if it does not exist yet.
         let mut lock_file = RwLock::new(std::fs::OpenOptions::new()
             .write(true)
@@ -716,7 +716,7 @@ impl<'store> Overlay<'store> {
         let mut trust_root_store = std::fs::OpenOptions::new()
             .write(true)
             .create_new(true)
-            .open(self.path.join(openpgp_cert_d::TRUST_ROOT))?;
+            .open(self.path().join(openpgp_cert_d::TRUST_ROOT))?;
 
         let trust_root = Self::generate_trust_root()?;
         trust_root.as_tsk().serialize(&mut trust_root_store)?;
@@ -767,7 +767,7 @@ impl<'store> Overlay<'store> {
 
     #[allow(dead_code)]
     fn certd_mtime(&self) -> Result<SystemTime> {
-        Ok(std::fs::metadata(&self.path)?.modified()?)
+        Ok(std::fs::metadata(self.path())?.modified()?)
     }
 
     fn mtime_cache_path(&self, of: &Resource) -> PathBuf {
@@ -780,7 +780,7 @@ impl<'store> Overlay<'store> {
             openpgp::fmt::hex::encode(
                 hash.into_digest().expect("SHA2 is complete")));
 
-        self.path.join(name)
+        self.path().join(name)
     }
 
     fn get_cached_mtime(&self, of: &Resource) -> Result<SystemTime> {
@@ -793,10 +793,10 @@ impl<'store> Overlay<'store> {
         // directory, caching the mtime would fail anyway, and callers
         // of this function expect a side-effect, so this seems like
         // an okay place to do that.
-        std::fs::create_dir_all(&self.path)?;
+        std::fs::create_dir_all(self.path())?;
 
         let p = self.mtime_cache_path(&of);
-        let f = tempfile::NamedTempFile::new_in(&self.path)?;
+        let f = tempfile::NamedTempFile::new_in(self.path())?;
         filetime::set_file_mtime(f.path(), new.into())?;
         f.persist(p)?;
         Ok(())
