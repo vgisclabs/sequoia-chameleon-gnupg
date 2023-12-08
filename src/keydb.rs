@@ -319,26 +319,17 @@ impl<'store> KeyDB<'store> {
         let items = certd.fingerprints();
 
         let open = |fp: String| -> Option<(String, _, _)> {
-            let path = path.join(&fp[..2]).join(&fp[2..]);
-
-            let f = match fs::File::open(&path) {
-                Ok(f) => f,
+            let f = match certd.get_file(&fp) {
+                Ok(f) => f?,
                 Err(err) => {
-                    t!("Reading {:?}: {}", path, err);
+                    t!("Reading {}: {}", fp, err);
                     return None;
                 }
             };
-            let metadata = match f.metadata() {
-                Ok(f) => f,
-                Err(err) => {
-                    t!("Stating entry {:?}: {}", path, err);
-                    return None;
-                }
-            };
-            match openpgp_cert_d::Tag::try_from(metadata) {
+            match openpgp_cert_d::Tag::try_from(&f) {
                 Ok(tag) => Some((fp, tag, f)),
                 Err(err) => {
-                    t!("Getting tag for entry {:?}: {}", path, err);
+                    t!("Getting tag for entry {}: {}", fp, err);
                     None
                 }
             }
