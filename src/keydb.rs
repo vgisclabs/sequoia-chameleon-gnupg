@@ -689,35 +689,30 @@ impl<'store> Overlay<'store> {
     /// This is done during the insertion, while we hold the exclusive
     /// lock, so this is race free.
     fn load_trust_root(&self) -> Result<Cert> {
-        use fd_lock::RwLock;
-        use openpgp::serialize::Serialize;
+        use openpgp_cert_d::MergeResult;
 
-        let certd = self.cert_store.certd()
-            .ok_or_else(|| anyhow::anyhow!("No certd configured"))?;
-        let certd = certd.certd();
+        let certd = self.certd();
 
-        // Acquire an exclusive lock on the certd.
-        let lock_path = self.path().join("writelock");
-        // Open the lockfile for writing, and create it if it does not exist yet.
-        let mut lock_file = RwLock::new(std::fs::OpenOptions::new()
-            .write(true)
-            .create(true)
-            .open(&lock_path)?);
-        let exclusive_lock = lock_file.write()?;
-
-        if let Some((_, trust_root)) = certd.get(openpgp_cert_d::TRUST_ROOT)? {
-            return Ok(Cert::from_bytes(&trust_root)?);
-        }
-
-        let mut trust_root_store = std::fs::OpenOptions::new()
-            .write(true)
-            .create_new(true)
-            .open(self.path().join(openpgp_cert_d::TRUST_ROOT))?;
-
-        let trust_root = Self::generate_trust_root()?;
-        trust_root.as_tsk().serialize(&mut trust_root_store)?;
-        drop(trust_root_store);
-        drop(exclusive_lock);
+        // Acquire an exclusive lock on the certd by inserting the
+        // trust root.  We may yet discover that one already exists,
+        // in which case we won't generate a new one, but load the
+        // existing one.
+        let mut trust_root =
+            Err(anyhow::anyhow!("merge callback not invoked"));
+        certd.insert_special(
+            openpgp_cert_d::TRUST_ROOT,
+            (), false, |_new, old| {
+                if let Some(old) = old {
+                    trust_root = Cert::from_bytes(&old);
+                    Ok(MergeResult::Keep)
+                } else {
+                    let tr = Self::generate_trust_root()?;
+                    let d = tr.as_tsk().to_vec()?;
+                    trust_root = Ok(tr);
+                    Ok(MergeResult::Data(d))
+                }
+            })?;
+        let trust_root = trust_root?;
 
         // Also insert the public bits into the certd for the WoT
         // algorithm to find.
