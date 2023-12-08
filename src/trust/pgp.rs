@@ -1,6 +1,6 @@
 use std::{
-    borrow::Cow,
     time::SystemTime,
+    sync::Arc,
 };
 
 use anyhow::Result;
@@ -111,7 +111,7 @@ impl<'a, 'store> ModelViewAt<'a, 'store> for WoTViewAt<'a, 'store> {
         }
     }
 
-    fn lookup(&self, query: &Query) -> Result<Vec<(Validity, Cow<'a, LazyCert<'store>>)>> {
+    fn lookup(&self, query: &Query) -> Result<Vec<(Validity, Arc<LazyCert<'store>>)>> {
         let certs = self.network.backend().store().lookup_candidates(&query)?;
         Ok(certs.into_iter()
            .map(|c| {

@@ -194,12 +194,6 @@ dependencies = [
 
 [[package]]
 name = "base64"
-version = "0.13.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9e1b586273c5702936fe7b7d6896644d8be71e6314cfe09d3167c95f712589e8"
-
-[[package]]
-name = "base64"
 version = "0.21.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "35636a1494ede3b646cc98f74f8e62c773a38a659ebc777a2cf26b9b74171df9"
@@ -784,20 +778,11 @@ dependencies = [
 
 [[package]]
 name = "dirs"
-version = "4.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ca3aa72a6f96ea37bbc5aa912f6788242832f75369bdfdadcb0e38423f100059"
-dependencies = [
- "dirs-sys 0.3.7",
-]
-
-[[package]]
-name = "dirs"
 version = "5.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "44c45a9d03d6676652bcb5e724c7e988de1acad23a711b5217ab9cbecbec2225"
 dependencies = [
- "dirs-sys 0.4.1",
+ "dirs-sys",
 ]
 
 [[package]]
@@ -808,17 +793,6 @@ checksum = "b98cf8ebf19c3d1b223e151f99a4f9f0690dca41414773390fc824184ac833e1"
 dependencies = [
  "cfg-if 1.0.0",
  "dirs-sys-next",
-]
-
-[[package]]
-name = "dirs-sys"
-version = "0.3.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1b1d1d91c932ef41c0f2663aa8b0ca0342d444d842c06914aa0a7e352d0bada6"
-dependencies = [
- "libc",
- "redox_users",
- "winapi",
 ]
 
 [[package]]
@@ -943,18 +917,6 @@ checksum = "c34f04666d835ff5d62e058c3995147c06f42fe86ff053337632bca83e42702d"
 
 [[package]]
 name = "enum-as-inner"
-version = "0.5.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c9720bba047d567ffc8a3cba48bf19126600e249ab7f128e9233e6376976a116"
-dependencies = [
- "heck",
- "proc-macro2",
- "quote",
- "syn 1.0.109",
-]
-
-[[package]]
-name = "enum-as-inner"
 version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5ffccbb6966c05b32ef8fbac435df276c4ae4d3dc55a8cd0eb9745e6c12f546a"
@@ -1008,17 +970,6 @@ name = "fastrand"
 version = "2.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "25cbce373ec4653f1a01a31e8a5e5ec0c622dc27ff9c4e6606eefef5cbbed4a5"
-
-[[package]]
-name = "fd-lock"
-version = "3.0.13"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ef033ed5e9bad94e55838ca0ca906db0e043f517adda0c8b79c7a8c66c93c1b5"
-dependencies = [
- "cfg-if 1.0.0",
- "rustix",
- "windows-sys",
-]
 
 [[package]]
 name = "fd-lock"
@@ -1329,11 +1280,11 @@ dependencies = [
  "async-trait",
  "cfg-if 1.0.0",
  "data-encoding",
- "enum-as-inner 0.6.0",
+ "enum-as-inner",
  "futures-channel",
  "futures-io",
  "futures-util",
- "idna 0.4.0",
+ "idna",
  "ipnet",
  "once_cell",
  "openssl",
@@ -1486,17 +1437,6 @@ name = "ident_case"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b9e0384b61958566e926dc50660321d12159025e767c18e043daf26b70104c39"
-
-[[package]]
-name = "idna"
-version = "0.2.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "418a0a6fab821475f634efe3ccc45c013f742efe03d853e8d3355d5cb850ecf8"
-dependencies = [
- "matches",
- "unicode-bidi",
- "unicode-normalization",
-]
 
 [[package]]
 name = "idna"
@@ -1723,12 +1663,6 @@ name = "match_cfg"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ffbee8634e0d45d258acb448e7eaab3fce7a0a467395d4d9f228e3c1f01fb2e4"
-
-[[package]]
-name = "matches"
-version = "0.1.10"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2532096657941c2fea9c289d370a250971c689d4f143798ff67113ec042024a5"
 
 [[package]]
 name = "md-5"
@@ -1987,16 +1921,18 @@ checksum = "624a8340c38c1b80fd549087862da4ba43e08858af025b236e509b6649fc13d5"
 
 [[package]]
 name = "openpgp-cert-d"
-version = "0.1.0"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ccaa2a2e4502a5daf19c5753250fc6e37daa1d06f866ec97cd5e3416e6d05883"
+checksum = "d9697d17dfc2c9c0adc61a13ecb5029f8bbc56ffcc37e345729a1a7f38de6ef1"
 dependencies = [
  "anyhow",
- "dirs 4.0.0",
- "fd-lock 3.0.13",
- "sha1collisiondetection 0.2.7",
+ "dirs",
+ "fd-lock",
+ "libc",
+ "sha1collisiondetection",
  "tempfile",
  "thiserror",
+ "walkdir",
 ]
 
 [[package]]
@@ -2005,7 +1941,7 @@ version = "0.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c75a0ec2d1b302412fb503224289325fcc0e44600176864804c7211b055cfd58"
 dependencies = [
- "base64 0.21.5",
+ "base64",
  "byteorder",
  "md-5",
  "sha2",
@@ -2363,7 +2299,7 @@ version = "0.11.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "046cd98826c46c2ac8ddecae268eb5c2e58628688a5fc7a2643704a73faba95b"
 dependencies = [
- "base64 0.21.5",
+ "base64",
  "bytes",
  "encoding_rs",
  "futures-core",
@@ -2473,6 +2409,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1ad4cc8da4ef723ed60bced201181d83791ad433213d8c24efffda1eec85d741"
 
 [[package]]
+name = "same-file"
+version = "1.0.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "93fc1dc3aaa9bfed95e02e6eadabb4baf7e3078b0bd1b4d7b6b0b68378900502"
+dependencies = [
+ "winapi-util",
+]
+
+[[package]]
 name = "schannel"
 version = "0.1.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2518,19 +2463,18 @@ checksum = "836fa6a3e1e547f9a2c4040802ec865b5d85f4014efe00555d7090a3dcaa1090"
 
 [[package]]
 name = "sequoia-cert-store"
-version = "0.3.2"
+version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "02cc866249ad73d5350e7c52ef1b3939129a7a1b52d9ca25ef220ee184c5b33e"
+checksum = "f44e2775a51e844809b1f393c5098dd414f79555b61b29a98f0dede289b86515"
 dependencies = [
  "anyhow",
  "crossbeam",
- "dirs 5.0.1",
+ "dirs",
  "num_cpus",
- "once_cell",
  "openpgp-cert-d",
  "rayon",
  "rusqlite",
- "sequoia-net 0.27.0",
+ "sequoia-net",
  "sequoia-openpgp",
  "smallvec",
  "thiserror",
@@ -2542,14 +2486,14 @@ name = "sequoia-chameleon-gnupg"
 version = "0.3.2"
 dependencies = [
  "anyhow",
- "base64 0.21.5",
+ "base64",
  "buffered-reader",
  "chrono",
  "daemonize",
  "diff",
- "dirs 5.0.1",
+ "dirs",
  "editdistancek",
- "fd-lock 4.0.0",
+ "fd-lock",
  "filetime",
  "futures",
  "home-dir",
@@ -2559,7 +2503,6 @@ dependencies = [
  "memchr",
  "ntest",
  "once_cell",
- "openpgp-cert-d",
  "openssh-keys",
  "percent-encoding",
  "rand",
@@ -2569,7 +2512,7 @@ dependencies = [
  "reqwest",
  "sequoia-cert-store",
  "sequoia-ipc",
- "sequoia-net 0.28.0",
+ "sequoia-net",
  "sequoia-openpgp",
  "sequoia-openpgp-mt",
  "sequoia-policy-config",
@@ -2595,7 +2538,7 @@ dependencies = [
  "capnp-rpc",
  "crossbeam-utils",
  "ctor",
- "dirs 5.0.1",
+ "dirs",
  "fs2",
  "futures",
  "lalrpop",
@@ -2615,37 +2558,12 @@ dependencies = [
 
 [[package]]
 name = "sequoia-net"
-version = "0.27.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "960f1ea77bf8b6f455285424257574d66fa29223e4286268017a4458cc29d33f"
-dependencies = [
- "anyhow",
- "base64 0.13.1",
- "futures-util",
- "http",
- "hyper",
- "hyper-tls",
- "libc",
- "native-tls",
- "percent-encoding",
- "sequoia-openpgp",
- "tempfile",
- "thiserror",
- "tokio",
- "trust-dns-client",
- "trust-dns-resolver",
- "url",
- "zbase32",
-]
-
-[[package]]
-name = "sequoia-net"
 version = "0.28.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6abf810ba698339f332b946b485cc815c13a0f750189009bc10514c71fba814b"
 dependencies = [
  "anyhow",
- "base64 0.21.5",
+ "base64",
  "futures-util",
  "hickory-client",
  "hickory-resolver",
@@ -2671,7 +2589,7 @@ checksum = "2ea026cf8a70d331c742e3ad7e68fd405d0743ff86630fb4334a1bf8d0e194c7"
 dependencies = [
  "aes-gcm",
  "anyhow",
- "base64 0.21.5",
+ "base64",
  "botan",
  "buffered-reader",
  "bzip2",
@@ -2683,7 +2601,7 @@ dependencies = [
  "ed25519-dalek",
  "flate2",
  "getrandom",
- "idna 0.4.0",
+ "idna",
  "lalrpop",
  "lalrpop-util",
  "lazy_static",
@@ -2698,7 +2616,7 @@ dependencies = [
  "rand_core",
  "regex",
  "regex-syntax 0.8.2",
- "sha1collisiondetection 0.3.1",
+ "sha1collisiondetection",
  "thiserror",
  "win-crypto-ng",
  "winapi",
@@ -2733,9 +2651,9 @@ dependencies = [
 
 [[package]]
 name = "sequoia-wot"
-version = "0.8.1"
+version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cf5135009a31efa667ef38e517d848727585d854704ee8f36ca4b52b9b3d9765"
+checksum = "383672b024f126625127ec2b709b1e2f8d4814ab1bf4f800abb1a9fdc8dedcd3"
 dependencies = [
  "anyhow",
  "chrono",
@@ -2745,14 +2663,11 @@ dependencies = [
  "crossbeam",
  "dot-writer",
  "enumber",
- "lazy_static",
  "num_cpus",
- "openpgp-cert-d",
  "sequoia-cert-store",
  "sequoia-openpgp",
  "sequoia-policy-config",
  "thiserror",
- "tokio",
 ]
 
 [[package]]
@@ -2804,7 +2719,7 @@ version = "3.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "64cd236ccc1b7a29e7e2739f27c0b2dd199804abc4290e32f59f3b68d6405c23"
 dependencies = [
- "base64 0.21.5",
+ "base64",
  "chrono",
  "hex",
  "indexmap 1.9.3",
@@ -2825,15 +2740,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.38",
-]
-
-[[package]]
-name = "sha1collisiondetection"
-version = "0.2.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b20793cf8330b2c7da4c438116660fed24e380bcb8a1bcfff2581b5593a0b38e"
-dependencies = [
- "generic-array",
 ]
 
 [[package]]
@@ -3246,72 +3152,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "trust-dns-client"
-version = "0.22.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6c408c32e6a9dbb38037cece35740f2cf23c875d8ca134d33631cec83f74d3fe"
-dependencies = [
- "cfg-if 1.0.0",
- "data-encoding",
- "futures-channel",
- "futures-util",
- "lazy_static",
- "radix_trie",
- "rand",
- "thiserror",
- "time",
- "tokio",
- "tracing",
- "trust-dns-proto",
-]
-
-[[package]]
-name = "trust-dns-proto"
-version = "0.22.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4f7f83d1e4a0e4358ac54c5c3681e5d7da5efc5a7a632c90bb6d6669ddd9bc26"
-dependencies = [
- "async-trait",
- "cfg-if 1.0.0",
- "data-encoding",
- "enum-as-inner 0.5.1",
- "futures-channel",
- "futures-io",
- "futures-util",
- "idna 0.2.3",
- "ipnet",
- "lazy_static",
- "openssl",
- "rand",
- "smallvec",
- "thiserror",
- "tinyvec",
- "tokio",
- "tracing",
- "url",
-]
-
-[[package]]
-name = "trust-dns-resolver"
-version = "0.22.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "aff21aa4dcefb0a1afbfac26deb0adc93888c7d295fb63ab273ef276ba2b7cfe"
-dependencies = [
- "cfg-if 1.0.0",
- "futures-util",
- "ipconfig",
- "lazy_static",
- "lru-cache",
- "parking_lot",
- "resolv-conf",
- "smallvec",
- "thiserror",
- "tokio",
- "tracing",
- "trust-dns-proto",
-]
-
-[[package]]
 name = "try-lock"
 version = "0.2.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3367,7 +3207,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "143b538f18257fac9cad154828a57c6bf5157e1aa604d4816b5995bf6de87ae5"
 dependencies = [
  "form_urlencoded",
- "idna 0.4.0",
+ "idna",
  "percent-encoding",
 ]
 
@@ -3388,6 +3228,16 @@ name = "version_check"
 version = "0.9.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "49874b5167b65d7193b8aba1567f5c7d93d001cafc34600cee003eda787e483f"
+
+[[package]]
+name = "walkdir"
+version = "2.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d71d857dc86794ca4c280d616f7da00d2dbfd8cd788846559a6813e6aa4b54ee"
+dependencies = [
+ "same-file",
+ "winapi-util",
+]
 
 [[package]]
 name = "want"
@@ -3514,6 +3364,15 @@ name = "winapi-i686-pc-windows-gnu"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ac3b87c63620426dd9b991e5ce0329eff545bccbbb34f3be09ff6fb6ab51b7b6"
+
+[[package]]
+name = "winapi-util"
+version = "0.1.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f29e6f9198ba0d26b4c9f07dbe6f9ed633e1f3d5b8b414090084349e46a52596"
+dependencies = [
+ "winapi",
+]
 
 [[package]]
 name = "winapi-x86_64-pc-windows-gnu"

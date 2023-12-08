@@ -1,11 +1,10 @@
 use std::{
-    borrow::Cow,
     cell::RefCell,
     fmt,
     fs,
     io::{self, Read, Write},
     path::{Path, PathBuf},
-    sync::Mutex,
+    sync::{Arc, Mutex},
     time,
 };
 
@@ -921,7 +920,7 @@ impl<'store> Config<'store> {
 
     /// Returns certs matching a given query using groups and the
     /// configured trust model.
-    pub fn lookup_certs(&self, query: &Query) -> Result<Vec<(Validity, Cow<LazyCert<'store>>)>> {
+    pub fn lookup_certs(&self, query: &Query) -> Result<Vec<(Validity, Arc<LazyCert<'store>>)>> {
         let certs = self.lookup_certs_with(
             self.trust_model_impl.with_policy(self, Some(self.now()))?.as_ref(),
             query, true)?;
@@ -945,7 +944,7 @@ impl<'store> Config<'store> {
                                  vtm: &dyn trust::ModelViewAt<'a, 'store>,
                                  query: &Query,
                                  expand_groups: bool)
-        -> Result<Vec<(Validity, Cow<'a, LazyCert<'store>>)>>
+        -> Result<Vec<(Validity, Arc<LazyCert<'store>>)>>
     {
         match query {
             Query::Key(_) | Query::ExactKey(_) =>
@@ -1062,7 +1061,7 @@ impl<'store> common::Common<'store> for Config<'store> {
     }
 
     fn lookup_certs(&self, query: &Query)
-        -> anyhow::Result<Vec<(Validity, Cow<LazyCert<'store>>)>>
+        -> anyhow::Result<Vec<(Validity, Arc<LazyCert<'store>>)>>
     {
         Config::lookup_certs(self, query)
     }

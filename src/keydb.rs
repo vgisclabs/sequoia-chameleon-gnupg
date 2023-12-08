@@ -1,11 +1,11 @@
 //! Manages keyrings and keyboxes.
 
 use std::{
-    borrow::Cow,
     fs,
     io::Read,
     path::{Path, PathBuf},
     time::{Duration, SystemTime, UNIX_EPOCH},
+    sync::Arc,
 };
 
 use anyhow::{anyhow, Context, Result};
@@ -29,7 +29,7 @@ use openpgp::{
 use sequoia_cert_store as cert_store;
 use cert_store::CertStore;
 use cert_store::LazyCert;
-use cert_store::store::MergeCerts;
+use cert_store::store::{openpgp_cert_d, MergeCerts};
 use cert_store::Store;
 use cert_store::StoreUpdate;
 use cert_store::store::UserIDQueryParams;
@@ -267,13 +267,13 @@ impl<'store> KeyDB<'store> {
     /// Note: The returned certs have to be validated using a trust
     /// model!
     pub fn lookup_candidates(&self, query: &Query)
-        -> Result<Vec<Cow<LazyCert<'store>>>>
+        -> Result<Vec<Arc<LazyCert<'store>>>>
     {
         tracer!(TRACE, "KeyDB::lookup_candidates");
         t!("{}", query);
         match query {
             Query::Key(h) | Query::ExactKey(h) =>
-                self.lookup_by_key(h),
+                self.lookup_by_cert_or_subkey(h),
             Query::Email(e) =>
                 self.lookup_by_email(e),
             Query::UserIDFragment(f) =>
@@ -316,7 +316,7 @@ impl<'store> KeyDB<'store> {
                 err
             })?;
 
-        let items = certd.iter_fingerprints()?;
+        let items = certd.fingerprints();
 
         let open = |fp: String| -> Option<(String, _, _)> {
             let path = path.join(&fp[..2]).join(&fp[2..]);
@@ -345,7 +345,7 @@ impl<'store> KeyDB<'store> {
         };
 
         let result = if lazy {
-            items.into_iter().filter_map(|fp| {
+            items.into_iter().filter_map(Result::ok).filter_map(|fp| {
                 // XXX: Once we have a cached tag, avoid the
                 // work if tags match.
                 t!("loading {} from overlay", fp);
@@ -387,6 +387,7 @@ impl<'store> KeyDB<'store> {
             // For performance reasons, we read, parse, and
             // canonicalize certs in parallel.
             items.collect::<Vec<_>>().into_par_iter()
+                .filter_map(Result::ok)
                 .filter_map(|fp| {
                     // XXX: Once we have a cached tag and
                     // presumably a Sync index, avoid the work if
@@ -606,7 +607,7 @@ impl<'store> KeyDB<'store> {
                 Ok(certs) => {
                     for cert in certs.into_iter() {
                         let keyid = cert.keyid();
-                        if let Err(err) = self.update(Cow::Owned(cert)) {
+                        if let Err(err) = self.update(Arc::new(cert)) {
                             let err = anyhow::Error::from(err)
                                 .context(format!(
                                     "Reading {} from {:?}",
@@ -724,7 +725,11 @@ impl<'store> Overlay<'store> {
 
         // Also insert the public bits into the certd for the WoT
         // algorithm to find.
-        certd.insert(trust_root.to_vec()?.into(), |new, _| Ok(new))?;
+        certd.insert(
+            &trust_root.fingerprint().to_string(), &trust_root, false,
+            |new, _old| {
+                Ok(openpgp_cert_d::MergeResult::Data(new.to_vec()?))
+            })?;
 
         Ok(trust_root)
     }
@@ -816,42 +821,42 @@ macro_rules! forward_mut {
 }
 
 impl<'a> cert_store::store::Store<'a> for KeyDB<'a> {
-    fn lookup_by_cert(&self, kh: &KeyHandle) -> Result<Vec<Cow<LazyCert<'a>>>> {
+    fn lookup_by_cert(&self, kh: &KeyHandle) -> Result<Vec<Arc<LazyCert<'a>>>> {
         forward!(lookup_by_cert, self, kh)
     }
 
-    fn lookup_by_cert_fpr(&self, fingerprint: &Fingerprint) -> Result<Cow<LazyCert<'a>>>
+    fn lookup_by_cert_fpr(&self, fingerprint: &Fingerprint) -> Result<Arc<LazyCert<'a>>>
     {
         forward!(lookup_by_cert_fpr, self, fingerprint)
     }
 
-    fn lookup_by_key(&self, kh: &KeyHandle) -> Result<Vec<Cow<LazyCert<'a>>>> {
-        forward!(lookup_by_key, self, kh)
+    fn lookup_by_cert_or_subkey(&self, kh: &KeyHandle) -> Result<Vec<Arc<LazyCert<'a>>>> {
+        forward!(lookup_by_cert_or_subkey, self, kh)
     }
 
     fn select_userid(&self, query: &UserIDQueryParams, pattern: &str)
-        -> Result<Vec<Cow<LazyCert<'a>>>>
+        -> Result<Vec<Arc<LazyCert<'a>>>>
     {
         forward!(select_userid, self, query, pattern)
     }
 
-    fn lookup_by_userid(&self, userid: &UserID) -> Result<Vec<Cow<LazyCert<'a>>>> {
+    fn lookup_by_userid(&self, userid: &UserID) -> Result<Vec<Arc<LazyCert<'a>>>> {
         forward!(lookup_by_userid, self, userid)
     }
 
-    fn grep_userid(&self, pattern: &str) -> Result<Vec<Cow<LazyCert<'a>>>> {
+    fn grep_userid(&self, pattern: &str) -> Result<Vec<Arc<LazyCert<'a>>>> {
         forward!(grep_userid, self, pattern)
     }
 
-    fn lookup_by_email(&self, email: &str) -> Result<Vec<Cow<LazyCert<'a>>>> {
+    fn lookup_by_email(&self, email: &str) -> Result<Vec<Arc<LazyCert<'a>>>> {
         forward!(lookup_by_email, self, email)
     }
 
-    fn grep_email(&self, pattern: &str) -> Result<Vec<Cow<LazyCert<'a>>>> {
+    fn grep_email(&self, pattern: &str) -> Result<Vec<Arc<LazyCert<'a>>>> {
         forward!(grep_email, self, pattern)
     }
 
-    fn lookup_by_email_domain(&self, domain: &str) -> Result<Vec<Cow<LazyCert<'a>>>> {
+    fn lookup_by_email_domain(&self, domain: &str) -> Result<Vec<Arc<LazyCert<'a>>>> {
         forward!(lookup_by_email_domain, self, domain)
     }
 
@@ -859,7 +864,7 @@ impl<'a> cert_store::store::Store<'a> for KeyDB<'a> {
         forward!(fingerprints, self)
     }
 
-    fn certs<'b>(&'b self) -> Box<dyn Iterator<Item=Cow<'b, LazyCert<'a>>> + 'b>
+    fn certs<'b>(&'b self) -> Box<dyn Iterator<Item=Arc<LazyCert<'a>>> + 'b>
         where Self: 'b
     {
         forward!(certs, self)
@@ -869,19 +874,19 @@ impl<'a> cert_store::store::Store<'a> for KeyDB<'a> {
         forward_mut!(prefetch_all, self)
     }
 
-    fn prefetch_some(&mut self, certs: Vec<KeyHandle>) {
+    fn prefetch_some(&mut self, certs: &[KeyHandle]) {
         forward_mut!(prefetch_some, self, certs)
     }
 }
 
 impl<'a> cert_store::store::StoreUpdate<'a> for KeyDB<'a> {
-    fn update(&mut self, cert: Cow<LazyCert<'a>>) -> Result<()> {
+    fn update(&mut self, cert: Arc<LazyCert<'a>>) -> Result<()> {
         forward_mut!(update, self, cert)
     }
 
-    fn update_by<'ra>(&'ra mut self, cert: Cow<'ra, LazyCert<'a>>,
-                      merge_strategy: &mut dyn MergeCerts<'a, 'ra>)
-        -> Result<Cow<'ra, LazyCert<'a>>>
+    fn update_by(&mut self, cert: Arc<LazyCert<'a>>,
+                      merge_strategy: &mut dyn MergeCerts<'a>)
+        -> Result<Arc<LazyCert<'a>>>
     {
         forward_mut!(update_by, self, cert, merge_strategy)
     }

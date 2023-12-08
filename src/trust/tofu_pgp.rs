@@ -1,8 +1,8 @@
 //! Implements the Tofu+PGP model.
 
 use std::{
-    borrow::Cow,
     time::SystemTime,
+    sync::Arc,
 };
 
 use anyhow::Result;
@@ -77,7 +77,7 @@ impl<'a, 'store> ModelViewAt<'a, 'store> for TofuPGPViewAt<'a, 'store> {
     }
 
     fn lookup(&self, query: &Query)
-        -> Result<Vec<(Validity, Cow<'a, LazyCert<'store>>)>>
+        -> Result<Vec<(Validity, Arc<LazyCert<'store>>)>>
     {
         self.pgp.lookup(query)
     }

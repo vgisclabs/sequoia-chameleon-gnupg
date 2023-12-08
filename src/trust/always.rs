@@ -1,8 +1,8 @@
 //! Implements the "always trust" model.
 
 use std::{
-    borrow::Cow,
     time::SystemTime,
+    sync::Arc,
 };
 
 use anyhow::Result;
@@ -70,7 +70,7 @@ impl<'a, 'store> ModelViewAt<'a, 'store> for AlwaysViewAt<'a, 'store> {
         Ok(Validity::Unknown)
     }
 
-    fn lookup(&self, query: &Query) -> Result<Vec<(Validity, Cow<'a, LazyCert<'store>>)>> {
+    fn lookup(&self, query: &Query) -> Result<Vec<(Validity, Arc<LazyCert<'store>>)>> {
         Ok(self.config.keydb.lookup_candidates(query)?
            .into_iter()
            .map(|c| (Validity::Unknown, c))

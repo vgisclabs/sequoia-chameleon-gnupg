@@ -842,9 +842,9 @@ impl<'a, 'store> VerificationHelper for VHelper<'a, 'store> {
     }
 
     fn get_certs(&mut self, ids: &[openpgp::KeyHandle]) -> Result<Vec<Cert>> {
-        Ok(ids.iter().filter_map(|id| self.control.keydb().lookup_by_key(id).ok())
+        Ok(ids.iter().filter_map(|id| self.control.keydb().lookup_by_cert_or_subkey(id).ok())
            .flatten()
-           .filter_map(|cert| cert.as_cert().ok())
+           .filter_map(|cert| cert.to_cert().ok().cloned())
            .collect())
     }
 

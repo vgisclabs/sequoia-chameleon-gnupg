@@ -355,9 +355,9 @@ impl<'a, 'store> DHelper<'a, 'store> {
                     "public key is {}", handle));
             }
 
-            if let Some(cert) = self.config.keydb().lookup_by_key(&handle).ok()
+            if let Some(cert) = self.config.keydb().lookup_by_cert_or_subkey(&handle).ok()
                 .and_then(|certs: Vec<_>| certs.into_iter().next())
-                .and_then(|cert| cert.as_cert().ok())
+                .and_then(|cert| cert.to_cert().ok().cloned())
             {
                 if ! self.config.quiet && self.config.verbose > 0 {
                     self.config.warn(format_args!(
@@ -428,9 +428,9 @@ impl<'a, 'store> DHelper<'a, 'store> {
             let handle = KeyHandle::from(keyid);
 
             // See if we have the recipient cert.
-            let cert = match self.config.keydb().lookup_by_key(&handle).ok()
+            let cert = match self.config.keydb().lookup_by_cert_or_subkey(&handle).ok()
                 .and_then(|c| c.into_iter().next())
-                .and_then(|c| c.as_cert().ok())
+                .and_then(|c| c.to_cert().ok().cloned())
             {
                 Some(c) => c,
                 None => {
@@ -592,14 +592,14 @@ impl<'a, 'store> DecryptionHelper for DHelper<'a, 'store> {
             && (pkesks.is_empty() || skesks.is_empty()) // Both => void.
             && pkesks.iter().all(|pkesk| { // Check all recipients.
                 let certs = if let Ok(certs) = self.config.keydb()
-                    .lookup_by_key(&pkesk.recipient().into())
+                    .lookup_by_cert_or_subkey(&pkesk.recipient().into())
                 {
                     certs
                 } else {
                     return false;
                 };
 
-                for cert in certs.into_iter().filter_map(|cert| cert.as_cert().ok()) {
+                for cert in certs.into_iter().filter_map(|cert| cert.to_cert().ok().cloned()) {
                     if let Some(key) = cert.keys()
                         .with_policy(&self.config.de_vs_producer, None)
                         .key_handle(pkesk.recipient()).next()

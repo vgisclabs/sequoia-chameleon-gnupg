@@ -1,8 +1,8 @@
 //! Miscellaneous commands.
 
 use std::{
-    borrow::Cow,
     io::{self, Read},
+    sync::Arc,
 };
 
 use anyhow::{Context, Result};
@@ -125,7 +125,7 @@ pub fn cmd_implicit(config: &crate::Config, args: &[String])
         Some(ListKeys) => {
             let certs =
                 RawCertParser::from_reader(input)?
-                    .map(|r| r.map(|c| Cow::Owned(LazyCert::from(c))))
+                    .map(|r| r.map(|c| Arc::new(LazyCert::from(c))))
                     .collect::<Result<Vec<_>>>()?;
             crate::list_keys::list_keys(
                 config, certs.into_iter(), false, false, io::stdout())

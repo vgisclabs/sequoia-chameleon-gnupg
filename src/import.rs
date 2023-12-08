@@ -1,4 +1,4 @@
-use std::borrow::Cow;
+use std::sync::Arc;
 
 use anyhow::Result;
 
@@ -253,7 +253,7 @@ pub async fn do_import_cert(config: &mut crate::Config<'_>,
                 })?;
 
             // Actually store the cert.
-            config.mut_keydb().update(Cow::Owned(merged.into()))?;
+            config.mut_keydb().update(Arc::new(merged.into()))?;
         }
     } else {
         flags.set(IMPORT_OK_NEW_KEY);
@@ -272,7 +272,7 @@ pub async fn do_import_cert(config: &mut crate::Config<'_>,
             })?;
 
         // Actually store the cert.
-        config.mut_keydb().update(Cow::Owned(cert.into()))?;
+        config.mut_keydb().update(Arc::new(cert.into()))?;
     }
 
     if let Some(key) = key {

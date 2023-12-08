@@ -1,11 +1,10 @@
 use std::{
-    borrow::Cow,
     cell::RefCell,
     fmt,
     fs,
     io,
     path::{Path, PathBuf},
-    sync::Mutex,
+    sync::{Arc, Mutex},
 };
 
 use anyhow::{Context, Result};
@@ -184,7 +183,7 @@ impl<'store> common::Common<'store> for Config<'store> {
     }
 
     fn lookup_certs(&self, _query: &common::Query)
-        -> anyhow::Result<Vec<(common::Validity, Cow<LazyCert<'store>>)>>
+        -> anyhow::Result<Vec<(common::Validity, Arc<LazyCert<'store>>)>>
     {
         // The verification code uses this to determine the validity.
         // Since gpgv doesn't use trust models, its output doesn't

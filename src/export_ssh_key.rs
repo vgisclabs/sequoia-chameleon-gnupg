@@ -36,7 +36,7 @@ pub fn cmd_export_ssh_key(config: &mut crate::Config, args: &[String])
             "key {:?} not found: No public key", args[0])),
         1 => {
             let key = export_ssh_key(config, &args[0], query,
-                                     certs[0].1.as_cert()?)
+                                     certs[0].1.to_cert()?)
                 .map_err(|e| {
                     let _ = config.status().emit(Status::Failure {
                         location: "export-ssh-key",
@@ -61,7 +61,7 @@ pub fn cmd_export_ssh_key(config: &mut crate::Config, args: &[String])
 fn export_ssh_key(config: &crate::Config,
                   query_str: &str,
                   query: Query,
-                  cert: Cert)
+                  cert: &Cert)
                   -> Result<String> {
     use openssh_keys::{Data, PublicKey, Curve as SshCurve};
     let mut subkeys: Vec<_> = if let Query::ExactKey(h) = &query {

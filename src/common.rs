@@ -1,10 +1,10 @@
 //! Controls the execution of commands via the configuration.
 
 use std::{
-    borrow::Cow,
     fmt,
     path::{Path, PathBuf},
     time::SystemTime,
+    sync::Arc,
 };
 
 use anyhow::Result;
@@ -92,7 +92,7 @@ pub trait Common<'store> {
     /// Returns certs matching a given query using groups and the
     /// configured trust model.
     fn lookup_certs(&self, query: &Query)
-                    -> anyhow::Result<Vec<(Validity, Cow<LazyCert<'store>>)>>;
+                    -> anyhow::Result<Vec<(Validity, Arc<LazyCert<'store>>)>>;
 
     /// Returns the output file.
     fn outfile(&self) -> Option<&String>;
@@ -221,7 +221,7 @@ pub trait ModelViewAt<'a, 'store> {
                 -> Result<Validity>;
 
     fn lookup(&self, query: &Query)
-        -> Result<Vec<(Validity, Cow<'a, LazyCert<'store>>)>>;
+        -> Result<Vec<(Validity, Arc<LazyCert<'store>>)>>;
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -312,7 +312,7 @@ impl Query {
     /// Returns whether `cert` matches this query.
     ///
     /// Note: the match must be authenticated!
-    pub fn matches(&self, cert: &Cow<LazyCert>) -> bool {
+    pub fn matches(&self, cert: &Arc<LazyCert>) -> bool {
         match self {
             Query::Key(h) | Query::ExactKey(h) =>
                 cert.keys().any(|k| k.key_handle().aliases(h)),

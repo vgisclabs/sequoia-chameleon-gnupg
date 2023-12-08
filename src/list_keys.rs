@@ -1,7 +1,7 @@
 use std::{
-    borrow::Cow,
     collections::BTreeMap,
     io::{self, Write},
+    sync::Arc,
 };
 
 use anyhow::Result;
@@ -48,7 +48,7 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String], list_secret: bool)
         }.emit(config, &mut sink)?;
     }
 
-    let certs: Box<dyn Iterator<Item = Cow<LazyCert>>> = if args.is_empty() {
+    let certs: Box<dyn Iterator<Item = Arc<LazyCert>>> = if args.is_empty() {
         // We filter out the trust root.  Not only does including it
         // mess up the tests, it is also likely surprising and
         // confusing for users.
@@ -64,12 +64,28 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String], list_secret: bool)
                 if let Some(certd) =
                     overlay.cert_store.certd().map(|c| c.certd())
                 {
-                    use openpgp::serialize::SerializeInto;
+                    use openpgp::{
+                        Cert,
+                        parse::Parse,
+                        serialize::SerializeInto,
+                    };
+                    use sequoia_cert_store::store::openpgp_cert_d::MergeResult;
                     if certd.get(&trust_root.fingerprint().to_string())?
                         .is_none()
                     {
                         certd.insert(
-                            trust_root.to_vec()?.into(), |new, _| Ok(new))?;
+                            &trust_root.fingerprint().to_string(),
+                            trust_root, false,
+                            |new, old| {
+                                let d = if let Some(old) = old
+                                    .and_then(|b| Cert::from_bytes(b).ok())
+                                {
+                                    old.merge_public(new.clone())?.to_vec()?
+                                } else {
+                                    new.to_vec()?
+                                };
+                                Ok(MergeResult::Data(d))
+                            })?;
                     }
                 }
 
@@ -91,7 +107,7 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String], list_secret: bool)
         for query in args.iter().map(|a| Query::from(&a[..])) {
             let r = match query {
                 Query::Key(h) | Query::ExactKey(h) =>
-                    config.keydb().lookup_by_key(&h),
+                    config.keydb().lookup_by_cert_or_subkey(&h),
                 Query::Email(e) =>
                     config.keydb().lookup_by_email(&e),
                 Query::UserIDFragment(f) =>
@@ -127,7 +143,7 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String], list_secret: bool)
 }
 
 pub fn list_keys<'a, 'store: 'a, S>(config: &'a crate::Config,
-                                    certs: impl Iterator<Item = Cow<'a, LazyCert<'store>>> + 'a,
+                                    certs: impl Iterator<Item = Arc<LazyCert<'store>>> + 'a,
                                     list_secret: bool,
                                     emit_header: bool,
                                     mut sink: S)

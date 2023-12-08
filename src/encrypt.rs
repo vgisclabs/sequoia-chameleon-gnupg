@@ -118,9 +118,9 @@ fn do_encrypt(config: &crate::Config, args: &[String],
 
         // Get the candidates, and sort by descending validity.
         let mut candidates = if recipient.from_file {
-            use std::borrow::Cow;
+            use std::sync::Arc;
             vec![(Validity::Fully,
-                  Cow::Owned(openpgp::Cert::from_file(&recipient.name)?.into()))]
+                  Arc::new(openpgp::Cert::from_file(&recipient.name)?.into()))]
         } else {
             config.lookup_certs(&query)?
         };

@@ -53,7 +53,6 @@
 //! the time to sleep after doing an update, we limit lambda to 19
 //! hours.
 
-use std::borrow::Cow;
 use std::collections::btree_map::{BTreeMap, Entry};
 use std::fmt;
 use std::fs::File;
@@ -62,6 +61,7 @@ use std::path::PathBuf;
 use std::process::{self, Command, Stdio};
 use std::thread;
 use std::time::Duration;
+use std::sync::Arc;
 
 use tokio::task::JoinSet;
 
@@ -297,7 +297,7 @@ async fn worker(config: &mut crate::Config<'_>) -> openpgp::Result<()> {
     let mut rng = rand::thread_rng();
 
     let mut certs: Vec<_> = config.keydb().certs()
-        .filter_map(|c| c.as_cert().ok())
+        .filter_map(|c| c.to_cert().ok().cloned())
         .collect();
     let mut n = certs.len();
     loop {
@@ -354,7 +354,7 @@ async fn worker(config: &mut crate::Config<'_>) -> openpgp::Result<()> {
             let _ = config.mut_keydb().reinitialize(true);
 
             certs = config.keydb().certs()
-                .filter_map(|c| c.as_cert().ok())
+                .filter_map(|c| c.to_cert().ok().cloned())
                 .collect();
             n = certs.len();
 
@@ -553,7 +553,7 @@ async fn worker(config: &mut crate::Config<'_>) -> openpgp::Result<()> {
                 .collect::<Vec<Cert>>();
 
             for cert in certs {
-                if let Err(e) = config.mut_keydb().update(Cow::Owned(cert.into())) {
+                if let Err(e) = config.mut_keydb().update(Arc::new(cert.into())) {
                     t!("inserting cert: {}", e);
                 }
             }
