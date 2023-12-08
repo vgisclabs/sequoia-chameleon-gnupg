@@ -637,7 +637,6 @@ impl<'store> KeyDB<'store> {
 }
 
 pub struct Overlay<'store> {
-    path: PathBuf,
     pub(crate) cert_store: CertStore<'store>,
     #[allow(dead_code)]
     trust_root: OnceCell<Cert>,
@@ -676,10 +675,16 @@ impl<'store> Overlay<'store> {
         };
 
         Ok(Overlay {
-            path: p.into(),
             cert_store,
             trust_root: Default::default(),
         })
+    }
+
+    /// Returns the low-level `CertD`.
+    pub fn certd(&self) -> &openpgp_cert_d::CertD {
+        self.cert_store
+            .certd().expect("created using CertStore::open")
+            .certd()
     }
 
     /// Lazily reads (or creates) the trust root.
@@ -762,7 +767,7 @@ impl<'store> Overlay<'store> {
     }
 
     pub fn path(&self) -> &Path {
-        &self.path
+        self.certd().base_dir()
     }
 
     #[allow(dead_code)]
