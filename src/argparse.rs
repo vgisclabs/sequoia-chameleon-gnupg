@@ -9,6 +9,8 @@ use std::{
 
 pub mod flags;
 use flags::*;
+#[macro_use]
+pub mod options;
 pub mod utils;
 
 /// A command or option with long option, flags, and description.

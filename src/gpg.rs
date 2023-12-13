@@ -36,6 +36,7 @@ mod macros;
 pub mod tracing;
 pub mod agent;
 #[allow(dead_code)]
+#[macro_use]
 pub mod argparse;
 use argparse::{Argument, Opt, flags::*};
 pub mod babel;
