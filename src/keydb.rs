@@ -11,6 +11,7 @@ use std::{
 use anyhow::{anyhow, Context, Result};
 use home_dir::HomeDirExt;
 
+// XXX: Requires fallible initialization, see https://github.com/rust-lang/rust/issues/109737
 use once_cell::unsync::OnceCell;
 
 use sequoia_openpgp as openpgp;

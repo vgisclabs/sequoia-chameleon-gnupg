@@ -1,5 +1,5 @@
 use std::{
-    cell::RefCell,
+    cell::{OnceCell, RefCell},
     fmt,
     fs,
     io::{self, Read, Write},
@@ -10,7 +10,6 @@ use std::{
 
 use anyhow::{Context, Result};
 use indexmap::IndexMap;
-use once_cell::unsync::OnceCell;
 
 use sequoia_openpgp as openpgp;
 use sequoia_ipc as ipc;
