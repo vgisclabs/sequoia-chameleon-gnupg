@@ -430,7 +430,7 @@ impl<T: Copy + Debug + PartialEq + Eq + Into<isize> + 'static> Iterator for Iter
                 .collect::<Vec<_>>();
 
             let m = match matches.len() {
-                0 => return Some(Err(Error::Unkown(a0.into()))),
+                0 => return Some(Err(Error::Unknown(a0.into()))),
                 _ => matches[0],
             };
 
@@ -545,7 +545,7 @@ impl<T: Copy + Debug + PartialEq + Eq + Into<isize> + 'static> Iterator for Iter
                 .collect::<Vec<_>>();
 
             let matched = match matches.len() {
-                0 => return Some(Err(Error::Unkown(a.into()))),
+                0 => return Some(Err(Error::Unknown(a.into()))),
                 1 => matches[0],
                 n => {
                     // See if there is an *exact* match.
@@ -618,7 +618,7 @@ impl<T: Copy + Debug + PartialEq + Eq + Into<isize> + 'static> Iterator for Iter
                 .collect::<Vec<_>>();
 
             match matches.len() {
-                0 => return Some(Err(Error::Unkown(a0.into()))),
+                0 => return Some(Err(Error::Unknown(a0.into()))),
                 _ => matches[0],
             }
         };
@@ -633,7 +633,7 @@ pub enum Error {
     #[error("Malformed argument {:?}", _0)]
     Malformed(String),
     #[error("Unknown argument {:?}", _0)]
-    Unkown(String),
+    Unknown(String),
     #[error("Ambiguous argument: {:?} matches {}", _0, _1)]
     Ambiguous(String, String),
     #[error("Missing parameter for {:?}", _0)]
