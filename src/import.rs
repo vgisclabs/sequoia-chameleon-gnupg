@@ -23,9 +23,147 @@ use cert_store::Store;
 use cert_store::StoreUpdate;
 
 use crate::{
+    argparse,
+    argparse::options::Opt,
     common::Common,
     utils,
 };
+
+/// Controls import operations.
+#[derive(Default)]
+pub struct ImportOptions {
+    /// Import signatures that are marked as local-only.
+    pub local_sigs: bool,
+
+    /// Show key during import.
+    pub show: bool,
+
+    /// Do not clear the ownertrust values during import.
+    pub keep_ownertrust: bool,
+
+    /// Only accept updates to existing keys.
+    pub merge_only: bool,
+
+    /// Remove unusable parts from key after import.
+    pub clean: bool,
+
+    /// Remove as much as possible from key after import.
+    pub minimal: bool,
+
+    /// Ignore key-signatures which are not self-signatures.
+    pub self_sigs_only: bool,
+
+    /// Run import filters and export key immediately.
+    pub export: bool,
+
+    /// Assume the GnuPG key backup format.
+    pub restore: bool,
+
+    /// Do not actually import the keys.
+    pub dry_run: bool,
+}
+
+impl ImportOptions {
+    const OPTS: [Opt<ImportOptions>; 20] = [
+        opt_todo! {
+            "import-local-sigs",
+            |o, s, _| Ok({ o.local_sigs = s; }),
+            "import signatures that are marked as local-only",
+        },
+
+        opt_todo! {
+            "keep-ownertrust",
+            |o, s, _| Ok({ o.keep_ownertrust = s; }),
+            "do not clear the ownertrust values during import",
+        },
+
+        opt_todo! {
+            "import-show",
+            |o, s, _| Ok({ o.show = s; }),
+            "show key during import",
+        },
+
+        opt_todo! {
+            "merge-only",
+            |o, s, _| Ok({ o.merge_only = s; }),
+            "only accept updates to existing keys",
+        },
+
+        opt_todo! {
+            "import-clean",
+            |o, s, _| Ok({ o.clean = s; }),
+            "remove unusable parts from key after import",
+        },
+
+        opt_todo! {
+            "import-minimal",
+            |o, s, _| Ok({ o.minimal = s; o.clean = s; }),
+            "remove as much as possible from key after import",
+        },
+
+        opt_todo! {
+            "self-sigs-only",
+            |o, s, _| Ok({ o.self_sigs_only = s; }),
+            "ignore key-signatures which are not self-signatures",
+        },
+
+        opt_todo! {
+            "import-export",
+            |o, s, _| Ok({ o.export = s; }),
+            "run import filters and export key immediately",
+        },
+
+        opt_todo! {
+            "restore",
+            |o, s, _| Ok({ o.restore = s; }),
+            "assume the GnuPG key backup format",
+        },
+        opt_todo! {
+            "import-restore",
+            |o, s, _| Ok({ o.restore = s; }),
+            "",
+        },
+
+        /* No description to avoid string change: Fixme for 2.3 */
+        opt_todo! {
+            "show-only",
+            |o, s, _| Ok({ o.show = s; o.dry_run = s; }),
+            "",
+        },
+
+        /* Aliases for backward compatibility */
+        opt_todo! {
+            "allow-local-sigs",
+            |o, s, _| Ok({ o.local_sigs = s; }),
+            "",
+        },
+
+        // The following options are NOPs in the Chameleon.
+        opt_nop!("repair-pks-subkey-bug"),
+        opt_nop!("fast-import"),
+        opt_nop!("repair-keys"),
+        opt_nop!("repair-hkp-subkey-bug"),
+
+        // The following options are NOPs in GnuPG.
+        opt_nop!("import-unusable-sigs"),
+        opt_nop!("import-clean-sigs"),
+        opt_nop!("import-clean-uids"),
+        opt_nop!("convert-sk-to-kp"),
+    ];
+
+    /// Prints the list of import options if requested.
+    ///
+    /// If `s == "help"`, prints all supported options and returns
+    /// `true`.  The caller should then exit the process gracefully.
+    pub fn maybe_print_help(s: &str) -> Result<bool> {
+        argparse::options::maybe_print_help(&Self::OPTS, s)
+    }
+
+    /// Parses the import options.
+    pub fn parse(&mut self, s: &str) -> Result<()> {
+        argparse::options::parse(&Self::OPTS, s, self)
+    }
+}
 
 /// Dispatches the --import command.
 ///

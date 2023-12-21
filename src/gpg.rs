@@ -512,7 +512,7 @@ pub struct Config<'store> {
     force_ownertrust: bool,
     groups: IndexMap<String, Vec<String>>,
     homedir: PathBuf,
-    import_options: u32,
+    import_options: import::ImportOptions,
     input_size_hint: Option<u64>,
     interactive: bool,
     keydb: keydb::KeyDB<'store>,
@@ -1588,9 +1588,8 @@ fn real_main() -> anyhow::Result<()> {
 	    aShowKeys =>
             {
                 set_cmd(&mut command, cmd)?;
-                opt.import_options |= IMPORT_SHOW;
-                opt.import_options |= IMPORT_DRY_RUN;
-                opt.import_options &= !IMPORT_REPAIR_KEYS;
+                opt.import_options.show = true;
+                opt.import_options.dry_run = true;
                 opt.list_options |= LIST_SHOW_UNUSABLE_UIDS;
                 opt.list_options |= LIST_SHOW_UNUSABLE_SUBKEYS;
                 opt.list_options |= LIST_SHOW_NOTATIONS;
@@ -2267,6 +2266,14 @@ fn real_main() -> anyhow::Result<()> {
 	    oKeyServerOptions => {
                 opt.keyserver_options = value.as_str().unwrap().parse()?;
 	    },
+
+            oImportOptions => {
+                let options = value.as_str().unwrap();
+                if import::ImportOptions::maybe_print_help(options)? {
+                    return Ok(true);
+                }
+                opt.import_options.parse(value.as_str().unwrap())?;
+            },
 
 	    oShowSessionKey => {
                 opt.show_session_key = true;
