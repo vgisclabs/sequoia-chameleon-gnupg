@@ -1505,7 +1505,7 @@ fn real_main() -> anyhow::Result<()> {
                 continue;
             },
         };
-      let mut handle_argument = || -> Result<()> {
+      let mut handle_argument = || -> Result<bool> {
         use CmdOrOpt::*;
         match cmd {
 	    aListConfig
@@ -2358,10 +2358,10 @@ fn real_main() -> anyhow::Result<()> {
 
             _ => (),
         }
-        Ok(())
+        Ok(false)
       };
 
-        handle_argument().with_context(|| {
+        let exit = handle_argument().with_context(|| {
             if let Some(f) = &config_file {
                 if let Some(arg) = parser.argument_name(cmd) {
                     format!("Error parsing option {} in {}", arg, f.display())
@@ -2376,6 +2376,13 @@ fn real_main() -> anyhow::Result<()> {
                 }
             }
         })?;
+
+        // We give the argument parsing code a chance to cleanly exit
+        // the program.  This is used, for example, when printing
+        // options such as import options.
+        if exit {
+            return Ok(());
+        }
     }
 
     if greeting && ! no_greeting {
