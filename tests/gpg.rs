@@ -1069,16 +1069,64 @@ impl Diff<'_> {
             eprintln!("asserting output matches output from last run.");
 
             if former_us.stdout != self.us.stdout {
-                pass = false;
-                eprintln!("Stdout changed from last run.");
+                let former_delta =
+                    self.oracle.stdout_edit_distance(former_us);
+                if former_delta > self.stdout_edit_distance() {
+                    eprintln!("Stdout changed from last run, \
+                               but we improved from {} to {}.",
+                              former_delta,
+                              self.oracle.stdout_edit_distance(former_us));
+
+                    if let Some(b) = self.experiment.borrow_mut()
+                        .artifacts.former_us_outputs.as_mut()
+                        .and_then(|o| o.get_mut(self.index))
+                    {
+                        b.stdout = self.us.stdout.clone();
+                    }
+                } else {
+                    pass = false;
+                    eprintln!("Stdout changed from last run.");
+                }
             }
             if former_us.stderr != self.us.stderr {
-                pass = false;
-                eprintln!("Stderr changed from last run.");
+                let former_delta =
+                    self.oracle.stderr_edit_distance(former_us);
+                if former_delta > self.stderr_edit_distance() {
+                    eprintln!("Stderr changed from last run, \
+                               but we improved from {} to {}.",
+                              former_delta,
+                              self.oracle.stderr_edit_distance(former_us));
+
+                    if let Some(b) = self.experiment.borrow_mut()
+                        .artifacts.former_us_outputs.as_mut()
+                        .and_then(|o| o.get_mut(self.index))
+                    {
+                        b.stderr = self.us.stderr.clone();
+                    }
+                } else {
+                    pass = false;
+                    eprintln!("Stderr changed from last run.");
+                }
             }
             if former_us.statusfd != self.us.statusfd {
-                pass = false;
-                eprintln!("Status-fd changed from last run.");
+                let former_delta =
+                    self.oracle.statusfd_edit_distance(former_us);
+                if former_delta > self.statusfd_edit_distance() {
+                    eprintln!("Statusfd changed from last run, \
+                               but we improved from {} to {}.",
+                              former_delta,
+                              self.oracle.statusfd_edit_distance(former_us));
+
+                    if let Some(b) = self.experiment.borrow_mut()
+                        .artifacts.former_us_outputs.as_mut()
+                        .and_then(|o| o.get_mut(self.index))
+                    {
+                        b.statusfd = self.us.statusfd.clone();
+                    }
+                } else {
+                    pass = false;
+                    eprintln!("Status-fd changed from last run.");
+                }
             }
             if former_us.status != self.us.status {
                 pass = false;
