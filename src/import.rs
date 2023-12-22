@@ -148,7 +148,7 @@ impl ImportOptions {
         opt_nop!("import-unusable-sigs"),
         opt_nop!("import-clean-sigs"),
         opt_nop!("import-clean-uids"),
-        opt_nop!("convert-sk-to-kp"),
+        opt_nop!("convert-sk-to-pk"),
     ];
 
     /// Prints the list of import options if requested.
