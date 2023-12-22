@@ -882,8 +882,8 @@ pub struct Diff<'a> {
 
 impl Diff<'_> {
     /// Canonicalizes the outputs with the given function.
-    pub fn canonicalize_with<F>(&mut self, mut fun: F)
-        -> Result<()>
+    pub fn canonicalize_with<F>(mut self, mut fun: F)
+        -> Result<Self>
     where
         F: FnMut(&mut Output) -> Result<()>,
     {
@@ -903,16 +903,25 @@ impl Diff<'_> {
             ];
         }
 
-        Ok(())
+        let diff = Diff {
+            experiment: self.experiment,
+            args: self.args,
+            oracle: self.oracle,
+            us: self.us,
+            former_us: self.former_us,
+            index: self.index,
+        };
+
+        Ok(diff)
     }
 
     /// Canonicalizes the first fingerprints in the outputs.
-    pub fn canonicalize_fingerprints(&mut self, n: usize) -> Result<()> {
+    pub fn canonicalize_fingerprints(mut self, n: usize) -> Result<Self> {
         let find_fp = Regex::new(r"[0-9A-F]{40}")?;
         let mut canonicalizations =
             std::mem::take(&mut self.experiment.get_mut().canonicalizations);
 
-        self.canonicalize_with(|o| {
+        let mut diff = self.canonicalize_with(|o| {
             if let Some(fp) = find_fp.find(&o.stdout)
                 .or_else(|| find_fp.find(&o.stderr))
                 .or_else(|| find_fp.find(&o.statusfd))
@@ -948,8 +957,16 @@ impl Diff<'_> {
             Ok(())
         })?;
 
-        self.experiment.get_mut().canonicalizations = canonicalizations;
-        Ok(())
+        diff.experiment.get_mut().canonicalizations = canonicalizations;
+
+        Ok(Diff {
+            experiment: diff.experiment,
+            args: diff.args,
+            oracle: diff.oracle,
+            us: diff.us,
+            former_us: diff.former_us,
+            index: diff.index,
+        })
     }
 
     /// Ignore former us.

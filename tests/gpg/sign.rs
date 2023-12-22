@@ -197,12 +197,11 @@ fn test_verification(experiment: &mut Experiment,
     for signature in signatures {
         let csf =
             signature.starts_with(b"-----BEGIN PGP SIGNED MESSAGE-----");
-        let mut diff = experiment.invoke(&[
+        let diff = experiment.invoke(&[
             "--verify",
             "--output", "output",
             &experiment.store("signature", &signature)?,
-        ])?;
-        diff.canonicalize_with(canonicalize_sig_id_and_salt)?;
+        ])?.canonicalize_with(canonicalize_sig_id_and_salt)?;
         diff.assert_success();
         diff.assert_limits(0, 6, 96);
         diff.with_working_dir(|p| {
@@ -225,12 +224,11 @@ fn test_detached_verification(experiment: &mut Experiment,
                               signatures: Vec<Vec<u8>>)
                               -> Result<()> {
     for signature in signatures {
-        let mut diff = experiment.invoke(&[
+        let diff = experiment.invoke(&[
             "--verify",
             &experiment.store("signature", &signature)?,
             &experiment.store("data", &PLAINTEXT)?,
-        ])?;
-        diff.canonicalize_with(canonicalize_sig_id_and_salt)?;
+        ])?.canonicalize_with(canonicalize_sig_id_and_salt)?;
         diff.assert_success();
         diff.assert_limits(0, 6, 67);
     }

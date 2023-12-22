@@ -77,14 +77,12 @@ fn print_md<A: Into<Option<&'static str>>>(mut e: Experiment, arg: A) -> Result<
         }
 
         args.push(&foo);
-        let mut diff = e.invoke(&args)?;
-        diff.canonicalize_with(trim_start)?;
+        let diff = e.invoke(&args)?.canonicalize_with(trim_start)?;
         diff.assert_success();
         diff.assert_equal_up_to(20, 0);
 
         args.push(&bar);
-        let mut diff = e.invoke(&args)?;
-        diff.canonicalize_with(trim_start)?;
+        let diff = e.invoke(&args)?.canonicalize_with(trim_start)?;
         diff.assert_success();
         diff.assert_equal_up_to(20, 0);
     }
@@ -110,14 +108,12 @@ fn print_mds() -> Result<()> {
         args.push("--print-mds");
 
         args.push(&foo);
-        let mut diff = e.invoke(&args)?;
-        diff.canonicalize_with(trim_start)?;
+        let diff = e.invoke(&args)?.canonicalize_with(trim_start)?;
         diff.assert_success();
         diff.assert_equal_up_to(20, 0);
 
         args.push(&bar);
-        let mut diff = e.invoke(&args)?;
-        diff.canonicalize_with(trim_start)?;
+        let diff = e.invoke(&args)?.canonicalize_with(trim_start)?;
         diff.assert_success();
         diff.assert_equal_up_to(20, 0);
     }
