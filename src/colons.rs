@@ -64,7 +64,7 @@ pub enum Record {
     Fingerprint(Fingerprint),
     Keygrip(Keygrip),
     UserID {
-        validity: Validity,
+        validity: Option<Validity>,
         creation_date: SystemTime,
         expiration_date: Option<SystemTime>,
         userid: UserID,
@@ -307,7 +307,7 @@ impl Record {
 
                 if mr {
                     write!(w, "uid:{}::::{}:{}:{}::",
-                           validity,
+                           validity.unwrap_or(Validity::Unknown),
                            creation_date.format("%s"),
                            expiration_date.map(|t| t.format("%s").to_string())
                            .unwrap_or_else(|| "".into()),
@@ -316,9 +316,14 @@ impl Record {
                     e(w, userid.value())?;
                     writeln!(w, "::::::::::0:")?;
                 } else {
-                    writeln!(w, "uid           {} {}",
-                             BoxedValidity(*validity),
-                             String::from_utf8_lossy(userid.value()))?;
+                    if let Some(validity) = validity {
+                        writeln!(w, "uid           {} {}",
+                                 BoxedValidity(*validity),
+                                 String::from_utf8_lossy(userid.value()))?;
+                    } else {
+                        writeln!(w, "uid                      {}",
+                                 String::from_utf8_lossy(userid.value()))?;
+                    }
                 }
             },
 

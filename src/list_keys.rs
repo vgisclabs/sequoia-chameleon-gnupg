@@ -153,7 +153,7 @@ where
 {
     let rt = tokio::runtime::Runtime::new()?;
     rt.block_on(async_list_keys(config, certs,
-                                list_secret, emit_header,
+                                list_secret, true, emit_header,
                                 sink))
 }
 
@@ -161,6 +161,7 @@ pub async fn async_list_keys<'a, 'store: 'a, S>(
     config: &'a crate::Config<'store>,
     certs: impl Iterator<Item = Arc<LazyCert<'store>>>,
     list_secret: bool,
+    list_uid_validity: bool,
     emit_header: bool,
     mut sink: S)
     -> Result<()>
@@ -303,7 +304,7 @@ where
             let vuid = uid.clone().with_policy(p, config.now()).ok();
 
             Record::UserID {
-                validity,
+                validity: list_uid_validity.then_some(validity),
                 creation_date: vuid.as_ref()
                     .and_then(|v| v.binding_signature().signature_creation_time())
                     .unwrap_or_else(|| {
