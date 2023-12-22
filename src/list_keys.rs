@@ -153,7 +153,7 @@ where
 {
     let rt = tokio::runtime::Runtime::new()?;
     rt.block_on(async_list_keys(config, certs,
-                                list_secret, true, emit_header,
+                                list_secret, list_secret, true, emit_header,
                                 sink))
 }
 
@@ -161,6 +161,8 @@ pub async fn async_list_keys<'a, 'store: 'a, S>(
     config: &'a crate::Config<'store>,
     certs: impl Iterator<Item = Arc<LazyCert<'store>>>,
     list_secret: bool,
+    // Tunes behavior for gpg --list-secret-keys.
+    list_secret_keys_mode: bool,
     list_uid_validity: bool,
     emit_header: bool,
     mut sink: S)
@@ -183,13 +185,20 @@ where
     let mut emitted_header = false;
 
     for cert in certs {
-        let has_secret = if let Some(a) = agent.as_mut() {
+        let mut has_secret = if let Some(a) = agent.as_mut() {
             crate::agent::has_keys(a, &cert).await?
         } else {
             Default::default()
         };
 
-        if list_secret && has_secret.is_empty() {
+        // When we are importing secret keys, we may have the secret
+        // while the agent does not yet have it.  Nevertheless, we
+        // want to list the secrets.
+        for skb in cert.to_cert()?.keys().secret() {
+            has_secret.insert(skb.fingerprint());
+        }
+
+        if list_secret_keys_mode && has_secret.is_empty() {
             // No secret (sub)key, don't list this key in --list-secret-keys.
             continue;
         }
@@ -284,7 +293,7 @@ where
         Record::Fingerprint(cert_fp)
             .emit(config, &mut sink)?;
         if config.with_keygrip
-            || (config.with_colons && (list_secret || have_secret))
+            || (config.with_colons && (list_secret_keys_mode || have_secret))
         {
             if let Ok(grip) = Keygrip::of(cert.primary_key().mpis()) {
                 Record::Keygrip(grip).emit(config, &mut sink)?;
@@ -360,7 +369,8 @@ where
                     .emit(config, &mut sink)?;
             }
             if config.with_keygrip
-                || (config.with_colons && (list_secret || have_secret))
+                || (config.with_colons &&
+                    (list_secret_keys_mode || have_secret))
             {
                 if let Ok(grip) = Keygrip::of(subkey.mpis()) {
                     Record::Keygrip(grip).emit(config, &mut sink)?;
