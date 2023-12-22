@@ -1,5 +1,5 @@
 use std::{
-    cell::RefCell,
+    cell::{OnceCell, RefCell},
     collections::BTreeMap,
     fmt,
     fs,
@@ -804,6 +804,9 @@ impl Experiment {
             former_us,
             us,
             index: n,
+            cached_stdout_edit_distance: Default::default(),
+            cached_stderr_edit_distance: Default::default(),
+            cached_statusfd_edit_distance: Default::default(),
         })
     }
 
@@ -878,9 +881,39 @@ pub struct Diff<'a> {
     us: Output,
     former_us: Option<Output>,
     index: usize,
+
+    /// The cached edit distance between our stdout and the oracle's.
+    cached_stdout_edit_distance: OnceCell<usize>,
+
+    /// The cached edit distance between our stderr and the oracle's.
+    cached_stderr_edit_distance: OnceCell<usize>,
+
+    /// The cached edit distance between our status-fd and the oracle's.
+    cached_statusfd_edit_distance: OnceCell<usize>,
 }
 
 impl Diff<'_> {
+    /// Returns the edit distance between our stdout and the oracle's.
+    pub fn stdout_edit_distance(&self) -> usize {
+        self.cached_stdout_edit_distance.get_or_init(
+            || self.oracle.stdout_edit_distance(&self.us))
+            .clone()
+    }
+
+    /// Returns the edit distance between our stderr and the oracle's.
+    pub fn stderr_edit_distance(&self) -> usize {
+        self.cached_stderr_edit_distance.get_or_init(
+            || self.oracle.stderr_edit_distance(&self.us))
+            .clone()
+    }
+
+    /// Returns the edit distance between our status-fd and the oracle's.
+    pub fn statusfd_edit_distance(&self) -> usize {
+        self.cached_statusfd_edit_distance.get_or_init(
+            || self.oracle.statusfd_edit_distance(&self.us))
+            .clone()
+    }
+
     /// Canonicalizes the outputs with the given function.
     pub fn canonicalize_with<F>(mut self, mut fun: F)
         -> Result<Self>
@@ -893,24 +926,37 @@ impl Diff<'_> {
             fun(former_us)?;
         }
 
-        if let Some(bounds) = self.experiment.get_mut()
-            .artifacts.dynamic_upper_bounds.get_mut(self.index)
-        {
-            *bounds = vec![
-                self.oracle.stdout_edit_distance(&self.us),
-                self.oracle.stderr_edit_distance(&self.us),
-                self.oracle.statusfd_edit_distance(&self.us),
-            ];
-        }
-
-        let diff = Diff {
+        let mut diff = Diff {
             experiment: self.experiment,
             args: self.args,
             oracle: self.oracle,
             us: self.us,
             former_us: self.former_us,
             index: self.index,
+            cached_stdout_edit_distance: Default::default(),
+            cached_stderr_edit_distance: Default::default(),
+            cached_statusfd_edit_distance: Default::default(),
         };
+
+        // Do a little dance to only compute the edit distances if
+        // necessary.
+        if diff.experiment.borrow()
+            .artifacts.dynamic_upper_bounds.get(self.index).is_some()
+        {
+            // Compute them now while we don't have self mutably
+            // borrowed.
+            let bounds = vec![
+                diff.stdout_edit_distance(),
+                diff.stderr_edit_distance(),
+                diff.statusfd_edit_distance(),
+            ];
+            if let Some(b) = diff.experiment.get_mut()
+                .artifacts.dynamic_upper_bounds.get_mut(diff.index)
+            {
+                *b = bounds;
+            }
+        }
+
 
         Ok(diff)
     }
@@ -966,6 +1012,9 @@ impl Diff<'_> {
             us: diff.us,
             former_us: diff.former_us,
             index: diff.index,
+            cached_stdout_edit_distance: Default::default(),
+            cached_stderr_edit_distance: Default::default(),
+            cached_statusfd_edit_distance: Default::default(),
         })
     }
 
@@ -1105,7 +1154,7 @@ impl Diff<'_> {
         let mut limits = Vec::new();
         let mut pass = true;
 
-        let d = self.oracle.stdout_edit_distance(&self.us);
+        let d = self.stdout_edit_distance();
         limits.push(d);
         if d > out_limit {
             pass = false;
@@ -1118,7 +1167,7 @@ impl Diff<'_> {
                       d, out_limit);
         }
 
-        let d = self.oracle.stderr_edit_distance(&self.us);
+        let d = self.stderr_edit_distance();
         limits.push(d);
         if d > err_limit {
             pass = false;
@@ -1131,7 +1180,7 @@ impl Diff<'_> {
                       d, err_limit);
         }
 
-        let d = self.oracle.statusfd_edit_distance(&self.us);
+        let d = self.statusfd_edit_distance();
         limits.push(d);
         if d > statusfd_limit {
             pass = false;
@@ -1173,7 +1222,7 @@ impl fmt::Display for Diff<'_> {
 
         if self.oracle.stdout.len() + self.us.stdout.len() > 0 {
             writeln!(f, "stdout: (edit distance {})",
-                     self.oracle.stdout_edit_distance(&self.us))?;
+                     self.stdout_edit_distance())?;
             udiff(f,
                   "oracle stdout",
                   &String::from_utf8_lossy(&self.oracle.stdout),
@@ -1199,7 +1248,7 @@ impl fmt::Display for Diff<'_> {
 
         if self.oracle.stderr.len() + self.us.stderr.len() > 0 {
             writeln!(f, "stderr: (edit distance {})",
-                     self.oracle.stderr_edit_distance(&self.us))?;
+                     self.stderr_edit_distance())?;
             udiff(f, "oracle stderr",
                   &String::from_utf8_lossy(&self.oracle.stderr),
                   "chameleon stderr",
@@ -1222,7 +1271,7 @@ impl fmt::Display for Diff<'_> {
 
         if self.oracle.statusfd.len() + self.us.statusfd.len() > 0 {
             writeln!(f, "statusfd: (edit distance {})",
-                     self.oracle.statusfd_edit_distance(&self.us))?;
+                     self.statusfd_edit_distance())?;
             udiff(f, "oracle statusfd",
                   &String::from_utf8_lossy(&self.oracle.statusfd),
                   "chameleon statusfd",
