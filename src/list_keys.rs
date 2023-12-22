@@ -142,11 +142,27 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String], list_secret: bool)
               sink)
 }
 
-pub fn list_keys<'a, 'store: 'a, S>(config: &'a crate::Config,
-                                    certs: impl Iterator<Item = Arc<LazyCert<'store>>> + 'a,
+pub fn list_keys<'a, 'store: 'a, S>(config: &'a crate::Config<'store>,
+                                    certs: impl Iterator<Item = Arc<LazyCert<'store>>>,
                                     list_secret: bool,
                                     emit_header: bool,
-                                    mut sink: S)
+                                    sink: S)
+    -> Result<()>
+where
+    S: Write,
+{
+    let rt = tokio::runtime::Runtime::new()?;
+    rt.block_on(async_list_keys(config, certs,
+                                list_secret, emit_header,
+                                sink))
+}
+
+pub async fn async_list_keys<'a, 'store: 'a, S>(
+    config: &'a crate::Config<'store>,
+    certs: impl Iterator<Item = Arc<LazyCert<'store>>>,
+    list_secret: bool,
+    emit_header: bool,
+    mut sink: S)
     -> Result<()>
 where
     S: Write,
@@ -154,10 +170,9 @@ where
     let vtm = config.trust_model_impl.with_policy(config, Some(config.now()))?;
     let p = vtm.policy();
 
-    let rt = tokio::runtime::Runtime::new()?;
     let mut agent =
         if list_secret || (config.with_secret && config.with_colons) {
-            rt.block_on(config.connect_agent()).ok()
+            config.connect_agent().await.ok()
         } else {
             None
         };
@@ -167,9 +182,11 @@ where
     let mut emitted_header = false;
 
     for cert in certs {
-        let has_secret = agent.as_mut()
-            .map(|a| rt.block_on(crate::agent::has_keys(a, &cert))).transpose()?
-            .unwrap_or_default();
+        let has_secret = if let Some(a) = agent.as_mut() {
+            crate::agent::has_keys(a, &cert).await?
+        } else {
+            Default::default()
+        };
 
         if list_secret && has_secret.is_empty() {
             // No secret (sub)key, don't list this key in --list-secret-keys.
