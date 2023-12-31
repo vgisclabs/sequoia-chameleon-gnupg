@@ -9,7 +9,6 @@ use std::{
 };
 
 use anyhow::{anyhow, Context, Result};
-use home_dir::HomeDirExt;
 
 // XXX: Requires fallible initialization, see https://github.com/rust-lang/rust/issues/109737
 use once_cell::unsync::OnceCell;
@@ -170,7 +169,7 @@ impl<'store> KeyDB<'store> {
         }
 
         // Expand tildes.
-        let mut path = PathBuf::from(url).expand_home()?;
+        let mut path = PathBuf::from(shellexpand::tilde(url).as_ref());
 
         // If the path contains just a single component, it is
         // relative to the home directory.
