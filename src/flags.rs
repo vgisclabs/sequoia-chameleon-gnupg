@@ -16,14 +16,3 @@ pub const DBG_IPC_VALUE: u32 = 1024  /* debug assuan communication */;
 pub const DBG_CLOCK_VALUE: u32 = 4096;
 pub const DBG_LOOKUP_VALUE: u32 = 8192	/* debug the key lookup */;
 pub const DBG_EXTPROG_VALUE: u32 = 16384 /* debug external program calls */;
-
-/* Various option flags.  Note that there should be no common string
-   names between the IMPORT_ and EXPORT_ flags as they can be mixed in
-   the keyserver-options option. */
-
-pub const KEYSERVER_HTTP_PROXY: u32 = 1 << 0;
-pub const KEYSERVER_TIMEOUT: u32 = 1 << 1;
-pub const KEYSERVER_ADD_FAKE_V3: u32 = 1 << 2;
-pub const KEYSERVER_AUTO_KEY_RETRIEVE: u32 = 1 << 3;
-pub const KEYSERVER_HONOR_KEYSERVER_URL: u32 = 1 << 4;
-pub const KEYSERVER_HONOR_PKA_RECORD: u32 = 1 << 5;

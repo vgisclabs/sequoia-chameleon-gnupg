@@ -517,7 +517,7 @@ pub struct Config<'store> {
     interactive: bool,
     keydb: keydb::KeyDB<'store>,
     keyserver: Vec<KeyserverURL>,
-    keyserver_options: KeyserverOptions,
+    keyserver_options: keyserver::KeyserverOptions,
     list_only: bool,
     list_options: list_keys::ListOptions,
     list_sigs: bool,
@@ -1152,20 +1152,6 @@ impl std::str::FromStr for KeyserverURL {
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         Ok(Self {
             url: s.into(), // XXX: parsing
-        })
-    }
-}
-
-#[derive(Clone, Default)]
-struct KeyserverOptions {
-}
-
-impl std::str::FromStr for KeyserverOptions {
-    type Err = anyhow::Error;
-
-    fn from_str(_s: &str) -> std::result::Result<Self, Self::Err> {
-        Ok(Self {
-            // XXX
         })
     }
 }
@@ -2266,7 +2252,11 @@ fn real_main() -> anyhow::Result<()> {
                 }
 	    },
 	    oKeyServerOptions => {
-                opt.keyserver_options = value.as_str().unwrap().parse()?;
+                let options = value.as_str().unwrap();
+                if keyserver::KeyserverOptions::maybe_print_help(options)? {
+                    return Ok(true);
+                }
+                opt.keyserver_options.parse(value.as_str().unwrap())?;
 	    },
 
             oExportOptions => {
