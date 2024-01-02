@@ -520,7 +520,7 @@ pub struct Config<'store> {
     keyserver: Vec<KeyserverURL>,
     keyserver_options: KeyserverOptions,
     list_only: bool,
-    list_options: u32,
+    list_options: list_keys::ListOptions,
     list_sigs: bool,
     local_user: Vec<Sender>,
     lock_once: bool,
@@ -1592,10 +1592,11 @@ fn real_main() -> anyhow::Result<()> {
                 set_cmd(&mut command, cmd)?;
                 opt.import_options.show = true;
                 opt.import_options.dry_run = true;
-                opt.list_options |= LIST_SHOW_UNUSABLE_UIDS;
-                opt.list_options |= LIST_SHOW_UNUSABLE_SUBKEYS;
-                opt.list_options |= LIST_SHOW_NOTATIONS;
-                opt.list_options |= LIST_SHOW_POLICY_URLS;
+                opt.list_options.unusable_uids = true;
+                opt.list_options.unusable_subkeys = true;
+                opt.list_options.ietf_notations = true;
+                opt.list_options.user_notations = true;
+                opt.list_options.policy_urls = true;
             },
 
 	    aDetachedSign => {
@@ -1673,8 +1674,8 @@ fn real_main() -> anyhow::Result<()> {
 
 	    oVerbose => {
 	        opt.verbose += 1;
-	        opt.list_options |= LIST_SHOW_UNUSABLE_UIDS;
-	        opt.list_options |= LIST_SHOW_UNUSABLE_SUBKEYS;
+	        opt.list_options.unusable_uids = true;
+	        opt.list_options.unusable_subkeys = true;
 	    },
 
 	    oBatch => {
@@ -1728,7 +1729,7 @@ fn real_main() -> anyhow::Result<()> {
 	    oShowKeyring => {
 	        deprecated_warning("--show-keyring",
 			           "--list-options ", "show-keyring");
-	        opt.list_options |= LIST_SHOW_KEYRING;
+	        opt.list_options.keyring_name = true;
 	    },
 
 	    oDebug => {
@@ -1989,7 +1990,7 @@ fn real_main() -> anyhow::Result<()> {
 			           "--list-options ", "show-policy-urls");
 	        deprecated_warning("--show-policy-url",
 			           "--verify-options ", "show-policy-urls");
-	        opt.list_options |= LIST_SHOW_POLICY_URLS;
+	        opt.list_options.policy_urls = true;
 	        opt.verify_options |= VERIFY_SHOW_POLICY_URLS;
 	    },
 	    oNoShowPolicyURL => {
@@ -1997,7 +1998,7 @@ fn real_main() -> anyhow::Result<()> {
 			           "--list-options ", "no-show-policy-urls");
 	        deprecated_warning("--no-show-policy-url",
 			           "--verify-options ", "no-show-policy-urls");
-	        opt.list_options &= !LIST_SHOW_POLICY_URLS;
+	        opt.list_options.policy_urls = false;
 	        opt.verify_options &= !VERIFY_SHOW_POLICY_URLS;
 	    },
 	    oSigKeyserverURL => {
@@ -2033,7 +2034,7 @@ fn real_main() -> anyhow::Result<()> {
 			           "--list-options ","show-photos");
 	        deprecated_warning("--show-photos",
 			           "--verify-options ","show-photos");
-	        opt.list_options |= LIST_SHOW_PHOTOS;
+	        opt.list_options.photos = true;
 	        opt.verify_options |= VERIFY_SHOW_PHOTOS;
 	    },
 	    oNoShowPhotos => {
@@ -2041,7 +2042,7 @@ fn real_main() -> anyhow::Result<()> {
 			           "--list-options ","no-show-photos");
 	        deprecated_warning("--no-show-photos",
 			           "--verify-options ","no-show-photos");
-	        opt.list_options &= !LIST_SHOW_PHOTOS;
+	        opt.list_options.photos = false;
 	        opt.verify_options &= !VERIFY_SHOW_PHOTOS;
 	    },
 	    oPhotoViewer => {
@@ -2283,6 +2284,14 @@ fn real_main() -> anyhow::Result<()> {
                     return Ok(true);
                 }
                 opt.import_options.parse(value.as_str().unwrap())?;
+            },
+
+            oListOptions => {
+                let options = value.as_str().unwrap();
+                if list_keys::ListOptions::maybe_print_help(options)? {
+                    return Ok(true);
+                }
+                opt.list_options.parse(value.as_str().unwrap())?;
             },
 
 	    oShowSessionKey => {

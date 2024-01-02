@@ -21,11 +21,183 @@ use cert_store::Store;
 use cert_store::store::StoreError;
 
 use crate::{
+    argparse,
+    argparse::options::Opt,
     common::{Common, Query},
     compliance::KeyCompliance,
     colons::*,
     trust::{*, cert::*},
 };
+
+/// Controls key list operations.
+pub struct ListOptions {
+    /// Display photo IDs during key listings.
+    pub photos: bool,
+
+    /// Show key usage information during key listings.
+    pub key_usage: bool,
+
+    /// Show policy URLs during signature listings.
+    pub policy_urls: bool,
+
+    /// Show IETF standard notations during signature listings.
+    pub ietf_notations: bool,
+
+    /// Show user standard notations during signature listings.
+    pub user_notations: bool,
+
+    /// Show preferred keyserver URLs during signature listings.
+    pub preferred_keyserver: bool,
+
+    /// Show user ID validity during key listings.
+    pub uid_validity: bool,
+
+    /// Show revoked and expired user IDs in key listings.
+    pub unusable_uids: bool,
+
+    /// Show revoked and expired subkeys in key listings.
+    pub unusable_subkeys: bool,
+
+    /// Show the keyring name in key listings.
+    pub keyring_name: bool,
+
+    /// Show expiration dates during signature listings.
+    pub signature_expiration: bool,
+
+    /// XXX
+    pub signature_subpackets: bool,
+
+    /// XXX.
+    pub only_fpr_mbox: bool,
+}
+
+impl Default for ListOptions {
+    fn default() -> Self {
+        Self {
+            photos: false,
+            key_usage: true,
+            policy_urls: false,
+            ietf_notations: false,
+            user_notations: false,
+            preferred_keyserver: false,
+            uid_validity: true,
+            unusable_uids: false,
+            unusable_subkeys: false,
+            keyring_name: false,
+            signature_expiration: false,
+            signature_subpackets: false,
+            only_fpr_mbox: false,
+        }
+    }
+}
+
+impl ListOptions {
+    const OPTS: [Opt<ListOptions>; 15] = [
+        opt_todo! {
+            "show-photos",
+            |o, s, _| Ok({ o.photos = s; }),
+            "display photo IDs during key listings",
+        },
+
+        opt_todo! {
+            "show-usage",
+            |o, s, _| Ok({ o.key_usage = s; }),
+            "show key usage information during key listings",
+        },
+
+        opt_todo! {
+            "show-policy-urls",
+            |o, s, _| Ok({ o.policy_urls = s; }),
+            "show policy URLs during signature listings",
+        },
+
+        opt_todo! {
+            "show-notations",
+            |o, s, _| Ok({ o.ietf_notations = s; o.user_notations = s; }),
+            "show all notations during signature listings",
+        },
+
+        opt_todo! {
+            "show-std-notations",
+            |o, s, _| Ok({ o.ietf_notations = s; }),
+            "show IETF standard notations during signature listings",
+        },
+
+        opt_todo! {
+            "show-standard-notations",
+            |o, s, _| Ok({ o.ietf_notations = s; }),
+            "",
+        },
+
+        opt_todo! {
+            "show-user-notations",
+            |o, s, _| Ok({ o.user_notations = s; }),
+            "show user-supplied notations during signature listings",
+        },
+
+        opt_todo! {
+            "show-keyserver-urls",
+            |o, s, _| Ok({ o.preferred_keyserver = s; }),
+            "show preferred keyserver URLs during signature listings",
+        },
+
+        opt_todo! {
+            "show-uid-validity",
+            |o, s, _| Ok({ o.uid_validity = s; }),
+            "show user ID validity during key listings",
+        },
+
+        opt_todo! {
+            "show-unusable-uids",
+            |o, s, _| Ok({ o.unusable_uids = s; }),
+            "show revoked and expired user IDs in key listings",
+        },
+
+        opt_todo! {
+            "show-unusable-subkeys",
+            |o, s, _| Ok({ o.unusable_subkeys = s; }),
+            "show revoked and expired subkeys in key listings",
+        },
+
+        opt_todo! {
+            "show-keyring",
+            |o, s, _| Ok({ o.keyring_name = s; }),
+            "show the keyring name in key listings",
+        },
+
+        opt_todo! {
+            "show-sig-expire",
+            |o, s, _| Ok({ o.signature_expiration = s; }),
+            "show expiration dates during signature listings",
+        },
+
+        opt_todo! {
+            "show-sig-subpackets",
+            // XXX: this takes an argument that has to be parsed.
+            |o, s, _| Ok({ o.signature_subpackets = s; }),
+            "",
+        },
+
+        opt_todo! {
+            "show-only-fpr-mbox",
+            |o, s, _| Ok({ o.only_fpr_mbox = s; }),
+            "",
+        },
+    ];
+
+    /// Prints the list of key list options if requested.
+    ///
+    /// If `s == "help"`, prints all supported options and returns
+    /// `true`.  The caller should then exit the process gracefully.
+    pub fn maybe_print_help(s: &str) -> Result<bool> {
+        argparse::options::maybe_print_help(&Self::OPTS, s)
+    }
+
+    /// Parses the key list options.
+    pub fn parse(&mut self, s: &str) -> Result<()> {
+        argparse::options::parse(&Self::OPTS, s, self)
+    }
+}
 
 /// Dispatches the --list-keys command (and similar ones).
 pub fn cmd_list_keys(config: &crate::Config, args: &[String], list_secret: bool)

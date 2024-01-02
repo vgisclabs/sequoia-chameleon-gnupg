@@ -21,21 +21,6 @@ pub const DBG_EXTPROG_VALUE: u32 = 16384 /* debug external program calls */;
    names between the IMPORT_ and EXPORT_ flags as they can be mixed in
    the keyserver-options option. */
 
-pub const LIST_SHOW_PHOTOS: u32 = 1 << 0;
-pub const LIST_SHOW_POLICY_URLS: u32 = 1 << 1;
-pub const LIST_SHOW_STD_NOTATIONS: u32 = 1 << 2;
-pub const LIST_SHOW_USER_NOTATIONS: u32 = 1 << 3;
-pub const LIST_SHOW_NOTATIONS: u32 = LIST_SHOW_STD_NOTATIONS | LIST_SHOW_USER_NOTATIONS;
-pub const LIST_SHOW_KEYSERVER_URLS: u32 = 1 << 4;
-pub const LIST_SHOW_UID_VALIDITY: u32 = 1 << 5;
-pub const LIST_SHOW_UNUSABLE_UIDS: u32 = 1 << 6;
-pub const LIST_SHOW_UNUSABLE_SUBKEYS: u32 = 1 << 7;
-pub const LIST_SHOW_KEYRING: u32 = 1 << 8;
-pub const LIST_SHOW_SIG_EXPIRE: u32 = 1 << 9;
-pub const LIST_SHOW_SIG_SUBPACKETS: u32 = 1 << 10;
-pub const LIST_SHOW_USAGE: u32 = 1 << 11;
-pub const LIST_SHOW_ONLY_FPR_MBOX: u32 = 1 << 12;
-
 pub const VERIFY_SHOW_PHOTOS: u32 = 1 << 0;
 pub const VERIFY_SHOW_POLICY_URLS: u32 = 1 << 1;
 pub const VERIFY_SHOW_STD_NOTATIONS: u32 = 1 << 2;
