@@ -31,11 +31,152 @@ use sequoia_cert_store as cert_store;
 use cert_store::Store;
 
 use crate::{
+    argparse,
+    argparse::options::Opt,
     babel,
     common::{Common, Query, Validity},
     status::{Status, ErrSigStatus, NoDataReason},
     utils,
 };
+
+/// Controls verification operations.
+pub struct VerifyOptions {
+    /// Display photo IDs during signature verification.
+    pub photos: bool,
+
+    /// Show policy URLs during signature listings.
+    pub policy_urls: bool,
+
+    /// Show IETF standard notations during signature listings.
+    pub ietf_notations: bool,
+
+    /// Show user standard notations during signature listings.
+    pub user_notations: bool,
+
+    /// Show preferred keyserver URLs during signature listings.
+    pub preferred_keyserver: bool,
+
+    /// Show user ID validity during signature verification.
+    pub uid_validity: bool,
+
+    /// Show revoked and expired user IDs in signature verification.
+    pub unusable_uids: bool,
+
+    /// Show only the primary user ID in signature verification.
+    pub primary_uid_only: bool,
+
+    /// Validate signatures with PKA data.
+    pub pka_lookups: bool,
+
+    /// Elevate the trust of signatures with valid PKA data.
+    pub pka_trust_increase: bool,
+}
+
+impl Default for VerifyOptions {
+    fn default() -> Self {
+        Self {
+            photos: false,
+            policy_urls: true,
+            ietf_notations: true,
+            user_notations: false,
+            preferred_keyserver: true,
+            uid_validity: true,
+            unusable_uids: false,
+            primary_uid_only: false,
+            pka_lookups: false,
+            pka_trust_increase: false,
+        }
+    }
+}
+
+impl VerifyOptions {
+    const OPTS: [Opt<VerifyOptions>; 12] = [
+        opt_todo! {
+            "show-photos",
+            |o, s, _| Ok({ o.photos = s; }),
+            "display photo IDs during signature verification",
+        },
+
+        opt_todo! {
+            "show-policy-urls",
+            |o, s, _| Ok({ o.policy_urls = s; }),
+            "show policy URLs during signature listings",
+        },
+
+        opt_todo! {
+            "show-notations",
+            |o, s, _| Ok({ o.ietf_notations = s; o.user_notations = s; }),
+            "show all notations during signature listings",
+        },
+
+        opt_todo! {
+            "show-std-notations",
+            |o, s, _| Ok({ o.ietf_notations = s; }),
+            "show IETF standard notations during signature listings",
+        },
+
+        opt_todo! {
+            "show-standard-notations",
+            |o, s, _| Ok({ o.ietf_notations = s; }),
+            "",
+        },
+
+        opt_todo! {
+            "show-user-notations",
+            |o, s, _| Ok({ o.user_notations = s; }),
+            "show user-supplied notations during signature listings",
+        },
+
+        opt_todo! {
+            "show-keyserver-urls",
+            |o, s, _| Ok({ o.preferred_keyserver = s; }),
+            "show preferred keyserver URLs during signature listings",
+        },
+
+        opt_todo! {
+            "show-uid-validity",
+            |o, s, _| Ok({ o.uid_validity = s; }),
+            "show user ID validity during signature verification",
+        },
+
+        opt_todo! {
+            "show-unusable-uids",
+            |o, s, _| Ok({ o.unusable_uids = s; }),
+            "show revoked and expired user IDs in signature verification",
+        },
+
+	opt_todo! {
+            "show-primary-uid-only",
+            |o, s, _| Ok({ o.primary_uid_only = s; }),
+	    "show only the primary user ID in signature verification",
+        },
+
+	opt_todo! {
+            "pka-lookups",
+            |o, s, _| Ok({ o.pka_lookups = s; }),
+	    "validate signatures with PKA data",
+        },
+
+	opt_todo! {
+            "pka-trust-increase",
+            |o, s, _| Ok({ o.pka_trust_increase = s; }),
+	    "elevate the trust of signatures with valid PKA data",
+        },
+    ];
+
+    /// Prints the list of verify options if requested.
+    ///
+    /// If `s == "help"`, prints all supported options and returns
+    /// `true`.  The caller should then exit the process gracefully.
+    pub fn maybe_print_help(s: &str) -> Result<bool> {
+        argparse::options::maybe_print_help(&Self::OPTS, s)
+    }
+
+    /// Parses the verify options.
+    pub fn parse(&mut self, s: &str) -> Result<()> {
+        argparse::options::parse(&Self::OPTS, s, self)
+    }
+}
 
 /// Dispatches the --verify command.
 ///

@@ -22,6 +22,7 @@ pub mod gnupg_interface;
 #[macro_use]
 mod macros;
 #[allow(dead_code)]
+#[macro_use]
 pub mod argparse;
 use argparse::{Argument, Opt, flags::*};
 pub mod babel;

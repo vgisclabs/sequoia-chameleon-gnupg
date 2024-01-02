@@ -51,7 +51,6 @@ pub mod policy;
 use policy::GPGPolicy;
 #[allow(dead_code)]
 pub mod flags;
-use flags::*;
 pub mod error_codes;
 pub mod status;
 pub mod trust;
@@ -563,7 +562,7 @@ pub struct Config<'store> {
     use_embedded_filename: bool,
     use_tor: OnceCell<bool>,
     verbose: usize,
-    verify_options: u32,
+    verify_options: verify::VerifyOptions,
     with_colons: bool,
     with_fingerprint: bool,
     with_icao_spelling: bool,
@@ -689,7 +688,7 @@ impl<'store> Config<'store> {
             use_embedded_filename: false,
             use_tor: Default::default(),
             verbose: 0,
-            verify_options: 0,
+            verify_options: Default::default(),
             with_colons: false,
             with_fingerprint: false,
             with_icao_spelling: false,
@@ -1991,7 +1990,7 @@ fn real_main() -> anyhow::Result<()> {
 	        deprecated_warning("--show-policy-url",
 			           "--verify-options ", "show-policy-urls");
 	        opt.list_options.policy_urls = true;
-	        opt.verify_options |= VERIFY_SHOW_POLICY_URLS;
+	        opt.verify_options.policy_urls = true;
 	    },
 	    oNoShowPolicyURL => {
 	        deprecated_warning("--no-show-policy-url",
@@ -1999,7 +1998,7 @@ fn real_main() -> anyhow::Result<()> {
 	        deprecated_warning("--no-show-policy-url",
 			           "--verify-options ", "no-show-policy-urls");
 	        opt.list_options.policy_urls = false;
-	        opt.verify_options &= !VERIFY_SHOW_POLICY_URLS;
+	        opt.verify_options.policy_urls = false;
 	    },
 	    oSigKeyserverURL => {
                 opt.sig_keyserver_url.push(URL::new(value.as_str().unwrap()));
@@ -2035,7 +2034,7 @@ fn real_main() -> anyhow::Result<()> {
 	        deprecated_warning("--show-photos",
 			           "--verify-options ","show-photos");
 	        opt.list_options.photos = true;
-	        opt.verify_options |= VERIFY_SHOW_PHOTOS;
+	        opt.verify_options.photos = true;
 	    },
 	    oNoShowPhotos => {
 	        deprecated_warning("--no-show-photos",
@@ -2043,7 +2042,7 @@ fn real_main() -> anyhow::Result<()> {
 	        deprecated_warning("--no-show-photos",
 			           "--verify-options ","no-show-photos");
 	        opt.list_options.photos = false;
-	        opt.verify_options &= !VERIFY_SHOW_PHOTOS;
+	        opt.verify_options.photos = false;
 	    },
 	    oPhotoViewer => {
                 opt.photo_viewer = Some(value.as_str().unwrap().into());
@@ -2292,6 +2291,14 @@ fn real_main() -> anyhow::Result<()> {
                     return Ok(true);
                 }
                 opt.list_options.parse(value.as_str().unwrap())?;
+            },
+
+            oVerifyOptions => {
+                let options = value.as_str().unwrap();
+                if verify::VerifyOptions::maybe_print_help(options)? {
+                    return Ok(true);
+                }
+                opt.verify_options.parse(value.as_str().unwrap())?;
             },
 
 	    oShowSessionKey => {
