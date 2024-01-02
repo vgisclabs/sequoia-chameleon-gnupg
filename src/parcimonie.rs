@@ -160,6 +160,7 @@ pub fn start(config: &crate::Config, command: Option<CmdOrOpt>) {
 
     if ! config.auto_key_locate.iter().any(|akl| match akl {
         AutoKeyLocate::Wkd => true,
+        AutoKeyLocate::Dane => true,
         AutoKeyLocate::KeyServer => true,
         _ => false,
     }) {
