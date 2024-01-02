@@ -21,16 +21,6 @@ pub const DBG_EXTPROG_VALUE: u32 = 16384 /* debug external program calls */;
    names between the IMPORT_ and EXPORT_ flags as they can be mixed in
    the keyserver-options option. */
 
-pub const EXPORT_LOCAL_SIGS: u32 = 1 << 0;
-pub const EXPORT_ATTRIBUTES: u32 = 1 << 1;
-pub const EXPORT_SENSITIVE_REVKEYS: u32 = 1 << 2;
-pub const EXPORT_RESET_SUBKEY_PASSWD: u32 = 1 << 3;
-pub const EXPORT_MINIMAL: u32 = 1 << 4;
-pub const EXPORT_CLEAN: u32 = 1 << 5;
-pub const EXPORT_PKA_FORMAT: u32 = 1 << 6;
-pub const EXPORT_DANE_FORMAT: u32 = 1 << 7;
-pub const EXPORT_BACKUP: u32 = 1 << 10;
-
 pub const LIST_SHOW_PHOTOS: u32 = 1 << 0;
 pub const LIST_SHOW_POLICY_URLS: u32 = 1 << 1;
 pub const LIST_SHOW_STD_NOTATIONS: u32 = 1 << 2;

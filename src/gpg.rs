@@ -507,6 +507,7 @@ pub struct Config<'store> {
     encrypt_to_default_key: usize,
     escape_from: bool,
     expert: bool,
+    export_options: export::ExportOptions,
     fingerprint: usize,
     flags: Flags,
     force_ownertrust: bool,
@@ -629,6 +630,7 @@ impl<'store> Config<'store> {
             encrypt_to_default_key: 0, // XXX
             escape_from: false,
             expert: false,
+            export_options: Default::default(),
             fingerprint: 0,
             flags: Default::default(),
             force_ownertrust: false,
@@ -2266,6 +2268,14 @@ fn real_main() -> anyhow::Result<()> {
 	    oKeyServerOptions => {
                 opt.keyserver_options = value.as_str().unwrap().parse()?;
 	    },
+
+            oExportOptions => {
+                let options = value.as_str().unwrap();
+                if export::ExportOptions::maybe_print_help(options)? {
+                    return Ok(true);
+                }
+                opt.export_options.parse(value.as_str().unwrap())?;
+            },
 
             oImportOptions => {
                 let options = value.as_str().unwrap();
