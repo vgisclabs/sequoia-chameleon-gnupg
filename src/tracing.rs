@@ -53,6 +53,16 @@ pub fn enable_all() {
 ///
 /// If the module is unknown, nothing happens.
 pub fn enable(module: &str) {
+    // Decode numerical flags.
+    if let Ok(n) = module.parse::<u32>() {
+        if n == !0 {
+            enable_all();
+        } else if n & DBG_IPC > 0 {
+            enable("ipc");
+        }
+        return;
+    }
+
     match module {
         "ipc" => crate::agent::trace(true),
         "dirmngr" => crate::dirmngr::trace(true),
@@ -82,3 +92,20 @@ pub fn enabled_modules() -> Option<String> {
         Some(r.join(","))
     }
 }
+
+// The debugging flags.
+pub const DBG_PACKET:  u32 = 1     /* debug packet reading/writing */;
+pub const DBG_MPI:     u32 = 2     /* debug mpi details */;
+pub const DBG_CRYPTO:  u32 = 4     /* debug crypto handling */;
+                                   /* (may reveal sensitive data) */
+pub const DBG_FILTER:  u32 = 8     /* debug internal filter handling */;
+pub const DBG_IOBUF:   u32 = 16    /* debug iobuf stuff */;
+pub const DBG_MEMORY:  u32 = 32    /* debug memory allocation stuff */;
+pub const DBG_CACHE:   u32 = 64    /* debug the caching */;
+pub const DBG_MEMSTAT: u32 = 128   /* show memory statistics */;
+pub const DBG_TRUST:   u32 = 256   /* debug the trustdb */;
+pub const DBG_HASHING: u32 = 512   /* debug hashing operations */;
+pub const DBG_IPC:     u32 = 1024  /* debug assuan communication */;
+pub const DBG_CLOCK:   u32 = 4096;
+pub const DBG_LOOKUP:  u32 = 8192  /* debug the key lookup */;
+pub const DBG_EXTPROG: u32 = 16384 /* debug external program calls */;

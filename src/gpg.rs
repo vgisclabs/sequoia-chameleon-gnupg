@@ -48,7 +48,6 @@ mod interactive;
 pub mod keydb;
 pub mod policy;
 use policy::GPGPolicy;
-pub mod flags;
 pub mod error_codes;
 pub mod status;
 pub mod trust;
@@ -1714,20 +1713,17 @@ fn real_main() -> anyhow::Result<()> {
 	        opt.list_options.keyring_name = true;
 	    },
 
-	    oDebug => {
-                // XXX:
-                //parse_debug_flag (value.as_str().unwrap(), &opt.debug, debug_flags))?;
+	    oDebug | oDebugAll => {
+                // Debugging is handled early on.  See module tracing.
             },
 
-	    oDebugAll => {
-                opt.debug = !0;
-            },
             oDebugLevel => {
+                // XXX: This is currently ignored.
                 debug_level = Some(value.as_str().unwrap().to_string());
             },
 
             oDebugIOLBF => {
-                /* Already set in pre-parse step.  */
+                // XXX: This is supposed to set stdout to line buffered mode.
             },
 
 	    oStatusFD => {
