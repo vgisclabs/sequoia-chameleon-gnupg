@@ -35,7 +35,6 @@ pub mod gnupg_interface;
 mod macros;
 pub mod tracing;
 pub mod agent;
-#[allow(dead_code)]
 #[macro_use]
 pub mod argparse;
 use argparse::{Argument, Opt, flags::*};
@@ -49,7 +48,6 @@ mod interactive;
 pub mod keydb;
 pub mod policy;
 use policy::GPGPolicy;
-#[allow(dead_code)]
 pub mod flags;
 pub mod error_codes;
 pub mod status;
@@ -462,7 +460,6 @@ use CmdOrOpt::*;
 
 include!("gpg.option.inc");
 
-#[allow(dead_code)]
 pub struct Config<'store> {
     // Runtime.
     clock: clock::Clock,
@@ -1111,9 +1108,10 @@ struct Flags {
 }
 
 #[derive(Clone)]
-#[allow(dead_code)]
 struct URL {
+    #[allow(dead_code)]
     url: String,
+    #[allow(dead_code)]
     critical: bool,
 }
 
@@ -1232,12 +1230,14 @@ impl AsRef<str> for Keyring {
     }
 }
 
-#[allow(dead_code)]
 struct Recipient {
     name: String,
+    #[allow(dead_code)]
     hidden: bool,
+    #[allow(dead_code)]
     config: bool,
     from_file: bool,
+    #[allow(dead_code)]
     additional: bool,
 }
 
@@ -1400,7 +1400,6 @@ fn print_additional_version(config: &Config) {
     w.newline();
 }
 
-#[allow(dead_code, unused_variables, unused_assignments)]
 fn real_main() -> anyhow::Result<()> {
     tracing::parse_command_line();
 

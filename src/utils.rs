@@ -26,7 +26,6 @@ use crate::{
 };
 
 /// Opens a (special) file.
-#[allow(dead_code)]
 pub fn open(control: &dyn common::Common, name: &str)
             -> Result<Box<dyn io::Read + Send + Sync>>
 {
@@ -43,7 +42,6 @@ pub fn open(control: &dyn common::Common, name: &str)
 }
 
 /// Opens multiple (special) files, joining them into one stream.
-#[allow(dead_code)]
 pub fn open_multiple(control: &dyn common::Common, names: &[String])
                      -> Box<dyn io::Read + Send + Sync>
 {
@@ -100,7 +98,6 @@ impl io::Read for MultiReader {
 }
 
 /// Opens a (special) file for writing.
-#[allow(dead_code)]
 pub fn create(control: &dyn common::Common, name: &str)
               -> Result<Box<dyn io::Write + Send + Sync>>
 {
@@ -243,7 +240,6 @@ pub fn make_outfile_name<S: AsRef<str>>(name: S) -> Result<String> {
 /// encoded. See also [`S2K::nearest_hash_count()`].
 ///
 // Notes: Copied from S2K::encode_count.
-#[allow(dead_code)]
 pub fn s2k_encode_iteration_count(hash_bytes: u32) -> Result<u8> {
     use openpgp::Error;
     // eeee.mmmm -> (16 + mmmm) * 2^(6 + e)

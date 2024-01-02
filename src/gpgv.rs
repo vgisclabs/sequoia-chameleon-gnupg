@@ -21,7 +21,6 @@ pub mod gnupg_interface;
 
 #[macro_use]
 mod macros;
-#[allow(dead_code)]
 #[macro_use]
 pub mod argparse;
 use argparse::{Argument, Opt, flags::*};
@@ -95,7 +94,6 @@ const OPTIONS: &[Opt<CmdOrOpt>] = &[
     Opt { short_opt: o301, long_opt: "", flags: 0, description: "@\n", },
 ];
 
-#[allow(dead_code)]
 pub struct Config<'store> {
     // Runtime.
     fail: std::cell::Cell<bool>,
