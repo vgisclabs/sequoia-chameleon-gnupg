@@ -112,7 +112,6 @@ pub struct Config<'store> {
     outfile: Option<String>,
     quiet: bool,
     verbose: usize,
-    verify_options: u32,
 
     // For sharing the code with with gpg.rs.
     list_only: bool,
@@ -144,7 +143,6 @@ impl<'store> Config<'store> {
             outfile: None,
             quiet: false,
             verbose: 0,
-            verify_options: 0,
 
             // For sharing the code with with gpg.rs.
             list_only: false,
