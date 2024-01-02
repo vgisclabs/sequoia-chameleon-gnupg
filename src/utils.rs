@@ -237,7 +237,7 @@ pub fn make_outfile_name<S: AsRef<str>>(name: S) -> Result<String> {
 /// # Errors
 ///
 /// Fails with `Error::InvalidArgument` if `hash_bytes` cannot be
-/// encoded. See also [`S2K::nearest_hash_count()`].
+/// encoded. See also `S2K::nearest_hash_count()`.
 ///
 // Notes: Copied from S2K::encode_count.
 pub fn s2k_encode_iteration_count(hash_bytes: u32) -> Result<u8> {
