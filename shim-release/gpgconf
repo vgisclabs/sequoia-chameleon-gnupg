@@ -19,7 +19,7 @@ then
     BASEDIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
     CHAMELEON="$BASEDIR/gpg"
 
-    if "$CHAMELEON" --version >/dev/null
+    if "$CHAMELEON" --version >/dev/null 2>&1
     then
 	/usr/bin/gpgconf "$@" | sed -e "s|^gpg:OpenPGP:.*$|gpg:OpenPGP:$CHAMELEON|"
 	exit "${PIPESTATUS[0]}"
