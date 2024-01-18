@@ -36,7 +36,8 @@ use crate::{
     babel,
     common::Common,
     compliance::Compliance,
-    status::Status,
+    error_codes,
+    status::{NoDataReason, Status},
     trust::OwnerTrustLevel,
     utils,
     verify::*,
@@ -98,9 +99,28 @@ pub fn cmd_decrypt(config: &crate::Config, args: &[String])
         Ok(())
     };
 
-    let r = transaction();
-    config.status().emit(Status::EndDecryption)?;
-    r?;
+    match transaction() {
+        Ok(()) => config.status().emit(Status::EndDecryption)?,
+        Err(e) => {
+            match e.downcast_ref::<openpgp::Error>() {
+                Some(openpgp::Error::MalformedMessage(_)) => {
+                    config.status().emit(
+                        Status::NoData(NoDataReason::ExpectedPacket))?;
+                    config.status().emit(
+                        Status::Failure {
+                            location: "decrypt",
+                            error: error_codes::Error::GPG_ERR_MINUS_ONE,
+                        })?;
+                    config.error(format_args!(
+                        "decrypt_message failed: Unknown system error"));
+                    return Err(e);
+                },
+                _ => (),
+            }
+            config.status().emit(Status::EndDecryption)?;
+            return Err(e);
+        },
+    }
 
     Ok(())
 }

@@ -1,0 +1,71 @@
+{
+  "outputs": [
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: keybox '/HOMEDIR/pubring.kbx' created\\ngpg: /HOMEDIR/trustdb.gpg: trustdb created\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--decrypt\"",
+        "\"--output\"",
+        "\"nothing\"",
+        "\"/EXPERIMENT/empty\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: decrypt_message failed: Unknown system error\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] NODATA 2\\n[GNUPG:] FAILURE decrypt 4294967295\\n",
+      "status": "exit status: 2",
+      "files": {}
+    }
+  ],
+  "former_us_outputs": [
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--decrypt\"",
+        "\"--output\"",
+        "\"nothing\"",
+        "\"/EXPERIMENT/empty\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: Malformed Message: Malformed OpenPGP message\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] END_DECRYPTION\\n",
+      "status": "exit status: 2",
+      "files": {
+        "nothing": ""
+      }
+    }
+  ],
+  "artifacts": {},
+  "dynamic_upper_bounds": [
+    [
+      0,
+      86,
+      0
+    ],
+    [
+      0,
+      34,
+      41
+    ]
+  ]
+}

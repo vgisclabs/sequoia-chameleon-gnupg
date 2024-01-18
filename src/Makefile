@@ -33,6 +33,8 @@ error_codes.inc: err-codes.h.in
 	    echo >>"$@.new" "    /// $$DESC."; \
 	    echo >>"$@.new" "    $$SYMBOL = $$N,"; \
 	done
+	echo >>"$@.new" "    /// Sometimes, GnuPG returns -1."; \
+	echo >>"$@.new" "    GPG_ERR_MINUS_ONE = 4294967295,"; \
 	echo >>"$@.new" "}"
 	echo >>"$@.new"
 
@@ -43,6 +45,7 @@ error_codes.inc: err-codes.h.in
 	sed -n -e '/[0-9]\+\s\+GPG_ERR_.*\s\+[A-Z].*/p' "$<" | while read N SYMBOL DESC; do \
 	    echo >>"$@.new" "            $$SYMBOL => f.write_str(\"$$DESC\"),"; \
 	done
+	echo >>"$@.new" "            GPG_ERR_MINUS_ONE => f.write_str(\"Minus one\"),"
 	echo >>"$@.new" "        }"
 	echo >>"$@.new" "    }"
 	echo >>"$@.new" "}"

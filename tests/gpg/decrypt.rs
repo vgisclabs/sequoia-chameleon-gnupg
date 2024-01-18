@@ -399,3 +399,15 @@ fn encrypt_for(recipient_certs: &[&Cert]) -> Result<Vec<u8>> {
     w.finalize()?;
     Ok(buf)
 }
+
+#[test]
+fn empty() -> Result<()> {
+    let mut experiment = make_experiment!()?;
+    let diff = experiment.invoke(&[
+        "--decrypt",
+        "--output", "nothing",
+        &experiment.store("empty", &[])?,
+    ])?;
+    diff.assert_limits(0, 0, 0);
+    Ok(())
+}

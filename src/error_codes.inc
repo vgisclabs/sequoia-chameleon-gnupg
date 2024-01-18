@@ -874,6 +874,8 @@ pub enum Error {
     GPG_ERR_UNKNOWN_ERRNO = 16382,
     /// End of file.
     GPG_ERR_EOF = 16383,
+    /// Sometimes, GnuPG returns -1.
+    GPG_ERR_MINUS_ONE = 4294967295,
 }
 
 impl std::fmt::Display for Error {
@@ -1316,6 +1318,7 @@ impl std::fmt::Display for Error {
             GPG_ERR_MISSING_ERRNO => f.write_str("System error w/o errno"),
             GPG_ERR_UNKNOWN_ERRNO => f.write_str("Unknown system error"),
             GPG_ERR_EOF => f.write_str("End of file"),
+            GPG_ERR_MINUS_ONE => f.write_str("Minus one"),
         }
     }
 }

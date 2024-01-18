@@ -2616,6 +2616,9 @@ fn real_main() -> anyhow::Result<()> {
             if let Some(c) = opt.override_status_code.get() {
                 std::process::exit(c);
             }
+            if opt.fail.get() {
+                std::process::exit(2);
+            }
             if opt.verbose > 1 {
                 print_error_chain(&e);
             } else {
