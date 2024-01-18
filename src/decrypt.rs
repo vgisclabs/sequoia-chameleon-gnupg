@@ -37,7 +37,11 @@ use crate::{
     common::Common,
     compliance::Compliance,
     error_codes,
-    status::{NoDataReason, Status},
+    status::{
+        NoDataReason,
+        Status,
+        UnexpectedReason,
+    },
     trust::OwnerTrustLevel,
     utils,
     verify::*,
@@ -103,16 +107,32 @@ pub fn cmd_decrypt(config: &crate::Config, args: &[String])
         Ok(()) => config.status().emit(Status::EndDecryption)?,
         Err(e) => {
             match e.downcast_ref::<openpgp::Error>() {
-                Some(openpgp::Error::MalformedMessage(_)) => {
-                    config.status().emit(
-                        Status::NoData(NoDataReason::ExpectedPacket))?;
-                    config.status().emit(
-                        Status::Failure {
-                            location: "decrypt",
-                            error: error_codes::Error::GPG_ERR_MINUS_ONE,
-                        })?;
-                    config.error(format_args!(
-                        "decrypt_message failed: Unknown system error"));
+                Some(openpgp::Error::MalformedMessage(m)) => {
+                    if m.ends_with("not expected") {
+                        // Wrong data encountered.
+                        config.status().emit(
+                            Status::Unexpected(UnexpectedReason::Unspecified))?;
+                        config.status().emit(
+                            Status::Failure {
+                                location: "decrypt",
+                                error: error_codes::Error::GPG_ERR_UNEXPECTED,
+                            })?;
+                        config.error(format_args!(
+                            "decrypt_message failed: Unexpected error"));
+                    } else {
+                        // No data encountered.
+                        config.status().emit(
+                            Status::NoData(NoDataReason::ExpectedPacket))?;
+                        config.status().emit(
+                            Status::Failure {
+                                location: "decrypt",
+                                error: error_codes::Error::GPG_ERR_MINUS_ONE,
+                            })?;
+                        config.error(format_args!(
+                            "decrypt_message failed: Unknown system error"));
+                    }
+
+                    // Don't emit Status::EndDecryption.
                     return Err(e);
                 },
                 _ => (),

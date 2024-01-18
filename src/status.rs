@@ -294,6 +294,8 @@ pub enum Status<'a> {
         location: &'a str,
         error: crate::error_codes::Error,
     },
+
+    Unexpected(UnexpectedReason),
 }
 
 impl Status<'_> {
@@ -789,6 +791,10 @@ impl Status<'_> {
             } => {
                 writeln!(w, "FAILURE {} {}", location, *error as isize)?;
             },
+
+            Unexpected(reason) => {
+                writeln!(w, "UNEXPECTED {}", u8::from(*reason))?;
+            },
         }
 
         Ok(())
@@ -1020,6 +1026,21 @@ pub enum NoDataReason {
     ExpectedPacket,
     InvalidPacket,
     ExpectedSignature,
+}
+
+#[derive(Clone, Copy, Debug)]
+pub enum UnexpectedReason {
+    Unspecified,
+    CorruptedMessageStructure,
+}
+
+impl From<UnexpectedReason> for u8 {
+    fn from(r: UnexpectedReason) -> u8 {
+        match r {
+            UnexpectedReason::Unspecified => 0,
+            UnexpectedReason::CorruptedMessageStructure => 1,
+        }
+    }
 }
 
 /// Reasons why a key is unsuitable.

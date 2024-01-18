@@ -411,3 +411,25 @@ fn empty() -> Result<()> {
     diff.assert_limits(0, 0, 0);
     Ok(())
 }
+
+#[test]
+fn a_cert() -> Result<()> {
+    let mut experiment = make_experiment!()?;
+    let cert = experiment.artifact(
+        "cert",
+        || CertBuilder::general_purpose(
+            None, Some("Alice Lovelace <alice@lovelace.name>"))
+            .set_creation_time(Experiment::now())
+            .generate()
+            .map(|(cert, _rev)| cert),
+        |a, f| a.as_tsk().serialize(f),
+        |b| Cert::from_bytes(&b))?;
+
+    let diff = experiment.invoke(&[
+        "--decrypt",
+        "--output", "nothing",
+        &experiment.store("empty", &cert.to_vec()?)?,
+    ])?;
+    diff.assert_limits(0, 0, 0);
+    Ok(())
+}
