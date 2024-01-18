@@ -749,12 +749,31 @@ impl Experiment {
 
         us.args = normalized_args.clone();
 
-        let use_cache = std::env::var_os("GPG_SQ_IGNORE_CACHE").is_none();
+        #[derive(PartialEq, Eq)]
+        enum TestFixtures {
+            /// Use, but don't create on demand.
+            Use,
+
+            /// Use, and create on demand if missing or arguments
+            /// changed.
+            Create,
+
+            /// Unconditionally recreate.
+            Recreate,
+        }
+        use TestFixtures::*;
+        let fixtures = std::env::var("GPG_SQ_TEST_FIXTURES").ok()
+            .map(|s| match s.as_str() {
+                "create" => Create,
+                "recreate" => Recreate,
+                _ => Use,
+            }).unwrap_or(Use);
+
         let former_us = if let Some(o) = self.artifacts
             .former_us_outputs.as_ref()
             .and_then(|o| o.get(n))
             .filter(|v| v.args == normalized_args)
-            .filter(|_| use_cache)
+            .filter(|_| fixtures != Recreate)
         {
             eprintln!("Have previous output from the chameleon");
             Some(o.clone())
@@ -774,12 +793,18 @@ impl Experiment {
         // Then, invoke GnuPG if we don't have a cached artifact.
         let oracle = if let Some(o) = self.artifacts.outputs.get(n)
             .filter(|v| v.args == normalized_args)
-            .filter(|_| use_cache)
+            .filter(|_| fixtures != Recreate)
         {
             eprintln!("Not invoking the oracle: using cached results");
             o.clone()
         } else {
             // Cache miss or the arguments changed.
+            if fixtures == Use {
+                return Err(anyhow::anyhow!(
+                    "Text fixtures missing or outdated, set \
+                     GPG_SQ_TEST_FIXTURES=create to (re)create."));
+            }
+
             check_gpg_oracle();
             eprintln!("Invoking the oracle");
             let mut output = self.oracle.invoke(&args)?
