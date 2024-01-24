@@ -26,6 +26,7 @@ pub use crate::common::{
     Query,
     TrustModel,
     Validity,
+    ValidityLevel,
 };
 
 impl TrustModel {

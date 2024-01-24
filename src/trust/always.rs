@@ -26,6 +26,7 @@ use crate::{
         Query,
         TrustModel,
         Validity,
+        ValidityLevel,
     },
 };
 
@@ -67,13 +68,13 @@ impl<'a, 'store> ModelViewAt<'a, 'store> for AlwaysViewAt<'a, 'store> {
     fn validity(&self, _: &UserID, _: &Fingerprint)
                 -> Result<Validity> {
         // Always unknown validity, see tdb_get_ownertrust.
-        Ok(Validity::Unknown)
+        Ok(ValidityLevel::Unknown.into())
     }
 
     fn lookup(&self, query: &Query) -> Result<Vec<(Validity, Arc<LazyCert<'store>>)>> {
         Ok(self.config.keydb.lookup_candidates(query)?
            .into_iter()
-           .map(|c| (Validity::Unknown, c))
+           .map(|c| (ValidityLevel::Unknown.into(), c))
            .collect())
     }
 }

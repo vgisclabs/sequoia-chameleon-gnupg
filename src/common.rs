@@ -225,10 +225,45 @@ pub trait ModelViewAt<'a, 'store> {
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
-pub enum Validity {
+pub struct Validity {
+    pub level: ValidityLevel,
+    pub revoked: bool,
+    pub expired: bool,
+}
+
+impl From<ValidityLevel> for Validity {
+    fn from(level: ValidityLevel) -> Self {
+        Validity {
+            level,
+            revoked: false,
+            expired: false,
+        }
+    }
+}
+
+impl Validity {
+    /// Returns a revoked validity.
+    pub fn revoked() -> Self {
+        Validity {
+            level: ValidityLevel::Unknown,
+            revoked: true,
+            expired: false,
+        }
+    }
+
+    /// Returns an expired validity.
+    pub fn expired() -> Self {
+        Validity {
+            level: ValidityLevel::Unknown,
+            revoked: false,
+            expired: true,
+        }
+    }
+}
+
+#[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub enum ValidityLevel {
     Unknown,
-    Revoked, // XXX: This is a flag in GnuPG.
-    Expired, // XXX: This is a flag in GnuPG.
     Undefined,
     Never,
     Marginal,
@@ -238,32 +273,40 @@ pub enum Validity {
 
 impl fmt::Display for Validity {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        use Validity::*;
-        match self {
-            Unknown => f.write_str("-"),
-            Revoked => f.write_str("r"),
-            Expired => f.write_str("e"),
-            Undefined => f.write_str("q"),
-            Never => f.write_str("n"),
-            Marginal => f.write_str("m"),
-            Fully => f.write_str("f"),
-            Ultimate => f.write_str("u"),
+        if self.revoked {
+            f.write_str("r")
+        } else if self.expired {
+            f.write_str("e")
+        } else {
+            use ValidityLevel::*;
+            match self.level {
+                Unknown => f.write_str("-"),
+                Undefined => f.write_str("q"),
+                Never => f.write_str("n"),
+                Marginal => f.write_str("m"),
+                Fully => f.write_str("f"),
+                Ultimate => f.write_str("u"),
+            }
         }
     }
 }
 
 impl fmt::Display for crate::babel::Fish<Validity> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        use Validity::*;
-        match self.0 {
-            Unknown => f.write_str("unknown"),
-            Revoked => f.write_str("revoked"),
-            Expired => f.write_str("expired"),
-            Undefined => f.write_str("undefined"),
-            Never => f.write_str("never"),
-            Marginal => f.write_str("marginal"),
-            Fully => f.write_str("full"),
-            Ultimate => f.write_str("ultimate"),
+        if self.0.revoked {
+            f.write_str("revoked")
+        } else if self.0.expired {
+            f.write_str("expired")
+        } else {
+            use ValidityLevel::*;
+            match self.0.level {
+                Unknown => f.write_str("unknown"),
+                Undefined => f.write_str("undefined"),
+                Never => f.write_str("never"),
+                Marginal => f.write_str("marginal"),
+                Fully => f.write_str("full"),
+                Ultimate => f.write_str("ultimate"),
+            }
         }
     }
 }

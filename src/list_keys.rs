@@ -424,9 +424,9 @@ where
                 .unwrap_or_else(|| KeyFlags::empty()),
             sum_key_flags: {
                 let mut kf = KeyFlags::empty();
-                if acert.cert_validity() == Validity::Expired {
+                if acert.cert_validity().expired {
                     // Expired certs don't list their subkeys' flags.
-                } else if acert.cert_validity() == Validity::Revoked {
+                } else if acert.cert_validity().revoked {
                     // Revoked certs don't list their subkeys' flags.
                 } else if let Some(vcert) = vcert.as_ref() {
                     if vcert.keys().alive().for_signing().next().is_some() {
@@ -501,9 +501,7 @@ where
 
         for (validity, subkey) in acert.subkeys() {
             // Don't display expired or revoked subkeys.
-            if ! config.with_colons
-                && (validity == Validity::Expired
-                    || validity == Validity::Revoked) {
+            if ! config.with_colons && (validity.expired || validity.revoked) {
                 continue;
             }
 

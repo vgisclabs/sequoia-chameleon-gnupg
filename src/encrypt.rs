@@ -23,7 +23,7 @@ use sequoia_ipc as ipc;
 
 use crate::{
     babel,
-    common::{Common, Query, TrustModel, Validity},
+    common::{Common, Query, TrustModel, Validity, ValidityLevel},
     compliance::Compliance,
     status::{self, Status, InvalidKeyReason},
     utils,
@@ -119,7 +119,7 @@ fn do_encrypt(config: &crate::Config, args: &[String],
         // Get the candidates, and sort by descending validity.
         let mut candidates = if recipient.from_file {
             use std::sync::Arc;
-            vec![(Validity::Fully,
+            vec![(ValidityLevel::Fully.into(),
                   Arc::new(openpgp::Cert::from_file(&recipient.name)?.into()))]
         } else {
             config.lookup_certs(&query)?
@@ -355,7 +355,8 @@ fn do_we_trust(config: &crate::Config,
                validity: Validity)
                -> Result<bool>
 {
-    let ok = match validity {
+    use ValidityLevel::*;
+    let ok = match validity.level {
         _ if config.trust_model == Some(TrustModel::Always) => {
             if config.verbose > 0 {
                 config.info(format_args!(
@@ -364,7 +365,14 @@ fn do_we_trust(config: &crate::Config,
             true
         },
 
-        Validity::Marginal => {
+        _ if validity.revoked || validity.expired => {
+            config.info(format_args!(
+                "{}: There is no assurance this key belongs to the named user",
+                key.keyid()));
+            false
+        },
+
+        Marginal => {
             config.info(format_args!(
                 "{}: There is limited assurance this key belongs \
                  to the named user",
@@ -372,7 +380,7 @@ fn do_we_trust(config: &crate::Config,
             true
         },
 
-        Validity::Fully => {
+        Fully => {
             if config.verbose > 0 {
                 config.info(format_args!(
                     "This key probably belongs to the named user"));
@@ -380,24 +388,21 @@ fn do_we_trust(config: &crate::Config,
             true
         },
 
-        Validity::Ultimate => {
+        Ultimate => {
             if config.verbose > 0 {
                 config.info(format_args!("This key belongs to us"));
             }
             true
         },
 
-        Validity::Never => {
+        Never => {
             config.info(format_args!(
                 "{}: This key is bad!  It has been marked as untrusted!",
                 key.keyid()));
             false
         },
 
-        Validity::Unknown | Validity::Undefined
-        // XXX these are flags in GnuPG
-            | Validity::Revoked | Validity::Expired =>
-        {
+        Unknown | Undefined => {
             config.info(format_args!(
                 "{}: There is no assurance this key belongs to the named user",
                 key.keyid()));
@@ -431,7 +436,7 @@ fn do_we_trust(config: &crate::Config,
         }
         eprintln!();
 
-        if validity == Validity::Never {
+        if validity.level == ValidityLevel::Never {
             eprintln!(
                 "This key is bad!  It has been marked as untrusted!  If you\n\
                  *really* know what you are doing, you may answer the next\n\

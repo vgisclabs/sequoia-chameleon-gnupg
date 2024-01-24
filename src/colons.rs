@@ -307,7 +307,7 @@ impl Record {
 
                 if mr {
                     write!(w, "uid:{}::::{}:{}:{}::",
-                           validity.unwrap_or(Validity::Unknown),
+                           validity.unwrap_or(ValidityLevel::Unknown.into()),
                            creation_date.format("%s"),
                            expiration_date.map(|t| t.format("%s").to_string())
                            .unwrap_or_else(|| "".into()),
@@ -443,16 +443,20 @@ struct BoxedValidity(Validity);
 
 impl fmt::Display for BoxedValidity {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        use Validity::*;
-        match self.0 {
-            Unknown =>   f.write_str("[ unknown]"),
-            Revoked =>   f.write_str("[ revoked]"),
-            Expired =>   f.write_str("[ expired]"),
-            Undefined => f.write_str("[  undef ]"),
-            Never =>     f.write_str("[  never ]"),
-            Marginal =>  f.write_str("[marginal]"),
-            Fully =>     f.write_str("[  full  ]"),
-            Ultimate =>  f.write_str("[ultimate]"),
+        if self.0.revoked {
+            f.write_str("[ revoked]")
+        } else if self.0.expired {
+            f.write_str("[ expired]")
+        } else {
+            use ValidityLevel::*;
+            match self.0.level {
+                Unknown =>   f.write_str("[ unknown]"),
+                Undefined => f.write_str("[  undef ]"),
+                Never =>     f.write_str("[  never ]"),
+                Marginal =>  f.write_str("[marginal]"),
+                Fully =>     f.write_str("[  full  ]"),
+                Ultimate =>  f.write_str("[ultimate]"),
+            }
         }
     }
 }

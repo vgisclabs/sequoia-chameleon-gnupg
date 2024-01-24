@@ -23,6 +23,7 @@ use crate::{
         Query,
         TrustModel,
         Validity,
+        ValidityLevel,
     },
 };
 
@@ -100,14 +101,14 @@ impl<'a, 'store> ModelViewAt<'a, 'store> for WoTViewAt<'a, 'store> {
         let amount = paths.amount();
         if amount >= wot::FULLY_TRUSTED {
             if self.roots.binary_search(fingerprint).is_ok() {
-                Ok(Validity::Ultimate)
+                Ok(ValidityLevel::Ultimate.into())
             } else {
-                Ok(Validity::Fully)
+                Ok(ValidityLevel::Fully.into())
             }
         } else if amount >= 60 { // XXX magic number
-            Ok(Validity::Marginal)
+            Ok(ValidityLevel::Marginal.into())
         } else {
-            Ok(Validity::Unknown)
+            Ok(ValidityLevel::Unknown.into())
         }
     }
 
@@ -122,9 +123,9 @@ impl<'a, 'store> ModelViewAt<'a, 'store> for WoTViewAt<'a, 'store> {
                        let fp = c.fingerprint();
                        c.userids()
                            .map(|uid| self.validity(&uid, &fp)
-                                .unwrap_or(Validity::Unknown))
+                                .unwrap_or(ValidityLevel::Unknown.into()))
                            .max()
-                           .unwrap_or(Validity::Unknown)
+                           .unwrap_or(ValidityLevel::Unknown.into())
                    },
                    Query::Email(_) | Query::UserIDFragment(_) => {
                        // GnuPG only matches on one userid, but a
@@ -135,9 +136,9 @@ impl<'a, 'store> ModelViewAt<'a, 'store> for WoTViewAt<'a, 'store> {
                        c.userids()
                            .filter(|uid| query.matches_userid(uid))
                            .map(|uid| self.validity(&uid, &fp)
-                                .unwrap_or(Validity::Unknown))
+                                .unwrap_or(ValidityLevel::Unknown.into()))
                            .max()
-                           .unwrap_or(Validity::Unknown)
+                           .unwrap_or(ValidityLevel::Unknown.into())
                    },
                };
                (validity, c)

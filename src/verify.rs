@@ -34,7 +34,7 @@ use crate::{
     argparse,
     argparse::options::Opt,
     babel,
-    common::{Common, Query, Validity},
+    common::{Common, Query, ValidityLevel},
     status::{Status, ErrSigStatus, NoDataReason},
     utils,
 };
@@ -699,19 +699,17 @@ impl<'a, 'store> VHelper<'a, 'store> {
             }
         }
 
-        let print_fingerprint = match validity {
-            Some(Validity::Revoked) => {
-                // XXX
-                false
-            },
-
-            Some(Validity::Expired) => {
-                self.control.info(format_args!(
-                    "Note: This key has expired!"));
-                true
-            },
-
-            Some(Validity::Unknown) | Some(Validity::Undefined) => {
+        let print_fingerprint = if validity.map(|v| v.revoked).unwrap_or(false) {
+            // XXX
+            false
+        } else if validity.map(|v| v.expired).unwrap_or(false) {
+            self.control.info(format_args!(
+                "Note: This key has expired!"));
+            true
+        } else {
+          use ValidityLevel::*;
+          match validity.map(|v| v.level) {
+            Some(Unknown) | Some(Undefined) => {
                 self.control.info(format_args!(
                     "WARNING: This key is not certified with \
                      a trusted signature!"));
@@ -721,7 +719,7 @@ impl<'a, 'store> VHelper<'a, 'store> {
                 true
             },
 
-            Some(Validity::Never) => {
+            Some(Never) => {
                 self.control.info(format_args!(
                     "WARNING: We do NOT trust this key!"));
                 self.control.info(format_args!(
@@ -730,7 +728,7 @@ impl<'a, 'store> VHelper<'a, 'store> {
                 false
             },
 
-            Some(Validity::Marginal) => {
+            Some(Marginal) => {
                 self.control.info(format_args!(
                     "WARNING: This key is not certified with \
                      sufficiently trusted signatures!"));
@@ -740,11 +738,12 @@ impl<'a, 'store> VHelper<'a, 'store> {
                 true
             },
 
-            Some(Validity::Fully) | Some(Validity::Ultimate) => {
+            Some(Fully) | Some(Ultimate) => {
                 false
             },
 
             None => false, // For gpgv.
+          }
         };
 
         if print_fingerprint || self.control.with_fingerprint() {
@@ -770,9 +769,8 @@ impl<'a, 'store> VHelper<'a, 'store> {
             sig.signature_creation_time())
         {
             let acert = crate::common::cert::AuthenticatedCert::new(vtm.as_ref(), ka.cert())?;
-            use crate::common::Validity::*;
-            match acert.cert_validity() {
-                Revoked | Expired => (),
+            use crate::common::ValidityLevel::*;
+            match acert.cert_validity().level {
                 Unknown | Undefined =>
                     self.control.status().emit(Status::TrustUndefined {
                         model: Some(vtm.kind()),

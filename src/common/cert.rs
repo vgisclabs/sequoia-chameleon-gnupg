@@ -23,6 +23,7 @@ use openpgp::{
 use crate::{
     common::{
         Validity,
+        ValidityLevel,
         ModelViewAt,
     },
 };
@@ -62,14 +63,14 @@ impl<'a> AuthenticatedCert<'a> {
             if let Ok(vcert) = cert.with_policy(vtm.policy(), vtm.time()) {
                 if let RevocationStatus::Revoked(_) = vcert.revocation_status()
                 {
-                    Some(Validity::Revoked)
+                    Some(Validity::revoked())
                 } else if vcert.alive().is_err() {
-                    Some(Validity::Expired)
+                    Some(Validity::expired())
                 } else {
                     None
                 }
             } else {
-                Some(Validity::Expired) // All binding signatures expired.
+                Some(Validity::expired()) // All binding signatures expired.
             }
         };
 
@@ -80,13 +81,13 @@ impl<'a> AuthenticatedCert<'a> {
                     v
                 } else if let Ok(vuid) = uid.with_policy(vtm.policy(), vtm.time()) {
                     if let RevocationStatus::Revoked(_) = vuid.revocation_status() {
-                        Validity::Revoked
+                        Validity::revoked()
                     } else {
                         vtm.validity(vuid.userid(), &cert_fp)
-                            .unwrap_or(Validity::Unknown)
+                            .unwrap_or(ValidityLevel::Unknown.into())
                     }
                 } else {
-                    Validity::Expired
+                    Validity::expired()
                 }
             })
             .collect();
@@ -94,20 +95,21 @@ impl<'a> AuthenticatedCert<'a> {
         // A cert's validity is either revoked, expired, or the max
         // over the validity of the user ids.
         let cert_validity = cert_validity.unwrap_or_else(
-            || uid_validities.iter().max().cloned().unwrap_or(Validity::Unknown));
+            || uid_validities.iter().max().cloned()
+                .unwrap_or(ValidityLevel::Unknown.into()));
 
         let key_validities: Vec<_> = cert.keys()
             .map(|skb| {
                 if let Ok(vskb) = skb.with_policy(vtm.policy(), vtm.time()) {
                     if let RevocationStatus::Revoked(_) = vskb.revocation_status() {
-                        Validity::Revoked
+                        Validity::revoked()
                     } else if vskb.alive().is_err() {
-                        Validity::Expired
+                        Validity::expired()
                     } else {
                         cert_validity
                     }
                 } else {
-                    Validity::Expired
+                    Validity::expired()
                 }
             })
             .collect();
