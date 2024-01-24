@@ -508,6 +508,14 @@ impl<'a, 'store> DHelper<'a, 'store> {
                 },
             };
 
+            if self.config.list_only {
+                if ! crate::agent::has_key(&mut agent, key.key()).await? {
+                    emit_no_seckey(keyid)?;
+                }
+
+                continue;
+            }
+
             // And just try to decrypt it using the agent.
             let mut pair = KeyPair::new(&ctx, &key)?
                 .with_cert(&vcert);
@@ -533,6 +541,15 @@ impl<'a, 'store> DHelper<'a, 'store> {
 
         if let Some(maybe_fp) = success {
             return Ok(maybe_fp);
+        }
+
+        if self.config.list_only {
+            // If we --list-only, we'll never invoke
+            // decryption_successful, so print the status message
+            // here.
+            self.config.status().emit(Status::BeginDecryption)?;
+            // And short-circuit so that we don't ask for passwords.
+            return Ok(None);
         }
 
         // Then, try password-based encryption.

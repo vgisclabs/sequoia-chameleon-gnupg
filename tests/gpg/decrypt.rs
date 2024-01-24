@@ -76,6 +76,14 @@ fn symmetric(algo: SymmetricAlgorithm) -> Result<()> {
 
     let diff = experiment.invoke(&[
         "--batch",
+        "--decrypt",
+        "--list-only",
+        &experiment.store("ciphertext", &ciphertext)?,
+    ])?;
+    diff.assert_limits(0, 0, 0);
+
+    let diff = experiment.invoke(&[
+        "--batch",
         "--pinentry-mode=loopback",
         "--decrypt",
         "--passphrase", "password",
