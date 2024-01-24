@@ -141,7 +141,7 @@ impl ListOptions {
             "show preferred keyserver URLs during signature listings",
         },
 
-        opt_todo! {
+        opt! {
             "show-uid-validity",
             |o, s, _| Ok({ o.uid_validity = s; }),
             "show user ID validity during key listings",
@@ -325,7 +325,9 @@ where
 {
     let rt = tokio::runtime::Runtime::new()?;
     rt.block_on(async_list_keys(config, certs,
-                                list_secret, list_secret, true, emit_header,
+                                list_secret, list_secret,
+                                config.list_options.uid_validity,
+                                emit_header,
                                 sink))
 }
 
@@ -485,7 +487,17 @@ where
             let vuid = uid.clone().with_policy(p, config.now()).ok();
 
             Record::UserID {
-                validity: list_uid_validity.then_some(validity),
+                validity: (list_uid_validity
+                           // For some reason, in the machine readable
+                           // output, GnuPG disregards
+                           // no-show-uid-validity if the validity is
+                           // revoked, expired, or the ownertrust
+                           // marks the cert as disabled.
+                           || (config.with_colons
+                               && (validity.revoked
+                                   || validity.expired
+                                   || ownertrust.disabled())))
+                    .then_some(validity),
                 creation_date: vuid.as_ref()
                     .and_then(|v| v.binding_signature().signature_creation_time())
                     .unwrap_or_else(|| {

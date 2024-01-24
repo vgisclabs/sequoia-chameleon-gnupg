@@ -409,6 +409,36 @@ fn test_key_cert_imported(cert: Cert, mut experiment: Experiment) -> Result<()>
 
     let diff = experiment.invoke(&[
         "--list-keys",
+        "--list-options=show-uid-validity",
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(9, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--list-options=no-show-uid-validity",
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(9, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-colons",
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(per_subkey(&cert, 1), 0);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--list-options=show-uid-validity",
+        "--with-colons",
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(per_subkey(&cert, 1), 0);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--list-options=no-show-uid-validity",
         "--with-colons",
     ])?;
     diff.assert_success();
