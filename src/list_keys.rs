@@ -486,6 +486,10 @@ where
         for (validity, uid) in userids.into_iter() {
             let vuid = uid.clone().with_policy(p, config.now()).ok();
 
+            if ! vuid.is_some() {
+                continue;
+            }
+
             Record::UserID {
                 validity: (list_uid_validity
                            // For some reason, in the machine readable
