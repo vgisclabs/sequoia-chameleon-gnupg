@@ -224,11 +224,26 @@ pub trait ModelViewAt<'a, 'store> {
         -> Result<Vec<(Validity, Arc<LazyCert<'store>>)>>;
 }
 
-#[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub struct Validity {
     pub level: ValidityLevel,
     pub revoked: bool,
     pub expired: bool,
+}
+
+impl PartialOrd for Validity {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+use std::cmp::Ordering;
+impl Ord for Validity {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.revoked.cmp(&other.revoked).reverse()
+            .then_with(|| self.expired.cmp(&other.expired).reverse())
+            .then_with(|| self.level.cmp(&other.level))
+    }
 }
 
 impl From<ValidityLevel> for Validity {
