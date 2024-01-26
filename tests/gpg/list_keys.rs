@@ -382,11 +382,6 @@ mhZeqo6zyn8zrO9RGU7+8jmeb5nVnXw1YmZcw2fiJgI9+tTMkTfomyR6k0EDvcEu
     test_key(cert, experiment)
 }
 
-/// Allows `errors` for every (sub)key in `cert`.
-fn per_subkey(cert: &Cert, errors: usize) -> usize {
-    cert.keys().count() * errors
-}
-
 fn test_key(cert: Cert, mut experiment: Experiment) -> Result<()>
 {
     experiment.section("Importing cert...");
@@ -426,7 +421,7 @@ fn test_key_cert_imported(cert: Cert, mut experiment: Experiment) -> Result<()>
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(per_subkey(&cert, 1), 0);
+    diff.assert_equal_up_to(0, 0);
 
     let diff = experiment.invoke(&[
         "--list-keys",
@@ -434,7 +429,7 @@ fn test_key_cert_imported(cert: Cert, mut experiment: Experiment) -> Result<()>
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(per_subkey(&cert, 1), 0);
+    diff.assert_equal_up_to(0, 0);
 
     let diff = experiment.invoke(&[
         "--list-keys",
@@ -442,7 +437,7 @@ fn test_key_cert_imported(cert: Cert, mut experiment: Experiment) -> Result<()>
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(per_subkey(&cert, 1), 0);
+    diff.assert_equal_up_to(0, 0);
 
     let diff = experiment.invoke(&[
         "--fingerprint",
@@ -462,7 +457,7 @@ fn test_key_cert_imported(cert: Cert, mut experiment: Experiment) -> Result<()>
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(per_subkey(&cert, 1), 0);
+    diff.assert_equal_up_to(0, 0);
 
     let diff = experiment.invoke(&[
         "--list-keys",
@@ -477,7 +472,7 @@ fn test_key_cert_imported(cert: Cert, mut experiment: Experiment) -> Result<()>
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(per_subkey(&cert, 1), 0);
+    diff.assert_equal_up_to(0, 0);
 
     let diff = experiment.invoke(&[
         "--list-secret-keys",
@@ -490,7 +485,7 @@ fn test_key_cert_imported(cert: Cert, mut experiment: Experiment) -> Result<()>
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(per_subkey(&cert, 1), 0);
+    diff.assert_equal_up_to(0, 0);
 
     experiment.section("Importing TSK...");
     let diff = experiment.invoke(&[
@@ -511,7 +506,7 @@ fn test_key_cert_imported(cert: Cert, mut experiment: Experiment) -> Result<()>
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(per_subkey(&cert, 1), 0);
+    diff.assert_equal_up_to(0, 0);
 
     let diff = experiment.invoke(&[
         "--list-keys",
@@ -526,7 +521,7 @@ fn test_key_cert_imported(cert: Cert, mut experiment: Experiment) -> Result<()>
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(per_subkey(&cert, 1), 0);
+    diff.assert_equal_up_to(0, 0);
 
     let diff = experiment.invoke(&[
         "--list-secret-keys",
@@ -539,7 +534,7 @@ fn test_key_cert_imported(cert: Cert, mut experiment: Experiment) -> Result<()>
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(per_subkey(&cert, 1), 0);
+    diff.assert_equal_up_to(0, 0);
 
     Ok(())
 }
@@ -616,7 +611,7 @@ fn general_purpose(cs: CipherSuite) -> Result<()> {
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(per_subkey(&cert, 2), 0);
+    diff.assert_equal_up_to(0, 0);
 
     experiment.section("Importing TSK...");
     let diff = experiment.invoke(&[
@@ -636,7 +631,7 @@ fn general_purpose(cs: CipherSuite) -> Result<()> {
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(per_subkey(&cert, 2), 0);
+    diff.assert_equal_up_to(0, 0);
 
     Ok(())
 }

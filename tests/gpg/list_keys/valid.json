@@ -330,7 +330,7 @@
         "\"--with-colons\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:256:22:A36F44AAE1014B43:1671553073:::-:::cSC:::::ed25519:::0:\\nfpr:::::::::208D669E6FE78F1D89462670A36F44AAE1014B43:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsub:-:256:22:503BE0F2879264F9:1671553073::::::s:::::ed25519::\\nfpr:::::::::AAE8AB797DD9DDD141E902D0503BE0F2879264F9:\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:255:22:A36F44AAE1014B43:1671553073:::-:::cSC:::::ed25519:::0:\\nfpr:::::::::208D669E6FE78F1D89462670A36F44AAE1014B43:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsub:-:255:22:503BE0F2879264F9:1671553073::::::s:::::ed25519::\\nfpr:::::::::AAE8AB797DD9DDD141E902D0503BE0F2879264F9:\\n",
       "statusfd": "",
       "status": "exit status: 0",
       "files": {}
@@ -343,7 +343,7 @@
         "\"--with-colons\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:256:22:A36F44AAE1014B43:1671553073:::-:::cSC:::::ed25519:::0:\\nfpr:::::::::208D669E6FE78F1D89462670A36F44AAE1014B43:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsub:-:256:22:503BE0F2879264F9:1671553073::::::s:::::ed25519::\\nfpr:::::::::AAE8AB797DD9DDD141E902D0503BE0F2879264F9:\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:255:22:A36F44AAE1014B43:1671553073:::-:::cSC:::::ed25519:::0:\\nfpr:::::::::208D669E6FE78F1D89462670A36F44AAE1014B43:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsub:-:255:22:503BE0F2879264F9:1671553073::::::s:::::ed25519::\\nfpr:::::::::AAE8AB797DD9DDD141E902D0503BE0F2879264F9:\\n",
       "statusfd": "",
       "status": "exit status: 0",
       "files": {}
@@ -356,7 +356,7 @@
         "\"--with-colons\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:256:22:A36F44AAE1014B43:1671553073:::-:::cSC:::::ed25519:::0:\\nfpr:::::::::208D669E6FE78F1D89462670A36F44AAE1014B43:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsub:-:256:22:503BE0F2879264F9:1671553073::::::s:::::ed25519::\\nfpr:::::::::AAE8AB797DD9DDD141E902D0503BE0F2879264F9:\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:255:22:A36F44AAE1014B43:1671553073:::-:::cSC:::::ed25519:::0:\\nfpr:::::::::208D669E6FE78F1D89462670A36F44AAE1014B43:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsub:-:255:22:503BE0F2879264F9:1671553073::::::s:::::ed25519::\\nfpr:::::::::AAE8AB797DD9DDD141E902D0503BE0F2879264F9:\\n",
       "statusfd": "",
       "status": "exit status: 0",
       "files": {}
@@ -391,7 +391,7 @@
         "\"--with-colons\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:256:22:A36F44AAE1014B43:1671553073:::-:::cSC:::::ed25519:::0:\\nfpr:::::::::208D669E6FE78F1D89462670A36F44AAE1014B43:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsub:-:256:22:503BE0F2879264F9:1671553073::::::s:::::ed25519::\\nfpr:::::::::AAE8AB797DD9DDD141E902D0503BE0F2879264F9:\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:255:22:A36F44AAE1014B43:1671553073:::-:::cSC:::::ed25519:::0:\\nfpr:::::::::208D669E6FE78F1D89462670A36F44AAE1014B43:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsub:-:255:22:503BE0F2879264F9:1671553073::::::s:::::ed25519::\\nfpr:::::::::AAE8AB797DD9DDD141E902D0503BE0F2879264F9:\\n",
       "statusfd": "",
       "status": "exit status: 0",
       "files": {}
@@ -416,7 +416,7 @@
         "\"--with-colons\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:256:22:A36F44AAE1014B43:1671553073:::-:::cSC:::::ed25519:::0:\\nfpr:::::::::208D669E6FE78F1D89462670A36F44AAE1014B43:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsub:-:256:22:503BE0F2879264F9:1671553073::::::s:::::ed25519::\\nfpr:::::::::AAE8AB797DD9DDD141E902D0503BE0F2879264F9:\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:255:22:A36F44AAE1014B43:1671553073:::-:::cSC:::::ed25519:::0:\\nfpr:::::::::208D669E6FE78F1D89462670A36F44AAE1014B43:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsub:-:255:22:503BE0F2879264F9:1671553073::::::s:::::ed25519::\\nfpr:::::::::AAE8AB797DD9DDD141E902D0503BE0F2879264F9:\\n",
       "statusfd": "",
       "status": "exit status: 0",
       "files": {}
@@ -475,7 +475,7 @@
         "\"--with-colons\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:256:22:A36F44AAE1014B43:1671553073:::-:::cSC:::::ed25519:::0:\\nfpr:::::::::208D669E6FE78F1D89462670A36F44AAE1014B43:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsub:-:256:22:503BE0F2879264F9:1671553073::::::s:::::ed25519::\\nfpr:::::::::AAE8AB797DD9DDD141E902D0503BE0F2879264F9:\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:255:22:A36F44AAE1014B43:1671553073:::-:::cSC:::::ed25519:::0:\\nfpr:::::::::208D669E6FE78F1D89462670A36F44AAE1014B43:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsub:-:255:22:503BE0F2879264F9:1671553073::::::s:::::ed25519::\\nfpr:::::::::AAE8AB797DD9DDD141E902D0503BE0F2879264F9:\\n",
       "statusfd": "",
       "status": "exit status: 0",
       "files": {}
@@ -500,7 +500,7 @@
         "\"--with-colons\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:256:22:A36F44AAE1014B43:1671553073:::-:::cSC:::+::ed25519:::0:\\nfpr:::::::::208D669E6FE78F1D89462670A36F44AAE1014B43:\\ngrp:::::::::074365EE631CF555A5397C2681D84603ACE70FF8:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsub:-:256:22:503BE0F2879264F9:1671553073::::::s:::+::ed25519::\\nfpr:::::::::AAE8AB797DD9DDD141E902D0503BE0F2879264F9:\\ngrp:::::::::955D5C7A049C55131A590DE0C189FD2517568E51:\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:255:22:A36F44AAE1014B43:1671553073:::-:::cSC:::+::ed25519:::0:\\nfpr:::::::::208D669E6FE78F1D89462670A36F44AAE1014B43:\\ngrp:::::::::074365EE631CF555A5397C2681D84603ACE70FF8:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsub:-:255:22:503BE0F2879264F9:1671553073::::::s:::+::ed25519::\\nfpr:::::::::AAE8AB797DD9DDD141E902D0503BE0F2879264F9:\\ngrp:::::::::955D5C7A049C55131A590DE0C189FD2517568E51:\\n",
       "statusfd": "",
       "status": "exit status: 0",
       "files": {}
@@ -523,7 +523,7 @@
         "\"--with-colons\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "sec:-:256:22:A36F44AAE1014B43:1671553073:::-:::cSC:::+::ed25519:::0:\\nfpr:::::::::208D669E6FE78F1D89462670A36F44AAE1014B43:\\ngrp:::::::::074365EE631CF555A5397C2681D84603ACE70FF8:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nssb:-:256:22:503BE0F2879264F9:1671553073::::::s:::+::ed25519::\\nfpr:::::::::AAE8AB797DD9DDD141E902D0503BE0F2879264F9:\\ngrp:::::::::955D5C7A049C55131A590DE0C189FD2517568E51:\\n",
+      "stdout": "sec:-:255:22:A36F44AAE1014B43:1671553073:::-:::cSC:::+::ed25519:::0:\\nfpr:::::::::208D669E6FE78F1D89462670A36F44AAE1014B43:\\ngrp:::::::::074365EE631CF555A5397C2681D84603ACE70FF8:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nssb:-:255:22:503BE0F2879264F9:1671553073::::::s:::+::ed25519::\\nfpr:::::::::AAE8AB797DD9DDD141E902D0503BE0F2879264F9:\\ngrp:::::::::955D5C7A049C55131A590DE0C189FD2517568E51:\\n",
       "statusfd": "",
       "status": "exit status: 0",
       "files": {}
@@ -559,22 +559,17 @@
       0
     ],
     [
-      2,
+      0,
       0,
       0
     ],
     [
-      2,
+      0,
       0,
       0
     ],
     [
-      2,
       0,
-      0
-    ],
-    [
-      1,
       0,
       0
     ],
@@ -584,7 +579,12 @@
       0
     ],
     [
-      2,
+      1,
+      0,
+      0
+    ],
+    [
+      0,
       0,
       0
     ],
@@ -594,7 +594,7 @@
       0
     ],
     [
-      2,
+      0,
       0,
       0
     ],
@@ -619,7 +619,7 @@
       0
     ],
     [
-      2,
+      0,
       0,
       0
     ],
@@ -629,7 +629,7 @@
       0
     ],
     [
-      2,
+      0,
       0,
       0
     ],
@@ -639,7 +639,7 @@
       0
     ],
     [
-      2,
+      0,
       0,
       0
     ]

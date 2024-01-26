@@ -153,7 +153,7 @@ impl Record<'_> {
                 });
 
                 let curve = get_curve(key.mpis());
-                let key_length = key.mpis().bits().unwrap_or_default();
+                let key_length = get_bits(key.mpis());
 
                 if mr {
                     let compliance_flags = compliance.iter()
@@ -222,7 +222,7 @@ impl Record<'_> {
                 });
 
                 let curve = get_curve(key.mpis());
-                let key_length = key.mpis().bits().unwrap_or_default();
+                let key_length = get_bits(key.mpis());
 
                 if mr {
                     let compliance_flags = compliance.iter()
@@ -459,5 +459,16 @@ pub fn get_curve(mpis: &PublicKey) -> Option<Curve> {
         | PublicKey::ECDSA { curve, .. }
         | PublicKey::ECDH { curve, .. } => Some(curve.clone()),
         _ => None,
+    }
+}
+
+/// Returns the size of the key that we should report.
+pub fn get_bits(mpis: &PublicKey) -> usize {
+    match mpis {
+        // GnuPG knows better than the rest of the world.
+        PublicKey::EdDSA { curve, .. } if *curve == Curve::Ed25519 => 255,
+        // GnuPG knows better than the rest of the world.
+        PublicKey::ECDH { curve, .. } if *curve == Curve::Cv25519 => 255,
+        _ => mpis.bits().unwrap_or(0),
     }
 }

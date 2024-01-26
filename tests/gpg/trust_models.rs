@@ -163,8 +163,7 @@ fn run_test(cert: Cert, mut experiment: Experiment, model: &'static str,
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(11 // Next trust db check time.
-                            + per_subkey(&cert, 1), // cv25519 key size
+    diff.assert_equal_up_to(11, // Next trust db check time.
                             0);
 
     // Try to authenticate the certificate as a recipient.
@@ -214,9 +213,4 @@ fn run_test(cert: Cert, mut experiment: Experiment, model: &'static str,
     }
 
     Ok(())
-}
-
-/// Allows `errors` for every (sub)key in `cert`.
-fn per_subkey(cert: &Cert, errors: usize) -> usize {
-    cert.keys().count() * errors
 }
