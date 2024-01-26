@@ -90,7 +90,7 @@ where
         |a, f| a.as_tsk().serialize(f),
         |b| Cert::from_bytes(&b))?;
 
-    eprintln!("Importing cert...");
+    experiment.section("Importing cert...");
     let diff = experiment.invoke(&[
         "--import",
         "--import-options", options,
@@ -99,7 +99,7 @@ where
     diff.assert_success();
     diff.assert_limits(0, 0, 0);
 
-    eprintln!("Importing cert again, unchanged...");
+    experiment.section("Importing cert again, unchanged...");
     let diff = experiment.invoke(&[
         "--import",
         "--import-options", options,
@@ -108,7 +108,7 @@ where
     diff.assert_success();
     diff.assert_limits(0, 0, 0);
 
-    eprintln!("Importing key...");
+    experiment.section("Importing key...");
     let diff = experiment.invoke(&[
         "--import",
         "--import-options", options,
@@ -121,7 +121,7 @@ where
     // really.  Let's see if we can get away with not emulating that.
     diff.assert_limits(3, 0, 67);
 
-    eprintln!("Importing key again, unchanged...");
+    experiment.section("Importing key again, unchanged...");
     let diff = experiment.invoke(&[
         "--import",
         "--import-options", options,
@@ -139,7 +139,7 @@ where
         |a, f| a.as_tsk().serialize(f),
         |b| Cert::from_bytes(&b))?;
 
-    eprintln!("Importing cert...");
+    experiment.section("Importing cert...");
     let diff = experiment.invoke(&[
         "--with-colons",
         "--import",
@@ -150,7 +150,7 @@ where
     // STDOUT: Curve25519 key length.
     diff.assert_limits(3, 0, 0);
 
-    eprintln!("Importing cert again, unchanged...");
+    experiment.section("Importing cert again, unchanged...");
     let diff = experiment.invoke(&[
         "--with-colons",
         "--import",
@@ -161,7 +161,7 @@ where
     // STDOUT: Curve25519 key length.
     diff.assert_limits(3, 0, 0);
 
-    eprintln!("Importing key...");
+    experiment.section("Importing key...");
     let diff = experiment.invoke(&[
         "--with-colons",
         "--import",
@@ -176,7 +176,7 @@ where
     // STDOUT: Curve25519 key length.
     diff.assert_limits(3 + 3, 0, 67);
 
-    eprintln!("Importing key again, unchanged...");
+    experiment.section("Importing key again, unchanged...");
     let diff = experiment.invoke(&[
         "--with-colons",
         "--import",

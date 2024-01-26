@@ -30,7 +30,7 @@ fn always() -> Result<()> {
         |a, f| a.as_tsk().serialize(f),
         |b| Cert::from_bytes(&b))?;
 
-    eprintln!("Importing cert...");
+    experiment.section("Importing cert...");
     let diff = experiment.invoke(&[
         "--import",
         &experiment.store("cert", &cert.to_vec()?)?,
@@ -65,7 +65,7 @@ fn pgp() -> Result<()> {
             |a, f| a.as_tsk().serialize(f),
             |b| Cert::from_bytes(&b))?;
 
-        eprintln!("Importing cert...");
+        experiment.section("Importing cert...");
         let diff = experiment.invoke(&[
             "--import",
             &experiment.store("cert", &cert.to_vec()?)?,
@@ -74,7 +74,8 @@ fn pgp() -> Result<()> {
         diff.assert_equal_up_to(0, 0);
 
         if let Some(owner_trust) = owner_trust {
-            eprintln!("Setting ownertrust to {}...", owner_trust);
+            experiment.section(
+                format!("Setting ownertrust to {}...", owner_trust));
             let diff = experiment.invoke(&[
                 "--import-ownertrust",
                 &experiment.store("ownertrust",
@@ -115,7 +116,7 @@ fn auto() -> Result<()> {
             |a, f| a.as_tsk().serialize(f),
             |b| Cert::from_bytes(&b))?;
 
-        eprintln!("Importing cert...");
+        experiment.section("Importing cert...");
         let diff = experiment.invoke(&[
             "--import",
             &experiment.store("cert", &cert.to_vec()?)?,
@@ -124,7 +125,8 @@ fn auto() -> Result<()> {
         diff.assert_equal_up_to(0, 0);
 
         if let Some(owner_trust) = owner_trust {
-            eprintln!("Setting ownertrust to {}...", owner_trust);
+            experiment.section(
+                format!("Setting ownertrust to {}...", owner_trust));
             let diff = experiment.invoke(&[
                 "--import-ownertrust",
                 &experiment.store("ownertrust",
@@ -151,7 +153,7 @@ fn run_test(cert: Cert, mut experiment: Experiment, model: &'static str,
             expect_success: bool)
             -> Result<()>
 {
-    eprintln!("Checking the trust database...");
+    experiment.section("Checking the trust database...");
     let diff = experiment.invoke(&["--check-trustdb"])?;
     diff.assert_success();
 
@@ -182,7 +184,7 @@ fn run_test(cert: Cert, mut experiment: Experiment, model: &'static str,
             diff.with_working_dir(|p| p.get("ciphertext").cloned().ok_or_else(
                 || anyhow::anyhow!("no ciphertext produced")))?;
 
-        eprintln!("Importing key...");
+        experiment.section("Importing key...");
         let diff = experiment.invoke(&[
             "--import",
             &experiment.store("key", &cert.as_tsk().to_vec()?)?,

@@ -488,7 +488,7 @@ fn encrypted() -> Result<()> {
                   0,
                   p.clone())?;
 
-    eprintln!("Importing key...");
+    experiment.section("Importing key...");
     experiment.invoke(&[
         "--import",
         &experiment.store("key", &key.as_tsk().to_vec()?)?,

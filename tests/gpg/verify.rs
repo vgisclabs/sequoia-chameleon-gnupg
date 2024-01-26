@@ -569,7 +569,7 @@ fn test_detached_sig_with<'a>(experiment: &mut Experiment,
         diff.assert_failure();
         diff.assert_equal_up_to(0, 20);
 
-        eprintln!("Importing cert...");
+        experiment.section("Importing cert...");
         let diff = experiment.invoke(&[
             "--import",
             &experiment.store("cert", &cert.to_vec()?)?,

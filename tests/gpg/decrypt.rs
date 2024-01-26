@@ -162,7 +162,7 @@ fn locked_loopback() -> Result<()> {
 
     let ciphertext = encrypt_for(&[&cert])?;
 
-    eprintln!("Importing key...");
+    experiment.section("Importing key...");
     let diff = experiment.invoke(&[
         "--import",
         "--batch",
@@ -276,7 +276,7 @@ fn test_key(cert: Cert, ciphertext: Vec<u8>, mut experiment: Experiment)
     ])?;
     diff.assert_limits(0, 0, 0);
 
-    eprintln!("Importing cert...");
+    experiment.section("Importing cert...");
     let diff = experiment.invoke(&[
         "--import",
         &experiment.store("cert", &cert.to_vec()?)?,
@@ -312,7 +312,7 @@ fn test_key(cert: Cert, ciphertext: Vec<u8>, mut experiment: Experiment)
     ])?;
     diff.assert_limits(0, 1, 0);
 
-    eprintln!("Importing key...");
+    experiment.section("Importing key...");
     let diff = experiment.invoke(&[
         "--import",
         &experiment.store("key", &cert.as_tsk().to_vec()?)?,

@@ -624,6 +624,8 @@ impl Drop for Experiment {
 /// An experiment consists of a number of actions, which are executed
 /// in order.
 enum Action {
+    /// Signals the start of a new section in the test.
+    Section(String),
     /// Store a file in the working directory.
     Store(PathBuf),
     /// Invoke a command.
@@ -666,6 +668,14 @@ impl Experiment {
         e.invoke(&["--list-keys"])?.assert_success();
 
         Ok(e)
+    }
+
+    /// Signal the start of a new section in the test.
+    pub fn section<S: AsRef<str>>(&mut self, section: S) {
+        let section = section.as_ref();
+        eprintln!();
+        eprintln!("# {}", section);
+        self.log.borrow_mut().push(Action::Section(section.into()));
     }
 
     /// Creates or loads an artifact for the experiment.
@@ -739,7 +749,9 @@ impl Experiment {
         } else {
             "gpg"
         };
-        eprintln!("Invoking {:?} {}", what, normalized_args.join(" "));
+        eprintln!();
+        eprintln!("## Invoking {:?} {}", what, normalized_args.join(" "));
+        eprintln!();
 
         // First, invoke the Chameleon.
         eprintln!("Invoking the chameleon");
@@ -856,6 +868,9 @@ impl Experiment {
         for a in self.log.borrow().iter() {
             writeln!(&mut sink)?;
             match a {
+                Action::Section(s) => {
+                    writeln!(&mut sink, "# {}", s)?;
+                },
                 Action::Invoke(args) => {
                     write!(&mut sink, "gpg")?;
                     for a in args {

@@ -124,7 +124,7 @@ fn recipient_file() -> Result<()> {
 fn test_key(cert: Cert, mut experiment: Experiment, expect_success: bool)
             -> Result<()>
 {
-    eprintln!("Importing cert...");
+    experiment.section("Importing cert...");
     let diff = experiment.invoke(&[
         "--import",
         &experiment.store("cert", &cert.to_vec()?)?,
@@ -163,7 +163,7 @@ fn test_decryption(cert: Cert,
                    mut experiment: Experiment,
                    ciphertexts: Vec<Vec<u8>>)
                    -> Result<()> {
-    eprintln!("Importing key...");
+    experiment.section("Importing key...");
     let diff = experiment.invoke(&[
         "--import",
         &experiment.store("key", &cert.as_tsk().to_vec()?)?,
@@ -203,7 +203,7 @@ fn fingerprint_recipient() -> Result<()> {
         |a, f| a.as_tsk().serialize(f),
         |b| Cert::from_bytes(&b))?;
 
-    eprintln!("Importing cert...");
+    experiment.section("Importing cert...");
     let diff = experiment.invoke(&[
         "--import",
         &experiment.store("cert", &cert.to_vec()?)?,

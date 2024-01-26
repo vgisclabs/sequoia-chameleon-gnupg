@@ -91,7 +91,7 @@ fn no_authentication_subkey() -> Result<()> {
 fn test_key(cert: Cert, mut experiment: Experiment, expect_success: bool)
             -> Result<()>
 {
-    eprintln!("Importing cert...");
+    experiment.section("Importing cert...");
     let diff = experiment.invoke(&[
         "--import",
         &experiment.store("cert", &cert.to_vec()?)?,

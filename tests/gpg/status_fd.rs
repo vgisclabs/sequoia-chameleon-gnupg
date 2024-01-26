@@ -34,7 +34,7 @@ fn untrusted_certificate_prompt() -> Result<()> {
         |a, f| a.serialize(f),
         |b| Cert::from_bytes(&b))?;
 
-    eprintln!("Importing cert...");
+    experiment.section("Importing cert...");
     let diff = experiment.invoke(&[
         "--import",
         &experiment.store("cert", &cert.to_vec()?)?,

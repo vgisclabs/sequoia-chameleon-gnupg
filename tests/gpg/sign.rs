@@ -92,7 +92,7 @@ fn no_signing_subkey() -> Result<()> {
 fn test_key(cert: Cert, mut experiment: Experiment, expect_success: bool)
             -> Result<()>
 {
-    eprintln!("Importing key...");
+    experiment.section("Importing key...");
     let diff = experiment.invoke(&[
         "--import",
         &experiment.store("key", &cert.as_tsk().to_vec()?)?,

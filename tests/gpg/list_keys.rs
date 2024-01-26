@@ -286,7 +286,7 @@ fn disabled() -> Result<()> {
         |a, f| a.as_tsk().serialize(f),
         |b| Cert::from_bytes(&b))?;
 
-    eprintln!("Importing cert...");
+    experiment.section("Importing cert...");
     let diff = experiment.invoke(&[
         "--import",
         &experiment.store("cert", &cert.to_vec()?)?,
@@ -389,7 +389,7 @@ fn per_subkey(cert: &Cert, errors: usize) -> usize {
 
 fn test_key(cert: Cert, mut experiment: Experiment) -> Result<()>
 {
-    eprintln!("Importing cert...");
+    experiment.section("Importing cert...");
     let diff = experiment.invoke(&[
         "--import",
         &experiment.store("cert", &cert.to_vec()?)?,
@@ -492,7 +492,7 @@ fn test_key_cert_imported(cert: Cert, mut experiment: Experiment) -> Result<()>
     diff.assert_success();
     diff.assert_equal_up_to(per_subkey(&cert, 1), 0);
 
-    eprintln!("Importing TSK...");
+    experiment.section("Importing TSK...");
     let diff = experiment.invoke(&[
         "--batch",
         "--import",
@@ -598,7 +598,7 @@ fn general_purpose(cs: CipherSuite) -> Result<()> {
         |a, f| a.as_tsk().serialize(f),
         |b| Cert::from_bytes(&b))?;
 
-    eprintln!("Importing cert...");
+    experiment.section("Importing cert...");
     let diff = experiment.invoke(&[
         "--import",
         &experiment.store("cert", &cert.to_vec()?)?,
@@ -618,7 +618,7 @@ fn general_purpose(cs: CipherSuite) -> Result<()> {
     diff.assert_success();
     diff.assert_equal_up_to(per_subkey(&cert, 2), 0);
 
-    eprintln!("Importing TSK...");
+    experiment.section("Importing TSK...");
     let diff = experiment.invoke(&[
         "--import",
         &experiment.store("cert", &cert.as_tsk().to_vec()?)?,
