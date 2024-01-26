@@ -15,9 +15,9 @@ use anyhow::Result;
 use sequoia_openpgp as openpgp;
 use openpgp::{
     Fingerprint,
-    KeyID,
     crypto::hash::Digest,
-    packet::UserID,
+    crypto::mpi::PublicKey,
+    packet::{UserID, Key, key::{PublicParts, PrimaryRole, SubordinateRole}},
     types::*,
 };
 use sequoia_ipc as ipc;
@@ -30,35 +30,27 @@ use crate::{
 };
 
 #[allow(dead_code)]
-pub enum Record {
+pub enum Record<'k> {
     Key {
+        key: &'k Key<PublicParts, PrimaryRole>,
         have_secret: bool,
         validity: Validity,
-        key_length: usize,
-        pk_algo: PublicKeyAlgorithm,
-        keyid: KeyID,
-        creation_date: SystemTime,
         expiration_date: Option<SystemTime>,
         revocation_date: Option<SystemTime>,
         ownertrust: OwnerTrust,
         primary_key_flags: KeyFlags,
         sum_key_flags: KeyFlags,
         token_sn: Option<TokenSN>,
-        curve: Option<Curve>,
         compliance: Vec<Compliance>,
     },
     Subkey {
+        key: &'k Key<PublicParts, SubordinateRole>,
         have_secret: bool,
         validity: Validity,
-        key_length: usize,
-        pk_algo: PublicKeyAlgorithm,
-        keyid: KeyID,
-        creation_date: SystemTime,
         expiration_date: Option<SystemTime>,
         revocation_date: Option<SystemTime>,
         key_flags: KeyFlags,
         token_sn: Option<TokenSN>,
-        curve: Option<Curve>,
         compliance: Vec<Compliance>,
     },
     Fingerprint(Fingerprint),
@@ -90,7 +82,7 @@ pub enum Record {
     },
 }
 
-impl Record {
+impl Record<'_> {
     /// Emits the record to `w`, `mr` indicates whether it should be
     /// machine-readable.
     pub fn emit(&self, config: &crate::Config,
@@ -131,20 +123,17 @@ impl Record {
 
         match self {
             Key {
+                key,
                 have_secret,
                 validity,
-                key_length,
-                pk_algo,
-                keyid,
-                creation_date,
                 expiration_date,
                 revocation_date,
                 ownertrust,
                 primary_key_flags,
                 sum_key_flags,
                 token_sn,
-                curve,
                 compliance,
+                ..
             } => {
                 let record_type = if *have_secret {
                     "sec"
@@ -153,7 +142,7 @@ impl Record {
                 };
 
                 let creation_date =
-                    chrono::DateTime::<chrono::Utc>::from(*creation_date);
+                    chrono::DateTime::<chrono::Utc>::from(key.creation_time());
 
                 let expiration_date = expiration_date.map(|t| {
                     chrono::DateTime::<chrono::Utc>::from(t)
@@ -162,6 +151,9 @@ impl Record {
                 let revocation_date = revocation_date.map(|t| {
                     chrono::DateTime::<chrono::Utc>::from(t)
                 });
+
+                let curve = get_curve(key.mpis());
+                let key_length = key.mpis().bits().unwrap_or_default();
 
                 if mr {
                     let compliance_flags = compliance.iter()
@@ -175,8 +167,8 @@ impl Record {
                              record_type,
                              validity,
                              key_length,
-                             u8::from(*pk_algo),
-                             keyid,
+                             u8::from(key.pk_algo()),
+                             key.keyid(),
                              creation_date.format("%s"),
                              expiration_date.map(|t| t.format("%s").to_string())
                              .unwrap_or_else(|| "".into()),
@@ -194,7 +186,7 @@ impl Record {
                     writeln!(w,
                              "{}   {} {} [{}]{}",
                              record_type,
-                             babel::Fish((*pk_algo, *key_length, curve)),
+                             babel::Fish((key.pk_algo(), key_length, &curve)),
                              creation_date.format("%Y-%m-%d"),
                              babel::Fish(primary_key_flags).to_string().to_uppercase(),
                              bracket(revocation_date, expiration_date),
@@ -203,17 +195,13 @@ impl Record {
             },
 
             Subkey {
+                key,
                 have_secret,
                 validity,
-                key_length,
-                pk_algo,
-                keyid,
-                creation_date,
                 expiration_date,
                 revocation_date,
                 key_flags,
                 token_sn,
-                curve,
                 compliance,
             } => {
                 let record_type = if *have_secret {
@@ -223,7 +211,7 @@ impl Record {
                 };
 
                 let creation_date =
-                    chrono::DateTime::<chrono::Utc>::from(*creation_date);
+                    chrono::DateTime::<chrono::Utc>::from(key.creation_time());
 
                 let expiration_date = expiration_date.map(|t| {
                     chrono::DateTime::<chrono::Utc>::from(t)
@@ -232,6 +220,9 @@ impl Record {
                 let revocation_date = revocation_date.map(|t| {
                     chrono::DateTime::<chrono::Utc>::from(t)
                 });
+
+                let curve = get_curve(key.mpis());
+                let key_length = key.mpis().bits().unwrap_or_default();
 
                 if mr {
                     let compliance_flags = compliance.iter()
@@ -244,8 +235,8 @@ impl Record {
                              record_type,
                              validity,
                              key_length,
-                             u8::from(*pk_algo),
-                             keyid,
+                             u8::from(key.pk_algo()),
+                             key.keyid(),
                              creation_date.format("%s"),
                              expiration_date.map(|t| t.format("%s").to_string())
                              .unwrap_or_else(|| "".into()),
@@ -260,7 +251,7 @@ impl Record {
                     writeln!(w,
                              "{}   {} {} [{}]{}",
                              record_type,
-                             babel::Fish((*pk_algo, *key_length, curve)),
+                             babel::Fish((key.pk_algo(), key_length, &curve)),
                              creation_date.format("%Y-%m-%d"),
                              babel::Fish(key_flags).to_string().to_uppercase(),
                              bracket(revocation_date, expiration_date),
@@ -458,5 +449,15 @@ impl fmt::Display for BoxedValidity {
                 Ultimate =>  f.write_str("[ultimate]"),
             }
         }
+    }
+}
+
+/// Returns the elliptic curve of the given key, if any.
+pub fn get_curve(mpis: &PublicKey) -> Option<Curve> {
+    match mpis {
+        PublicKey::EdDSA { curve, .. }
+        | PublicKey::ECDSA { curve, .. }
+        | PublicKey::ECDH { curve, .. } => Some(curve.clone()),
+        _ => None,
     }
 }

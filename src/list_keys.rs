@@ -9,7 +9,6 @@ use anyhow::Result;
 use sequoia_openpgp as openpgp;
 use openpgp::{
     cert::amalgamation::{ValidateAmalgamation, ValidAmalgamation},
-    crypto::mpi::PublicKey,
     types::*,
 };
 use sequoia_ipc as ipc;
@@ -403,12 +402,9 @@ where
             .unwrap_or_else(|| OwnerTrustLevel::Undefined.into());
 
         Record::Key {
+            key: cert.primary_key().key(),
             have_secret: have_secret && list_secret,
             validity: acert.cert_validity(),
-            key_length: cert.primary_key().mpis().bits().unwrap_or_default(),
-            pk_algo: cert.primary_key().pk_algo(),
-            keyid: cert.keyid(),
-            creation_date: cert.primary_key().creation_time(),
             expiration_date:  vcert.as_ref()
                 .and_then(|v| v.keys().next().expect("primary key")
                           .key_expiration_time()),
@@ -450,7 +446,6 @@ where
                 kf
             },
             token_sn: have_secret.then(|| TokenSN::SecretAvaliable),
-            curve: get_curve(cert.primary_key().mpis()),
             compliance: cert.primary_key().compliance(config),
         }.emit(config, &mut sink)?;
 
@@ -526,12 +521,9 @@ where
             let have_secret = has_secret.contains(&subkey_fp);
 
             Record::Subkey {
+                key: subkey.key(),
                 have_secret: have_secret && list_secret,
                 validity: validity,
-                key_length: subkey.mpis().bits().unwrap_or_default(),
-                pk_algo: subkey.pk_algo(),
-                keyid: subkey.keyid(),
-                creation_date: subkey.creation_time(),
                 expiration_date:  vsubkey.as_ref()
                     .and_then(|v| v.key_expiration_time()),
                 revocation_date: vsubkey.as_ref()
@@ -546,7 +538,6 @@ where
                     .and_then(|v| v.key_flags())
                     .unwrap_or_else(|| KeyFlags::empty()),
                 token_sn: have_secret.then(|| TokenSN::SecretAvaliable),
-                curve: get_curve(subkey.mpis()),
                 compliance: subkey.compliance(config),
             }.emit(config, &mut sink)?;
 
@@ -571,14 +562,4 @@ where
     }
 
     Ok(())
-}
-
-/// Returns the elliptic curve of the given key, if any.
-pub fn get_curve(mpis: &PublicKey) -> Option<Curve> {
-    match mpis {
-        PublicKey::EdDSA { curve, .. }
-        | PublicKey::ECDSA { curve, .. }
-        | PublicKey::ECDH { curve, .. } => Some(curve.clone()),
-        _ => None,
-    }
 }

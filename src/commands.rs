@@ -378,7 +378,7 @@ sec  {}/{} {} {}
 
 Create a revocation certificate for this key?",
         babel::Fish((primary.pk_algo(), primary.mpis().bits().unwrap_or(0),
-                     &crate::list_keys::get_curve(primary.mpis()))),
+                     &crate::colons::get_curve(primary.mpis()))),
         primary.keyid(),
         creation_time.format("%Y-%m-%d"),
         utils::best_effort_primary_uid(config.policy(), &cert),
