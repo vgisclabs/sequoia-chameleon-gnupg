@@ -15,6 +15,7 @@ use anyhow::Result;
 use sequoia_openpgp as openpgp;
 use openpgp::{
     Fingerprint,
+    KeyID,
     crypto::hash::Digest,
     crypto::mpi::PublicKey,
     packet::{UserID, Key, key::{PublicParts, PrimaryRole, SubordinateRole}},
@@ -60,6 +61,20 @@ pub enum Record<'k> {
         creation_date: SystemTime,
         expiration_date: Option<SystemTime>,
         userid: UserID,
+    },
+
+    Signature {
+        issuer: Option<KeyID>,
+        issuer_fp: Option<Fingerprint>,
+        issuer_uid: Option<UserID>,
+        validity: Option<SignatureValidity>,
+        pk_algo: PublicKeyAlgorithm,
+        hash_algo: HashAlgorithm,
+        creation_time: SystemTime,
+        typ: SignatureType,
+        exportable: bool,
+        trust: Option<(u8, u8)>,
+        has_notations: bool,
     },
 
     /// rvk: Revocation key
@@ -318,6 +333,75 @@ impl Record<'_> {
                 }
             },
 
+            Signature {
+                issuer,
+                issuer_fp,
+                issuer_uid,
+                validity,
+                pk_algo,
+                hash_algo,
+                creation_time,
+                typ,
+                exportable,
+                trust,
+                has_notations,
+            } => {
+                use SignatureType::*;
+                let class = match typ {
+                    CertificationRevocation
+                        | KeyRevocation
+                        | SubkeyRevocation => "rev",
+                    _ => "sig",
+                };
+
+                let creation_time =
+                    chrono::DateTime::<chrono::Utc>::from(*creation_time);
+
+                if mr {
+                    writeln!(w, "{}:{}::{}:{}:{}::{}::{}:{:02x}{}::{}:::{}:",
+                             class,
+                             validity.as_ref().map(|i| i.to_string())
+                             .unwrap_or_default(),
+                             u8::from(*pk_algo),
+                             issuer.as_ref().map(|i| i.to_string())
+                             .unwrap_or_default(),
+                             creation_time.format("%s"),
+                             trust.map(|(depth, amount)|
+                                       format!("{} {}", depth, amount))
+                             .unwrap_or_else(|| "".into()),
+                             issuer_uid.as_ref()
+                             .map(|u| String::from_utf8_lossy(u.value()).to_string())
+                             .unwrap_or_else(|| "[User ID not found]".to_string()),
+                             u8::from(*typ),
+                             if *exportable { 'x' } else { 'l' },
+                             issuer_fp.as_ref().map(|i| i.to_string())
+                             .unwrap_or_default(),
+                             u8::from(*hash_algo))?;
+                } else {
+                    use SignatureType::*;
+                    writeln!(w, "{} {}    {} {} {} {}  {}",
+                             class,
+                             match typ {
+                                 PersonaCertification => '1',
+                                 CasualCertification => '2',
+                                 PositiveCertification => '3',
+                                 _ => ' ',
+                             },
+                             has_notations.then_some('N').unwrap_or(' '),
+                             trust.map(|(depth, _amount)| depth.to_string())
+                             .unwrap_or_else(|| " ".into()),
+                             issuer.as_ref().map(|i| i.to_string())
+                             .unwrap_or_default(),
+                             creation_time.format("%Y-%m-%d"),
+                             issuer_uid.as_ref()
+                             .map(|u|
+                                  String::from_utf8_lossy(u.value()).to_string())
+                             .unwrap_or_else(
+                                 || "[User ID not found]".to_string()))?;
+                }
+            },
+
+
             RevocationKey {
                 pk_algo,
                 revoker,
@@ -384,6 +468,25 @@ impl fmt::Display for TokenSN {
             SerialNumber(s) => f.write_str(s),
             SimpleStub =>      f.write_str("#"),
             SecretAvaliable => f.write_str("+"),
+        }
+    }
+}
+
+pub enum SignatureValidity {
+    Good,
+    Bad,
+    MissingKey,
+    OtherError,
+}
+
+impl fmt::Display for SignatureValidity {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        use SignatureValidity::*;
+        match self {
+            Good => f.write_str("!"),
+            Bad => f.write_str("-"),
+            MissingKey => f.write_str("?"),
+            OtherError => f.write_str("%"),
         }
     }
 }

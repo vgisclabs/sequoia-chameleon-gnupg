@@ -9,6 +9,7 @@ use anyhow::Result;
 use sequoia_openpgp as openpgp;
 use openpgp::{
     cert::amalgamation::{ValidateAmalgamation, ValidAmalgamation},
+    packet::{UserID, signature::subpacket::SubpacketTag},
     types::*,
 };
 use sequoia_ipc as ipc;
@@ -26,6 +27,7 @@ use crate::{
     compliance::KeyCompliance,
     colons::*,
     trust::{*, cert::*},
+    utils::best_effort_primary_uid,
 };
 
 /// Controls key list operations.
@@ -68,6 +70,12 @@ pub struct ListOptions {
 
     /// XXX.
     pub only_fpr_mbox: bool,
+
+    /// Show third-party certifications (without verifying them).
+    pub list_sigs: bool,
+
+    /// Fast-list mode, disables third-party cert lookups while listing.
+    pub fast_list: bool,
 }
 
 impl Default for ListOptions {
@@ -86,6 +94,8 @@ impl Default for ListOptions {
             signature_expiration: false,
             signature_subpackets: false,
             only_fpr_mbox: false,
+            list_sigs: false,
+            fast_list: false,
         }
     }
 }
@@ -397,9 +407,12 @@ where
         let acert = AuthenticatedCert::new(vtm.as_ref(), &cert)?;
         let vcert = cert.with_policy(p, config.now()).ok();
         let cert_fp = cert.fingerprint();
+        let cert_kh = cert.key_handle();
         let have_secret = has_secret.contains(&cert_fp);
         let ownertrust = config.trustdb.get_ownertrust(&cert_fp)
             .unwrap_or_else(|| OwnerTrustLevel::Undefined.into());
+        let best_effort_primary_userid: UserID =
+            best_effort_primary_uid(config.policy(), &cert).into();
 
         Record::Key {
             key: cert.primary_key().key(),
@@ -469,6 +482,49 @@ where
             }
         }
 
+        if config.list_options.list_sigs {
+            for s in cert.primary_key().signatures() {
+                let is_self_sig =
+                    s.get_issuers().iter().any(|i| i.aliases(&cert_kh));
+
+                let (issuer_uid, validity) =
+                    if config.list_options.fast_list {
+                        (Some("".into()), None)
+                    } else if is_self_sig {
+                        (Some(best_effort_primary_userid.clone()), None)
+                    } else {
+                        if let Some(signer) =
+                            s.get_issuers().into_iter().find_map(
+                                |k| config.keydb().lookup_by_cert_or_subkey(&k).ok())
+                            .and_then(|certs| certs.into_iter().next())
+                            .and_then(|cert| cert.to_cert().ok().cloned())
+                        {
+                            (Some(best_effort_primary_uid(config.policy(), &signer).into()),
+                             None)
+                        } else {
+                            (None, Some(SignatureValidity::MissingKey))
+                        }
+                    };
+
+                Record::Signature {
+                    issuer: s.issuers().cloned().next().or_else(
+                        || s.issuer_fingerprints().cloned().next().map(Into::into)),
+                    issuer_fp: s.issuer_fingerprints().cloned().next(),
+                    issuer_uid,
+                    validity,
+                    pk_algo: s.pk_algo(),
+                    hash_algo: s.hash_algo(),
+                    creation_time: s.signature_creation_time()
+                        .expect("valid signatures have a creation time"),
+                    typ: s.typ(),
+                    exportable: s.exportable().is_ok(),
+                    trust: s.trust_signature(),
+                    has_notations: s.subpackets(SubpacketTag::NotationData)
+                        .next().is_some(),
+                }.emit(config, &mut sink)?;
+            }
+        }
+
         // Sort the userids so that the primary user id is first.
         let mut userids: Vec<_> = acert.userids().collect();
         let primary_userid = vcert
@@ -508,6 +564,49 @@ where
                     .and_then(|v| v.binding_signature().signature_expiration_time()),
                 userid: uid.userid().clone(),
             }.emit(config, &mut sink)?;
+
+            if config.list_options.list_sigs {
+                for s in uid.signatures() {
+                    let is_self_sig =
+                        s.get_issuers().iter().any(|i| i.aliases(&cert_kh));
+
+                    let (issuer_uid, validity) =
+                        if config.list_options.fast_list {
+                            (Some("".into()), None)
+                        } else if is_self_sig {
+                            (Some(best_effort_primary_userid.clone()), None)
+                        } else {
+                            if let Some(signer) =
+                                s.get_issuers().into_iter().find_map(
+                                    |k| config.keydb().lookup_by_cert_or_subkey(&k).ok())
+                                .and_then(|certs| certs.into_iter().next())
+                                .and_then(|cert| cert.to_cert().ok().cloned())
+                            {
+                                (Some(best_effort_primary_uid(config.policy(), &signer).into()),
+                                 None)
+                            } else {
+                                (None, Some(SignatureValidity::MissingKey))
+                            }
+                        };
+
+                    Record::Signature {
+                        issuer: s.issuers().cloned().next().or_else(
+                            || s.issuer_fingerprints().cloned().next().map(Into::into)),
+                        issuer_fp: s.issuer_fingerprints().cloned().next(),
+                        issuer_uid,
+                        validity,
+                        pk_algo: s.pk_algo(),
+                        hash_algo: s.hash_algo(),
+                        creation_time: s.signature_creation_time()
+                            .expect("valid signatures have a creation time"),
+                        typ: s.typ(),
+                        exportable: s.exportable().is_ok(),
+                        trust: s.trust_signature(),
+                        has_notations: s.subpackets(SubpacketTag::NotationData)
+                            .next().is_some(),
+                    }.emit(config, &mut sink)?;
+                }
+            }
         }
 
         for (validity, subkey) in acert.subkeys() {
@@ -551,6 +650,50 @@ where
             {
                 if let Ok(grip) = Keygrip::of(subkey.mpis()) {
                     Record::Keygrip(grip).emit(config, &mut sink)?;
+                }
+            }
+
+
+            if config.list_options.list_sigs {
+                for s in subkey.signatures() {
+                    let is_self_sig =
+                        s.get_issuers().iter().any(|i| i.aliases(&cert_kh));
+
+                    let (issuer_uid, validity) =
+                        if config.list_options.fast_list {
+                            (Some("".into()), None)
+                        } else if is_self_sig {
+                            (Some(best_effort_primary_userid.clone()), None)
+                        } else {
+                            if let Some(signer) =
+                                s.get_issuers().into_iter().find_map(
+                                    |k| config.keydb().lookup_by_cert_or_subkey(&k).ok())
+                                .and_then(|certs| certs.into_iter().next())
+                                .and_then(|cert| cert.to_cert().ok().cloned())
+                            {
+                                (Some(best_effort_primary_uid(config.policy(), &signer).into()),
+                                 None)
+                            } else {
+                                (None, Some(SignatureValidity::MissingKey))
+                            }
+                        };
+
+                    Record::Signature {
+                        issuer: s.issuers().cloned().next().or_else(
+                            || s.issuer_fingerprints().cloned().next().map(Into::into)),
+                        issuer_fp: s.issuer_fingerprints().cloned().next(),
+                        issuer_uid,
+                        validity,
+                        pk_algo: s.pk_algo(),
+                        hash_algo: s.hash_algo(),
+                        creation_time: s.signature_creation_time()
+                            .expect("valid signatures have a creation time"),
+                        typ: s.typ(),
+                        exportable: s.exportable().is_ok(),
+                        trust: s.trust_signature(),
+                        has_notations: s.subpackets(SubpacketTag::NotationData)
+                            .next().is_some(),
+                    }.emit(config, &mut sink)?;
                 }
             }
         }

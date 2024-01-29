@@ -9,6 +9,7 @@ use openpgp::{
     cert::prelude::*,
     packet::{prelude::*, key::*},
     parse::Parse,
+    policy::StandardPolicy,
     serialize::{Serialize, SerializeInto},
     types::{Curve, KeyFlags, SignatureType},
 };
@@ -632,6 +633,283 @@ fn general_purpose(cs: CipherSuite) -> Result<()> {
     ])?;
     diff.assert_success();
     diff.assert_equal_up_to(0, 0);
+
+    Ok(())
+}
+
+#[test]
+#[ntest::timeout(600000)]
+fn list_signatures() -> Result<()> {
+    let mut experiment = make_experiment!("setup")?;
+
+    fn certify<F>(certifier: &Cert, target_cert: Cert, target_userid: &UserID,
+                  typ: SignatureType, frobber: F)
+                  -> Result<Cert>
+    where
+        F: Fn(SignatureBuilder) -> Result<SignatureBuilder>,
+    {
+        let p = StandardPolicy::new();
+
+        // Get a usable (alive, non-revoked) certification key.
+        let key = certifier
+            .keys().with_policy(&p, None)
+            .for_certification().alive().revoked(false).nth(0).unwrap().key();
+        // Derive a signer.
+        let mut signer = key.clone().parts_into_secret()?.into_keypair()?;
+
+        // Update the User ID's binding signature.
+        let mut builder = SignatureBuilder::new(typ)
+            .set_signature_creation_time(Experiment::now())?;
+        builder = frobber(builder)?;
+        let new_sig =
+            builder.sign_userid_binding(&mut signer,
+                                        Some(target_cert.primary_key().key()),
+                                        target_userid)?;
+
+        target_cert.insert_packets(vec![
+            Packet::from(target_userid.clone()),
+            Packet::from(new_sig),
+        ])
+    }
+
+    let alice_uid: UserID = "Alice Lovelace <alice@lovelace.name>".into();
+    let alice = experiment.artifact(
+        "alice",
+        || CertBuilder::general_purpose(
+            None, Some(alice_uid.clone()))
+            .set_creation_time(Experiment::now())
+            .generate()
+            .map(|(cert, _rev)| cert),
+        |a, f| a.as_tsk().serialize(f),
+        |b| Cert::from_bytes(&b))?;
+
+    let barbara = experiment.artifact(
+        "barbara",
+        || CertBuilder::general_purpose(
+            None, Some("Barbara Lovelace <barbara@lovelace.name>"))
+            .set_creation_time(Experiment::now())
+            .generate()
+            .map(|(cert, _rev)| cert),
+        |a, f| a.as_tsk().serialize(f),
+        |b| Cert::from_bytes(&b))?;
+
+    let clara = experiment.artifact(
+        "clara",
+        || CertBuilder::general_purpose(
+            None, Some("Clara Lovelace <clara@lovelace.name>"))
+            .set_creation_time(Experiment::now())
+            .generate()
+            .map(|(cert, _rev)| cert),
+        |a, f| a.as_tsk().serialize(f),
+        |b| Cert::from_bytes(&b))?;
+
+    let daniela = experiment.artifact(
+        "daniela",
+        || CertBuilder::general_purpose(
+            None, Some("Daniela Lovelace <daniela@lovelace.name>"))
+            .set_creation_time(Experiment::now())
+            .generate()
+            .map(|(cert, _rev)| cert),
+        |a, f| a.as_tsk().serialize(f),
+        |b| Cert::from_bytes(&b))?;
+
+    let emelie = experiment.artifact(
+        "emelie",
+        || CertBuilder::general_purpose(
+            None, Some("Emelie Lovelace <emelie@lovelace.name>"))
+            .set_creation_time(Experiment::now())
+            .generate()
+            .map(|(cert, _rev)| cert),
+        |a, f| a.as_tsk().serialize(f),
+        |b| Cert::from_bytes(&b))?;
+
+    let finja = experiment.artifact(
+        "finja",
+        || CertBuilder::general_purpose(
+            None, Some("Finja Lovelace <finja@lovelace.name>"))
+            .set_creation_time(Experiment::now())
+            .generate()
+            .map(|(cert, _rev)| cert),
+        |a, f| a.as_tsk().serialize(f),
+        |b| Cert::from_bytes(&b))?;
+
+    let gale = experiment.artifact(
+        "gale",
+        || CertBuilder::general_purpose(
+            None, Some("Gale Lovelace <gale@lovelace.name>"))
+            .set_creation_time(Experiment::now())
+            .generate()
+            .map(|(cert, _rev)| cert),
+        |a, f| a.as_tsk().serialize(f),
+        |b| Cert::from_bytes(&b))?;
+
+    let hannah = experiment.artifact(
+        "hannah",
+        || CertBuilder::general_purpose(
+            None, Some("Hannah Lovelace <hannah@lovelace.name>"))
+            .set_creation_time(Experiment::now())
+            .generate()
+            .map(|(cert, _rev)| cert),
+        |a, f| a.as_tsk().serialize(f),
+        |b| Cert::from_bytes(&b))?;
+
+    let alice = experiment.artifact(
+        "alice-certified",
+        || {
+            let alice =
+                certify(&barbara, alice.clone(), &alice_uid,
+                        SignatureType::GenericCertification, |b| Ok(b))?;
+            let alice =
+                certify(&clara, alice, &alice_uid,
+                        SignatureType::PersonaCertification, |b| Ok(b))?;
+            let alice =
+                certify(&daniela, alice, &alice_uid,
+                        SignatureType::CasualCertification, |b| Ok(b))?;
+            let alice =
+                certify(&emelie, alice, &alice_uid,
+                        SignatureType::PositiveCertification, |b| Ok(b))?;
+            let alice =
+                certify(&finja, alice, &alice_uid,
+                        SignatureType::PositiveCertification,
+                        |b: SignatureBuilder| b.set_trust_signature(3, 120))?;
+            let alice =
+                certify(&gale, alice, &alice_uid,
+                        SignatureType::PositiveCertification,
+                        |b: SignatureBuilder| b.set_signature_creation_time(
+                            Experiment::now() - Duration::new(3600, 0)))?;
+            let alice =
+                certify(&gale, alice, &alice_uid,
+                        SignatureType::CertificationRevocation,
+                        |b: SignatureBuilder| b.set_signature_creation_time(
+                            Experiment::now() - Duration::new(1800, 0)))?;
+            let alice =
+                certify(&hannah, alice, &"<alice@example.org>".into(),
+                        SignatureType::PositiveCertification, |b| Ok(b))?;
+            Ok(alice)
+        },
+        |a, f| a.as_tsk().serialize(f),
+        |b| Cert::from_bytes(&b))?;
+
+    let mut experiment = make_experiment!("alice-only")?;
+
+    experiment.section("Importing Alice's cert...");
+    let diff = experiment.invoke(&[
+        "--import",
+        &experiment.store("alice", &alice.to_vec()?)?,
+    ])?;
+    diff.assert_success();
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(1, 0, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-colons",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(0, 0, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-sig-list",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(1, 0, 67);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-sig-list",
+        "--with-colons",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(0, 0, 67);
+
+    let diff = experiment.invoke(&[
+        "--list-signatures",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(1, 0, 67);
+
+    let diff = experiment.invoke(&[
+        "--list-signatures",
+        "--with-colons",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(0, 0, 67);
+
+    let diff = experiment.invoke(&[
+        "--list-signatures",
+        "--fast-list-mode",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(1, 0, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-signatures",
+        "--fast-list-mode",
+        "--with-colons",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(4, 0, 0);
+
+    let mut experiment = make_experiment!("all-certs")?;
+    experiment.section("Importing the other certs ...");
+    let mut certs =
+        vec![alice, barbara, clara, daniela, emelie, finja, gale, hannah];
+    certs.sort_by_cached_key(|c| c.fingerprint());
+    let mut certs_bin = vec![];
+    for c in certs {
+        c.serialize(&mut certs_bin)?;
+    }
+    let diff = experiment.invoke(&[
+        "--import",
+        &experiment.store("certs", &certs_bin)?,
+    ])?;
+    diff.assert_success();
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(1, 0, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-colons",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(0, 0, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-sig-list",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(1, 0, 536);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-sig-list",
+        "--with-colons",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(0, 0, 536);
+
+    let diff = experiment.invoke(&[
+        "--list-signatures",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(1, 0, 536);
+
+    let diff = experiment.invoke(&[
+        "--list-signatures",
+        "--with-colons",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(0, 0, 536);
 
     Ok(())
 }

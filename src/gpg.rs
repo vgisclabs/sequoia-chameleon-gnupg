@@ -516,7 +516,6 @@ pub struct Config<'store> {
     keyserver_options: keyserver::KeyserverOptions,
     list_only: bool,
     list_options: list_keys::ListOptions,
-    list_sigs: bool,
     local_user: Vec<Sender>,
     lock_once: bool,
     marginals_needed: Option<i64>,
@@ -641,7 +640,6 @@ impl<'store> Config<'store> {
             keyserver_options: Default::default(),
             list_only: false,
             list_options: Default::default(),
-            list_sigs: false,
             local_user: vec![],
             lock_once: false,
             marginals_needed: None,
@@ -1804,7 +1802,7 @@ fn real_main() -> anyhow::Result<()> {
             },
 	    oNoVerbose => {
                 opt.verbose = 0;
-                opt.list_sigs = false;
+                opt.list_options.list_sigs = false;
             },
             oQuickRandom => (),
 	    oEmitVersion => {
@@ -1868,10 +1866,10 @@ fn real_main() -> anyhow::Result<()> {
 
             oWithSigCheck => {
                 opt.check_sigs = true; /*FALLTHRU*/
-                opt.list_sigs = true;
+                opt.list_options.list_sigs = true;
             },
             oWithSigList => {
-                opt.list_sigs = true;
+                opt.list_options.list_sigs = true;
             },
 
 	    oSkipVerify => {
@@ -2302,6 +2300,8 @@ fn real_main() -> anyhow::Result<()> {
                 // XXX: We don't really support KeyIDs here.
                 opt.trusted_keys.push(value.as_str().unwrap().parse()?);
             },
+	    oFastListMode => opt.list_options.fast_list = true,
+	    oFixedListMode => (), // This is a NOP in GnuPG.
             oListOnly => opt.list_only = true,
 	    oEnableSpecialFilenames => {
                 opt.special_filenames = true;
@@ -2568,6 +2568,10 @@ fn real_main() -> anyhow::Result<()> {
         Some(aSignEncrSym) => encrypt::cmd_encrypt(&mut opt, &args, true, true),
         Some(aListKeys) =>
             list_keys::cmd_list_keys(&mut opt, &args, false),
+        Some(aListSigs) => {
+            opt.list_options.list_sigs = true;
+            list_keys::cmd_list_keys(&mut opt, &args, false)
+        },
         Some(aListSecretKeys) =>
             list_keys::cmd_list_keys(&mut opt, &args, true),
         Some(aCheckTrustDB) => Ok(()), // This is a NOP for us.
