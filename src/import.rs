@@ -213,7 +213,7 @@ async fn real_cmd_import(config: &mut crate::Config<'_>, args: &[String])
 
             // Ignore corrupt and invalid certificates.
             match cert.and_then(TryInto::try_into) {
-                Ok(c) => do_import_cert(config, &mut s, c).await?,
+                Ok(c) => do_import_cert(config, &mut s, c, false).await?,
                 Err(e) => {
                     // XXX: This is awkward.  It'd be nice if we'd get
                     // the vector of packets that failed to parse into
@@ -251,7 +251,8 @@ async fn real_cmd_import(config: &mut crate::Config<'_>, args: &[String])
 
 pub async fn do_import_cert(config: &mut crate::Config<'_>,
                             s: &mut crate::status::ImportResult,
-                            cert: openpgp::Cert) -> Result<()> {
+                            cert: openpgp::Cert,
+                            for_migration: bool) -> Result<()> {
     // We collect stats for the IMPORT_OK status line.
     use crate::status::*;
     let mut flags = crate::status::ImportOkFlags::default();
@@ -310,6 +311,8 @@ pub async fn do_import_cert(config: &mut crate::Config<'_>,
                     vec![key.clone()].into_iter(),
                     true, false, false, false,
                     std::io::stdout()).await?;
+            } else if for_migration {
+                // Be quiet when migrating.
             } else {
                 config.warn(format_args!("key {:X}: {:?} not changed",
                                          cert.keyid(), primary_uid));
@@ -351,7 +354,9 @@ pub async fn do_import_cert(config: &mut crate::Config<'_>,
             let primary_uid =
                 utils::best_effort_primary_uid(config.policy(), &merged);
 
-            if ! changed {
+            if for_migration {
+                // Be quiet when migrating.
+            } else if ! changed {
                 // I think this should not happen because it
                 // is handled above, but better be safe than
                 // sorry.
@@ -423,6 +428,8 @@ pub async fn do_import_cert(config: &mut crate::Config<'_>,
                 config, vec![key.clone()].into_iter(),
                 true, false, false, false,
                 std::io::stdout()).await?;
+        } else if for_migration {
+            // Be quiet when migrating.
         } else {
             config.warn(format_args!("key {:X}: public key {:?} imported",
                                      cert.keyid(), primary_uid));
@@ -539,7 +546,7 @@ pub async fn do_import_failed(config: &mut crate::Config<'_>,
                         cert.primary_key().clone().into(),
                         Packet::from(revocation.clone()),
                     ].into_iter())?;
-                    do_import_cert(config, s, min).await?;
+                    do_import_cert(config, s, min, false).await?;
                 } else {
                     // XXX: Would be nice to save unknown
                     //      revocations somewhere.

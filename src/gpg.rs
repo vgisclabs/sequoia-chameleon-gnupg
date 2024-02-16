@@ -68,6 +68,7 @@ pub mod locate;
 use locate::AutoKeyLocate;
 pub mod parcimonie;
 pub mod dirmngr;
+pub mod migrate;
 
 /// Commands and options.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -2537,6 +2538,42 @@ fn real_main() -> anyhow::Result<()> {
 
     if opt.keyserver.is_empty() {
         opt.keyserver.push(Default::default());
+    }
+
+    // Check for certain command whether we need to migrate a
+    // secring.gpg to the gpg-agent.
+    match command {
+        Some(aListSecretKeys)
+            | Some(aSign)
+            | Some(aSignEncr)
+            | Some(aSignEncrSym)
+            | Some(aSignSym)
+            | Some(aClearsign)
+            | Some(aDecrypt)
+            | Some(aSignKey)
+            | Some(aLSignKey)
+            | Some(aEditKey)
+            | Some(aPasswd)
+            | Some(aDeleteSecretKeys)
+            | Some(aDeleteSecretAndPublicKeys)
+            | Some(aQuickKeygen)
+            | Some(aQuickAddUid)
+            | Some(aQuickAddKey)
+            | Some(aQuickRevUid)
+            | Some(aQuickSetPrimaryUid)
+            | Some(aFullKeygen)
+            | Some(aKeygen)
+            | Some(aImport)
+            | Some(aExportSecret)
+            | Some(aExportSecretSub)
+            | Some(aGenRevoke)
+            | Some(aDesigRevoke)
+            | Some(aCardEdit)
+            | Some(aChangePIN) =>
+            migrate::secring(&mut opt)?,
+        Some(aListKeys) if opt.with_secret =>
+            migrate::secring(&mut opt)?,
+        _ => (),
     }
 
     let result = match command {

@@ -310,7 +310,7 @@ async fn importer(config: &mut crate::Config<'_>,
 	match rcert {
             Ok(c) => {
 		let c = c.strip_secret_key_material();
-		import::do_import_cert(config, &mut s, c).await?;
+		import::do_import_cert(config, &mut s, c, false).await?;
 	    },
             Err(e) =>
 		import::do_import_failed(config, &mut s, e, vec![]).await?,
