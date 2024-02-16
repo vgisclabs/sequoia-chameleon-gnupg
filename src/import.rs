@@ -4,6 +4,7 @@ use anyhow::Result;
 
 use sequoia_openpgp as openpgp;
 use openpgp::{
+    KeyID,
     cert::{
         Cert,
         raw::RawCertParser,
@@ -385,13 +386,6 @@ pub async fn do_import_cert(config: &mut crate::Config<'_>,
                         pluralize("new signature",  d.n_sigs)));
                 }
 
-                if d.n_revoc > 0 {
-                    config.warn(format_args!(
-                        "key {:X}: {:?} {}",
-                        existing.keyid(), primary_uid,
-                        pluralize("new revocation",  d.n_revoc)));
-                }
-
                 if d.n_subk > 0 {
                     config.warn(format_args!(
                         "key {:X}: {:?} {}",
@@ -506,9 +500,12 @@ pub async fn do_import_failed(config: &mut crate::Config<'_>,
                               e: anyhow::Error,
                               packets: Vec<openpgp::Packet>) -> Result<()>
 {
+    use crate::status::*;
+
     match e.downcast_ref::<openpgp::Error>() {
         Some(openpgp::Error::UnsupportedCert2(_, _)) => {
             s.skipped_v3_keys += 1; // XXX: not very sharp
+            return Ok(());
         },
         Some(openpgp::Error::MalformedCert(_)) => {
             let mut revocations = Vec::new();
@@ -546,16 +543,34 @@ pub async fn do_import_failed(config: &mut crate::Config<'_>,
                         cert.primary_key().clone().into(),
                         Packet::from(revocation.clone()),
                     ].into_iter())?;
-                    do_import_cert(config, s, min, false).await?;
+
+                    let primary_uid = utils::best_effort_primary_uid(
+                        config.policy(), cert.to_cert()?);
+                    config.warn(format_args!(
+                        "key {:X}: {:?} revocation certificate imported",
+                        cert.keyid(), primary_uid));
+
+                    config.status().emit(
+                        Status::KeyConsidered {
+                            fingerprint: cert.fingerprint(),
+                            not_selected: false,
+                            all_expired_or_revoked: false,
+                        })?;
+
+                    // Actually store the cert.
+                    config.mut_keydb().update(Arc::new(min.into()))?;
+                    s.n_revoc += 1;
                 } else {
                     // XXX: Would be nice to save unknown
                     //      revocations somewhere.
-                    config.warn(format_args!(
-                        "Ignoring revocation for unknown key{}",
-                        issuers.first().map(|i| format!(" {:X}", i))
-                            .unwrap_or_default()));
+                    config.error(format_args!(
+                        "key {}: no public key - \
+                         can't apply revocation certificate",
+                        issuers.first().map(KeyID::from)
+                            .unwrap_or(KeyID::wildcard())));
                 }
             }
+            return Ok(());
         },
         _ => (),
     }

@@ -2,12 +2,14 @@ use anyhow::Result;
 
 use sequoia_openpgp as openpgp;
 use openpgp::{
+    Packet,
     cert::prelude::*,
     parse::Parse,
     serialize::{
         Serialize,
         SerializeInto,
     },
+    types::ReasonForRevocation,
 };
 
 use super::super::*;
@@ -190,6 +192,70 @@ where
     // STDOUT: Curve25519 key length.
     diff.assert_limits(3 + 3, 0, 67);
 
+
+    Ok(())
+}
+
+#[test]
+#[ntest::timeout(600000)]
+fn cert_revocation() -> Result<()> {
+    let mut experiment = make_experiment!()?;
+    let cert = experiment.artifact(
+        "cert",
+        || {
+            let (cert, _) = CertBuilder::new()
+                .set_creation_time(Experiment::now())
+                .add_userid("Alice Lovelace <alice@lovelace.name>")
+                .add_signing_subkey()
+                .generate()?;
+            Ok(cert)
+        },
+        |a, f| a.as_tsk().serialize(f),
+        |b| Cert::from_bytes(&b))?;
+
+    let rev = experiment.artifact(
+        "rev",
+        || {
+            // Create and sign a revocation certificate.
+            let mut signer = cert.primary_key().key().clone()
+                .parts_into_secret()?.into_keypair()?;
+            CertRevocationBuilder::new()
+                .set_signature_creation_time(Experiment::now())?
+                .set_reason_for_revocation(ReasonForRevocation::KeyCompromised,
+                                           b"It was the maid :/")?
+                .build(&mut signer, &cert, None)
+                .map(Packet::from)
+        },
+        |a, f| a.serialize(f),
+        |b| Packet::from_bytes(&b))?;
+
+    test_revocation(cert, rev, experiment)
+}
+
+fn test_revocation(cert: Cert, rev: Packet, mut experiment: Experiment)
+                   -> Result<()>
+{
+    experiment.section("Importing revocation without knowing the cert...");
+    let diff = experiment.invoke(&[
+        "--import",
+        &experiment.store("rev", &rev.to_vec()?)?,
+    ])?;
+    diff.assert_limits(0, 0, 0);
+
+    experiment.section("Importing cert...");
+    let diff = experiment.invoke(&[
+        "--import",
+        &experiment.store("cert", &cert.to_vec()?)?,
+    ])?;
+    diff.assert_success();
+
+    experiment.section("Importing revocation...");
+    let diff = experiment.invoke(&[
+        "--import",
+        &experiment.store("rev", &rev.to_vec()?)?,
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(0, 38 /* no ultimately trusted keys found */, 0);
 
     Ok(())
 }

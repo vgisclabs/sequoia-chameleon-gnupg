@@ -1,0 +1,126 @@
+{
+  "outputs": [
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: keybox '/HOMEDIR/pubring.kbx' created\\ngpg: /HOMEDIR/trustdb.gpg: trustdb created\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--import\"",
+        "\"/EXPERIMENT/rev\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: key 90A218AF750320E0: no public key - can't apply revocation certificate\\ngpg: Total number processed: 1\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] IMPORT_RES 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--import\"",
+        "\"/EXPERIMENT/cert\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: key 90A218AF750320E0: public key \"Alice Lovelace <alice@lovelace.name>\" imported\\ngpg: Total number processed: 1\\ngpg:               imported: 1\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 8032E2C1107B6672DA427D2B90A218AF750320E0 0\\n[GNUPG:] IMPORTED 90A218AF750320E0 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] IMPORT_OK 1 8032E2C1107B6672DA427D2B90A218AF750320E0\\n[GNUPG:] IMPORT_RES 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--import\"",
+        "\"/EXPERIMENT/rev\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: key 90A218AF750320E0: \"Alice Lovelace <alice@lovelace.name>\" revocation certificate imported\\ngpg: Total number processed: 1\\ngpg:    new key revocations: 1\\ngpg: no ultimately trusted keys found\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 8032E2C1107B6672DA427D2B90A218AF750320E0 0\\n[GNUPG:] IMPORT_RES 1 0 0 0 0 0 0 0 1 0 0 0 0 0 0\\n",
+      "status": "exit status: 0",
+      "files": {}
+    }
+  ],
+  "former_us_outputs": [
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--import\"",
+        "\"/EXPERIMENT/rev\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: key 90A218AF750320E0: no public key - can't apply revocation certificate\\ngpg: Total number processed: 1\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] IMPORT_RES 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--import\"",
+        "\"/EXPERIMENT/cert\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: key 90A218AF750320E0: public key \"Alice Lovelace <alice@lovelace.name>\" imported\\ngpg: Total number processed: 1\\ngpg:               imported: 1\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 8032E2C1107B6672DA427D2B90A218AF750320E0 0\\n[GNUPG:] IMPORTED 90A218AF750320E0 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] IMPORT_OK 1 8032E2C1107B6672DA427D2B90A218AF750320E0\\n[GNUPG:] IMPORT_RES 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--import\"",
+        "\"/EXPERIMENT/rev\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: key 90A218AF750320E0: \"Alice Lovelace <alice@lovelace.name>\" revocation certificate imported\\ngpg: Total number processed: 1\\ngpg:    new key revocations: 1\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 8032E2C1107B6672DA427D2B90A218AF750320E0 0\\n[GNUPG:] IMPORT_RES 1 0 0 0 0 0 0 0 1 0 0 0 0 0 0\\n",
+      "status": "exit status: 0",
+      "files": {}
+    }
+  ],
+  "artifacts": {
+    "cert": "\\xC5X\\x04c\\xA1\\xE01\\x16\\t+\\x06\\x01\\x04\\x01\\xDAG\\x0F\\x01\\x01\\x07@\\x87\\xAE\\x95\\x12\\x1D\\xAA\\xD0\\xD6\\xF1\\xEFz\\xB2N\\x0FU\\x8D\\xC0nF@\\x7F\\xF2\\xD4\\x18\\xB2L\\x051\\x8B\\x0F?\\t\\x00\\x01\\x00\\x913y%9\\x19\\xE4;F\\x12\\x7Fǎ\\x8F\\x81t$ֺSo\\xD7\\xFE\\xE9:\\x99\\t\\xF4\\x90\\x8A\\x16\\xA4\\x0F\\\\\\xC2\\xC0\\x0B\\x04\\x1F\\x16\\n\\x00}\\x05\\x82c\\xA1\\xE01\\x03\\x0B\\t\\x07\\t\\x10\\x90\\xA2\\x18\\xAFu\\x03 \\xE0G\\x14\\x00\\x00\\x00\\x00\\x00\\x1E\\x00 salt@notations.sequoia-pgp.orgz\\xC5\\x0E\\x1F\\xBB\\xB2\\x1A_{\\\\\\x04\\x88\\x14hT\\xC8y_L\\x0C\\xF8\\xA0B\\xEF\\xE1I\\x01j\\x032>\\x9D\\x03\\x15\\n\\x08\\x02\\x9B\\x01\\x02\\x1E\\x01\\x16!\\x04\\x802\\xE2\\xC1\\x10{fr\\xDAB}+\\x90\\xA2\\x18\\xAFu\\x03 \\xE0\\x00\\x00\\xC4t\\x00\\xFE\"\\xC9\\xCDy\\xA4=\\xDA%\\xD7=\\x93\\xF4Pz\\xE0\\x19Ha(\\xE2\\xABL\\xF4$\\x83\\x04f󋱹\\x90\\x00\\xFFF}4\\x9F\\xB0\\x0E\\xE4H\\x99\\xE1\\xCA\\x1D\\x8CWd_\\xF4\\x8B\\xC5\"$\\x0F\\xC8\\x14\\x08\\xC1cO\\xE0\\xE3\\x8F\\x04\\xCD$Alice Lovelace <alice@lovelace.name>\\xC2\\xC0\\x0E\\x04\\x13\\x16\\n\\x00\\x80\\x05\\x82c\\xA1\\xE01\\x03\\x0B\\t\\x07\\t\\x10\\x90\\xA2\\x18\\xAFu\\x03 \\xE0G\\x14\\x00\\x00\\x00\\x00\\x00\\x1E\\x00 salt@notations.sequoia-pgp.org\\xEA\\xFC\\xBEƞN\\x03e\\xE5\\xDFE\\x8C:\\xF4*3>\\xC7\"\\xC3\\xE6(\\xA7\\xEE\\x0B\\x7F\\x83\\x02\\xA1O\\x03\\x15\\n\\x08\\x02\\x99\\x01\\x02\\x9B\\x01\\x02\\x1E\\x01\\x16!\\x04\\x802\\xE2\\xC1\\x10{fr\\xDAB}+\\x90\\xA2\\x18\\xAFu\\x03 \\xE0\\x00\\x00w\\xC5\\x01\\x00\\x92\\xF59\\x16h\\xBD:2\\xFB\\xB5l\\x1B\\x0C^9\\x1A\\xD1&\\x85V`\\\\\\x9D\\xE5\\xBA\\x12W\"\\xAE\\x92\\x83\\xA7\\x01\\x00߱\\xCB\\xE4]~\\xA6\\xAB\\xA3\\xFA\\xC0\\xC9\\xDB\\xA7\\x8D\\xBAř7C\\xD7\\xEB\\xEC\\xA8Jb\\xBD\\x85\\xA5#-\\x06\\xC7X\\x04c\\xA1\\xE01\\x16\\t+\\x06\\x01\\x04\\x01\\xDAG\\x0F\\x01\\x01\\x07@\\x9D\\xD3\\x19\\xE8./\\xBF\\x87\\xE9O\\xBD^!_\\xEB\\x19G\\x1E|\\x91\\xB1\\x10\\xA0X\\xB3\\x05c>\\x86?\\xCDM\\x00\\x00\\xFFH\\x8Ax\\xA8[c\\xD4B/\\xEA\\x10Q4R\\xB5\\x83\\xCD\\x04\\xB8ۘ7탭r\\x1BV\\xFA\\x8F%\\xA7\\x10\\x85\\xC2\\xC0\\xBF\\x04\\x18\\x16\\n\\x011\\x05\\x82c\\xA1\\xE01\\t\\x10\\x90\\xA2\\x18\\xAFu\\x03 \\xE0G\\x14\\x00\\x00\\x00\\x00\\x00\\x1E\\x00 salt@notations.sequoia-pgp.orgi4\\xAAc\\x14\\x88\\xA4AeP^\\x91|4\\xE0\\x96\\xA2_\\x1E5!\\xA7\\xB7\\xAD\\xD8,\\x1516\\xDC\\xCB!\\x02\\x9B\\x02\\xBE\\xA0\\x04\\x19\\x16\\n\\x00o\\x05\\x82c\\xA1\\xE01\\t\\x10d}\\xC1_\\xF3!\\xEA?G\\x14\\x00\\x00\\x00\\x00\\x00\\x1E\\x00 salt@notations.sequoia-pgp.org\\xF5\\x86]\\x07d/\\xA2\\xF4q<\\xB4\\xB1\\xEBvt\\xD1\\xD5\\xBF+x\\xCE\\xCASҴ\\xFD\\xD8p\\xB7\\x18=\\x17\\x16!\\x04\\r!K\\xC9\\x01\\xA6\\x0C\\xAD\\xE1q\\x86ld}\\xC1_\\xF3!\\xEA?\\x00\\x00\\xC9\\x10\\x01\\x00\\xCB\\xDF\\n\\xA4\\xA0\\xAB\\x97#\\xCA\\x1D\\xE6g\\xF3\\xD1yގ\\x8F\\xDAs\\xF7\\xF6\\x7F5\\xBC\\x0CA\\x9F\\x01ȫ\\xAA\\x01\\x00\\xE4V\\\\p\\xE3\\x16\\xA1+\\xC7>\\x97\\x82\\x9E.\\x07\\x02p\\xAC\\x1Fj\\xB1\\x18j|\\xF5\\xC6`\\x86\\x11-Z\\x05\\x16!\\x04\\x802\\xE2\\xC1\\x10{fr\\xDAB}+\\x90\\xA2\\x18\\xAFu\\x03 \\xE0\\x00\\x000\\x19\\x01\\x00\\xBFbvK\\x1B:M$\\xA4\\xD9\\xDDU>ړ\\x15p'\\x01*\\xCEfQ\\x82H\\xC7\\xD4(Hg\\xA7G\\x00\\xFFl<Xä\\x93ѤG\\x0B\\xA3a\\xEC\\\\6\\x0F\\x1D\\x85\\xA4\\xF2\\x86\\x05\\xFB\\x91\\xA8_\\xF2qWӄ\\x0B",
+    "rev": "\\xC2\\xC0\\x12\\x04 \\x16\\n\\x00\\x84\\x05\\x82c\\xA1\\xE01\\t\\x10\\x90\\xA2\\x18\\xAFu\\x03 \\xE0G\\x14\\x00\\x00\\x00\\x00\\x00\\x1E\\x00 salt@notations.sequoia-pgp.org\\x91\\x9B\\xFB\\xC1쵻P];uD\\xDF{\\xFB\\xAAY\\xCE\\xE2\\x99ư7Z\\x0F\\xD6\\xF1W\\xAA\\xA4ʳ\\x14\\x1D\\x02It was the maid :/\\x16!\\x04\\x802\\xE2\\xC1\\x10{fr\\xDAB}+\\x90\\xA2\\x18\\xAFu\\x03 \\xE0\\x00\\x00\\xEC\\xF5\\x01\\x00\\xB7\\xA0E\\xCBb>\\xD6\\xF8\\x93\\x7F\\xB3Ӑ\\x02C\\xB1?\\x12\\x8ES\\xE3\\x91U\\x04\\x1A\\x90\\xC6q\\x9B%\\x8D\\xF1\\x01\\x00\\xE6\\x86D=\\xE7K1\\x1Č-\\x99\\xE8\\xCC\\xFB8V='\\xFF\\x9A\\x9C\\xB9\\x91\\xE7.\\x9Bs\\xD1>\\xDA\\x00"
+  },
+  "dynamic_upper_bounds": [
+    [
+      0,
+      86,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      38,
+      0
+    ]
+  ]
+}
