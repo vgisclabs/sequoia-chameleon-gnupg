@@ -2039,12 +2039,10 @@ fn real_main() -> anyhow::Result<()> {
 	    oS2KMode => {
                 opt.s2k_mode = value.as_int().unwrap();
             },
-	    oS2KDigest => {
-                s2k_digest = Some(argparse::utils::parse_digest(value.as_str().unwrap())?);
-            },
-	    oS2KCipher => {
-                s2k_cipher = Some(argparse::utils::parse_cipher(value.as_str().unwrap())?);
-            },
+	    oS2KDigest => s2k_digest =
+                Some(value.as_str().unwrap().parse::<babel::Fish<_>>()?.0),
+	    oS2KCipher => s2k_cipher =
+                Some(value.as_str().unwrap().parse::<babel::Fish<_>>()?.0),
 	    oS2KCount => {
 	        if let Ok(v) = value.as_int() {
                     opt.s2k_count = Some(v);
@@ -2195,22 +2193,15 @@ fn real_main() -> anyhow::Result<()> {
                 opt.command_fd =
                     fs::File::open(value.as_str().unwrap())?.into();
             },
-	    oCipherAlgo => {
-                opt.def_cipher =
-                    argparse::utils::parse_cipher(value.as_str().unwrap())?;
-            },
-	    oDigestAlgo => {
-                opt.def_digest =
-                    argparse::utils::parse_digest(value.as_str().unwrap())?;
-            },
-	    oCompressAlgo => {
-		opt.compress_algo = Some(
-                    argparse::utils::parse_compressor(value.as_str().unwrap())?);
-	    },
-	    oCertDigestAlgo => {
-                opt.cert_digest =
-                    argparse::utils::parse_digest(value.as_str().unwrap())?;
-            },
+
+	    oCipherAlgo => opt.def_cipher =
+                value.as_str().unwrap().parse::<babel::Fish<_>>()?.0,
+	    oDigestAlgo => opt.def_digest =
+                value.as_str().unwrap().parse::<babel::Fish<_>>()?.0,
+	    oCompressAlgo => opt.compress_algo =
+                Some(value.as_str().unwrap().parse::<babel::Fish<_>>()?.0),
+	    oCertDigestAlgo => opt.cert_digest =
+                value.as_str().unwrap().parse::<babel::Fish<_>>()?.0,
 
 	    oNoSecmemWarn => (),
 	    oRequireSecmem => (),
@@ -2309,7 +2300,7 @@ fn real_main() -> anyhow::Result<()> {
             },
             oWeakDigest => {
                 opt.policy.weak_digest(
-                    argparse::utils::parse_digest(value.as_str().unwrap())?);
+                    value.as_str().unwrap().parse::<babel::Fish<_>>()?.0);
             },
             oGroup => {
                 let g = value.as_str().unwrap().splitn(2, "=")

@@ -302,7 +302,7 @@ fn real_main() -> anyhow::Result<()> {
 
 	    Argument::Option(oWeakDigest, value) => {
                 opt.policy.weak_digest(
-                    argparse::utils::parse_digest(value.as_str().unwrap())?);
+                    value.as_str().unwrap().parse::<babel::Fish<_>>()?.0);
             },
 
             Argument::Option(oIgnoreTimeConflict, _) => {

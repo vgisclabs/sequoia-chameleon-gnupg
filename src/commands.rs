@@ -520,7 +520,7 @@ pub fn print_md(config: &crate::Config, args: &[String]) -> Result<()>
     } else if &args[0] == "*" {
         (&args[1..], None)
     } else {
-        (&args[1..], Some(crate::argparse::utils::parse_digest(&args[0])?))
+        (&args[1..], Some(args[0].parse::<babel::Fish<_>>()?.0))
     };
     _print_mds(config, algo, args)
 }
