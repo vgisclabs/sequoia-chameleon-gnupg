@@ -21,6 +21,7 @@ use openpgp::{
         key::{PublicParts, UnspecifiedRole},
     },
     policy::Policy,
+    serialize::Serialize,
     types::*,
 };
 
@@ -69,6 +70,7 @@ use locate::AutoKeyLocate;
 pub mod parcimonie;
 pub mod dirmngr;
 pub mod migrate;
+pub mod generate_key;
 
 /// Commands and options.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -508,6 +510,7 @@ pub struct Config<'store> {
     export_options: export::ExportOptions,
     fingerprint: usize,
     flags: Flags,
+    forbid_gen_key: bool,
     force_ownertrust: bool,
     groups: IndexMap<String, Vec<String>>,
     homedir: PathBuf,
@@ -634,6 +637,7 @@ impl<'store> Config<'store> {
             export_options: Default::default(),
             fingerprint: 0,
             flags: Default::default(),
+            forbid_gen_key: false,
             force_ownertrust: false,
             groups: Default::default(),
             homedir: std::env::var_os("GNUPGHOME")
@@ -986,6 +990,22 @@ impl<'store> Config<'store> {
         vtm.lookup(query)
     }
 
+    /// Stores a revocation certificate.
+    pub fn store_revocation(&self, cert: &Cert, rev: Signature) -> Result<()> {
+        let store = self.homedir().join("openpgp-revocs.d");
+        if ! store.exists() {
+            std::fs::create_dir_all(&store)?;
+            self.info(format_args!("directory '{}' created", store.display()));
+        }
+
+        let path = store.join(format!("{:X}.rev", cert.fingerprint()));
+        Packet::from(rev).serialize(&mut fs::File::create(&path)?)?;
+        self.info(format_args!("revocation certificate stored as '{}'",
+                               path.display()));
+
+        Ok(())
+    }
+
     /// Makes an http client for keyserver and WKD requests.
     pub fn make_http_client(&self) -> keyserver::HttpClientBuilder {
         use reqwest::StatusCode;
@@ -1133,7 +1153,7 @@ impl URL {
     }
 }
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct KeyserverURL {
     url: String,
 }
@@ -2454,6 +2474,8 @@ fn real_main() -> anyhow::Result<()> {
                         .format("%Y-%m-%d %H:%M:%S")));
             },
 
+            oForbidGenKey => opt.forbid_gen_key = true,
+
             // Our own extensions.
             aXSequoiaParcimonie => {
                 set_cmd(&mut command, aXSequoiaParcimonie)?;
@@ -2724,6 +2746,8 @@ fn real_main() -> anyhow::Result<()> {
         Some(aPrintMD) => commands::print_md(&opt, &args),
         Some(aPrintMDs) => commands::print_mds(&opt, &args),
         Some(aListPackets) => list_packets::cmd_list_packets(&opt, &args),
+        Some(aKeygen) => generate_key::cmd_generate_key(&mut opt, &args, false),
+        Some(aFullKeygen) => generate_key::cmd_generate_key(&mut opt, &args, true),
         None => commands::cmd_implicit(&opt, &args),
 
         // Our own extensions.

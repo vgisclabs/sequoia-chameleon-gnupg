@@ -4,10 +4,6 @@ use std::{
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
-use chrono::{
-    NaiveDateTime,
-};
-
 /// Implements a time source for all time-related operations.
 ///
 /// Note: In this crate, you need to use `Clock::now()` instead of
@@ -53,10 +49,8 @@ impl std::str::FromStr for Clock {
             UNIX_EPOCH.checked_add(Duration::new(t.parse()?, 0))
                 .ok_or(anyhow::anyhow!("Duration overflows time type"))?
         } else {
-            let naive = NaiveDateTime::parse_from_str(s, "%Y-%m-%dT%H%M%S")?;
-            UNIX_EPOCH.checked_add(Duration::new(
-                naive.timestamp().try_into()?, 0))
-                .ok_or(anyhow::anyhow!("Duration overflows time type"))?
+            // XXX have a closer look
+            crate::utils::parse_iso_date(s)?
         };
 
         if fixed {

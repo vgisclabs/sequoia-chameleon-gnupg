@@ -231,6 +231,13 @@ pub enum Status<'a> {
         issuer: KeyID,
     },
 
+    KeyCreated {
+        primary: bool,
+        subkey: bool,
+        fingerprint: Fingerprint,
+        handle: Option<String>,
+    },
+
     TrustUndefined {
         model: Option<TrustModel>
     },
@@ -633,6 +640,30 @@ impl Status<'_> {
                 issuer,
             } => {
                 writeln!(w, "NO_SECKEY {:X}", issuer)?;
+            },
+
+            Status::KeyCreated {
+                primary,
+                subkey,
+                fingerprint,
+                handle,
+            } => {
+                if *primary || *subkey {
+                    write!(w, "KEY_CREATED {} {:X}",
+                           match (*primary, *subkey) {
+                               (true, true) => "B",
+                               (true, false) => "P",
+                               (false, true) => "S",
+                               (false, false) => unreachable!(),
+                           },
+                           fingerprint)?;
+
+                    if let Some(h) = handle {
+                        write!(w, " {}", h)?;
+                    }
+
+                    writeln!(w)?;
+                }
             },
 
             TrustUndefined { model } => {

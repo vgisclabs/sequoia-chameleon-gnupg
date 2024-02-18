@@ -1,0 +1,411 @@
+{
+  "outputs": [
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: keybox '/HOMEDIR/pubring.kbx' created\\ngpg: /HOMEDIR/trustdb.gpg: trustdb created\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--batch\"",
+        "\"--generate-key\"",
+        "\"/EXPERIMENT/parameters\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: directory '/HOMEDIR/openpgp-revocs.d' created\\ngpg: revocation certificate stored as '/HOMEDIR/openpgp-revocs.d/FADAA6DFCC8F9E7FCD2A7575F1B1EEBE1D991E5D.rev'\\n",
+      "stdout": "[GNUPG:] KEY_CONSIDERED FADAA6DFCC8F9E7FCD2A7575F1B1EEBE1D991E5D 0\\n[GNUPG:] KEY_CREATED B FADAA6DFCC8F9E7FCD2A7575F1B1EEBE1D991E5D\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--check-trustdb\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: marginals needed: 3  completes needed: 1  trust model: pgp\\ngpg: depth: 0  valid:   1  signed:   0  trust: 0-, 0q, 0n, 0m, 0f, 1u\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED [FINGERPRINT-0] 0\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-subkey-fingerprints\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n--------------------\\npub   ed25519 2022-12-20 [C]\\n      [FINGERPRINT-0]\\nuid           [ultimate] Name (Comment) <name@example.org>\\nsub   ed25519 2022-12-20 [S]\\n      4A6038E6FB6AECF61C4DB70D7A955F8E0C9444F6\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-keygrip\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n--------------------\\npub   ed25519 2022-12-20 [C]\\n      [FINGERPRINT-0]\\n      Keygrip = 6E318AC8A84D30F0518DFFC95ADEF8569E6BB979\\nuid           [ultimate] Name (Comment) <name@example.org>\\nsub   ed25519 2022-12-20 [S]\\n      Keygrip = 038C853D03A925B0C6D42DA481A3823CB3E1EA0C\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:u:255:22:[KEYID-0]:1671553073:::u:::cSC:::::ed25519:::0:\\nfpr:::::::::[FINGERPRINT-0]:\\nuid:u::::1671553073::67634EE232484FC05DFD157E27D2086106148768::Name (Comment) <name@example.org>::::::::::0:\\nsub:u:255:22:[KEYID-1]:1671553073::::::s:::::ed25519::\\nfpr:::::::::[FINGERPRINT-1]:\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--fingerprint\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n--------------------\\npub   ed25519 2022-12-20 [C]\\n      [FINGERPRINT-0]\\nuid           [ultimate] Name (Comment) <name@example.org>\\nsub   ed25519 2022-12-20 [S]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--fingerprint\"",
+        "\"--fingerprint\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n--------------------\\npub   ed25519 2022-12-20 [C]\\n      [FINGERPRINT-0]\\nuid           [ultimate] Name (Comment) <name@example.org>\\nsub   ed25519 2022-12-20 [S]\\n      [FINGERPRINT-1]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--fingerprint\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:u:255:22:[KEYID-0]:1671553073:::u:::cSC:::::ed25519:::0:\\nfpr:::::::::[FINGERPRINT-0]:\\nuid:u::::1671553073::67634EE232484FC05DFD157E27D2086106148768::Name (Comment) <name@example.org>::::::::::0:\\nsub:u:255:22:[KEYID-1]:1671553073::::::s:::::ed25519::\\nfpr:::::::::[FINGERPRINT-1]:\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-secret\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n--------------------\\npub   ed25519 2022-12-20 [C]\\n      [FINGERPRINT-0]\\nuid           [ultimate] Name (Comment) <name@example.org>\\nsub   ed25519 2022-12-20 [S]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-secret\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:u:255:22:[KEYID-0]:1671553073:::u:::cSC:::+::ed25519:::0:\\nfpr:::::::::[FINGERPRINT-0]:\\ngrp:::::::::[FINGERPRINT-0]:\\nuid:u::::1671553073::67634EE232484FC05DFD157E27D2086106148768::Name (Comment) <name@example.org>::::::::::0:\\nsub:u:255:22:[KEYID-1]:1671553073::::::s:::+::ed25519::\\nfpr:::::::::[FINGERPRINT-1]:\\ngrp:::::::::[FINGERPRINT-1]:\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-secret-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n--------------------\\nsec   ed25519 2022-12-20 [C]\\n      [FINGERPRINT-0]\\nuid           [ultimate] Name (Comment) <name@example.org>\\nssb   ed25519 2022-12-20 [S]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-secret-keys\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "sec:u:255:22:[KEYID-0]:1671553073:::u:::cSC:::+::ed25519:::0:\\nfpr:::::::::[FINGERPRINT-0]:\\ngrp:::::::::[FINGERPRINT-0]:\\nuid:u::::1671553073::67634EE232484FC05DFD157E27D2086106148768::Name (Comment) <name@example.org>::::::::::0:\\nssb:u:255:22:[KEYID-1]:1671553073::::::s:::+::ed25519::\\nfpr:::::::::[FINGERPRINT-1]:\\ngrp:::::::::[FINGERPRINT-1]:\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    }
+  ],
+  "former_us_outputs": [
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--status-fd=1\"",
+        "\"--batch\"",
+        "\"--generate-key\"",
+        "\"/EXPERIMENT/parameters\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: directory '/HOMEDIR/openpgp-revocs.d' created\\ngpg: revocation certificate stored as '/HOMEDIR/openpgp-revocs.d/3E25FD46658295E10141D904072AE460C4A2A93E.rev'\\n",
+      "stdout": "[GNUPG:] KEY_CONSIDERED 3E25FD46658295E10141D904072AE460C4A2A93E 0\\n[GNUPG:] KEY_CREATED B 3E25FD46658295E10141D904072AE460C4A2A93E\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--check-trustdb\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-subkey-fingerprints\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   ed25519 2022-12-20 [C]\\n      [FINGERPRINT-0]\\nuid           [ultimate] Name (Comment) <name@example.org>\\nsub   ed25519 2022-12-20 [S]\\n      0A17FF429149CB8E7EB65D019C9F71D9AA064114\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-keygrip\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   ed25519 2022-12-20 [C]\\n      [FINGERPRINT-0]\\n      Keygrip = EB0F2664E27131636063EF9CD29D54A6A0E5BBB0\\nuid           [ultimate] Name (Comment) <name@example.org>\\nsub   ed25519 2022-12-20 [S]\\n      Keygrip = A9E783663D5C95E5D31B1E4484E0F1C9BE3984C0\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:u:255:22:[KEYID-0]:1671553013:::u:::cSC:::::ed25519:::0:\\nfpr:::::::::[FINGERPRINT-0]:\\nuid:u::::1671553013::67634EE232484FC05DFD157E27D2086106148768::Name (Comment) <name@example.org>::::::::::0:\\nsub:u:255:22:[KEYID-1]:1671553013::::::s:::::ed25519::\\nfpr:::::::::[FINGERPRINT-1]:\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--fingerprint\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   ed25519 2022-12-20 [C]\\n      [FINGERPRINT-0]\\nuid           [ultimate] Name (Comment) <name@example.org>\\nsub   ed25519 2022-12-20 [S]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--fingerprint\"",
+        "\"--fingerprint\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   ed25519 2022-12-20 [C]\\n      [FINGERPRINT-0]\\nuid           [ultimate] Name (Comment) <name@example.org>\\nsub   ed25519 2022-12-20 [S]\\n      [FINGERPRINT-1]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--fingerprint\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:u:255:22:[KEYID-0]:1671553013:::u:::cSC:::::ed25519:::0:\\nfpr:::::::::[FINGERPRINT-0]:\\nuid:u::::1671553013::67634EE232484FC05DFD157E27D2086106148768::Name (Comment) <name@example.org>::::::::::0:\\nsub:u:255:22:[KEYID-1]:1671553013::::::s:::::ed25519::\\nfpr:::::::::[FINGERPRINT-1]:\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-secret\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   ed25519 2022-12-20 [C]\\n      [FINGERPRINT-0]\\nuid           [ultimate] Name (Comment) <name@example.org>\\nsub   ed25519 2022-12-20 [S]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-secret\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:u:255:22:[KEYID-0]:1671553013:::u:::cSC:::+::ed25519:::0:\\nfpr:::::::::[FINGERPRINT-0]:\\ngrp:::::::::[FINGERPRINT-0]:\\nuid:u::::1671553013::67634EE232484FC05DFD157E27D2086106148768::Name (Comment) <name@example.org>::::::::::0:\\nsub:u:255:22:[KEYID-1]:1671553013::::::s:::+::ed25519::\\nfpr:::::::::[FINGERPRINT-1]:\\ngrp:::::::::[FINGERPRINT-1]:\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-secret-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\nsec   ed25519 2022-12-20 [C]\\n      [FINGERPRINT-0]\\nuid           [ultimate] Name (Comment) <name@example.org>\\nssb   ed25519 2022-12-20 [S]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-secret-keys\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "sec:u:255:22:[KEYID-0]:1671553013:::u:::cSC:::+::ed25519:::0:\\nfpr:::::::::[FINGERPRINT-0]:\\ngrp:::::::::[FINGERPRINT-0]:\\nuid:u::::1671553013::67634EE232484FC05DFD157E27D2086106148768::Name (Comment) <name@example.org>::::::::::0:\\nssb:u:255:22:[KEYID-1]:1671553013::::::s:::+::ed25519::\\nfpr:::::::::[FINGERPRINT-1]:\\ngrp:::::::::[FINGERPRINT-1]:\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    }
+  ],
+  "artifacts": {},
+  "dynamic_upper_bounds": [
+    [
+      0,
+      86,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      134,
+      42
+    ],
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      3,
+      0,
+      0
+    ],
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      3,
+      0,
+      0
+    ],
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      3,
+      0,
+      0
+    ],
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      3,
+      0,
+      0
+    ]
+  ]
+}

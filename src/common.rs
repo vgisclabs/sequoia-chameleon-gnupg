@@ -67,6 +67,13 @@ pub trait Common<'store> {
         // Nop for gpgv.
     }
 
+    /// Prints the usage and the given message and returns an error.
+    fn wrong_args(&self, message: &str) -> Result<()> {
+        eprintln!("usage: {} [options] {}", self.argv0(), message);
+        self.override_status_code(2);
+        Err(anyhow::anyhow!("Wrong arguments: {}", message))
+    }
+
     /// Returns the debug level.
     fn debug(&self) -> u32;
 

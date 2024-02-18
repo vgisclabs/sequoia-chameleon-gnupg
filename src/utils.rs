@@ -4,9 +4,11 @@ use std::{
     fs,
     io,
     path::{Path, PathBuf},
+    time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
 use anyhow::Result;
+use chrono::NaiveDateTime;
 
 use sequoia_openpgp as openpgp;
 use openpgp::{
@@ -293,6 +295,24 @@ pub fn sanitize_ascii_str(s: &[u8], escape: &[u8]) -> String {
     }
 
     o
+}
+
+/// Parses an "iso-date".
+///
+/// XXX: Documentation is not clear on timezone and format.
+pub fn parse_iso_date(s: &str) -> Result<SystemTime> {
+    for fmt in [
+        "%Y%m%dT%H%M%S",
+        "%Y-%m-%d",
+    ] {
+        if let Ok(naive) = NaiveDateTime::parse_from_str(s, fmt) {
+            return Ok(UNIX_EPOCH.checked_add(Duration::new(
+                naive.timestamp().try_into()?, 0))
+                      .ok_or(anyhow::anyhow!("Duration overflows time type"))?);
+        }
+    }
+
+    Err(anyhow::anyhow!("malformed ISO date"))
 }
 
 #[cfg(test)]

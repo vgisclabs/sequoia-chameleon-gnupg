@@ -50,6 +50,7 @@ mod gpg {
     mod export_ssh_key;
     mod import;
     mod migrate;
+    mod generate_key;
 }
 
 use std::sync::OnceLock;
