@@ -485,7 +485,7 @@ pub struct Config<'store> {
     comments: Vec<String>,
     completes_needed: Option<i64>,
     compliance: Compliance,
-    compress_algo: Option<CompressionAlgorithm>,
+    compress_algo: CompressionAlgorithm,
     compress_level: i64,
     debug: u32,
     def_cert_expire: Option<time::Duration>,
@@ -606,7 +606,7 @@ impl<'store> Config<'store> {
             comments: vec![],
             completes_needed: None,
             compliance: Default::default(),
-            compress_algo: Default::default(),
+            compress_algo: CompressionAlgorithm::Uncompressed,
             compress_level: 5,
             debug: 0,
             def_cert_expire: None,
@@ -2199,7 +2199,7 @@ fn real_main() -> anyhow::Result<()> {
 	    oDigestAlgo => opt.def_digest =
                 value.as_str().unwrap().parse::<babel::Fish<_>>()?.0,
 	    oCompressAlgo => opt.compress_algo =
-                Some(value.as_str().unwrap().parse::<babel::Fish<_>>()?.0),
+                value.as_str().unwrap().parse::<babel::Fish<_>>()?.0,
 	    oCertDigestAlgo => opt.cert_digest =
                 value.as_str().unwrap().parse::<babel::Fish<_>>()?.0,
 

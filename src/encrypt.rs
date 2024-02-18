@@ -17,7 +17,7 @@ use openpgp::{
     parse::Parse,
     policy::Policy,
     serialize::{Serialize, stream::*},
-    types::{HashAlgorithm, SignatureType, SymmetricAlgorithm},
+    types::*,
 };
 use sequoia_ipc as ipc;
 
@@ -300,8 +300,8 @@ fn do_encrypt(config: &crate::Config, args: &[String],
 
     let mut message = encryptor.build()?;
 
-    if let Some(algo) = config.compress_algo {
-        message = Compressor::new(message).algo(algo).build()?;
+    if config.compress_algo != CompressionAlgorithm::Uncompressed {
+        message = Compressor::new(message).algo(config.compress_algo).build()?;
     }
 
     if sign {
