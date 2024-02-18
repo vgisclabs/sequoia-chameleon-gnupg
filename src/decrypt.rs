@@ -584,7 +584,7 @@ impl<'a, 'store> DHelper<'a, 'store> {
             let p =
                 crate::agent::get_passphrase(
                     &mut agent,
-                    &cacheid, &error, None, None, false, 0, false,
+                    &cacheid, &error, None, None, false, 0, false, false,
                     |_agent, response| if let ipc::assuan::Response::Inquire {
                         keyword, parameters } = response
                     {

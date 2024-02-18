@@ -364,7 +364,7 @@ async fn ask_password(config: &crate::Config<'_>, cacheid: Option<String>)
     let mut agent = config.connect_agent().await?;
     Ok(crate::agent::get_passphrase(
         &mut agent,
-        &cacheid, &None, None, None, false, 0, false,
+        &cacheid, &None, None, None, false, 0, false, false,
         |_agent, response| if let ipc::assuan::Response::Inquire {
             keyword, parameters } = response
         {

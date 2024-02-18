@@ -203,15 +203,17 @@ pub async fn get_passphrase<P>(agent: &mut ipc::gnupg::Agent,
                                newsymkey: bool,
                                repeat: usize,
                                check: bool,
+                               qualitybar: bool,
                                mut pinentry_cb: P)
                                -> Result<Password>
 where
     P: FnMut(&mut Agent, Response) -> Option<Protected>,
 {
     agent.send(format!(
-        "GET_PASSPHRASE --data --repeat={}{}{} -- {} {} {} {}",
+        "GET_PASSPHRASE --data --repeat={}{}{}{} -- {} {} {} {}",
         repeat,
         if (repeat > 0 && check) || newsymkey { " --check" } else { "" },
+        if qualitybar { " --qualitybar" } else { "" },
         if newsymkey { " --newsymkey" } else { "" },
         cache_id.as_ref().map(escape).unwrap_or_else(|| "X".into()),
         err_msg.as_ref().map(escape).unwrap_or_else(|| "X".into()),
