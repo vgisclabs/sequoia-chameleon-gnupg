@@ -492,6 +492,7 @@ pub struct Config<'store> {
     def_cert_level: i64,
     def_cipher: SymmetricAlgorithm,
     def_digest: HashAlgorithm,
+    def_keyserver_url: Option<KeyserverURL>,
     def_recipient: Option<String>,
     def_recipient_self: bool,
     def_secret_key: Vec<String>,
@@ -613,6 +614,7 @@ impl<'store> Config<'store> {
             def_cert_level: 0, // XXX
             def_cipher: Default::default(),
             def_digest: Default::default(),
+            def_keyserver_url: None,
             def_recipient: None,
             def_recipient_self: false,
             def_secret_key: vec![],
@@ -2298,6 +2300,8 @@ fn real_main() -> anyhow::Result<()> {
 	    oEnableSpecialFilenames => {
                 opt.special_filenames = true;
             },
+            oDefaultKeyserverURL =>
+                opt.def_keyserver_url = Some(value.as_str().unwrap().parse()?),
             oWeakDigest => {
                 opt.policy.weak_digest(
                     value.as_str().unwrap().parse::<babel::Fish<_>>()?.0);
