@@ -39,18 +39,18 @@ macro_rules! make_experiment {
 mod gpg {
     mod decrypt;
     mod encrypt;
-    mod sign;
-    mod verify;
-    mod list_keys;
-    mod version;
-    mod trust_models;
-    mod status_fd;
-    mod print_mds;
-    mod list_packets;
     mod export_ssh_key;
-    mod import;
-    mod migrate;
     mod generate_key;
+    mod import;
+    mod list_keys;
+    mod list_packets;
+    mod migrate;
+    mod print_mds;
+    mod sign;
+    mod status_fd;
+    mod trust_models;
+    mod verify;
+    mod version;
 }
 
 use std::sync::OnceLock;
