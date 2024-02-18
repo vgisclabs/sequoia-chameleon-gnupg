@@ -2,6 +2,7 @@
 
 use std::{
     fmt,
+    str::FromStr,
 };
 
 use sequoia_openpgp as openpgp;
@@ -68,6 +69,27 @@ impl fmt::Display for Fish<PublicKeyAlgorithm> {
     }
 }
 
+impl FromStr for Fish<PublicKeyAlgorithm> {
+    type Err = anyhow::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_lowercase().as_str() {
+            "rsa" |
+            "openpgp-rsa" |
+            "oid.1.2.840.113549.1.1.1" =>
+                Ok(Fish(PublicKeyAlgorithm::RSAEncryptSign)),
+            _ => {
+                if let Ok(o) = u8::from_str(s) {
+                    Ok(Fish(o.into()))
+                } else {
+                    Err(openpgp::Error::InvalidArgument(
+                        format!("Unknown public key algorithm: {}", s)).into())
+                }
+            },
+        }
+    }
+}
+
 impl fmt::Display for Fish<&Curve> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         use Curve::*;
@@ -82,6 +104,26 @@ impl fmt::Display for Fish<&Curve> {
             Ed25519 => f.write_str("ed25519"),
             Cv25519 => f.write_str("cv25519"),
             Unknown(ref oid) => write!(f, "Unknown curve {:?}", oid),
+        }
+    }
+}
+
+impl FromStr for Fish<Curve> {
+    type Err = anyhow::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_lowercase().as_str() {
+            "ed25519" => Ok(Fish(Curve::Ed25519)),
+            "cv25519" | "curve25519" => Ok(Fish(Curve::Cv25519)),
+            "nistp256" => Ok(Fish(Curve::NistP256)),
+            "nistp384" => Ok(Fish(Curve::NistP384)),
+            "nistp521" => Ok(Fish(Curve::NistP521)),
+            "brainpoolp256" => Ok(Fish(Curve::BrainpoolP256)),
+            "brainpoolp384" =>
+                Ok(Fish(Curve::Unknown(BRAINPOOL_P384_OID.into()))),
+            "brainpoolp512" => Ok(Fish(Curve::BrainpoolP512)),
+            _ => Err(openpgp::Error::InvalidArgument(
+                format!("Unknown curve: {}", s)).into()),
         }
     }
 }
@@ -121,6 +163,15 @@ impl fmt::Display for Fish<SymmetricAlgorithm> {
     }
 }
 
+impl FromStr for Fish<SymmetricAlgorithm> {
+    type Err = anyhow::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        crate::argparse::utils::parse_cipher(s)
+            .map(|v| Fish(v))
+    }
+}
+
 impl fmt::Display for Fish<AEADAlgorithm> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         use AEADAlgorithm::*;
@@ -153,6 +204,15 @@ impl fmt::Display for Fish<HashAlgorithm> {
     }
 }
 
+impl FromStr for Fish<HashAlgorithm> {
+    type Err = anyhow::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        crate::argparse::utils::parse_digest(s)
+            .map(|v| Fish(v))
+    }
+}
+
 impl fmt::Display for Fish<CompressionAlgorithm> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         use CompressionAlgorithm::*;
@@ -166,6 +226,15 @@ impl fmt::Display for Fish<CompressionAlgorithm> {
             Unknown(u) => write!(f, "Unknown({})", u),
             catchall => write!(f, "{:?}", catchall),
         }
+    }
+}
+
+impl FromStr for Fish<CompressionAlgorithm> {
+    type Err = anyhow::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        crate::argparse::utils::parse_compressor(s)
+            .map(|v| Fish(v))
     }
 }
 
