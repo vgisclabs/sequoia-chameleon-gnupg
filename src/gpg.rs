@@ -493,6 +493,7 @@ pub struct Config<'store> {
     def_cipher: SymmetricAlgorithm,
     def_digest: HashAlgorithm,
     def_keyserver_url: Option<KeyserverURL>,
+    def_preferences: Preferences,
     def_recipient: Option<String>,
     def_recipient_self: bool,
     def_secret_key: Vec<String>,
@@ -533,6 +534,9 @@ pub struct Config<'store> {
     outfile: Option<String>,
     override_session_key: Option<SessionKey>,
     passphrase_repeat: i64,
+    personal_cipher_prefs: Vec<SymmetricAlgorithm>,
+    personal_digest_prefs: Vec<HashAlgorithm>,
+    personal_compress_prefs: Vec<CompressionAlgorithm>,
     photo_viewer: Option<PathBuf>,
     pinentry_mode: agent::PinentryMode,
     quiet: bool,
@@ -615,6 +619,7 @@ impl<'store> Config<'store> {
             def_cipher: Default::default(),
             def_digest: Default::default(),
             def_keyserver_url: None,
+            def_preferences: Default::default(),
             def_recipient: None,
             def_recipient_self: false,
             def_secret_key: vec![],
@@ -658,6 +663,9 @@ impl<'store> Config<'store> {
             outfile: None,
             override_session_key: None,
             passphrase_repeat: 0, // XXX
+            personal_cipher_prefs: Preferences::default().symmetric,
+            personal_digest_prefs: Preferences::default().hash,
+            personal_compress_prefs: Preferences::default().compression,
             photo_viewer: None,
             pinentry_mode: Default::default(),
             quiet: false,
@@ -1175,6 +1183,79 @@ impl std::str::FromStr for RequestOrigin {
             "browser" => Ok(RequestOrigin::Browser),
             _ => Err(anyhow::anyhow!("Invalid request origin {:?}", s)),
         }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct Preferences {
+    hash: Vec<HashAlgorithm>,
+    symmetric: Vec<SymmetricAlgorithm>,
+    compression: Vec<CompressionAlgorithm>,
+    mdc: bool,
+    ks_modify: bool,
+}
+
+impl Default for Preferences {
+    fn default() -> Self {
+        Preferences {
+            hash: vec![
+                HashAlgorithm::SHA512,
+                HashAlgorithm::SHA384,
+                HashAlgorithm::SHA256,
+            ],
+            symmetric: vec![
+                SymmetricAlgorithm::AES256,
+                SymmetricAlgorithm::AES192,
+                SymmetricAlgorithm::AES128,
+            ],
+            compression: vec![
+                CompressionAlgorithm::Uncompressed,
+            ],
+            mdc: true,
+            ks_modify: false,
+        }
+    }
+}
+
+impl Preferences {
+    fn parse(s: &str) -> Result<Option<Self>> {
+        let mut p = Preferences {
+            hash: vec![],
+            symmetric: vec![],
+            compression: vec![],
+            mdc: true,
+            ks_modify: false,
+        };
+
+        match s.to_lowercase().as_str() {
+            "" | "default" => return Ok(None),
+            // XXX: Does that make sense?
+            "none" => return Ok(Some(p)),
+            _ => (),
+        }
+
+        for s in s.split(&[' ', ',']) {
+            if let Ok(babel::Fish(a)) = s.parse() {
+                p.hash.push(a)
+            } else if let Ok(babel::Fish(a)) = s.parse() {
+                p.symmetric.push(a)
+            } else if let Ok(babel::Fish(a)) = s.parse() {
+                p.compression.push(a)
+            } else if s.to_lowercase() == "mdc" {
+                p.mdc = true;
+            } else if s.to_lowercase() == "no-mdc" {
+                p.mdc = false;
+            } else if s.to_lowercase() == "ks-modify" {
+                p.ks_modify = true;
+            } else if s.to_lowercase() == "no-ks-modify" {
+                p.ks_modify = false;
+            } else {
+                return Err(anyhow::anyhow!(
+                    "invalid item '{}' in preference string", s));
+            }
+        }
+
+        Ok(Some(p))
     }
 }
 
@@ -2300,8 +2381,23 @@ fn real_main() -> anyhow::Result<()> {
 	    oEnableSpecialFilenames => {
                 opt.special_filenames = true;
             },
+            oDefaultPreferenceList =>
+                opt.def_preferences =
+                Preferences::parse(value.as_str().unwrap())?.unwrap_or_default(),
             oDefaultKeyserverURL =>
                 opt.def_keyserver_url = Some(value.as_str().unwrap().parse()?),
+            oPersonalCipherPreferences =>
+                if let Some(p) = Preferences::parse(value.as_str().unwrap())? {
+                    opt.personal_cipher_prefs = p.symmetric;
+                },
+            oPersonalDigestPreferences =>
+                if let Some(p) = Preferences::parse(value.as_str().unwrap())? {
+                    opt.personal_digest_prefs = p.hash;
+                },
+            oPersonalCompressPreferences =>
+                if let Some(p) = Preferences::parse(value.as_str().unwrap())? {
+                    opt.personal_compress_prefs = p.compression;
+                },
             oWeakDigest => {
                 opt.policy.weak_digest(
                     value.as_str().unwrap().parse::<babel::Fish<_>>()?.0);
