@@ -2495,7 +2495,15 @@ fn real_main() -> anyhow::Result<()> {
     }
 
     if greeting && ! no_greeting {
-        eprintln!("Greetings from the people of earth!");
+        println!("gpg (Sequoia Chameleon {}) {}; \
+                  Copyright (C) 2024 Sequoia PGP",
+                 env!("CARGO_PKG_VERSION"),
+                 crate::gnupg_interface::VERSION);
+        println!("This is free software: \
+                  you are free to change and redistribute it.");
+        println!("There is NO WARRANTY, \
+                  to the extent permitted by law.");
+        eprintln!();
     }
 
     if multifile {
