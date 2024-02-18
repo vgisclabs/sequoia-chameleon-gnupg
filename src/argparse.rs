@@ -207,7 +207,7 @@ impl<T: Copy + Debug + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
         println!("Sequoia {} Chameleon {}",
                  self.name, env!("CARGO_PKG_VERSION"));
         println!("sequoia-openpgp {}", sequoia_openpgp::VERSION);
-        println!("Copyright (C) 2022 p≡p foundation");
+        println!("Copyright (C) 2024 Sequoia PGP");
         println!("License GNU GPL-3.0-or-later \
                   <https://gnu.org/licenses/gpl.html>");
         println!("This is free software: \
