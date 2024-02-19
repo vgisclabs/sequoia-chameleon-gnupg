@@ -192,8 +192,9 @@ pub struct Context {
 }
 
 impl Context {
-    const GPG_AGENT_CONF: &str = "allow-loopback-pinentry\n\
-                                  ";
+    const GPG_AGENT_CONF: &'static str =
+        "allow-loopback-pinentry\n\
+         ";
 
     /// Returns a context for the reference GnuPG implementation.
     pub fn gnupg() -> Result<Self> {
