@@ -383,6 +383,34 @@ pub async fn import(agent: &mut Agent,
                     unattended: bool)
                     -> Result<bool>
 {
+    // The gpg-agent shipped with GnuPG 2.4.x calculates the checksum
+    // over ECC artifacts differently.  Oddly, this seems to amount to
+    // adding 8 to the checksum.  See GnuPG commit
+    // 2b118516240b4bddd34c68c23a99bea56682a509.
+    use sequoia_openpgp::types::PublicKeyAlgorithm::*;
+    let mut r = import_int(agent, policy, cert, key, unattended, 0).await;
+    if r.is_err() && (key.pk_algo() == ECDSA
+                      || key.pk_algo() == EdDSA
+                      || key.pk_algo() == ECDH)
+    {
+        r = import_int(agent, policy, cert, key, unattended, 8).await;
+    }
+
+    if let Err(e) = &r {
+        // XXX: use warn()
+        eprintln!("gpg: {}", e);
+    }
+    r
+}
+
+async fn import_int(agent: &mut Agent,
+                    policy: &dyn Policy,
+                    cert: &Cert,
+                    key: &Key<SecretParts, UnspecifiedRole>,
+                    unattended: bool,
+                    csum_offset: u16)
+                    -> Result<bool>
+{
     use ipc::sexp::*;
 
     /// Makes a tuple cell, i.e. a *C*ons.
@@ -560,7 +588,7 @@ pub async fn import(agent: &mut Agent,
         transfer_key.push(s("curve", curve.to_string()));
     }
     transfer_key.push(Sexp::List(skey));
-    transfer_key.push(s("csum", checksum));
+    transfer_key.push(s("csum", checksum.wrapping_add(csum_offset)));
     transfer_key.push(protection);
 
     let transfer_key = Sexp::List(transfer_key);
@@ -629,10 +657,6 @@ pub async fn import(agent: &mut Agent,
                                         // Ignore error, we don't set imported.
                                             (),
                                         _ => {
-                                            if let Some(m) = message.as_ref() {
-                                                // XXX: use warn()
-                                                eprintln!("gpg: {}", m);
-                                            }
                                             return operation_failed(agent, &message).await;
                                         },
                                     }
