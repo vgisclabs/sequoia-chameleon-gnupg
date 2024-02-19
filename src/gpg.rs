@@ -2748,6 +2748,7 @@ fn real_main() -> anyhow::Result<()> {
         Some(aListPackets) => list_packets::cmd_list_packets(&opt, &args),
         Some(aKeygen) => generate_key::cmd_generate_key(&mut opt, &args, false),
         Some(aFullKeygen) => generate_key::cmd_generate_key(&mut opt, &args, true),
+        Some(aQuickAddKey) => generate_key::cmd_quick_add_key(&mut opt, &args),
         None => commands::cmd_implicit(&opt, &args),
 
         // Our own extensions.

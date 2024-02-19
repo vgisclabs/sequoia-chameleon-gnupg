@@ -46,6 +46,7 @@ mod gpg {
     mod list_packets;
     mod migrate;
     mod print_mds;
+    mod quick;
     mod sign;
     mod status_fd;
     mod trust_models;

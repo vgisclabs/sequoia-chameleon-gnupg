@@ -1,0 +1,160 @@
+{
+  "outputs": [
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: keybox '/HOMEDIR/pubring.kbx' created\\ngpg: /HOMEDIR/trustdb.gpg: trustdb created\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--import\"",
+        "\"/EXPERIMENT/key\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: key 344E40801AAF33B7: public key \"Alice Lovelace <alice@lovelace.name>\" imported\\ngpg: key 344E40801AAF33B7: secret key imported\\ngpg: Total number processed: 1\\ngpg:               imported: 1\\ngpg:       secret keys read: 1\\ngpg:   secret keys imported: 1\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED B68279AAFAFB4F132BFC479F344E40801AAF33B7 0\\n[GNUPG:] IMPORTED 344E40801AAF33B7 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] IMPORT_OK 1 B68279AAFAFB4F132BFC479F344E40801AAF33B7\\n[GNUPG:] KEY_CONSIDERED B68279AAFAFB4F132BFC479F344E40801AAF33B7 0\\n[GNUPG:] IMPORT_OK 17 B68279AAFAFB4F132BFC479F344E40801AAF33B7\\n[GNUPG:] IMPORT_RES 1 0 1 0 0 0 0 0 0 1 1 0 0 0 0\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--check-trustdb\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: no ultimately trusted keys found\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--batch\"",
+        "\"--passphrase=streng geheim\"",
+        "\"--quick-add-key\"",
+        "\"B68279AAFAFB4F132BFC479F344E40801AAF33B7\"",
+        "\"rsa\"",
+        "\"encrypt,sign\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED [FINGERPRINT-0] 0\\n[GNUPG:] KEY_CREATED S 9A450A5FFA2064894996D00A3C3C815FCF0CAC0C\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:255:22:[KEYID-0]:1671553073:::-:::cESC:::::ed25519:::0:\\nfpr:::::::::[FINGERPRINT-0]:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsub:-:3072:1:[KEYID-1]:1671553073::::::es::::::23:\\nfpr:::::::::[FINGERPRINT-1]:\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    }
+  ],
+  "former_us_outputs": [
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--import\"",
+        "\"/EXPERIMENT/key\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: key 344E40801AAF33B7: public key \"Alice Lovelace <alice@lovelace.name>\" imported\\ngpg: key 344E40801AAF33B7: secret key imported\\ngpg: Total number processed: 1\\ngpg:               imported: 1\\ngpg:       secret keys read: 1\\ngpg:   secret keys imported: 1\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED B68279AAFAFB4F132BFC479F344E40801AAF33B7 0\\n[GNUPG:] IMPORTED 344E40801AAF33B7 Alice Lovelace <alice@lovelace.name>\\n[GNUPG:] IMPORT_OK 1 B68279AAFAFB4F132BFC479F344E40801AAF33B7\\n[GNUPG:] IMPORT_OK 17 B68279AAFAFB4F132BFC479F344E40801AAF33B7\\n[GNUPG:] IMPORT_RES 1 0 1 0 0 0 0 0 0 1 1 0 0 0 0\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--check-trustdb\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--batch\"",
+        "\"--passphrase=streng geheim\"",
+        "\"--quick-add-key\"",
+        "\"B68279AAFAFB4F132BFC479F344E40801AAF33B7\"",
+        "\"rsa\"",
+        "\"encrypt,sign\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED [FINGERPRINT-0] 0\\n[GNUPG:] KEY_CREATED S B6C40EC15648CEA7DE09FA673AB3183CE913ED4E\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:255:22:[KEYID-0]:1671553073:::-:::cESC:::::ed25519:::0:\\nfpr:::::::::[FINGERPRINT-0]:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsub:-:3072:1:[KEYID-1]:1671553073::::::es::::::23:\\nfpr:::::::::[FINGERPRINT-1]:\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    }
+  ],
+  "artifacts": {
+    "key": "\\xC5X\\x04c\\xA1\\xE01\\x16\\t+\\x06\\x01\\x04\\x01\\xDAG\\x0F\\x01\\x01\\x07@c\\x88o\\xB2d\\xF3S[Nށs~+\\x1Ar\\xEE\\x86\\xD2\\xEDN#V`u*\\x828.\\x96#$\\x00\\x00\\xFD\\x1A\\xA8\\x11\\x01x\\x0Es\\xFC\\xC2\\xF35s{\\x15\\xF1\\x83M\\xE8!W\\x856\\xDBh{!&\\xA9õ#\\xED\\x0F\\xC5\\xC2\\xC0\\x0B\\x04\\x1F\\x16\\n\\x00}\\x05\\x82c\\xA1\\xE01\\x03\\x0B\\t\\x07\\t\\x104N@\\x80\\x1A\\xAF3\\xB7G\\x14\\x00\\x00\\x00\\x00\\x00\\x1E\\x00 salt@notations.sequoia-pgp.org\\x81D\\xE9P\\tXG\\x14'\\xC8\\xF0h\\xF7\\xC8_ڛ\\xC8)--\\x87\\xB0\\x0F1\\\\9\\x16*E\\xA7{\\x03\\x15\\n\\x08\\x02\\x9B\\x01\\x02\\x1E\\x01\\x16!\\x04\\xB6\\x82y\\xAA\\xFA\\xFBO\\x13+\\xFCG\\x9F4N@\\x80\\x1A\\xAF3\\xB7\\x00\\x00\\xAAw\\x01\\x00\\xA2\\xBA\\xE5\\x1F\\x86\\xF1\\xBFM\\xF8u=\\x10'\\x93\\x90\\xDA\\tBhz,x$\\\\Py\\x18\\x19jy X\\x00\\xFF[\\xD2\\x05\\xA0Dh\\xB3^\\xA49\\xC4[\\xC9\\xF3\\x93|춧\\xC2\\xEF\\x9D\\x92AU\\xEB\\x9AL\\x15\\xC8\\r\\n\\xCD$Alice Lovelace <alice@lovelace.name>\\xC2\\xC0\\x0E\\x04\\x13\\x16\\n\\x00\\x80\\x05\\x82c\\xA1\\xE01\\x03\\x0B\\t\\x07\\t\\x104N@\\x80\\x1A\\xAF3\\xB7G\\x14\\x00\\x00\\x00\\x00\\x00\\x1E\\x00 salt@notations.sequoia-pgp.org\\xE8U\\x05\\xD5g2\\x18G\\xB3I!\\xAD\\xBATl\\xFF\\x8B\\xE3!j:\\xD5*\\x86f\\x81\\x07\\x7F\\x0B+t\\xAA\\x03\\x15\\n\\x08\\x02\\x99\\x01\\x02\\x9B\\x01\\x02\\x1E\\x01\\x16!\\x04\\xB6\\x82y\\xAA\\xFA\\xFBO\\x13+\\xFCG\\x9F4N@\\x80\\x1A\\xAF3\\xB7\\x00\\x00\\x87S\\x01\\x00\\x9CB\\xE0\\x8E~\\x03f\\r\\xC2\\x11.\\x80\\xDC\\x0Fb+\\xFEÑ\\x00\\xA7\\xECr\\x9F\\x88\\n\\x10\\xB7b\\xABʓ\\x00\\xFE!\\x96ʱ\\x92\\x95\\x16i\\\\\\xDCj\\xBA\\x9E6\\xAA\\x82ҥ\\xE9v\\x06\\x18\\xEC\\xDA۰\\x1Bֳ\\xFF\\x81\\x0F"
+  },
+  "dynamic_upper_bounds": [
+    [
+      0,
+      86,
+      0
+    ],
+    [
+      0,
+      0,
+      42
+    ],
+    [
+      0,
+      38,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ]
+  ]
+}

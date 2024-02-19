@@ -8,6 +8,7 @@ use anyhow::{Context, Result};
 
 use sequoia_openpgp as openpgp;
 use openpgp::{
+    Fingerprint,
     cert::{
         Cert,
         CertRevocationBuilder,
@@ -16,6 +17,7 @@ use openpgp::{
     packet::{
         Key,
         Signature,
+        Packet,
         key::{
             self,
             Key4,
@@ -32,13 +34,16 @@ use sequoia_ipc::{
     Keygrip,
 };
 
-use sequoia_cert_store::StoreUpdate;
+use sequoia_cert_store::{
+    Store,
+    StoreUpdate,
+};
 
 use crate::{
     KeyserverURL,
     Preferences,
     babel,
-    common::Common,
+    common::{BRAINPOOL_P384_OID, Common},
     status::Status,
     trust::OwnerTrustLevel,
     utils,
@@ -89,6 +94,165 @@ async fn real_cmd_generate_key(config: &mut crate::Config<'_>, args: &[String],
         let _ = full;
         return Err(anyhow::anyhow!(
             "Interactive key generation is not yet implemented."));
+    }
+}
+
+/// Dispatches the --quick-add-key command.
+pub fn cmd_quick_add_key(config: &mut crate::Config, args: &[String])
+                         -> Result<()>
+{
+    check_forbid_gen_key(config)?;
+    if args.len() < 1 || args.len() > 4 {
+        config.wrong_args(format_args!(
+            "--quick-add-key FINGERPRINT [ALGO [USAGE [EXPIRE]]]"));
+    }
+
+    let rt = tokio::runtime::Runtime::new()?;
+    rt.block_on(real_cmd_quick_add_key(config, args))
+}
+
+async fn real_cmd_quick_add_key(config: &mut crate::Config<'_>, args: &[String])
+                                -> Result<()>
+{
+    let cert_fp: Fingerprint = args[0].parse()?;
+    let algo = args.get(1).cloned().unwrap_or_else(|| "-".into());
+    let usage = args.get(2).cloned().unwrap_or_else(|| "-".into());
+    let expire = args.get(3).cloned().unwrap_or_else(|| "-".into());
+
+    // This is awkward: we need to know whether a the algorithm is an
+    // encryption algorithm, but in order to select the correct
+    // algorithm (in case a default one is selected), we need to know
+    // whether it is encryption-capable or not.  Hardcode a list.
+    let for_encryption = match algo.to_ascii_lowercase().as_str() {
+        "dsa" | "ecdsa" | "eddsa" | "ed25519" => false,
+        _ => true,
+    };
+
+    let usage = if usage == "-" || usage.eq_ignore_ascii_case("default") {
+        if for_encryption {
+            KeyFlags::empty()
+                .set_transport_encryption()
+                .set_storage_encryption()
+        } else {
+            KeyFlags::empty()
+                .set_signing()
+        }
+    } else {
+        Parameter::parse_usage(&usage)?
+    };
+
+    let (pk_algo, pk_length, curve) =
+        parse_key_parameter_part(config, &algo, &usage)?;
+
+    let cert = config.keydb().lookup_by_cert_fpr(&cert_fp)?;
+    // Consider the cert.
+    config.status().emit(
+        Status::KeyConsidered {
+            fingerprint: cert.fingerprint(),
+            not_selected: false,
+            all_expired_or_revoked: false,
+        })?;
+
+    let vcert = cert.with_policy(config.policy(), None)?;
+    let mut primary_signer =
+        config.get_signer(&vcert, cert.primary_key().role_as_unspecified()).await?;
+
+    let (subkey, binding, _subkey_signer) =
+        do_create(config, Some((cert.to_cert()?, &mut primary_signer)),
+                  pk_algo,
+                  pk_length,
+                  curve,
+                  config.now(),
+                  crate::argparse::utils::parse_expiration(config, &expire)?,
+                  usage,
+                  None,
+                  &config.def_preferences.clone(),
+                  None,
+                  None)?;
+
+    // Emit key created.
+    config.status().emit(
+        Status::KeyCreated {
+            primary: false,
+            subkey: true,
+            fingerprint: subkey.fingerprint(),
+            handle: None,
+        })?;
+
+    let cert = cert.to_cert()?.clone()
+        .insert_packets(vec![
+            Packet::from(subkey.clone().role_into_subordinate()),
+            binding.into(),
+        ])?;
+
+    // Actually store the cert.
+    config.mut_keydb().update(
+        Arc::new(cert.clone().strip_secret_key_material().into()))?;
+
+    // Store the secrets in the agent.
+    let mut agent = config.connect_agent().await?;
+    // See if we import a new key or subkey.
+    crate::agent::import(&mut agent,
+                         config.policy(),
+                         &cert, &subkey,
+                         config.batch).await?;
+
+    Ok(())
+}
+
+/// Computes algorithm, key length, and curve given the algorithm
+/// string and usage.
+fn parse_key_parameter_part(_: &crate::Config, algo: &str, usage: &KeyFlags)
+                            -> Result<(PublicKeyAlgorithm, Option<usize>,
+                                       Option<Curve>)>
+{
+    // Case insensitive matching.
+    let algo = algo.to_ascii_lowercase();
+
+    // For the classic algorithms, split off the desired key length.
+    let (algo, size) = if let Some(first_digit) =
+        algo.char_indices().find_map(|(i, c)| c.is_digit(10).then_some(i))
+        .filter(|_| algo != "ed25519"
+                && algo != "cv25519"
+                && ! algo.starts_with("nistp")
+                && ! algo.starts_with("brainpool"))
+    {
+        (&algo[..first_digit], Some(algo[first_digit..].parse::<usize>()?))
+    } else {
+        (algo.as_str(), None)
+    };
+
+    // For the classic ECC curves, determine the correct pk algorithm.
+    let pk_ecc = if usage.for_signing() {
+        PublicKeyAlgorithm::ECDSA
+    } else {
+        PublicKeyAlgorithm::ECDH
+    };
+
+    match algo.to_ascii_lowercase().as_str() {
+        "" | "-" | "default" | "rsa" =>
+            Ok((PublicKeyAlgorithm::RSAEncryptSign, size.or(Some(3072)), None)),
+        "future-default" | "futuredefault" => if usage.for_signing() {
+            Ok((PublicKeyAlgorithm::EdDSA, None, Some(Curve::Ed25519)))
+        } else {
+            Ok((PublicKeyAlgorithm::ECDH, None, Some(Curve::Cv25519)))
+        },
+        "dsa" => Ok((PublicKeyAlgorithm::DSA, size.or(Some(2048)), None)),
+        "elg" =>
+            Ok((PublicKeyAlgorithm::ElGamalEncrypt, size.or(Some(2048)), None)),
+        "ed25519" =>
+            Ok((PublicKeyAlgorithm::EdDSA, None, Some(Curve::Ed25519))),
+        "cv25519" =>
+            Ok((PublicKeyAlgorithm::ECDH, None, Some(Curve::Cv25519))),
+        "nistp256" => Ok((pk_ecc, None, Some(Curve::NistP256))),
+        "nistp384" => Ok((pk_ecc, None, Some(Curve::NistP384))),
+        "nistp521" => Ok((pk_ecc, None, Some(Curve::NistP521))),
+        "brainpoolp256r1" => Ok((pk_ecc, None, Some(Curve::BrainpoolP256))),
+        "brainpoolp384r1" =>
+            Ok((pk_ecc, None, Some(Curve::Unknown(BRAINPOOL_P384_OID.into())))),
+        "brainpoolp521r1" => Ok((pk_ecc, None, Some(Curve::BrainpoolP512))),
+        _ => Err(anyhow::anyhow!(
+            "Key generation failed: Unknown elliptic curve")),
     }
 }
 
@@ -263,7 +427,7 @@ impl std::str::FromStr for Usage {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut usage = Usage::default();
-        for u in s.split(":") {
+        for u in s.split(&[':', ' ', ',']) {
             match u.trim().to_lowercase().as_str() {
                 "cert" => usage.certify = true,
                 "sign" => usage.sign = true,
