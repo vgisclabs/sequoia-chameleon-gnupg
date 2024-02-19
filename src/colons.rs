@@ -26,7 +26,7 @@ use ipc::Keygrip;
 
 use crate::{
     babel,
-    common::Compliance,
+    common::{Common, Compliance},
     trust::*,
 };
 
@@ -107,15 +107,18 @@ impl Record<'_> {
         crate::with_invocation_log(
             |sink| self.do_emit(
                 sink,
+                config,
                 config.with_colons,
                 config.fingerprint > 0));
         self.do_emit(w,
+                     config,
                      config.with_colons,
                      config.fingerprint > 0)
     }
 
     fn do_emit(&self,
                w: &mut (impl io::Write + ?Sized),
+               config: &crate::Config,
                mr: bool,
                prettyprint: bool)
                 -> Result<()>
@@ -125,13 +128,18 @@ impl Record<'_> {
 
         // Helper function to format expiration and revocation times
         // in human-readable key listings.
-        fn bracket(revoked_at: Option<DateTime::<Utc>>,
+        fn bracket(config: &crate::Config,
+                   revoked_at: Option<DateTime::<Utc>>,
                    expired_at: Option<DateTime::<Utc>>) -> String {
             revoked_at.map(|t| format!(
                 " [revoked: {}]", t.format("%Y-%m-%d")))
                 .or_else(|| expired_at.map(|t| format!(
                     " [{}: {}]",
-                    if t > chrono::Utc::now() { "expires" } else { "expired" },
+                    if t > chrono::DateTime::<chrono::Utc>::from(config.now()) {
+                        "expires"
+                    } else {
+                        "expired"
+                    },
                     t.format("%Y-%m-%d"))))
                 .unwrap_or_else(|| "".into())
         }
@@ -204,7 +212,7 @@ impl Record<'_> {
                              babel::Fish((key.pk_algo(), key_length, &curve)),
                              creation_date.format("%Y-%m-%d"),
                              babel::Fish(primary_key_flags).to_string().to_uppercase(),
-                             bracket(revocation_date, expiration_date),
+                             bracket(config, revocation_date, expiration_date),
                     )?;
                 }
             },
@@ -269,7 +277,7 @@ impl Record<'_> {
                              babel::Fish((key.pk_algo(), key_length, &curve)),
                              creation_date.format("%Y-%m-%d"),
                              babel::Fish(key_flags).to_string().to_uppercase(),
-                             bracket(revocation_date, expiration_date),
+                             bracket(config, revocation_date, expiration_date),
                     )?;
                 }
             },

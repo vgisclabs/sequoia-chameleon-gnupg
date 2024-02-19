@@ -309,7 +309,7 @@ fn do_encrypt(config: &crate::Config, args: &[String],
         let (mut signers, signers_desc) =
             rt.block_on(crate::sign::get_signers(config))?;
 
-        let timestamp = openpgp::types::Timestamp::now();
+        let timestamp = config.now().try_into()?;
         let hash_algo = config.def_digest;
         let mut signer =
             Signer::new(message, signers.pop().expect("at least one"))
