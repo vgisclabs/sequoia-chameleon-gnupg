@@ -22,6 +22,12 @@ test-rust-stable:
   image: 192.168.122.1:5000/sequoia-pgp/build-docker-image/rust-stable:latest
   extends: .test
 
+test-fedora:
+  image: fedora
+  script:
+    - dnf install -y cargo openssl openssl-devel gnupg sqlite-devel
+    - cargo test --no-default-features --features=crypto-openssl
+
 all_commits:
   # Test each commit up to main, to facilitate bisecting.
   interruptible: true
