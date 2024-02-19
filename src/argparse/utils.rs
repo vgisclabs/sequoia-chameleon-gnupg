@@ -26,13 +26,16 @@ pub fn parse_expiration(config: &crate::Config, s: &str)
             }
         },
         _ => {
-            // ISO date.
+            // ISO date.  Curiously, GnuPG uses mktime(3) to convert
+            // the ISO date to a timestamp, and mktime(3) is
+            // timezone-aware.  Therefore, in contrast to parsing the
+            // ISO time below, we use the local timezone.
             if let Ok(d) = chrono::NaiveDate::parse_from_str(s, "%Y-%m-%d")
             {
                 // At noon, or, as GnuPG would say, 86400/2.
-                let dt = d.and_time(chrono::NaiveTime::from_hms_opt(12, 0, 0)
-                                    .expect("this to be a valid time"));
-                let dtu = chrono::DateTime::from_utc(dt, chrono::Utc);
+                let dt = d.and_hms_opt(12, 0, 0).unwrap()
+                    .and_local_timezone(chrono::offset::Local).unwrap();
+                let dtu = chrono::DateTime::<chrono::Utc>::from(dt);
                 if dtu > now {
                     let duration = dtu - now;
                     return Ok(Some(duration.to_std().expect("non-negative")));
@@ -173,8 +176,8 @@ mod tests {
                    Duration::new(365 * 24 * 60 * 60 , 0));
         assert_eq!(pe(&c, "1Y").unwrap().unwrap(),
                    Duration::new(365 * 24 * 60 * 60, 0));
-        assert_eq!(pe(&c, "2023-01-01").unwrap().unwrap(),
-                   Duration::new(1021327, 0));
+        // Note: Exact value depends on the local timezone.
+        assert!(pe(&c, "2023-01-01").is_ok());
         assert_eq!(pe(&c, "20230101T123456").unwrap().unwrap(),
                    Duration::new(1021327 + 34 * 60 + 56, 0));
     }
