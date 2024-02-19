@@ -390,7 +390,7 @@ async fn proc_parameter_file<'a>(config: &mut crate::Config<'_>,
 	    "name-email" => Parameter::NameEmail(value.into()),
 	    "name-comment" => Parameter::NameComment(value.into()),
 	    "expire-date" => Parameter::ExpireDate(
-                crate::argparse::utils::parse_expiration(value)
+                crate::argparse::utils::parse_expiration(config, value)
                     .map_err(|_| error_out("invalid expire date"))?),
 	    "creation-date" => Parameter::CreationDate(
                 Parameter::parse_creation(value)

@@ -7,8 +7,14 @@ use std::{
 use anyhow::{Context, Result};
 use sequoia_openpgp as openpgp;
 
-pub fn parse_expiration(s: &str) -> Result<Option<time::Duration>> {
-    let now = chrono::Utc::now();
+use crate::{
+    common::Common,
+};
+
+pub fn parse_expiration(config: &crate::Config, s: &str)
+                        -> Result<Option<time::Duration>>
+{
+    let now: chrono::DateTime<chrono::Utc> = config.now().into();
 
     match s {
         "" | "none" | "never" | "-" | "0" => Ok(None),
@@ -142,28 +148,34 @@ mod tests {
     fn parse_expiration() {
         use std::time::Duration;
         use super::parse_expiration as pe;
-        assert_eq!(pe("").unwrap(), None);
-        assert_eq!(pe("0").unwrap(), None);
-        assert_eq!(pe("none").unwrap(), None);
-        assert_eq!(pe("never").unwrap(), None);
-        assert_eq!(pe("-").unwrap(), None);
-        assert_eq!(pe("1").unwrap().unwrap(),
+        let mut c = crate::Config::new().unwrap();
+        c.clock = crate::clock::Clock::for_tests();
+        assert_eq!(pe(&c, "").unwrap(), None);
+        assert_eq!(pe(&c, "0").unwrap(), None);
+        assert_eq!(pe(&c, "none").unwrap(), None);
+        assert_eq!(pe(&c, "never").unwrap(), None);
+        assert_eq!(pe(&c, "-").unwrap(), None);
+        assert_eq!(pe(&c, "1").unwrap().unwrap(),
                    Duration::new(1, 0));
-        assert_eq!(pe("1d").unwrap().unwrap(),
+        assert_eq!(pe(&c, "1d").unwrap().unwrap(),
                    Duration::new(1 * 24 * 60 * 60 , 0));
-        assert_eq!(pe("1D").unwrap().unwrap(),
+        assert_eq!(pe(&c, "1D").unwrap().unwrap(),
                    Duration::new(1 * 24 * 60 * 60, 0));
-        assert_eq!(pe("1w").unwrap().unwrap(),
+        assert_eq!(pe(&c, "1w").unwrap().unwrap(),
                    Duration::new(7 * 24 * 60 * 60 , 0));
-        assert_eq!(pe("1W").unwrap().unwrap(),
+        assert_eq!(pe(&c, "1W").unwrap().unwrap(),
                    Duration::new(7 * 24 * 60 * 60, 0));
-        assert_eq!(pe("1m").unwrap().unwrap(),
+        assert_eq!(pe(&c, "1m").unwrap().unwrap(),
                    Duration::new(30 * 24 * 60 * 60 , 0));
-        assert_eq!(pe("1M").unwrap().unwrap(),
+        assert_eq!(pe(&c, "1M").unwrap().unwrap(),
                    Duration::new(30 * 24 * 60 * 60, 0));
-        assert_eq!(pe("1y").unwrap().unwrap(),
+        assert_eq!(pe(&c, "1y").unwrap().unwrap(),
                    Duration::new(365 * 24 * 60 * 60 , 0));
-        assert_eq!(pe("1Y").unwrap().unwrap(),
+        assert_eq!(pe(&c, "1Y").unwrap().unwrap(),
                    Duration::new(365 * 24 * 60 * 60, 0));
+        assert_eq!(pe(&c, "2023-01-01").unwrap().unwrap(),
+                   Duration::new(1021327, 0));
+        assert_eq!(pe(&c, "20230101T123456").unwrap().unwrap(),
+                   Duration::new(1021327 + 34 * 60 + 56, 0));
     }
 }

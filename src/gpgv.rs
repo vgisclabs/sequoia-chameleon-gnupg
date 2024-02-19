@@ -5,6 +5,7 @@ use std::{
     io,
     path::{Path, PathBuf},
     sync::{Arc, Mutex},
+    time::SystemTime,
 };
 
 use anyhow::{Context, Result};
@@ -25,6 +26,7 @@ mod macros;
 pub mod argparse;
 use argparse::{Argument, Opt, flags::*};
 pub mod babel;
+pub mod clock;
 pub mod common;
 pub mod error_codes;
 pub mod keydb;
@@ -99,6 +101,7 @@ pub struct Config<'store> {
     fail: std::cell::Cell<bool>,
     policy: GPGPolicy,
     trust_model_impl: Box<dyn common::Model>,
+    clock: clock::Clock,
 
     // Configuration.
     debug: u32,
@@ -126,6 +129,7 @@ impl<'store> Config<'store> {
             fail: Default::default(),
             policy: GPGPolicy::new()?,
             trust_model_impl: common::null_model(),
+            clock: Default::default(),
 
             // Configuration.
             debug: 0,
@@ -217,6 +221,10 @@ impl<'store> common::Common<'store> for Config<'store> {
 
     fn trust_model_impl(&self) -> &dyn common::Model {
         self.trust_model_impl.as_ref()
+    }
+
+    fn now(&self) -> SystemTime {
+        self.clock.now()
     }
 
     fn with_fingerprint(&self) -> bool {

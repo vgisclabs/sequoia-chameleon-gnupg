@@ -84,4 +84,14 @@ impl Clock {
             },
         }
     }
+
+    /// A fixed clock for unit tests that depend on the time.
+    ///
+    /// This returns the time Tue Dec 20 05:17:53 PM CET 2022.
+    #[cfg(test)]
+    pub fn for_tests() -> Self {
+        Clock::FixedTime {
+            fake_time: UNIX_EPOCH + Duration::new(1671553073, 0),
+        }
+    }
 }

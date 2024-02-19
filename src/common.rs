@@ -123,9 +123,7 @@ pub trait Common<'store> {
     fn trust_model_impl(&self) -> &dyn Model;
 
     /// Returns the current (fake) time.
-    fn now(&self) -> SystemTime {
-        SystemTime::now()
-    }
+    fn now(&self) -> SystemTime;
 
     /// Returns whether fingerprints should be included in the output.
     fn with_fingerprint(&self) -> bool;
