@@ -55,6 +55,11 @@ fn symmetric_twofish() -> Result<()> {
 }
 
 fn symmetric(algo: SymmetricAlgorithm) -> Result<()> {
+    if ! algo.is_supported() {
+        eprintln!("Skipping test because {} is not supported.", algo);
+        return Ok(());
+    }
+
     let mut experiment = make_experiment!(algo.to_string())?;
 
     let sk = SessionKey::from(vec![64; algo.key_size()?]);
