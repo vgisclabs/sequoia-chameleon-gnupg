@@ -322,7 +322,7 @@ pub async fn do_import_cert(config: &mut crate::Config<'_>,
             // Clone stats so that we can summarize the changes.
             let s_before = s.clone();
             let (merged, changed) = existing.clone().insert_packets_merge(
-                cert.into_packets(),
+                cert.into_packets2(),
                 |old, new| {
                     match (&old, &new) {
                         (None, Packet::UserID(_))

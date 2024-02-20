@@ -2557,9 +2557,9 @@ dependencies = [
 
 [[package]]
 name = "sequoia-openpgp"
-version = "1.17.0"
+version = "1.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2ea026cf8a70d331c742e3ad7e68fd405d0743ff86630fb4334a1bf8d0e194c7"
+checksum = "ebf154ce4af3d7983de8fded403f98ff9eb3ee38dffccea0472ac38aa4276df4"
 dependencies = [
  "aes-gcm",
  "anyhow",
@@ -2575,7 +2575,7 @@ dependencies = [
  "ed25519-dalek",
  "flate2",
  "getrandom",
- "idna 0.4.0",
+ "idna 0.5.0",
  "lalrpop",
  "lalrpop-util",
  "lazy_static",
@@ -2586,7 +2586,6 @@ dependencies = [
  "once_cell",
  "openssl",
  "openssl-sys",
- "rand",
  "rand_core",
  "regex",
  "regex-syntax 0.8.2",
