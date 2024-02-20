@@ -200,6 +200,11 @@ pub fn cmd_export(config: &mut crate::Config, args: &[String],
             continue;
         }
 
+        // Filter out non-exportable certs, like the trust root.
+        if ! cert.to_cert().map(utils::cert_exportable).unwrap_or(false) {
+            continue;
+        }
+
         config.status().emit(Status::Exported {
             fingerprint: cert.fingerprint(),
         })?;
