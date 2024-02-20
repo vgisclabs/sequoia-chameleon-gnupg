@@ -38,7 +38,7 @@ sequoia-cert-store = "0.4"
 sequoia-openpgp = { version = "1.19", default-features = false, features = ["compression"] }
 sequoia-openpgp-mt = "0.1"
 sequoia-policy-config = "0.6"
-sequoia-ipc = "0.31"
+sequoia-ipc = "0.33"
 sequoia-net = "0.28"
 sequoia-wot = "0.9"
 shellexpand = "3"
