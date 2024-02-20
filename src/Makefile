@@ -28,6 +28,7 @@ error_codes.inc: err-codes.h.in
 	echo >"$@.new" "/// Error codes defined in libgpg-error."
 	echo >>"$@.new" "#[derive(Clone, Copy, Debug, PartialEq, Eq)]"
 	echo >>"$@.new" "#[allow(non_camel_case_types)]"
+	echo >>"$@.new" "#[repr(u32)]"
 	echo >>"$@.new" "pub enum Error {"
 	sed -n -e '/[0-9]\+\s\+GPG_ERR_.*\s\+[A-Z].*/p' "$<" | while read N SYMBOL DESC; do \
 	    echo >>"$@.new" "    /// $$DESC."; \

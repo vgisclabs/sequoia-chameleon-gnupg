@@ -1,6 +1,7 @@
 /// Error codes defined in libgpg-error.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[allow(non_camel_case_types)]
+#[repr(u32)]
 pub enum Error {
     /// Success.
     GPG_ERR_NO_ERROR = 0,
