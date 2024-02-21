@@ -1,3 +1,5 @@
+use std::io::Write;
+
 use anyhow::Result;
 
 use sequoia_openpgp as openpgp;
@@ -7,6 +9,7 @@ use openpgp::{
 
 use sequoia_cert_store as cert_store;
 use cert_store::Store;
+use sequoia_net::dane;
 
 use crate::{
     argparse,
@@ -36,7 +39,7 @@ pub struct ExportOptions {
     /// XXX.
     pub pka: bool,
 
-    /// XXX.
+    /// Export OpenPGP DANE records to put into DNS zone files.
     pub dane: bool,
 
     /// XXX.
@@ -96,10 +99,10 @@ impl ExportOptions {
             "",
         },
 
-        opt_todo! {
+        opt! {
             "export-dane",
             |o, s, _| Ok({ o.dane = s; }),
-            "",
+            "export OpenPGP DANE records to put into DNS zone files",
         },
 
         opt_todo! {
@@ -167,7 +170,7 @@ pub fn cmd_export(config: &mut crate::Config, args: &[String],
     };
 
     let mut message = Message::new(&mut sink);
-    if config.armor {
+    if config.armor && ! config.export_options.dane {
         message = Armorer::new(message)
             .kind(if export_secret {
                 openpgp::armor::Kind::SecretKey
@@ -207,13 +210,73 @@ pub fn cmd_export(config: &mut crate::Config, args: &[String],
             continue;
         }
 
+        let vcert = cert.with_policy(config.policy(), config.now()).ok();
+
+        // For some output options, we skip the cert if it isn't valid.
+        if config.export_options.dane && vcert.is_none() {
+            continue;
+        }
+
         config.status().emit(Status::Exported {
             fingerprint: cert.fingerprint(),
         })?;
         s.exported += 1;
 
-        // XXX: secrets from the agent.
-        cert.export(&mut message)?;
+        if config.export_options.dane {
+            let vcert = vcert.as_ref().expect("checked above");
+            for (fqdn, uid) in vcert.userids()
+                .filter_map(|u| if let Ok(Some(email)) = u.email2() {
+                    email.split('@').nth(1).map(ToString::to_string)
+                        .map(|fqdn| (fqdn, u.userid().clone()))
+                } else {
+                    None
+                })
+            {
+                // First, we create a minimized cert that contains
+                // only this one user ID.
+                let cert = cert.to_cert()?.clone()
+                    .retain_userids(|u| u.userid() == &uid);
+                let vcert = cert.with_policy(config.policy(), config.now())?;
+
+                // Then, emit the origin and comments.
+                writeln!(message, "$ORIGIN _openpgpkey.{}.", fqdn)?;
+                writeln!(message, "; {}", cert.fingerprint())?;
+                writeln!(message, "; {}", String::from_utf8_lossy(uid.value()))?;
+
+                // Finally, emit the record.  We need to doctor it to
+                // look like what GnuPG emits.
+                let entries = dane::generate_generic(&vcert, fqdn, None, None)?;
+                assert_eq!(entries.len(), 1);
+                let entry = entries.into_iter().next().unwrap();
+
+                // It starts with a comment, which we ignore.
+                assert!(entry.starts_with(";"));
+                let mut lines = entry.split('\n');
+
+                // The entry we split into components.
+                let mut p = lines.nth(1).unwrap().split(' ');
+                let domain = p.next().unwrap();
+                let _ttl = p.next().unwrap();
+                let _in = p.next().unwrap();
+                let _type61 = p.next().unwrap();
+                let _hash = p.next().unwrap();
+                let length = p.next().unwrap();
+                let value = p.next().unwrap();
+
+                writeln!(message, "{} TYPE61 \\# {} (",
+                         domain.split('.').next().unwrap().to_ascii_lowercase(),
+                         length)?;
+                for chunk in value.as_bytes().chunks(64) {
+                    writeln!(message, "\t{}",
+                             std::str::from_utf8(chunk)?.to_ascii_lowercase())?;
+                }
+                writeln!(message, "\t)")?;
+                writeln!(message)?;
+            }
+        } else {
+            // XXX: secrets from the agent.
+            cert.export(&mut message)?;
+        }
     }
 
     message.finalize()?;

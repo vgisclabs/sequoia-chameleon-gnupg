@@ -69,6 +69,8 @@ fn general_purpose(cs: CipherSuite) -> Result<()> {
     test_key(cert, experiment)
 }
 
+/// GnuPG emits old-style packets, which will change the CTB and the
+/// length encoding, incurring a per-packet difference.
 fn n_packets(cert: &Cert) -> usize {
     cert.clone().into_packets2().count()
 }
@@ -88,6 +90,17 @@ fn test_key(cert: Cert, mut experiment: Experiment) -> Result<()> {
     ])?;
     diff.assert_success();
     diff.assert_limits(n_packets(&cert) * 3, 0, 0);
+
+    // The output is broken into chunks.  Undo that.
+    let dane_re = regex::bytes::Regex::new("\n\t")?;
+    let diff = experiment.invoke(&[
+        "--export",
+        "--export-options", "export-dane",
+    ])?.canonicalize_with(
+        |o| Ok(o.stdout = dane_re.replace_all(&o.stdout, b"").into()))?;
+    diff.assert_success();
+    // The diff is amplified because of the hex encoding.
+    diff.assert_limits(n_packets(&cert) * 3 * 2, 0, 0);
 
     Ok(())
 }
