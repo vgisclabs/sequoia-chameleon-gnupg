@@ -2437,7 +2437,7 @@ fn real_main() -> anyhow::Result<()> {
                 }
             },
             oUnGroup => {
-                opt.groups.remove(value.as_str().unwrap());
+                opt.groups.shift_remove(value.as_str().unwrap());
             },
             oNoGroups => {
                 opt.groups.clear();
