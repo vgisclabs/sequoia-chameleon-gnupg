@@ -182,6 +182,13 @@ pub fn cmd_export(config: &mut crate::Config, args: &[String],
         .collect::<Vec<_>>();
 
     for cert in config.keydb().certs() {
+        // Filter out non-exportable certs, like the trust root.
+        if ! cert.to_cert().map(utils::cert_exportable).unwrap_or(false) {
+            continue;
+        }
+
+        // This count doesn't include non-exportable certs to match
+        // GnuPG's expectations of not having those.
         s.count += 1;
 
         // Only export keys with secret if so desired.
@@ -197,11 +204,6 @@ pub fn cmd_export(config: &mut crate::Config, args: &[String],
 
         // Filter out certs that the user is not interested in.
         if ! filter.is_empty() && ! filter.iter().any(|q| q.matches(&cert)) {
-            continue;
-        }
-
-        // Filter out non-exportable certs, like the trust root.
-        if ! cert.to_cert().map(utils::cert_exportable).unwrap_or(false) {
             continue;
         }
 

@@ -39,6 +39,7 @@ macro_rules! make_experiment {
 mod gpg {
     mod decrypt;
     mod encrypt;
+    mod export;
     mod export_ssh_key;
     mod generate_key;
     mod import;
