@@ -2757,7 +2757,17 @@ fn real_main() -> anyhow::Result<()> {
         Some(aXSequoiaParcimonieDaemonize) =>
             parcimonie::cmd_parcimonie_daemonize(&mut opt, &args),
 
-        Some(c) => Err(anyhow::anyhow!("Command {:?} is not implemented.", c)),
+        Some(c) => {
+            let name = parser.argument_name(c).map(|l| format!("--{}", l))
+                .unwrap_or_else(|| format!("{:?}", c));
+            opt.error(format_args!(
+                "The command {} is not yet implemented in the Sequoia", name));
+            opt.error(format_args!(
+                "Chameleon.  To help us prioritize our work, please file a bug at"));
+            opt.error(format_args!(
+                "  https://gitlab.com/sequoia-pgp/sequoia-chameleon-gnupg/-/issues"));
+            Err(anyhow::anyhow!("Command {} is not implemented.", name))
+        },
     };
 
     // When we emit data to stdout, which is line-buffered by default,
