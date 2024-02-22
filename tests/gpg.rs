@@ -116,9 +116,6 @@ fn check_gpg_oracle() {
 
     static START: Once = Once::new();
     START.call_once(|| {
-        eprintln!("Checking that {:?} is the stock GnuPG...",
-                  &gpg()[0]);
-
         let o = Command::new(&gpg()[0])
             .arg("--version").output().unwrap();
         if String::from_utf8_lossy(&o.stdout[..o.stdout.len().min(256)])
@@ -164,8 +161,8 @@ fn build() {
             prog.push("--features=crypto-cng");
         }
 
-        eprintln!("Spawning {:?} to build the chameleon...",
-                  prog);
+        eprintln!("  - Building the chameleon:");
+        eprintln!("    {:?}", prog);
 
         let mut c = std::process::Command::new(&prog[0]);
         c.args(prog[1..].iter());
@@ -292,7 +289,9 @@ impl Context {
         for arg in args {
             c.arg(arg);
         }
-        eprintln!("Spawning {:?} {:?}...", exe, c.get_args());
+        eprintln!("    {:?} {}",
+                  exe.file_name().unwrap(),
+                  c.get_args().map(|s| format!("{:?}", s)).collect::<Vec<_>>().join(" "));
         let mut child = c.spawn()?;
 
         // Now handle the status-fd pipe.
@@ -759,7 +758,7 @@ impl Experiment {
         eprintln!();
 
         // First, invoke the Chameleon.
-        eprintln!("Invoking the chameleon");
+        eprintln!("  - Invoking the chameleon:");
         let mut us = self.us.invoke(&args)?
             .canonicalize(self.us.home.path(), self.wd.path());
         self.canonicalizations.iter().for_each(|c| c.apply(&mut us));
@@ -792,11 +791,10 @@ impl Experiment {
             .filter(|v| v.args == normalized_args)
             .filter(|_| fixtures != Recreate)
         {
-            eprintln!("Have previous output from the chameleon");
             Some(o.clone())
         } else {
             // Save the current output for the next run.
-            eprintln!("No previous output from the chameleon");
+            eprintln!("  - No previous output from the chameleon");
             if self.artifacts.former_us_outputs.is_none() {
                 self.artifacts.former_us_outputs = Some(Vec::new());
             }
@@ -812,18 +810,18 @@ impl Experiment {
             .filter(|v| v.args == normalized_args)
             .filter(|_| fixtures != Recreate)
         {
-            eprintln!("Not invoking the oracle: using cached results");
+            eprintln!("  - Not invoking the oracle: using cached results");
             o.clone()
         } else {
             // Cache miss or the arguments changed.
             if fixtures == Use {
                 return Err(anyhow::anyhow!(
-                    "Text fixtures missing or outdated, set \
+                    "error: Text fixtures missing or outdated, set \
                      GPG_SQ_TEST_FIXTURES=create to (re)create."));
             }
 
             check_gpg_oracle();
-            eprintln!("Invoking the oracle");
+            eprintln!("  - Invoking the oracle:");
             let mut output = self.oracle.invoke(&args)?
                 .canonicalize(self.oracle.home.path(), self.wd.path());
             self.canonicalizations.iter().for_each(|c| c.apply(&mut output));
@@ -1084,7 +1082,7 @@ impl Diff<'_> {
         let pass = self.oracle.success()
             && self.us.success();
         if ! pass {
-            eprintln!("Invocation not successful.\n\n{}", self);
+            eprintln!("error: Invocation not successful.\n\n{}", self);
             panic!();
         }
         self.assert_dynamic_upper_bounds();
@@ -1098,7 +1096,7 @@ impl Diff<'_> {
         let pass = !self.oracle.success()
             && !self.us.success();
         if ! pass {
-            eprintln!("Invocation did not fail.\n\n{}", self);
+            eprintln!("error: Invocation did not fail.\n\n{}", self);
             panic!();
         }
         self.assert_dynamic_upper_bounds();
@@ -1111,13 +1109,13 @@ impl Diff<'_> {
         let mut pass = true;
 
         if let Some(former_us) = self.former_us.as_ref() {
-            eprintln!("asserting output matches output from last run.");
+            eprintln!("  - Asserting output matches output from last run.");
 
             if former_us.stdout != self.us.stdout {
                 let former_delta =
                     self.oracle.stdout_edit_distance(former_us);
                 if former_delta > self.stdout_edit_distance() {
-                    eprintln!("Stdout changed from last run, \
+                    eprintln!("    - Stdout changed from last run, \
                                but we improved from {} to {}.",
                               former_delta,
                               self.oracle.stdout_edit_distance(former_us));
@@ -1130,14 +1128,14 @@ impl Diff<'_> {
                     }
                 } else {
                     pass = false;
-                    eprintln!("Stdout changed from last run.");
+                    eprintln!("error: Stdout changed from last run.");
                 }
             }
             if former_us.stderr != self.us.stderr {
                 let former_delta =
                     self.oracle.stderr_edit_distance(former_us);
                 if former_delta > self.stderr_edit_distance() {
-                    eprintln!("Stderr changed from last run, \
+                    eprintln!("    - Stderr changed from last run, \
                                but we improved from {} to {}.",
                               former_delta,
                               self.oracle.stderr_edit_distance(former_us));
@@ -1150,14 +1148,14 @@ impl Diff<'_> {
                     }
                 } else {
                     pass = false;
-                    eprintln!("Stderr changed from last run.");
+                    eprintln!("    - Stderr changed from last run.");
                 }
             }
             if former_us.statusfd != self.us.statusfd {
                 let former_delta =
                     self.oracle.statusfd_edit_distance(former_us);
                 if former_delta > self.statusfd_edit_distance() {
-                    eprintln!("Statusfd changed from last run, \
+                    eprintln!("    - Statusfd changed from last run, \
                                but we improved from {} to {}.",
                               former_delta,
                               self.oracle.statusfd_edit_distance(former_us));
@@ -1170,15 +1168,15 @@ impl Diff<'_> {
                     }
                 } else {
                     pass = false;
-                    eprintln!("Status-fd changed from last run.");
+                    eprintln!("error: Status-fd changed from last run.");
                 }
             }
             if former_us.status != self.us.status {
                 pass = false;
-                eprintln!("Status changed from last run.");
+                eprintln!("error: Status changed from last run.");
             }
         } else {
-            eprintln!("Can't compare output to last run: \
+            eprintln!("    - Can't compare output to last run: \
                        no output for last run is recorded");
         }
 
@@ -1205,7 +1203,7 @@ impl Diff<'_> {
             let out_limit = limits.get(0).cloned().unwrap_or_default();
             let err_limit = limits.get(1).cloned().unwrap_or_default();
             let statusfd_limit = limits.get(2).cloned().unwrap_or_default();
-            eprintln!("Asserting recorded limits of {}, {}, {}",
+            eprintln!("  - Asserting recorded limits of {}, {}, {}.",
                       out_limit, err_limit, statusfd_limit);
             new_limits = Some(
                 self._assert_limits(false, out_limit, err_limit, statusfd_limit)
@@ -1232,7 +1230,7 @@ impl Diff<'_> {
     pub fn assert_limits(&self,
                          out_limit: usize, err_limit: usize,
                          statusfd_limit: usize) {
-        eprintln!("Asserting static limits of {}, {}, {}",
+        eprintln!("  - Asserting static limits of {}, {}, {}.",
                   out_limit, err_limit, statusfd_limit);
         self._assert_limits(true, out_limit, err_limit, statusfd_limit);
     }
@@ -1251,12 +1249,12 @@ impl Diff<'_> {
         limits.push(d);
         if d > out_limit {
             pass = false;
-            eprintln!("Stdout edit distance {} exceeds limit of {}.",
+            eprintln!("error: Stdout edit distance {} exceeds limit of {}.",
                       d, out_limit);
         }
         if static_limits && out_limit > 20 && d < out_limit / 2 {
             pass = false;
-            eprintln!("Stdout edit distance {} smaller than half of limit {}.",
+            eprintln!("error: Stdout edit distance {} smaller than half of limit {}.",
                       d, out_limit);
         }
 
@@ -1264,12 +1262,12 @@ impl Diff<'_> {
         limits.push(d);
         if d > err_limit {
             pass = false;
-            eprintln!("Stderr edit distance {} exceeds limit of {}.",
+            eprintln!("error: Stderr edit distance {} exceeds limit of {}.",
                       d, err_limit);
         }
         if static_limits && err_limit > 20 && d < err_limit / 2 {
             pass = false;
-            eprintln!("Stderr edit distance {} smaller than half of limit {}.",
+            eprintln!("error: Stderr edit distance {} smaller than half of limit {}.",
                       d, err_limit);
         }
 
@@ -1277,12 +1275,12 @@ impl Diff<'_> {
         limits.push(d);
         if d > statusfd_limit {
             pass = false;
-            eprintln!("Statusfd_limit edit distance {} exceeds limit of {}.",
+            eprintln!("error: Statusfd_limit edit distance {} exceeds limit of {}.",
                       d, statusfd_limit);
         }
         if static_limits && statusfd_limit > 20 && d < statusfd_limit / 2 {
             pass = false;
-            eprintln!("Statusfd_limit edit distance {} smaller than half of limit {}.",
+            eprintln!("error: Statusfd_limit edit distance {} smaller than half of limit {}.",
                       d, statusfd_limit);
         }
 
