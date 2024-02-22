@@ -820,7 +820,7 @@ impl Status<'_> {
                 location,
                 error,
             } => {
-                writeln!(w, "FAILURE {} {}", location, *error as isize)?;
+                writeln!(w, "FAILURE {} {}", location, *error as u32)?;
             },
 
             Unexpected(reason) => {
