@@ -1132,7 +1132,6 @@ struct Flags {
     disable_signer_uid: bool,
     force_sign_key: bool,
     include_key_block: bool,
-    use_embedded_filename: bool,
 }
 
 #[derive(Clone)]
@@ -2084,12 +2083,13 @@ fn real_main() -> anyhow::Result<()> {
 	    oSigKeyserverURL => {
                 opt.sig_keyserver_url.push(URL::new(value.as_str().unwrap()));
             },
-	    oUseEmbeddedFilename => {
-	        opt.flags.use_embedded_filename = true;
-	    },
-	    oNoUseEmbeddedFilename => {
-	        opt.flags.use_embedded_filename = false;
-	    },
+
+	    oUseEmbeddedFilename =>
+                return Err(anyhow::anyhow!(
+                    "This option is a security risk \
+                     and is thus not supported")),
+	    oNoUseEmbeddedFilename => (), // This is a NOP for us.
+
 	    oComment => {
 	        if let Ok(v) = value.as_str() {
 	            opt.comments.push(v.into());
