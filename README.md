@@ -47,8 +47,9 @@ $ gpg-sq --export | gpg --import
 
 ### How to build and use the Chameleon
 
-First, you need to install Sequoia's [build dependencies].  Then build
-the Chameleon from a checkout of this repository:
+First, you need to install Sequoia's [build dependencies], as well as
+the SQLite3 library.  Then build the Chameleon from a checkout of this
+repository:
 
 ```sh
 $ git clone https://gitlab.com/sequoia-pgp/sequoia-chameleon-gnupg.git
@@ -87,6 +88,15 @@ $ gpg --version | head -n1
 gpg (GnuPG-compatible Sequoia Chameleon) 2.2.39
 $ gpgconf | head -n1
 gpg:OpenPGP:.../sequoia-chameleon-gnupg/shim-release/gpg
+```
+
+#### Running the tests
+
+To run the tests, you also need `faketime` and Sequoia's command-line
+frontend `sq`.  Then, you can run the tests using `cargo`:
+
+```sh
+$ cargo test
 ```
 
 ### How to trace invocations of the Chameleon

@@ -1311,6 +1311,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "histo"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a6a96a1c8acf372eefef3b065d800986a6d11abdc2c27cc61255513646b3df6c"
+dependencies = [
+ "streaming-stats",
+]
+
+[[package]]
 name = "hostname"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2469,6 +2478,7 @@ dependencies = [
  "anyhow",
  "base64",
  "buffered-reader",
+ "bzip2",
  "chrono",
  "daemonize",
  "diff",
@@ -2477,6 +2487,7 @@ dependencies = [
  "fd-lock",
  "filetime",
  "futures",
+ "histo",
  "indexmap 2.2.3",
  "interprocess",
  "libc",
@@ -2502,6 +2513,7 @@ dependencies = [
  "serde_with",
  "shellexpand",
  "stfu8",
+ "tar",
  "tempfile",
  "thiserror",
  "tokio",
@@ -2831,6 +2843,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e51f1e89f093f99e7432c491c382b88a6860a5adbe6bf02574bf0a08efff1978"
 
 [[package]]
+name = "streaming-stats"
+version = "0.1.29"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dbc32bf233385fb1ae0c4cf13a8dfd11efec71f6a9de95feac8c870788bc8b25"
+dependencies = [
+ "num-traits",
+]
+
+[[package]]
 name = "string_cache"
 version = "0.8.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2901,6 +2922,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a75fb188eb626b924683e3b95e3a48e63551fcfb51949de2f06a9d91dbee93c9"
 dependencies = [
  "core-foundation-sys",
+ "libc",
+]
+
+[[package]]
+name = "tar"
+version = "0.4.40"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b16afcea1f22891c49a00c751c7b63b2233284064f11a200fc624137c51e2ddb"
+dependencies = [
+ "filetime",
  "libc",
 ]
 

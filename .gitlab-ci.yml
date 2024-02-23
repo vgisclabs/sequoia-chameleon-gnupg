@@ -4,7 +4,7 @@ image: 192.168.122.1:5000/sequoia-pgp/build-docker-image/trixie-prebuild:latest
 .test:
   before_script:
     # The tests rely on gpg-agent.  Make sure it is available.
-    - apt-get update -y -qq && apt-get install -y gpg-agent
+    - apt-get update -y -qq && apt-get install -y sq gpg-agent faketime
     - if [ -d target ]; then find target | wc --lines; du -sh target; fi
     - if [ -d cargo ]; then find cargo | wc --lines; du -sh cargo; fi
     - rustc --version
@@ -25,13 +25,14 @@ test-rust-stable:
 test-fedora:
   image: fedora
   script:
-    - dnf install -y cargo openssl openssl-devel gnupg sqlite-devel
+    - dnf install -y cargo openssl openssl-devel gnupg sqlite-devel sequoia-sq faketime
     - cargo test --no-default-features --features=crypto-openssl
 
 all_commits:
   # Test each commit up to main, to facilitate bisecting.
   interruptible: true
   script:
+    - apt-get update -y -qq && apt-get install -y sq gpg-agent faketime
     - if [ -d target ]; then find target | wc --lines; du -sh target; fi
     - if [ -d cargo ]; then find cargo | wc --lines; du -sh cargo; fi
     - rustc --version

@@ -52,14 +52,17 @@ zbase32 = "0.1.2"
 
 [dev-dependencies]
 anyhow = { version = "1", features = ["backtrace"] }
+bzip2 = { version = "0.4", default-features = false }
 diff = "0.1"
 editdistancek = "1"
 interprocess = { version = "1", default-features = false }
+histo = "1"
 ntest = "0.9"
 regex = "1"
 reqwest = "0.11"
 serde_with = "3"
 stfu8 = "0.2"
+tar = { version = "0.4", default-features = false }
 tempfile = "3"
 
 [[bin]]
