@@ -243,7 +243,7 @@ fn do_encrypt(config: &crate::Config, args: &[String],
     }
 
     let recipients: Vec<Recipient>
-        = keys.iter().map(Recipient::from).collect();
+        = keys.iter().rev().map(Recipient::from).collect();
 
     let mut sink = if let Some(name) = outfile {
         utils::create(config, name)?
