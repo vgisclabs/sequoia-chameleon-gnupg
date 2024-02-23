@@ -70,7 +70,7 @@ pub struct ImportOptions {
 
 impl ImportOptions {
     const OPTS: [Opt<ImportOptions>; 20] = [
-        opt_todo! {
+        opt! {
             "import-local-sigs",
             |o, s, _| Ok({ o.local_sigs = s; }),
             "import signatures that are marked as local-only",
@@ -137,7 +137,7 @@ impl ImportOptions {
         },
 
         /* Aliases for backward compatibility */
-        opt_todo! {
+        opt! {
             "allow-local-sigs",
             |o, s, _| Ok({ o.local_sigs = s; }),
             "",
@@ -257,6 +257,19 @@ pub async fn do_import_cert(config: &mut crate::Config<'_>,
     // We collect stats for the IMPORT_OK status line.
     use crate::status::*;
     let mut flags = crate::status::ImportOkFlags::default();
+
+    // Maybe strip out local signatures.
+    let cert = if config.import_options.local_sigs {
+        cert
+    } else {
+        let mut p = cert.into_tsk().into_packets().collect::<Vec<_>>();
+        p.retain(|p| match p {
+            Packet::Signature(s) =>
+                s.exportable_certification().unwrap_or(true),
+            _ => true,
+        });
+        Cert::from_packets(p.into_iter())?
+    };
 
     // We import the cert first, if this is a key, we'll deal
     // with the secrets later.

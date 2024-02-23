@@ -4,7 +4,7 @@ use anyhow::Result;
 
 use sequoia_openpgp as openpgp;
 use openpgp::{
-    serialize::stream::*,
+    serialize::{Serialize, stream::*},
 };
 
 use sequoia_cert_store as cert_store;
@@ -63,7 +63,7 @@ impl Default for ExportOptions {
 
 impl ExportOptions {
     const OPTS: [Opt<ExportOptions>; 15] = [
-        opt_todo! {
+        opt! {
             "export-local-sigs",
             |o, s, _| Ok({ o.local_sigs = s; }),
             "export signatures that are marked as local-only",
@@ -117,7 +117,7 @@ impl ExportOptions {
             |o, s, _| Ok({ o.backup = s; }),
             "",
         },
-        opt_todo! {
+        opt! {
             "include-local-sigs",
             |o, s, _| Ok({ o.local_sigs = s; }),
             "",
@@ -275,7 +275,11 @@ pub fn cmd_export(config: &mut crate::Config, args: &[String],
             }
         } else {
             // XXX: secrets from the agent.
-            cert.export(&mut message)?;
+            if config.export_options.local_sigs {
+                cert.to_cert()?.serialize(&mut message)?;
+            } else {
+                cert.to_cert()?.export(&mut message)?;
+            }
         }
     }
 

@@ -4,12 +4,13 @@ use sequoia_openpgp as openpgp;
 use openpgp::{
     Packet,
     cert::prelude::*,
+    packet::signature::SignatureBuilder,
     parse::Parse,
     serialize::{
         Serialize,
         SerializeInto,
     },
-    types::ReasonForRevocation,
+    types::{ReasonForRevocation, SignatureType},
 };
 
 use super::super::*;
@@ -256,6 +257,61 @@ fn test_revocation(cert: Cert, rev: Packet, mut experiment: Experiment)
     ])?;
     diff.assert_success();
     diff.assert_limits(0, 38 /* no ultimately trusted keys found */, 0);
+
+    Ok(())
+}
+
+#[test]
+#[ntest::timeout(600000)]
+fn local_sigs() -> Result<()> {
+    let mut experiment = make_experiment!()?;
+    let cert = experiment.artifact(
+        "cert",
+        || {
+            let (cert, _rev) = CertBuilder::general_purpose(
+                None, Some("Alice Lovelace <alice@lovelace.name>"))
+                .set_creation_time(Experiment::now())
+                .generate()?;
+
+            let (bob, _rev) = CertBuilder::new()
+                .set_creation_time(Experiment::now())
+                .generate()?;
+
+            let mut signer = bob.primary_key().key().clone()
+                .parts_into_secret()?.into_keypair()?;
+            let uid = cert.userids().next().unwrap().userid();
+            let sig = SignatureBuilder::new(SignatureType::GenericCertification)
+                .set_signature_creation_time(Experiment::now())?
+                .set_exportable_certification(false)?
+                .sign_userid_binding(&mut signer, cert.primary_key().key(), &uid)?;
+
+            cert.insert_packets(vec![sig])
+        },
+        |a, f| a.as_tsk().serialize(f),
+        |b| Cert::from_bytes(&b))?;
+
+    experiment.section("Importing cert...");
+    let diff = experiment.invoke(&[
+        "--import",
+        &experiment.store("cert", &cert.to_vec()?)?,
+    ])?;
+    diff.assert_success();
+
+    experiment.section("Importing cert without local sigs...");
+    let diff = experiment.invoke(&[
+        "--import",
+        "--import-options", "no-import-local-sigs",
+        &experiment.store("cert", &cert.to_vec()?)?,
+    ])?;
+    diff.assert_success();
+
+    experiment.section("Importing cert with local sigs...");
+    let diff = experiment.invoke(&[
+        "--import",
+        "--import-options", "import-local-sigs",
+        &experiment.store("cert", &cert.to_vec()?)?,
+    ])?;
+    diff.assert_success();
 
     Ok(())
 }
