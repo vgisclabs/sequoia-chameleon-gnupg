@@ -98,12 +98,14 @@ pub fn parse<T>(opts: &[Opt<T>], s: &str, o: &mut T) -> Result<()> {
         let (token, r) = optsep(v);
         rest = r;
 
-        let (mut key, value) = argsplit(token);
+        let (original_key, value) = argsplit(token);
 
-        let reversed = key.starts_with("no-");
-        if reversed {
-            key = &key[3..];
-        }
+        let reversed = original_key.starts_with("no-");
+        let key = if reversed {
+            &original_key[3..]
+        } else {
+            &original_key[..]
+        };
 
         for (i, opt) in opts.iter().filter(|o| o.enabled).enumerate() {
             if opt.name.starts_with(key) {
@@ -122,7 +124,7 @@ pub fn parse<T>(opts: &[Opt<T>], s: &str, o: &mut T) -> Result<()> {
             }
         }
 
-        return Err(Error::Unknown(key.into()).into());
+        return Err(Error::Unknown(original_key.into()).into());
     }
 
     Ok(())
