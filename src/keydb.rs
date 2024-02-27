@@ -724,14 +724,6 @@ macro_rules! forward {
         }
     }}
 }
-macro_rules! forward_mut {
-    ( $method:ident, $self:expr $(, $args:ident)* ) => {{
-        match $self.overlay.as_mut() {
-            Ok(be) => be.cert_store.$method($($args),*),
-            Err(be) => be.$method($($args),*),
-        }
-    }}
-}
 
 impl<'a> cert_store::store::Store<'a> for KeyDB<'a> {
     fn lookup_by_cert(&self, kh: &KeyHandle) -> Result<Vec<Arc<LazyCert<'a>>>> {
@@ -783,25 +775,25 @@ impl<'a> cert_store::store::Store<'a> for KeyDB<'a> {
         forward!(certs, self)
     }
 
-    fn prefetch_all(&mut self) {
-        forward_mut!(prefetch_all, self)
+    fn prefetch_all(&self) {
+        forward!(prefetch_all, self)
     }
 
-    fn prefetch_some(&mut self, certs: &[KeyHandle]) {
-        forward_mut!(prefetch_some, self, certs)
+    fn prefetch_some(&self, certs: &[KeyHandle]) {
+        forward!(prefetch_some, self, certs)
     }
 }
 
 impl<'a> cert_store::store::StoreUpdate<'a> for KeyDB<'a> {
-    fn update(&mut self, cert: Arc<LazyCert<'a>>) -> Result<()> {
-        forward_mut!(update, self, cert)
+    fn update(&self, cert: Arc<LazyCert<'a>>) -> Result<()> {
+        forward!(update, self, cert)
     }
 
-    fn update_by(&mut self, cert: Arc<LazyCert<'a>>,
-                      merge_strategy: &mut dyn MergeCerts<'a>)
+    fn update_by(&self, cert: Arc<LazyCert<'a>>,
+                 merge_strategy: &dyn MergeCerts<'a>)
         -> Result<Arc<LazyCert<'a>>>
     {
-        forward_mut!(update_by, self, cert, merge_strategy)
+        forward!(update_by, self, cert, merge_strategy)
     }
 }
 
