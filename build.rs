@@ -433,9 +433,7 @@ fn cli_gpgv_sq() -> Command {
         .about(
             "This is a re-implementation and drop-in replacement of gpgv using the Sequoia OpenPGP implementation.
 
-gpgv-sq is feature-complete. Please report any problems you encounter when replacing gpgv with gpgv-sq.
-
-Support for trust models is limited. Currently, the Web-of-Trust (\"pgp\") and always trust (\"always\") are implemented.",
+gpgv-sq is feature-complete. Please report any problems you encounter when replacing gpgv with gpgv-sq.",
         )
         .arg_required_else_help(true)
         .allow_external_subcommands(true)
