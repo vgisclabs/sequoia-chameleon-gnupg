@@ -141,7 +141,7 @@ pub async fn get_signers(config: &crate::Config<'_>)
                                     Vec<(PublicKeyAlgorithm, Fingerprint)>)> {
     let mut signers = vec![];
     let mut signers_desc = vec![];
-    for local_user in config.local_users(KeyFlags::empty().set_signing()).await
+    let local_users = config.local_users(KeyFlags::empty().set_signing()).await
         .or_else(|_| {
             use crate::error_codes;
 
@@ -157,8 +157,17 @@ pub async fn get_signers(config: &crate::Config<'_>)
                  })?;
 
             Err(anyhow::anyhow!("Unusable secret key"))
-        })?
-    {
+        })?;
+
+    for (i, local_user) in local_users.iter().enumerate() {
+	// Do an early check against duplicated entries.  However this
+	// won't catch all duplicates because the user IDs may be
+	// specified in different ways.
+        if local_users[..i].contains(local_user) {
+	    config.info(format_args!("skipped \"{}\": duplicated", local_user));
+            continue;
+        }
+
         let query = crate::trust::Query::from(local_user.as_str());
         let certs = config.lookup_certs(&query)?;
 
@@ -203,8 +212,14 @@ pub async fn get_signers(config: &crate::Config<'_>)
 
         let (_, _, _, signer, algo, fp) =
             candidates.pop().expect("candidates is not empty");
-        signers.push(signer);
-        signers_desc.push((algo, fp));
+
+        let desc = (algo, fp);
+        if signers_desc.contains(&desc) {
+	    config.info(format_args!("skipped: secret key already present"));
+        } else {
+            signers.push(signer);
+            signers_desc.push(desc);
+        }
     }
 
     if signers.is_empty() {

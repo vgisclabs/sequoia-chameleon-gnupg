@@ -3,6 +3,7 @@ use regex::bytes::Regex;
 
 use sequoia_openpgp as openpgp;
 use openpgp::{
+    PacketPile,
     cert::prelude::*,
     parse::Parse,
     serialize::{
@@ -259,4 +260,68 @@ fn trim_ascii_end(mut buf: &[u8]) -> &[u8] {
         }
     }
     buf
+}
+
+#[test]
+#[ntest::timeout(600000)]
+fn signers_are_deduplicated() -> Result<()> {
+    let mut experiment = make_experiment!()?;
+    let cert = experiment.artifact(
+        "cert",
+        || CertBuilder::new()
+            .add_signing_subkey()
+            .add_userid("Alice Lovelace <alice@lovelace.name>")
+            .set_creation_time(Experiment::now())
+            .generate()
+            .map(|(cert, _rev)| cert),
+        |a, f| a.as_tsk().serialize(f),
+        |b| Cert::from_bytes(&b))?;
+
+    experiment.section("Importing key...");
+    let diff = experiment.invoke(&[
+        "--import",
+        &experiment.store("key", &cert.as_tsk().to_vec()?)?,
+    ])?;
+    diff.assert_success();
+
+    let fp = cert.fingerprint().to_string();
+    let id = cert.keyid().to_string();
+
+    let diff = experiment.invoke(&[
+        "--digest-algo=SHA512",
+        "--detach-sign",
+        "-u", &fp,
+        "-u", &fp,
+        "--output", "signature",
+        &experiment.store("plaintext", PLAINTEXT)?,
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(0, 0, 0);
+    let signatures =
+        diff.with_working_dir(|p| p.get("signature").cloned().ok_or_else(
+            || anyhow::anyhow!("no signature produced")))?;
+    for s in signatures {
+        let pp = PacketPile::from_bytes(&s)?;
+        assert_eq!(pp.children().count(), 1);
+    }
+
+    let diff = experiment.invoke(&[
+        "--digest-algo=SHA512",
+        "--detach-sign",
+        "-u", &id,
+        "-u", &fp,
+        "--output", "signature",
+        &experiment.store("plaintext", PLAINTEXT)?,
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(0, 0, 0);
+    let signatures =
+        diff.with_working_dir(|p| p.get("signature").cloned().ok_or_else(
+            || anyhow::anyhow!("no signature produced")))?;
+    for s in signatures {
+        let pp = PacketPile::from_bytes(&s)?;
+        assert_eq!(pp.children().count(), 1);
+    }
+
+    Ok(())
 }
