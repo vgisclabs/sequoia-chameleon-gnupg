@@ -429,7 +429,8 @@ Support for trust models is limited. Currently, the Web-of-Trust (\"pgp\") and a
 
 fn cli_gpgv_sq() -> Command {
     Command::new("gpgv-sq")
-        .about(
+        .about("gpgv-sq - Verify OpenPGP signatures as gpgv")
+        .long_about(
             "This is a re-implementation and drop-in replacement of gpgv using the Sequoia OpenPGP implementation.
 
 gpgv-sq is feature-complete. Please report any problems you encounter when replacing gpgv with gpgv-sq.",
