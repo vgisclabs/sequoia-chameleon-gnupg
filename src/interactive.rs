@@ -34,6 +34,8 @@ impl Fd {
 }
 
 impl Config<'_> {
+    /// Prompts the given question.
+    ///
     /// Prompts the given question `keyword` (when reading via
     /// command-fd) or `prompt` (when reading via `stdin`), and reads
     /// a line from the command-fd or stdin, as appropriate.
@@ -47,6 +49,8 @@ impl Config<'_> {
         Ok(response)
     }
 
+    /// Prompts the given yes/no question, defaulting to no.
+    ///
     /// Prompts the given yes/no question `keyword` (when reading via
     /// command-fd) or `prompt` (when reading via `stdin`), and reads
     /// a line from the command-fd or stdin, as appropriate.  Defaults

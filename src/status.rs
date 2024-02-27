@@ -288,13 +288,15 @@ pub enum Status<'a> {
 
     NoData(NoDataReason),
 
-    // What to prompt for, e.g., `ask_revocation_reason.okay`.
+    /// What to prompt for when asking a yes/no question, e.g.,
+    /// `ask_revocation_reason.okay`.
     GetBool(String),
 
-    // What to prompt for, e.g. `ask_revocation_reason.text`.
+    /// What to prompt for when asking a question,
+    /// e.g. `ask_revocation_reason.text`.
     GetLine(String),
 
-    // Sent when we got a prompt.
+    /// Sent when we got an answer.
     GotIt,
 
     Failure {
