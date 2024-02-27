@@ -4,14 +4,11 @@ use std::{
     fs,
     io::Read,
     path::{Path, PathBuf},
-    time::{Duration, SystemTime, UNIX_EPOCH},
+    time::{SystemTime, UNIX_EPOCH},
     sync::Arc,
 };
 
 use anyhow::{anyhow, Context, Result};
-
-// XXX: Requires fallible initialization, see https://github.com/rust-lang/rust/issues/109737
-use once_cell::unsync::OnceCell;
 
 use sequoia_openpgp as openpgp;
 use openpgp::{
@@ -22,7 +19,6 @@ use openpgp::{
     KeyHandle,
     packet::UserID,
     parse::Parse,
-    serialize::SerializeInto,
     types::HashAlgorithm,
 };
 
@@ -629,8 +625,6 @@ impl<'store> KeyDB<'store> {
 
 pub struct Overlay<'store> {
     pub(crate) cert_store: CertStore<'store>,
-    #[allow(dead_code)]
-    trust_root: OnceCell<Cert>,
 }
 
 impl<'store> Overlay<'store> {
@@ -667,7 +661,6 @@ impl<'store> Overlay<'store> {
 
         Ok(Overlay {
             cert_store,
-            trust_root: Default::default(),
         })
     }
 
@@ -679,77 +672,11 @@ impl<'store> Overlay<'store> {
     }
 
     /// Lazily reads (or creates) the trust root.
-    pub fn trust_root(&self) -> Result<&Cert> {
-        self.trust_root.get_or_try_init(|| self.load_trust_root())
-    }
-
-    /// Eagerly loads the trust root, or generates one if none existed
-    /// before.
-    ///
-    /// This is done during the insertion, while we hold the exclusive
-    /// lock, so this is race free.
-    fn load_trust_root(&self) -> Result<Cert> {
-        use openpgp_cert_d::MergeResult;
-
-        let certd = self.certd();
-
-        // Acquire an exclusive lock on the certd by inserting the
-        // trust root.  We may yet discover that one already exists,
-        // in which case we won't generate a new one, but load the
-        // existing one.
-        let mut trust_root =
-            Err(anyhow::anyhow!("merge callback not invoked"));
-        certd.insert_special(
-            openpgp_cert_d::TRUST_ROOT,
-            (), false, |_new, old| {
-                if let Some(old) = old {
-                    trust_root = Cert::from_bytes(&old);
-                    Ok(MergeResult::Keep)
-                } else {
-                    let tr = Self::generate_trust_root()?;
-                    let d = tr.as_tsk().to_vec()?;
-                    trust_root = Ok(tr);
-                    Ok(MergeResult::Data(d))
-                }
-            })?;
-        let trust_root = trust_root?;
-
-        // Also insert the public bits into the certd for the WoT
-        // algorithm to find.
-        certd.insert(
-            &trust_root.fingerprint().to_string(), &trust_root, false,
-            |new, _old| {
-                Ok(openpgp_cert_d::MergeResult::Data(new.to_vec()?))
-            })?;
-
-        Ok(trust_root)
-    }
-
-    fn generate_trust_root() -> Result<Cert> {
-        use openpgp::{
-            cert::CertBuilder,
-            packet::signature::SignatureBuilder,
-            types::SignatureType,
-        };
-
-        // XXX: It would be nice if the direct key signature would
-        // also be non-exportable, but Sequoia doesn't have a way to
-        // do that yet with the CertBuilder.
-        let (root, _) =
-            CertBuilder::new()
-            // Set it in the past so that it is possible to use the CA
-            // when the reference time is in the past.  Feb 2002.
-            .set_creation_time(
-                SystemTime::UNIX_EPOCH + Duration::new(1014235320, 0))
-            // CAs should *not* expire.
-            .set_validity_period(None)
-            .add_userid_with(
-                "Local Trust Root",
-                SignatureBuilder::new(SignatureType::PositiveCertification)
-                    .set_exportable_certification(false)?)?
-            .generate()?;
-
-        Ok(root)
+    pub fn trust_root(&self) -> Result<Arc<LazyCert<'store>>> {
+        self.cert_store
+            .certd().expect("created using CertStore::open")
+            .trust_root()
+            .map(move |(cert, _created)| cert)
     }
 
     pub fn path(&self) -> &Path {

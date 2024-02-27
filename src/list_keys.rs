@@ -256,7 +256,7 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String], list_secret: bool)
                     {
                         certd.insert(
                             &trust_root.fingerprint().to_string(),
-                            trust_root, false,
+                            trust_root.to_cert()?, false,
                             |new, old| {
                                 let d = if let Some(old) = old
                                     .and_then(|b| Cert::from_bytes(b).ok())
