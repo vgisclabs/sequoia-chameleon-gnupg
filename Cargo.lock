@@ -2494,7 +2494,6 @@ dependencies = [
  "libc",
  "memchr",
  "ntest",
- "once_cell",
  "openssh-keys",
  "percent-encoding",
  "rand",

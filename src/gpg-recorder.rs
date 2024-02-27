@@ -21,7 +21,6 @@ use std::{
 };
 
 use anyhow::{Context, Result};
-use once_cell::unsync::OnceCell;
 use tokio::{
     io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt},
     process::{Child, Command},
