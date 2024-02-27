@@ -420,7 +420,6 @@ Support for trust models is limited. Currently, the Web-of-Trust (\"pgp\") and a
             arg!(--"x-sequoia-parcimonie" "continuously update certificates"),
             arg!(--"x-sequoia-autostart-parcimonie" "automatically start daemon to update certs"),
             arg!(--"x-sequoia-parcimonie-daemonize" "@"),
-            arg!(--"version" "@"),
             arg!(--"warranty" "@"),
             arg!(--"dump-option-table" "@"),
             arg!(--"dump-options" "@"),
@@ -469,6 +468,9 @@ fn main() {
             outdir.clone(),
         ).unwrap();
     }
+
+    let gpg_sq = gpg_sq.version(env!("CARGO_PKG_VERSION"));
+    let gpgv_sq = gpgv_sq.version(env!("CARGO_PKG_VERSION"));
 
     let outdir = std::path::PathBuf::from(outdir);
     let man = clap_mangen::Man::new(gpg_sq);
