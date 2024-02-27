@@ -1,22 +1,18 @@
 //! A shim around GnuPG that records all interactions.
-#![allow(unused_imports)]
 
 use std::{
     collections::hash_map::{Entry, HashMap},
     env,
-    fmt,
     fs,
-    io::{self, Read, Write},
+    io::{self, Write},
     path::{Path, PathBuf},
     process::{ExitStatus, Stdio},
     sync::atomic::{AtomicBool, Ordering},
-    thread,
     time,
     os::unix::{
         ffi::OsStrExt,
-        fs::{OpenOptionsExt, PermissionsExt},
+        fs::PermissionsExt,
         io::{AsRawFd, FromRawFd},
-        process::CommandExt,
     },
 };
 
@@ -30,22 +26,10 @@ use tokio::{
 use buffered_reader::BufferedReader;
 
 use sequoia_openpgp as openpgp;
-use sequoia_ipc as ipc;
 use openpgp::{
-    cert::prelude::*,
-    crypto::{Password, hash::Digest},
+    crypto::hash::Digest,
     fmt::hex,
-    packet::{
-        prelude::*,
-        key::{PublicParts, UnspecifiedRole},
-    },
-    policy::Policy,
     types::*,
-};
-
-use sequoia_cert_store::{
-    LazyCert,
-    Store,
 };
 
 pub mod gnupg_interface;
@@ -618,7 +602,7 @@ fn write_file<P: AsRef<Path>, D: AsRef<[u8]>>(p: P, d: D) -> io::Result<()> {
 /// Opens a pipe.
 fn pipe() -> Result<(tokio::fs::File, tokio::fs::File)> {
     use interprocess::unnamed_pipe::pipe;
-    use std::os::unix::io::{IntoRawFd, FromRawFd};
+    use std::os::unix::io::IntoRawFd;
     let (writer, reader) = pipe()?;
     unsafe {
         Ok((tokio::fs::File::from_raw_fd(writer.into_raw_fd()),
