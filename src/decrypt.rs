@@ -33,6 +33,7 @@ use sequoia_cert_store as cert_store;
 use cert_store::Store;
 
 use crate::{
+    agent::PinentryMode,
     babel,
     common::Common,
     compliance::Compliance,
@@ -632,6 +633,13 @@ impl<'a, 'store> DHelper<'a, 'store> {
                         let _ = self.config.status().emit(
                             Status::PinentryLaunched(info.into()));
                     },).await?;
+            }
+
+            // If we use loopback pinentry, we supplied the one
+            // passphrase that we had and it failed to decrypt the
+            // message.  Bail instead of spinning forever.
+            if let PinentryMode::Loopback = self.config.pinentry_mode {
+                return Err(anyhow::anyhow!("decryption failed: No secret key"));
             }
         }
     }
