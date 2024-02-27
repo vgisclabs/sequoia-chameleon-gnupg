@@ -4,6 +4,7 @@ use anyhow::Result;
 
 use sequoia_openpgp as openpgp;
 use openpgp::{
+    Cert,
     serialize::{Serialize, stream::*},
 };
 
@@ -186,7 +187,7 @@ pub fn cmd_export(config: &mut crate::Config, args: &[String],
 
     for cert in config.keydb().certs() {
         // Filter out non-exportable certs, like the trust root.
-        if ! cert.to_cert().map(utils::cert_exportable).unwrap_or(false) {
+        if ! cert.to_cert().map(Cert::exportable).unwrap_or(false) {
             continue;
         }
 
