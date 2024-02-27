@@ -133,7 +133,7 @@ impl VerifyOptions {
             "show preferred keyserver URLs during signature listings",
         },
 
-        opt_todo! {
+        opt! {
             "show-uid-validity",
             |o, s, _| Ok({ o.uid_validity = s; }),
             "show user ID validity during signature verification",
@@ -684,7 +684,9 @@ impl<'a, 'store> VHelper<'a, 'store> {
             .get(0)
             .map(|(validity, _cert)| *validity);
 
-        if let Some(v) = &validity {
+        if let Some(v) = validity.as_ref()
+            .filter(|_| self.control.verify_options.uid_validity)
+        {
             self.control.warn(format_args!(
                 "Good signature from {:?} [{}]", primary_uid, babel::Fish(*v)));
         } else {

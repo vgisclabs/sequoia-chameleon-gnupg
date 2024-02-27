@@ -113,6 +113,7 @@ pub struct Config<'store> {
     outfile: Option<String>,
     quiet: bool,
     verbose: usize,
+    verify_options: verify::VerifyOptions,
 
     // For sharing the code with with gpg.rs.
     list_only: bool,
@@ -145,6 +146,7 @@ impl<'store> Config<'store> {
             outfile: None,
             quiet: false,
             verbose: 0,
+            verify_options: Default::default(),
 
             // For sharing the code with with gpg.rs.
             list_only: false,

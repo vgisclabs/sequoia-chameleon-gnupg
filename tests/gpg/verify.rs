@@ -628,3 +628,131 @@ fn test_detached_sig_with<'a>(experiment: &mut Experiment,
 
     Ok(())
 }
+
+#[test]
+#[ntest::timeout(600000)]
+fn show_uid_validity() -> Result<()> {
+    let mut experiment = make_experiment!()?;
+    let cert = experiment.artifact(
+        "cert",
+        || CertBuilder::new()
+            .set_creation_time(Experiment::now())
+            .add_userid("Alice Lovelace <alice@lovelace.name>")
+            .add_signing_subkey()
+            .generate()
+            .map(|(cert, _rev)| cert),
+        |a, f| a.as_tsk().serialize(f),
+        |b| Cert::from_bytes(&b))?;
+
+    let sig = experiment.artifact(
+        "sig",
+        || -> Result<Packet> {
+            let mut subkey_signer =
+                cert.keys().subkeys().secret().next().unwrap()
+                .key().clone().into_keypair()?;
+
+            SignatureBuilder::new(SignatureType::Binary)
+                .set_signature_creation_time(Experiment::now())?
+                .sign_message(&mut subkey_signer, MSG)
+                .map(Into::into)
+        },
+        |a, f| a.serialize(f),
+        |b| Packet::from_bytes(&b))?;
+
+    for without_cert in [true, false] {
+        if without_cert {
+            experiment.section("First try without the cert...");
+        } else {
+            experiment.section("Importing cert...");
+            let diff = experiment.invoke(&[
+                "--import",
+                &experiment.store("cert", &cert.to_vec()?)?,
+            ])?;
+            diff.assert_success();
+        }
+
+        let diff = experiment.invoke(&[
+            "--verify",
+            &experiment.store("sig", &sig.to_vec()?)?,
+            &experiment.store("msg", &MSG)?,
+        ])?;
+        if without_cert {
+            diff.assert_failure();
+            diff.assert_limits(0, 6, 0);
+        } else {
+            diff.assert_success();
+            diff.assert_limits(0, 6, 67);
+        }
+
+        // Note: There is no machine-readable output (--with-colons)
+        // for signature verification.
+
+        let diff = experiment.invoke(&[
+            "--verify",
+            "--verify-options", "show-uid-validity",
+            &experiment.store("sig", &sig.to_vec()?)?,
+            &experiment.store("msg", &MSG)?,
+        ])?;
+        if without_cert {
+            diff.assert_failure();
+            diff.assert_limits(0, 6, 0);
+        } else {
+            diff.assert_success();
+            diff.assert_limits(0, 6, 67);
+        }
+
+        let diff = experiment.invoke(&[
+            "--verify",
+            "--verify-options", "no-show-uid-validity",
+            &experiment.store("sig", &sig.to_vec()?)?,
+            &experiment.store("msg", &MSG)?,
+        ])?;
+        if without_cert {
+            diff.assert_failure();
+            diff.assert_limits(0, 6, 0);
+        } else {
+            diff.assert_success();
+            diff.assert_limits(0, 6, 67);
+        }
+    }
+
+    // Finally, try various ownertrust values.
+
+    for ownertrust in [0, 2, 3, 4, 5, 6] {
+        experiment.section(&format!("Setting ownertrust to {}...", ownertrust));
+
+        let diff = experiment.invoke(&[
+            "--import-ownertrust",
+            &experiment.store(
+                "ownertrust",
+                format!("{}:{}:\n", cert.fingerprint(), ownertrust)
+                    .as_bytes())?,
+        ])?;
+        diff.assert_success();
+
+        let diff = experiment.invoke(&[
+            "--check-trustdb",
+        ])?;
+        diff.assert_success();
+
+        let diff = experiment.invoke(&[
+            "--verify",
+            "--verify-options", "show-uid-validity",
+            &experiment.store("sig", &sig.to_vec()?)?,
+            &experiment.store("msg", &MSG)?,
+        ])?;
+        diff.assert_success();
+        diff.assert_limits(0, 6, 67);
+
+        let diff = experiment.invoke(&[
+            "--verify",
+            "--verify-options", "no-show-uid-validity",
+            &experiment.store("sig", &sig.to_vec()?)?,
+            &experiment.store("msg", &MSG)?,
+        ])?;
+        diff.assert_success();
+        diff.assert_limits(0, 6, 67);
+    }
+
+    Ok(())
+}
