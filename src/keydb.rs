@@ -167,7 +167,7 @@ impl<'store> KeyDB<'store> {
         if ! path.is_absolute() {
             path = home_dir.join(path);
         }
-        t!("abolute path: {:?}", path);
+        t!("absolute path: {:?}", path);
 
         if kind.is_none() {
             t!("Kind is unknown, using heuristic");
