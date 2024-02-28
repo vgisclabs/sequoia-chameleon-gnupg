@@ -1,4 +1,7 @@
-use std::io::Write;
+use std::{
+    borrow::Cow,
+    io::Write,
+};
 
 use anyhow::Result;
 
@@ -16,6 +19,7 @@ use crate::{
     argparse,
     argparse::options::Opt,
     common::{Common, Query},
+    filter,
     status::{Status, ExportResult},
     utils,
 };
@@ -34,7 +38,7 @@ pub struct ExportOptions {
     /// Remove unusable parts from key during export.
     pub clean: bool,
 
-    /// XXX.
+    /// Remove as much as possible from key during export.
     pub minimal: bool,
 
     /// XXX.
@@ -82,13 +86,13 @@ impl ExportOptions {
             "export revocation keys marked as \"sensitive\"",
         },
 
-        opt_todo! {
+        opt! {
             "export-clean",
             |o, s, _| Ok({ o.clean = s; }),
             "remove unusable parts from key during export",
         },
 
-        opt_todo! {
+        opt! {
             "export-minimal",
             |o, s, _| Ok({ o.minimal = s; o.clean = s; }),
             "remove as much as possible from key during export",
@@ -276,10 +280,18 @@ pub fn cmd_export(config: &mut crate::Config, args: &[String],
             }
         } else {
             // XXX: secrets from the agent.
+            let mut cert = Cow::Borrowed(cert.to_cert()?);
+
+            if config.export_options.minimal {
+                cert = filter::minimal(config, cert)?;
+            } else if config.export_options.clean {
+                cert = filter::clean(config, cert)?;
+            }
+
             if config.export_options.local_sigs {
-                cert.to_cert()?.serialize(&mut message)?;
+                cert.serialize(&mut message)?;
             } else {
-                cert.to_cert()?.export(&mut message)?;
+                cert.export(&mut message)?;
             }
         }
     }

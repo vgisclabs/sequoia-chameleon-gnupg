@@ -71,6 +71,7 @@ pub mod parcimonie;
 pub mod dirmngr;
 pub mod migrate;
 pub mod generate_key;
+pub mod filter;
 
 /// Commands and options.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
