@@ -2708,7 +2708,7 @@ fn real_main() -> anyhow::Result<()> {
     }
     parcimonie::start(&opt, command);
 
-    // If a commad is likely to access at least the number of
+    // If a command is likely to access at least the number of
     // certificates divided by the number of CPUs, then we should
     // preload the certificates as we can do that in parallel.
     let preload = (matches!(command, Some(aListKeys)) && args.len() == 0)
