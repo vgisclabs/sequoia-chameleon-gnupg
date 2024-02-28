@@ -1,6 +1,6 @@
 use std::{
     collections::BTreeMap,
-    ffi::OsStr,
+    ffi::{OsStr, OsString},
     fs,
     io,
     path::{Path, PathBuf},
@@ -25,7 +25,7 @@ use tokio::{
 #[test]
 #[ntest::timeout(600000)]
 fn password_store_git() -> Result<()> {
-    Experiment::new("password-store-git")?.run()
+    Experiment::new("password-store-git")?.with_null_policy()?.run()
 }
 
 // The framework:
@@ -181,7 +181,10 @@ where
 /// A context for GnuPG.
 ///
 /// Creates a temporary directory and cleans it up on Drop.
-pub struct Context {
+pub struct Context<'env> {
+    /// Environment variables set when executing commands.
+    env: &'env BTreeMap<String, OsString>,
+
     // How to invoke gpg or gpg-sq.
     //
     // gpg[0] is the executable and the rest are arguments that are
@@ -195,13 +198,14 @@ pub struct Context {
     recorder_dir: PathBuf,
 }
 
-impl Context {
+impl<'env> Context<'env> {
     /// Returns a context for the chameleon.
-    pub fn new(recorder_dir: PathBuf)
+    pub fn new(recorder_dir: PathBuf, env: &'env BTreeMap<String, OsString>)
                -> Result<Self>
     {
         setup();
         Ok(Context {
+            env,
             gpg: gpg_chameleon().clone(),
             gpgv: gpgv_chameleon().clone(),
             recorder_dir,
@@ -254,9 +258,9 @@ impl Context {
         };
         c.env("LC_ALL", "C");
         c.env("TZ", "UTC"); // XXX: maybe track and store the TZ.
-        c.env("SEQUOIA_CRYPTO_POLICY", // Use a null policy.
-              format!("{}/tests/null-policy.toml",
-                      env!("CARGO_MANIFEST_DIR")));
+        for (k, v) in self.env.iter() {
+            c.env(k, v);
+        }
 
         // Create and populate a working directory.
         let workdir = tempfile::TempDir::new()?;
@@ -601,6 +605,9 @@ struct Experiment {
     diffs: Vec<Diff>,
     failures: Vec<usize>,
     old_distances: Option<Distances>,
+
+    /// Environment variables set when executing commands.
+    env: BTreeMap<String, OsString>,
 }
 
 impl Experiment {
@@ -622,10 +629,24 @@ impl Experiment {
             diffs: vec![],
             failures: vec![],
             old_distances: None,
+            env: Default::default(),
         };
 
         e.load_distances()?;
         Ok(e)
+    }
+
+    /// Use the given crypto policy configuration file.
+    fn with_policy<P: AsRef<Path>>(mut self, policy: P) -> Result<Self> {
+        self.env.insert("SEQUOIA_CRYPTO_POLICY".into(),
+                        fs::canonicalize(policy)?.into());
+        Ok(self)
+    }
+
+    /// Use the null crypto policy.
+    fn with_null_policy(self) -> Result<Self> {
+        self.with_policy(format!("{}/tests/null-policy.toml",
+                                 env!("CARGO_MANIFEST_DIR")))
     }
 
     fn basepath() -> &'static Path {
@@ -652,7 +673,7 @@ impl Experiment {
                 break;
             }
 
-            let ctx = Context::new(base)?;
+            let ctx = Context::new(base, &self.env)?;
             eprintln!("## Testing sample {}", n);
 
             let previously =
