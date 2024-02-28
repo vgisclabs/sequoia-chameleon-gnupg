@@ -16,6 +16,7 @@ use sequoia_openpgp as openpgp;
 use openpgp::{
     Fingerprint,
     KeyID,
+    cert::prelude::*,
     crypto::hash::Digest,
     crypto::mpi::PublicKey,
     packet::{UserID, Key, key::{PublicParts, PrimaryRole, SubordinateRole}},
@@ -57,10 +58,8 @@ pub enum Record<'k> {
     Fingerprint(Fingerprint),
     Keygrip(Keygrip),
     UserID {
+        amalgamation: UserIDAmalgamation<'k>,
         validity: Option<Validity>,
-        creation_date: SystemTime,
-        expiration_date: Option<SystemTime>,
-        userid: UserID,
     },
 
     Signature {
@@ -303,13 +302,22 @@ impl Record<'_> {
             },
 
             UserID {
+                amalgamation,
                 validity,
-                creation_date,
-                expiration_date,
-                userid,
             } => {
+                let userid = amalgamation.userid();
+                let binding = amalgamation
+                    .binding_signature(config.policy(), config.now()).ok()
+                    .or_else(|| amalgamation.self_signatures().next());
+
+                let creation_date = binding.as_ref()
+                    .and_then(|b| b.signature_creation_time())
+                    .unwrap_or(std::time::UNIX_EPOCH);
+
+                let expiration_date = binding.as_ref()
+                    .and_then(|b| b.signature_expiration_time());
                 let creation_date =
-                    chrono::DateTime::<chrono::Utc>::from(*creation_date);
+                    chrono::DateTime::<chrono::Utc>::from(creation_date);
 
                 let expiration_date = expiration_date.map(|t| {
                     chrono::DateTime::<chrono::Utc>::from(t)

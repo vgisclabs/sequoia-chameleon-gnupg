@@ -542,6 +542,7 @@ where
             }
 
             Record::UserID {
+                amalgamation: uid.clone(),
                 validity: (list_uid_validity
                            // For some reason, in the machine readable
                            // output, GnuPG disregards
@@ -553,16 +554,6 @@ where
                                    || validity.expired
                                    || ownertrust.disabled())))
                     .then_some(validity),
-                creation_date: vuid.as_ref()
-                    .and_then(|v| v.binding_signature().signature_creation_time())
-                    .unwrap_or_else(|| {
-                        uid.self_signatures().next()
-                            .and_then(|s| s.signature_creation_time())
-                            .unwrap_or(std::time::UNIX_EPOCH)
-                    }),
-                expiration_date:  vuid.as_ref()
-                    .and_then(|v| v.binding_signature().signature_expiration_time()),
-                userid: uid.userid().clone(),
             }.emit(config, &mut sink)?;
 
             if config.list_options.list_sigs {
