@@ -25,7 +25,7 @@ use tokio::{
 #[test]
 #[ntest::timeout(600000)]
 fn password_store_git() -> Result<()> {
-    Experiment::test("password-store-git")
+    Experiment::new("password-store-git")?.run()
 }
 
 // The framework:
@@ -615,14 +615,17 @@ impl Experiment {
             fs::File::open(tmp.path().join("metadata.json"))
                 .context("failed to read metadata.json from archive")?)?;
 
-        Ok(Experiment {
+        let mut e = Experiment {
             name: name.into(),
             metadata,
             sample_dir: tmp,
             diffs: vec![],
             failures: vec![],
             old_distances: None,
-        })
+        };
+
+        e.load_distances()?;
+        Ok(e)
     }
 
     fn basepath() -> &'static Path {
@@ -635,29 +638,6 @@ impl Experiment {
 
     fn archive_file(name: &str) -> PathBuf {
         Self::basepath().join(format!("{}.tar.bz2", name))
-    }
-
-    fn test(name: &str) -> Result<()> {
-        let mut e = Experiment::new(name)?;
-        e.load_distances()?;
-        e.run()?;
-        e.emit()?;
-        e.persist_distances()?;
-        if e.failures.is_empty() {
-            Ok(())
-        } else {
-            for i in &e.failures {
-                eprintln!("error: sample {} {}", i,
-                          if e.diffs[*i].regressed() {
-                              "regressed"
-                          } else {
-                              "returned wrong status code"
-                          });
-                e.diffs[*i].emit()?;
-            }
-            e.emit_failure_summary()?;
-            Err(anyhow::anyhow!("{} samples failed", e.failures.len()))
-        }
     }
 
     fn run(&mut self) -> Result<()> {
@@ -687,7 +667,23 @@ impl Experiment {
             n += 1;
         }
 
-        Ok(())
+        self.emit()?;
+        self.persist_distances()?;
+        if self.failures.is_empty() {
+            Ok(())
+        } else {
+            for i in &self.failures {
+                eprintln!("error: sample {} {}", i,
+                          if self.diffs[*i].regressed() {
+                              "regressed"
+                          } else {
+                              "returned wrong status code"
+                          });
+                self.diffs[*i].emit()?;
+            }
+            self.emit_failure_summary()?;
+            Err(anyhow::anyhow!("{} samples failed", self.failures.len()))
+        }
     }
 
     fn emit_failure_summary(&self) -> Result<()> {
