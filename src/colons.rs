@@ -316,8 +316,19 @@ impl Record<'_> {
 
                 let expiration_date = binding.as_ref()
                     .and_then(|b| b.signature_expiration_time());
+
+                // GnuPG doesn't emit the creation date if the user ID
+                // binding signature is expired or revoked.
                 let creation_date =
-                    chrono::DateTime::<chrono::Utc>::from(creation_date);
+                    (
+                        matches!(
+                            amalgamation.revocation_status(
+                                config.policy(), config.now()),
+                            RevocationStatus::NotAsFarAsWeKnow)
+                        && expiration_date.is_none()
+                    ).then_some(
+                        chrono::DateTime::<chrono::Utc>::from(creation_date)
+                    );
 
                 let expiration_date = expiration_date.map(|t| {
                     chrono::DateTime::<chrono::Utc>::from(t)
@@ -330,7 +341,8 @@ impl Record<'_> {
                 if mr {
                     write!(w, "uid:{}::::{}:{}:{}::",
                            validity.unwrap_or(ValidityLevel::Unknown.into()),
-                           creation_date.format("%s"),
+                           creation_date.map(|t| t.format("%s").to_string())
+                           .unwrap_or_default(),
                            expiration_date.map(|t| t.format("%s").to_string())
                            .unwrap_or_else(|| "".into()),
                            openpgp::fmt::hex::encode(&uidhash),

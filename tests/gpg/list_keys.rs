@@ -913,3 +913,108 @@ fn list_signatures() -> Result<()> {
 
     Ok(())
 }
+
+#[test]
+#[ntest::timeout(600000)]
+fn unusable_uids() -> Result<()> {
+    let mut experiment = make_experiment!()?;
+    let cert = experiment.artifact(
+        "cert",
+        || {
+            let aquarter =
+                Duration::from_secs(60 * 60 * 24 * 30 * 3);
+            let yesteryear = Experiment::now()
+                - Duration::from_secs(60 * 60 * 24 * 365);
+            let work: UserID =
+                "<alice@workwork.example.org>".into();
+            let fun: UserID =
+                "<alice@funfun.example.org>".into();
+            let (cert, _rev) = CertBuilder::new()
+                .set_creation_time(yesteryear)
+                .add_userid("Alice Lovelace <alice@lovelace.name>")
+                .add_signing_subkey()
+                .generate()?;
+            let mut signer = cert.primary_key().key().clone()
+                .parts_into_secret()?.into_keypair()?;
+
+            let work_binding = work.bind(
+                &mut signer, &cert,
+                SignatureBuilder::new(SignatureType::PositiveCertification)
+                    .set_signature_creation_time(yesteryear)?
+                    .set_signature_validity_period(aquarter)?)?;
+
+            let fun_binding = fun.bind(
+                &mut signer, &cert,
+                SignatureBuilder::new(SignatureType::PositiveCertification)
+                    .set_signature_creation_time(yesteryear)?)?;
+            let fun_revocation = fun.bind(
+                &mut signer, &cert,
+                SignatureBuilder::new(SignatureType::CertificationRevocation)
+                    .set_signature_creation_time(yesteryear + aquarter)?)?;
+
+            let cert = cert.insert_packets(vec![
+                Packet::from(work),
+                work_binding.into(),
+                fun.into(),
+                fun_binding.into(),
+                fun_revocation.into(),
+            ])?;
+            assert_eq!(cert.bad_signatures().count(), 0);
+            Ok(cert)
+        },
+        |a, f| a.as_tsk().serialize(f),
+        |b| Cert::from_bytes(&b))?;
+
+    experiment.section("Importing cert...");
+    let diff = experiment.invoke(&[
+        "--import",
+        &experiment.store("cert", &cert.to_vec()?)?,
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(0, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(1, 0, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-colons",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(0, 0, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--list-options", "no-show-unusable-uids",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(1, 0, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-colons",
+        "--list-options", "no-show-unusable-uids",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(0, 0, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--list-options", "show-unusable-uids",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(1, 0, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-colons",
+        "--list-options", "show-unusable-uids",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(0, 0, 0);
+
+    Ok(())
+}

@@ -156,7 +156,7 @@ impl ListOptions {
             "show user ID validity during key listings",
         },
 
-        opt_todo! {
+        opt! {
             "show-unusable-uids",
             |o, s, _| Ok({ o.unusable_uids = s; }),
             "show revoked and expired user IDs in key listings",
@@ -537,8 +537,23 @@ where
         for (validity, uid) in userids.into_iter() {
             let vuid = uid.clone().with_policy(p, config.now()).ok();
 
-            if ! vuid.is_some() {
-                continue;
+            // Unless explicitly requested, we don't list unusable
+            // user ids.
+            if ! config.list_options.unusable_uids {
+                // We never list user ids without any self signatures.
+                if uid.self_signatures().count() == 0 {
+                    continue;
+                }
+
+                // In human readable mode, we don't list expired user
+                // ids, or those that are revoked (unless the whole
+                // cert is revoked).
+                if ! config.with_colons
+                    && ((validity.revoked && ! acert.cert_validity().revoked)
+                        || vuid.is_none())
+                {
+                    continue;
+                }
             }
 
             Record::UserID {
