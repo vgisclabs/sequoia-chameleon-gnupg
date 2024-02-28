@@ -586,6 +586,9 @@ fn plausible_pgp(d: &[u8]) -> bool {
 fn inspect_pgp(d: Vec<u8>) -> Result<Vec<u8>> {
     use std::io::Write;
     let mut child = std::process::Command::new("sq").arg("inspect")
+        .env("SEQUOIA_CRYPTO_POLICY", // Use a null policy.
+             format!("{}/tests/null-policy.toml",
+                     env!("CARGO_MANIFEST_DIR")))
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
