@@ -64,7 +64,7 @@ pub fn enable(module: &str) {
     }
 
     match module {
-        "ipc" => crate::agent::trace(true),
+        "ipc" => crate::gpg_agent::trace(true),
         "dirmngr" => crate::dirmngr::trace(true),
         "keydb" => crate::keydb::trace(true),
         "keyserver" => crate::keyserver::trace(true),
@@ -80,7 +80,7 @@ pub fn enable(module: &str) {
 pub fn enabled_modules() -> Option<String> {
     let mut r = vec![];
 
-    if crate::agent::traced() { r.push("ipc"); }
+    if crate::gpg_agent::traced() { r.push("ipc"); }
     if crate::dirmngr::traced() { r.push("dirmngr"); }
     if crate::keydb::traced() { r.push("keydb"); }
     if crate::keyserver::traced() { r.push("keyserver"); }

@@ -192,10 +192,10 @@ async fn real_cmd_quick_add_key(config: &mut crate::Config<'_>, args: &[String])
     // Store the secrets in the agent.
     let mut agent = config.connect_agent().await?;
     // See if we import a new key or subkey.
-    crate::agent::import(&mut agent,
-                         config.policy(),
-                         &cert, &subkey,
-                         config.batch).await?;
+    crate::gpg_agent::import(&mut agent,
+                             config.policy(),
+                             &cert, &subkey,
+                             config.batch).await?;
 
     Ok(())
 }
@@ -726,7 +726,7 @@ async fn create_key(config: &mut crate::Config<'_>, filename: &str, i: usize,
     let mut agent = config.connect_agent().await?;
     let passphrase_store;
     if passphrase.is_none() && ! no_protection {
-        passphrase_store = crate::agent::get_passphrase(
+        passphrase_store = crate::gpg_agent::get_passphrase(
             &mut agent, &None, &None,
             Some("Passphrase:".into()),
             Some("Please enter passphrase to protect your new key".into()),
@@ -849,10 +849,10 @@ async fn create_key(config: &mut crate::Config<'_>, filename: &str, i: usize,
     // Store the secrets in the agent.
     for subkey in cert.keys().secret() {
         // See if we import a new key or subkey.
-        crate::agent::import(&mut agent,
-                             config.policy(),
-                             &cert, &subkey,
-                             config.batch).await?;
+        crate::gpg_agent::import(&mut agent,
+                                 config.policy(),
+                                 &cert, &subkey,
+                                 config.batch).await?;
     }
 
     // Set to ultimately trusted.

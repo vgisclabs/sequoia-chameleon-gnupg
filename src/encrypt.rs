@@ -273,7 +273,7 @@ fn do_encrypt(config: &crate::Config, args: &[String],
     // Now do our trick, maybe.
     if symmetric {
         let s2k = S2K::default();
-        let cacheid = crate::agent::cacheid_of(&s2k);
+        let cacheid = crate::gpg_agent::cacheid_of(&s2k);
 
         let p = rt.block_on(ask_password(config, cacheid))?;
         // XXX: We emit the SKESK first.  Naive consumers may
@@ -362,7 +362,7 @@ fn do_encrypt(config: &crate::Config, args: &[String],
 async fn ask_password(config: &crate::Config<'_>, cacheid: Option<String>)
                       -> Result<Password> {
     let mut agent = config.connect_agent().await?;
-    Ok(crate::agent::get_passphrase(
+    Ok(crate::gpg_agent::get_passphrase(
         &mut agent,
         &cacheid, &None, None, None, false, 0, false, false,
         |_agent, response| if let ipc::assuan::Response::Inquire {

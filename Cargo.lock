@@ -2502,6 +2502,7 @@ dependencies = [
  "regex",
  "reqwest",
  "sequoia-cert-store",
+ "sequoia-gpg-agent",
  "sequoia-ipc",
  "sequoia-net",
  "sequoia-openpgp",
@@ -2518,6 +2519,23 @@ dependencies = [
  "thiserror",
  "tokio",
  "zbase32",
+]
+
+[[package]]
+name = "sequoia-gpg-agent"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7bc7fbfde13797a8bfaf47a2dfcbcc6da1700a7cb1414853e7032d97d288f3c2"
+dependencies = [
+ "anyhow",
+ "chrono",
+ "futures",
+ "libc",
+ "sequoia-cert-store",
+ "sequoia-ipc",
+ "sequoia-openpgp",
+ "thiserror",
+ "tokio",
 ]
 
 [[package]]

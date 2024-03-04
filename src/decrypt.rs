@@ -25,7 +25,9 @@ use openpgp::{
     },
 };
 use sequoia_ipc as ipc;
-use ipc::gnupg::{
+
+use sequoia_gpg_agent as gpg_agent;
+use gpg_agent::{
     KeyPair,
 };
 
@@ -33,7 +35,7 @@ use sequoia_cert_store as cert_store;
 use cert_store::Store;
 
 use crate::{
-    agent::PinentryMode,
+    gpg_agent::PinentryMode,
     babel,
     common::Common,
     compliance::Compliance,
@@ -286,7 +288,7 @@ impl<'a, 'store> DHelper<'a, 'store> {
     /// Tries to decrypt the given PKESK packet with `keypair` and try
     /// to decrypt the packet parser using `decrypt`.
     async fn try_decrypt<D>(&self,
-                            agent: &mut sequoia_ipc::gnupg::Agent,
+                            agent: &mut gpg_agent::Agent,
                             cert: &Cert,
                             pkesk: &PKESK,
                             sym_algo: Option<SymmetricAlgorithm>,
@@ -510,7 +512,7 @@ impl<'a, 'store> DHelper<'a, 'store> {
             };
 
             if self.config.list_only {
-                if ! crate::agent::has_key(&mut agent, key.key()).await? {
+                if ! crate::gpg_agent::has_key(&mut agent, key.key()).await? {
                     emit_no_seckey(keyid)?;
                 }
 
@@ -523,7 +525,7 @@ impl<'a, 'store> DHelper<'a, 'store> {
 
             // See if we have a static password to loop back to the
             // agent.
-            if let (crate::agent::PinentryMode::Loopback, Some(p)) =
+            if let (crate::gpg_agent::PinentryMode::Loopback, Some(p)) =
                 (&self.config.pinentry_mode,
                  self.config.static_passphrase.borrow().as_ref())
             {
@@ -559,7 +561,7 @@ impl<'a, 'store> DHelper<'a, 'store> {
             return Err(anyhow::anyhow!("decryption failed: No secret key"));
         }
 
-        let cacheid = crate::agent::cacheid_over_all(skesks);
+        let cacheid = crate::gpg_agent::cacheid_over_all(skesks);
 
         let mut error: Option<String> = None;
         loop {
@@ -583,7 +585,7 @@ impl<'a, 'store> DHelper<'a, 'store> {
             }
 
             let p =
-                crate::agent::get_passphrase(
+                crate::gpg_agent::get_passphrase(
                     &mut agent,
                     &cacheid, &error, None, None, false, 0, false, false,
                     |_agent, response| if let ipc::assuan::Response::Inquire {
@@ -625,7 +627,7 @@ impl<'a, 'store> DHelper<'a, 'store> {
             error = Some("Decryption failed".to_string());
             if let Some(cacheid) = &cacheid {
                 // Make gpg-agent forget the bad passphrase.
-                crate::agent::forget_passphrase(
+                crate::gpg_agent::forget_passphrase(
                     &mut agent,
                     &cacheid,
                     |info| {

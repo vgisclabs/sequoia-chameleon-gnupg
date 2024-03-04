@@ -30,12 +30,13 @@ use sequoia_cert_store::{
     Store,
 };
 
+use sequoia_gpg_agent as gpg_agent;
+
 pub mod gnupg_interface;
 
 #[macro_use]
 mod macros;
 pub mod tracing;
-pub mod agent;
 #[macro_use]
 pub mod argparse;
 use argparse::{Argument, Opt, flags::*};
@@ -542,7 +543,7 @@ pub struct Config<'store> {
     personal_digest_prefs: Vec<HashAlgorithm>,
     personal_compress_prefs: Vec<CompressionAlgorithm>,
     photo_viewer: Option<PathBuf>,
-    pinentry_mode: agent::PinentryMode,
+    pinentry_mode: gpg_agent::PinentryMode,
     quiet: bool,
     remote_user: Vec<Recipient>,
     request_origin: RequestOrigin,
@@ -731,11 +732,11 @@ impl<'store> Config<'store> {
     }
 
     /// Returns a connection to the GnuPG agent.
-    pub async fn connect_agent(&self) -> Result<ipc::gnupg::Agent> {
-        use agent::{connect, send_simple};
+    pub async fn connect_agent(&self) -> Result<gpg_agent::Agent> {
+        use sequoia_gpg_agent::{connect, send_simple};
 
         let ctx = self.ipc()?;
-        let mut agent = connect(ctx).await?;
+        let mut agent: gpg_agent::Agent = connect(ctx).await?;
 
         send_simple(&mut agent, "RESET").await?;
 
@@ -852,14 +853,14 @@ impl<'store> Config<'store> {
                             -> Result<Box<dyn openpgp::crypto::Signer + Send + Sync>>
     {
         let mut agent = self.connect_agent().await?;
-        agent::has_key(&mut agent, subkey).await?;
+        gpg_agent::has_key(&mut agent, subkey).await?;
 
         let ctx = self.ipc()?;
         let mut pair = ipc::gnupg::KeyPair::new(&ctx, subkey)?
             .with_cert(vcert);
 
         // See if we have a static password to loop back to the agent.
-        if let (agent::PinentryMode::Loopback, Some(p)) =
+        if let (gpg_agent::PinentryMode::Loopback, Some(p)) =
             (&self.pinentry_mode, self.static_passphrase.borrow().as_ref())
         {
             pair = pair.with_password(p.clone());
@@ -901,7 +902,7 @@ impl<'store> Config<'store> {
                         for sk in vcert.keys().key_flags(&flags).alive()
                             .revoked(false)
                         {
-                            if agent::has_key(&mut agent, sk.key()).await? {
+                            if gpg_agent::has_key(&mut agent, sk.key()).await? {
                                 return Ok(vec![cert.fingerprint().to_string()]);
                             }
                         }
@@ -2615,7 +2616,7 @@ fn real_main() -> anyhow::Result<()> {
         opt.quiet = quiet;
     }
 
-    if let agent::PinentryMode::Loopback = opt.pinentry_mode {
+    if let gpg_agent::PinentryMode::Loopback = opt.pinentry_mode {
         // In loopback mode, never ask for the password multiple
         // times.
 	opt.passphrase_repeat = 0;
