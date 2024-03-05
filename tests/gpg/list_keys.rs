@@ -461,6 +461,46 @@ fn test_key_cert_imported(cert: Cert, mut experiment: Experiment) -> Result<()>
     diff.assert_equal_up_to(0, 0);
 
     let diff = experiment.invoke(&[
+        "--fingerprint",
+        "--fingerprint",
+        "--with-colons",
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(0, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-fingerprint",
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(1, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-fingerprint",
+        "--with-fingerprint",
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(1, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-fingerprint",
+        "--with-colons",
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(0, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-fingerprint",
+        "--with-fingerprint",
+        "--with-colons",
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(0, 0);
+
+    let diff = experiment.invoke(&[
         "--list-keys",
         "--with-secret",
     ])?;

@@ -134,6 +134,71 @@
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
+        "\"--fingerprint\"",
+        "\"--fingerprint\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:255:22:A36F44AAE1014B43:1671553073:::-:::cSC:::::ed25519:::0:\\nfpr:::::::::208D669E6FE78F1D89462670A36F44AAE1014B43:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsub:-:255:22:503BE0F2879264F9:1671553073::::::s:::::ed25519::\\nfpr:::::::::AAE8AB797DD9DDD141E902D0503BE0F2879264F9:\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-fingerprint\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n--------------------\\npub   ed25519 2022-12-20 [C]\\n      208D 669E 6FE7 8F1D 8946  2670 A36F 44AA E101 4B43\\nuid           [ unknown] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519 2022-12-20 [S]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-fingerprint\"",
+        "\"--with-fingerprint\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n--------------------\\npub   ed25519 2022-12-20 [C]\\n      208D 669E 6FE7 8F1D 8946  2670 A36F 44AA E101 4B43\\nuid           [ unknown] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519 2022-12-20 [S]\\n      AAE8 AB79 7DD9 DDD1 41E9  02D0 503B E0F2 8792 64F9\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-fingerprint\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:255:22:A36F44AAE1014B43:1671553073:::-:::cSC:::::ed25519:::0:\\nfpr:::::::::208D669E6FE78F1D89462670A36F44AAE1014B43:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsub:-:255:22:503BE0F2879264F9:1671553073::::::s:::::ed25519::\\nfpr:::::::::AAE8AB797DD9DDD141E902D0503BE0F2879264F9:\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-fingerprint\"",
+        "\"--with-fingerprint\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:255:22:A36F44AAE1014B43:1671553073:::-:::cSC:::::ed25519:::0:\\nfpr:::::::::208D669E6FE78F1D89462670A36F44AAE1014B43:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsub:-:255:22:503BE0F2879264F9:1671553073::::::s:::::ed25519::\\nfpr:::::::::AAE8AB797DD9DDD141E902D0503BE0F2879264F9:\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
         "\"--list-keys\"",
         "\"--with-secret\""
       ],
@@ -399,6 +464,71 @@
     {
       "args": [
         "\"--faked-system-time=1671553073!\"",
+        "\"--fingerprint\"",
+        "\"--fingerprint\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:255:22:A36F44AAE1014B43:1671553073:::-:::cSC:::::ed25519:::0:\\nfpr:::::::::208D669E6FE78F1D89462670A36F44AAE1014B43:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsub:-:255:22:503BE0F2879264F9:1671553073::::::s:::::ed25519::\\nfpr:::::::::AAE8AB797DD9DDD141E902D0503BE0F2879264F9:\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-fingerprint\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   ed25519 2022-12-20 [C]\\n      208D 669E 6FE7 8F1D 8946  2670 A36F 44AA E101 4B43\\nuid           [ unknown] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519 2022-12-20 [S]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-fingerprint\"",
+        "\"--with-fingerprint\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   ed25519 2022-12-20 [C]\\n      208D 669E 6FE7 8F1D 8946  2670 A36F 44AA E101 4B43\\nuid           [ unknown] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519 2022-12-20 [S]\\n      AAE8 AB79 7DD9 DDD1 41E9  02D0 503B E0F2 8792 64F9\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-fingerprint\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:255:22:A36F44AAE1014B43:1671553073:::-:::cSC:::::ed25519:::0:\\nfpr:::::::::208D669E6FE78F1D89462670A36F44AAE1014B43:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsub:-:255:22:503BE0F2879264F9:1671553073::::::s:::::ed25519::\\nfpr:::::::::AAE8AB797DD9DDD141E902D0503BE0F2879264F9:\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-fingerprint\"",
+        "\"--with-fingerprint\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:255:22:A36F44AAE1014B43:1671553073:::-:::cSC:::::ed25519:::0:\\nfpr:::::::::208D669E6FE78F1D89462670A36F44AAE1014B43:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsub:-:255:22:503BE0F2879264F9:1671553073::::::s:::::ed25519::\\nfpr:::::::::AAE8AB797DD9DDD141E902D0503BE0F2879264F9:\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
         "\"--list-keys\"",
         "\"--with-secret\""
       ],
@@ -580,6 +710,31 @@
     ],
     [
       1,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      0,
       0,
       0
     ],

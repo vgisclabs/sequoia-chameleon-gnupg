@@ -1916,8 +1916,9 @@ fn real_main() -> anyhow::Result<()> {
             },
 
 	    oWithFingerprint => {
-                opt.with_fingerprint = true;
                 opt.fingerprint += 1;
+                opt.with_fingerprint = true;
+                opt.with_subkey_fingerprint = opt.fingerprint > 1;
             },
 	    oWithSubkeyFingerprint => {
                 opt.with_subkey_fingerprint = true;
