@@ -42,8 +42,9 @@ impl Config<'_> {
     pub fn prompt(&self, keyword: &str, prompt: fmt::Arguments)
         -> Result<String>
     {
-        self.status_fd.emit_or(Status::GetLine(keyword.into()),
-                               &format!("{}", prompt))?;
+        self.status_fd.emit_or_prompt(
+            Status::GetLine(keyword.into()),
+            &format!("{}", prompt))?;
         let response = self.command_fd.get_response()?;
         self.status_fd.emit(Status::GotIt)?;
         Ok(response)
@@ -59,8 +60,9 @@ impl Config<'_> {
     pub fn prompt_yN(&self, keyword: &str, prompt: fmt::Arguments)
         -> Result<bool>
     {
-        self.status_fd.emit_or(Status::GetBool(keyword.into()),
-                               &format!("{} (y/N)", prompt))?;
+        self.status_fd.emit_or_prompt(
+            Status::GetBool(keyword.into()),
+            &format!("{} (y/N)", prompt))?;
         let a = self.command_fd.get_response()?;
         self.status_fd.emit(Status::GotIt)?;
 

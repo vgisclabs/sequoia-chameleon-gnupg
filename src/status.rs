@@ -43,17 +43,19 @@ impl<S: io::Write + Send + Sync + 'static> From<S> for Fd {
 }
 
 impl Fd {
-    // Sends all output to /dev/null.
+    /// Sends all output to /dev/null.
     pub fn sink() -> Self {
         Fd(None)
     }
 
-    // Whether gpg was called with --status-fd.  If not, everything is
-    // sent to /dev/null.
+    /// Whether gpg was called with --status-fd.
+    ///
+    /// If not, everything is sent to /dev/null.
     pub fn enabled(&self) -> bool {
         self.0.is_some()
     }
 
+    /// Emits a status message.
     #[allow(dead_code)]
     pub fn emit(&self, status: Status<'_>) -> Result<()> {
         crate::with_invocation_log(|sink| status.emit(sink));
@@ -64,10 +66,12 @@ impl Fd {
         }
     }
 
-    // If --status-fd was passed, then emits something on the
-    // specified file descriptor, otherwise prints the message plus a
-    // newline on stdout.
-    pub fn emit_or(&self, status: Status<'_>, msg: &str) -> Result<()> {
+    /// Emits a status message or an interactive prompt.
+    ///
+    /// If --status-fd was passed, then emits something on the
+    /// specified file descriptor, otherwise prints the message plus a
+    /// newline on stdout.
+    pub fn emit_or_prompt(&self, status: Status<'_>, msg: &str) -> Result<()> {
         crate::with_invocation_log(|sink| status.emit(sink));
         if self.enabled() {
             self.emit(status)
