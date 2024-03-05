@@ -3,19 +3,6 @@
 This is a re-implementation and drop-in replacement of `gpg` and
 `gpgv` using the Sequoia OpenPGP implementation.
 
-## Status
-
-`gpgv-sq` is feature-complete.  Please report any problems you
-encounter when replacing `gpgv` with `gpgv-sq`.
-
-`gpg-sq` is not feature-complete.  It currently implements a commonly
-used subset of the signature creation and verification commands, the
-encryption and decryption commands, the key listing commands, and some
-miscellaneous commands.
-
-Support for trust models is limited.  Currently, the Web-of-Trust
-("pgp") and always trust ("always") are implemented.
-
 ## Try it out, it is safe!
 
 If you are a power user, you can try out the Chameleon today to see if
@@ -26,26 +13,93 @@ existing GnuPG installation and keys.
 There are two ways the Chameleon will change your `$GNUPGHOME`:
 
   - It will create an openpgp-cert-d overlay in
-    `$GNUPGHOME/pubring.cert.d`.  GnuPG will ignore this.
+    `$GNUPGHOME/pubring.cert.d` (GnuPG will ignore this), unless you
+    are using the default `$GNUPGHOME`, in which case the default
+    location for the openpgp-cert-d is used.  This provides seamless
+    integration with other tools using the common certificate store,
+    such as Sequoia's native [sq] frontend.
 
   - If you create or import secret keys, the Chameleon will interact
     with `gpg-agent` the same way GnuPG would, and `gpg-agent` will in
     turn modify `$GNUPGHOME`.
 
-A consequence of not modifying GnuPG's state but using an overlay is
-that changes made using the Chameleon will not be picked up by GnuPG.
-For example, if you import a certificate using the Chameleon, it will
-only be inserted into the overlay, and GnuPG will not see it.  If you
-are using the Chameleon and GnuPG side-by-side, it is recommended to
-either do state changing actions using GnuPG, or explicitly export
-changes from the Chameleon and import them into GnuPG, by either
-manually running the following or adding it to a cronjob:
+[sq]: https://gitlab.com/sequoia-pgp/sequoia-sq
+
+### Switching to Sequoia's gpg-sq
+
+To use the Chameleon, you need to install it, and then make sure that
+it is invoked either directly by you or indirectly by programs instead
+of GnuPG.  There are three ways to do that.
+
+#### Direct invocation
+
+If you only interact with GnuPG via the command line, then invoking
+`gpg-sq` instead of `gpg` is enough to use the Chameleon instead of
+g10code's GnuPG.
+
+#### Replace /bin/gpg
+
+To globally replace g10code's `gpg` with the Chameleon, install it as
+`/bin/gpg` replacing g10code's `gpg`, for example using `dpkg-divert`
+or a similar mechanism.  This is more convenient and robust than
+invoking it using `gpg-sq`, but has the downside of being a
+system-wide all-or-nothing switch.
+
+#### Take precedence using PATH
+
+If the Chameleon can be found under the name `gpg` in your `$PATH`
+before g10code's `gpg` is found, it takes precedence.  This has the
+advantage of being more convenient and robust than invoking it using
+`gpg-sq`, while allowing a more fine-grained replacement method (for
+example per-shell if the `$PATH` is manipulated on a per-shell basis,
+or per-user if that is done in the shell's startup files).
+
+If you go down this route, you also need to make sure that `gpgconf`
+points to the Chameleon, because many programs invoke `gpgconf` to
+find the location of `gpg`, notably those that use GPGME.  To that
+end, we have a shim that can be used from the build directory (if you
+want to install the Chameleon, or your cargo target directory is
+different, you need to adapt it accordingly):
 
 ```sh
-$ gpg-sq --export | gpg --import
+$ export PATH=$(pwd)/shim-release:$PATH
+$ gpg --version | head -n1
+gpg (GnuPG-compatible Sequoia Chameleon) 2.2.40
+$ gpgconf | head -n1
+gpg:OpenPGP:.../sequoia-chameleon-gnupg/shim-release/gpg
 ```
 
-### How to build and use the Chameleon
+### Switching back to g10code's gpg
+
+You can at any point switch back to using g10code's gpg by undoing the
+replacement method discussed in the previous section.
+
+However, a consequence of not modifying GnuPG's state but using an
+overlay is that changes made using the Chameleon will not be picked up
+by GnuPG.  Therefore, you need to sync all the changes you made using
+the Chameleon back to g10code's GnuPG.
+
+For example, if you import a certificate using the Chameleon, it will
+only be inserted into the overlay, and g10code's GnuPG will not see
+it.  This is also true if you generate a key using the Chameleon:
+while the secret bits will be known to the `gpg-agent`, the public
+certificate will not.  Similarly, if you modify the trust database,
+the changes will only be written to our overlay.
+
+To sync the changes to the certificate store and trust database back,
+export changes from the Chameleon and import them into g10code's
+GnuPG:
+
+```sh
+$ gpg-sq --export | gpg-g10code --import
+$ gpg-sq --export-ownertrust | gpg-g10code --import-ownertrust
+```
+
+If you are using the Chameleon and GnuPG side-by-side, it is
+recommended to either do state changing actions using GnuPG, or sync
+the changes, either manually or periodically in a cron job.
+
+## How to build the Chameleon
 
 First, you need to install Sequoia's [build dependencies], as well as
 the SQLite3 library.  Then build the Chameleon from a checkout of this
@@ -71,23 +125,6 @@ $ git clone https://gitlab.com/sequoia-pgp/sequoia-chameleon-gnupg.git
 $ cd sequoia-chameleon-gnupg
 $ cargo build --release --no-default-features --features=crypto-openssl
 [...]
-```
-
-To use the Chameleon, you need to make sure that it is invoked either
-directly by you or indirectly by programs instead of GnuPG.  One way
-to do that is to put it under the name `gpg` into your path, but we
-also need to make sure that `gpgconf` points to the Chameleon, because
-many programs invoke gpgconf to find the location of gpg.  To that
-end, we have a shim that can be used from the build directory (if you
-want to install the Chameleon, or your cargo target directory is
-different, you need to adapt it accordingly):
-
-```sh
-$ export PATH=$(pwd)/shim-release:$PATH
-$ gpg --version | head -n1
-gpg (GnuPG-compatible Sequoia Chameleon) 2.2.39
-$ gpgconf | head -n1
-gpg:OpenPGP:.../sequoia-chameleon-gnupg/shim-release/gpg
 ```
 
 #### Running the tests
@@ -122,6 +159,74 @@ $ cat $SEQUOIA_GPG_CHAMELEON_LOG_INVOCATIONS
 814359: "gpg" "--lsign-key"
 814359:            Command aLSignKey is not implemented.
 ```
+
+# Status
+
+## gpgv-sq
+
+`gpgv-sq` is feature-complete.  Please report any problems you
+encounter when replacing `gpgv` with `gpgv-sq`.  `gpgv-sq` is
+stateless, you can switch to it by invoking `gpgv-sq` instead of
+`gpgv`, and switch between the implementations without further
+considerations.
+
+## gpg-sq
+
+`gpg-sq` is not feature-complete.  It currently implements a growing
+subset of commonly used commands and options.  Most of the signature
+creation and verification commands, the encryption and decryption
+commands, the key listing commands, and some miscellaneous commands
+are implemented.
+
+Currently, we rely on GnuPG's `gpg-agent` to handle secret key
+operations.  This is very convenient for users who are already using
+GnuPG, but it means that you have to have `gpg-agent` installed.
+Further, we don't have our own implementation of `gpgconf`, and we
+rely on it to start the `gpg-agent` and downstream users, such as
+GPGME, also require `gpgconf` to function.
+
+Support for trust models is limited.  Currently, the always trust
+("always") is implemented, as is the Web-of-Trust ("pgp") model, but
+we are only honoring ultimately trusted certificates as trust root
+(see [this issue]).
+
+[this issue]: https://gitlab.com/sequoia-pgp/sequoia-chameleon-gnupg/-/issues/34
+
+### Known deliberate divergences
+
+Some features of g10code's GnuPG are deliberately not implemented to
+improve security, or to reduce complexity in the reimplementation.
+This is a non-exhaustive list.
+
+#### Weak algorithms are rejected
+
+We reject more weak algorithms than GnuPG by default, notably SHA-1
+(see also [this section](#sha-1-mitigations)).
+
+#### Short key IDs are not supported
+
+Short key IDs, aka 32-bit key IDs, are not supported.  Creating keys
+with colliding short key IDs is trivial, so using them to refer to
+keys is insecure.  See https://evil32.com .
+
+#### We reject --use-embedded-filename
+
+This flag is insecure and may overwrite arbitrary files with
+attacker-controlled content on decryption.  We reject the flag by
+making the invocation fail.  Do not use this flag.
+
+#### No translation, no localization beyond date and time formats
+
+GnuPG translates all messages and error messages, and even some
+command-line arguments (`LANGUAGE=de gpg --compression-algo
+unkomprimiert`...).  We may translate strings in the future, but will
+never do locale-dependent argument parsing.
+
+#### Algorithms may be specified by OID in GnuPG
+
+Algorithms may be only be specified using their OpenPGP algorithm IDs
+and the symbolic identifiers as used by GnuPG.  If you absolutely need
+this, please open an issue.
 
 # Non-Functional Advantages
 
