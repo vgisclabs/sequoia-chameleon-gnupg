@@ -502,6 +502,36 @@ fn test_key_cert_imported(cert: Cert, mut experiment: Experiment) -> Result<()>
 
     let diff = experiment.invoke(&[
         "--list-keys",
+        "--keyid-format", "none",
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(1, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--keyid-format", "lOng",
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(1, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--keyid-format", "0xloNg",
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(1, 0);
+
+    // --keyid-format is ignored in colons mode.
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--keyid-format", "0xlong",
+        "--with-colons",
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(0, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
         "--with-secret",
     ])?;
     diff.assert_success();

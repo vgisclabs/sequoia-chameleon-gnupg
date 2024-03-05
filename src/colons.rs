@@ -26,6 +26,7 @@ use sequoia_ipc as ipc;
 use ipc::Keygrip;
 
 use crate::{
+    KeyIDFormat,
     babel,
     common::{Common, Compliance},
     trust::*,
@@ -206,9 +207,14 @@ impl Record<'_> {
                     )?;
                 } else {
                     writeln!(w,
-                             "{}   {} {} [{}]{}",
+                             "{}   {}{} {} [{}]{}",
                              record_type,
                              babel::Fish((key.pk_algo(), key_length, &curve)),
+                             match config.keyid_format {
+                                 KeyIDFormat::None => format!(""),
+                                 KeyIDFormat::Long => format!("/{}", key.keyid()),
+                                 KeyIDFormat::HexLong => format!("/0x{}", key.keyid()),
+                             },
                              creation_date.format("%Y-%m-%d"),
                              babel::Fish(primary_key_flags).to_string().to_uppercase(),
                              bracket(config, revocation_date, expiration_date),
@@ -271,9 +277,14 @@ impl Record<'_> {
                     )?;
                 } else {
                     writeln!(w,
-                             "{}   {} {} [{}]{}",
+                             "{}   {}{} {} [{}]{}",
                              record_type,
                              babel::Fish((key.pk_algo(), key_length, &curve)),
+                             match config.keyid_format {
+                                 KeyIDFormat::None => format!(""),
+                                 KeyIDFormat::Long => format!("/{}", key.keyid()),
+                                 KeyIDFormat::HexLong => format!("/0x{}", key.keyid()),
+                             },
                              creation_date.format("%Y-%m-%d"),
                              babel::Fish(key_flags).to_string().to_uppercase(),
                              bracket(config, revocation_date, expiration_date),
@@ -351,9 +362,16 @@ impl Record<'_> {
                     writeln!(w, "::::::::::0:")?;
                 } else {
                     if let Some(validity) = validity {
-                        writeln!(w, "uid           {} {}",
+                        writeln!(w, "{:width$}{} {}",
+                                 "uid",
                                  BoxedValidity(*validity),
-                                 String::from_utf8_lossy(userid.value()))?;
+                                 String::from_utf8_lossy(userid.value()),
+                                 width = match config.keyid_format {
+                                     KeyIDFormat::None => 14,
+                                     KeyIDFormat::Long => 20,
+                                     KeyIDFormat::HexLong => 22,
+                                 },
+                        )?;
                     } else {
                         writeln!(w, "uid                      {}",
                                  String::from_utf8_lossy(userid.value()))?;

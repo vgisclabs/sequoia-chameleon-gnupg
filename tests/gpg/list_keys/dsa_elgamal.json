@@ -200,6 +200,59 @@
       "args": [
         "\"--faked-system-time=1671553073!\"",
         "\"--list-keys\"",
+        "\"--keyid-format\"",
+        "\"none\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n--------------------\\npub   dsa1024 2007-06-07 [SC]\\n      73D758744BE721698EC54E8713B6F51ECDDE430D\\nuid           [ unknown] C O Mitter <committer@example.com>\\nsub   elg2048 2007-06-07 [E]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--keyid-format\"",
+        "\"lOng\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n--------------------\\npub   dsa1024/13B6F51ECDDE430D 2007-06-07 [SC]\\n      73D758744BE721698EC54E8713B6F51ECDDE430D\\nuid                 [ unknown] C O Mitter <committer@example.com>\\nsub   elg2048/7180066D7703B0E5 2007-06-07 [E]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--keyid-format\"",
+        "\"0xloNg\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n--------------------\\npub   dsa1024/0x13B6F51ECDDE430D 2007-06-07 [SC]\\n      73D758744BE721698EC54E8713B6F51ECDDE430D\\nuid                   [ unknown] C O Mitter <committer@example.com>\\nsub   elg2048/0x7180066D7703B0E5 2007-06-07 [E]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--keyid-format\"",
+        "\"0xlong\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:1024:17:13B6F51ECDDE430D:1181207337:::-:::scESC::::::::0:\\nfpr:::::::::73D758744BE721698EC54E8713B6F51ECDDE430D:\\nuid:-::::1181207337::2AE72D000EFEBAC29BED4A70447125482FBA5FAE::C O Mitter <committer@example.com>::::::::::0:\\nsub:-:2048:16:7180066D7703B0E5:1181207374::::::e:::::::\\nfpr:::::::::C4D1AEB1BB0323BE610A790A7180066D7703B0E5:\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
         "\"--with-secret\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
@@ -530,6 +583,59 @@
       "args": [
         "\"--faked-system-time=1671553073!\"",
         "\"--list-keys\"",
+        "\"--keyid-format\"",
+        "\"none\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   dsa1024 2007-06-07 [SC]\\n      73D758744BE721698EC54E8713B6F51ECDDE430D\\nuid           [ unknown] C O Mitter <committer@example.com>\\nsub   elg2048 2007-06-07 [E]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--keyid-format\"",
+        "\"lOng\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   dsa1024/13B6F51ECDDE430D 2007-06-07 [SC]\\n      73D758744BE721698EC54E8713B6F51ECDDE430D\\nuid                 [ unknown] C O Mitter <committer@example.com>\\nsub   elg2048/7180066D7703B0E5 2007-06-07 [E]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--keyid-format\"",
+        "\"0xloNg\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   dsa1024/0x13B6F51ECDDE430D 2007-06-07 [SC]\\n      73D758744BE721698EC54E8713B6F51ECDDE430D\\nuid                   [ unknown] C O Mitter <committer@example.com>\\nsub   elg2048/0x7180066D7703B0E5 2007-06-07 [E]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--keyid-format\"",
+        "\"0xlong\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:1024:17:13B6F51ECDDE430D:1181207337:::-:::scESC::::::::0:\\nfpr:::::::::73D758744BE721698EC54E8713B6F51ECDDE430D:\\nuid:-::::1181207337::2AE72D000EFEBAC29BED4A70447125482FBA5FAE::C O Mitter <committer@example.com>::::::::::0:\\nsub:-:2048:16:7180066D7703B0E5:1181207374::::::e:::::::\\nfpr:::::::::C4D1AEB1BB0323BE610A790A7180066D7703B0E5:\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
         "\"--with-secret\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
@@ -733,6 +839,26 @@
     ],
     [
       0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      1,
       0,
       0
     ],

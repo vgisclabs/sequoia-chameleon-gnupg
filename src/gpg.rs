@@ -520,6 +520,7 @@ pub struct Config<'store> {
     input_size_hint: Option<u64>,
     interactive: bool,
     keydb: keydb::KeyDB<'store>,
+    keyid_format: KeyIDFormat,
     keyserver: Vec<KeyserverURL>,
     keyserver_options: keyserver::KeyserverOptions,
     list_only: bool,
@@ -650,6 +651,7 @@ impl<'store> Config<'store> {
             input_size_hint: None,
             interactive: false,
             keydb: keydb::KeyDB::for_gpg(),
+            keyid_format: Default::default(),
             keyserver: Default::default(),
             keyserver_options: Default::default(),
             list_only: false,
@@ -1265,6 +1267,34 @@ impl std::str::FromStr for RequestOrigin {
             "remote" => Ok(RequestOrigin::Remote),
             "browser" => Ok(RequestOrigin::Browser),
             _ => Err(anyhow::anyhow!("Invalid request origin {:?}", s)),
+        }
+    }
+}
+
+#[derive(Clone)]
+enum KeyIDFormat {
+    None,
+    Long,
+    HexLong,
+}
+
+impl Default for KeyIDFormat {
+    fn default() -> Self {
+        KeyIDFormat::None
+    }
+}
+
+impl std::str::FromStr for KeyIDFormat {
+    type Err = anyhow::Error;
+
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        match s.to_lowercase().as_str() {
+            "none" => Ok(KeyIDFormat::None),
+            "short" | "0xshort" => Err(anyhow::anyhow!(
+                "short key IDs are not supported by the Sequoia Chameleon")),
+            "long" => Ok(KeyIDFormat::Long),
+            "0xlong" => Ok(KeyIDFormat::HexLong),
+            _ => Err(anyhow::anyhow!("invalid key ID format {:?}", s)),
         }
     }
 }
@@ -2510,6 +2540,8 @@ fn real_main() -> anyhow::Result<()> {
             oMultifile => {
                 multifile = true;
             },
+            oKeyidFormat =>
+                opt.keyid_format = value.as_str().unwrap().parse()?,
             oAutoKeyLocate => {
                 auto_key_locate_given = true;
                 for s in value.as_str().unwrap().split(',') {

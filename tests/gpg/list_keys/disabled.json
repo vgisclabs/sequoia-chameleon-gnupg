@@ -223,6 +223,59 @@
       "args": [
         "\"--faked-system-time=1671553073!\"",
         "\"--list-keys\"",
+        "\"--keyid-format\"",
+        "\"none\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n--------------------\\npub   ed25519 2022-12-20 [C]\\n      FCA1114B6F0595A26028A41F2CB66794733B0D53\\nuid           [ultimate] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519 2022-12-20 [S]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--keyid-format\"",
+        "\"lOng\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n--------------------\\npub   ed25519/2CB66794733B0D53 2022-12-20 [C]\\n      FCA1114B6F0595A26028A41F2CB66794733B0D53\\nuid                 [ultimate] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519/9BF4AE470EFC24DD 2022-12-20 [S]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--keyid-format\"",
+        "\"0xloNg\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n--------------------\\npub   ed25519/0x2CB66794733B0D53 2022-12-20 [C]\\n      FCA1114B6F0595A26028A41F2CB66794733B0D53\\nuid                   [ultimate] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519/0x9BF4AE470EFC24DD 2022-12-20 [S]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--keyid-format\"",
+        "\"0xlong\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:u:255:22:2CB66794733B0D53:1671553073:::u:::cSCD:::::ed25519:::0:\\nfpr:::::::::FCA1114B6F0595A26028A41F2CB66794733B0D53:\\nuid:u::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsub:u:255:22:9BF4AE470EFC24DD:1671553073::::::s:::::ed25519::\\nfpr:::::::::41056B630D6E80C8CDDD35599BF4AE470EFC24DD:\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
         "\"--with-secret\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
@@ -576,6 +629,59 @@
       "args": [
         "\"--faked-system-time=1671553073!\"",
         "\"--list-keys\"",
+        "\"--keyid-format\"",
+        "\"none\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   ed25519 2022-12-20 [C]\\n      FCA1114B6F0595A26028A41F2CB66794733B0D53\\nuid           [ultimate] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519 2022-12-20 [S]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--keyid-format\"",
+        "\"lOng\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   ed25519/2CB66794733B0D53 2022-12-20 [C]\\n      FCA1114B6F0595A26028A41F2CB66794733B0D53\\nuid                 [ultimate] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519/9BF4AE470EFC24DD 2022-12-20 [S]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--keyid-format\"",
+        "\"0xloNg\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   ed25519/0x2CB66794733B0D53 2022-12-20 [C]\\n      FCA1114B6F0595A26028A41F2CB66794733B0D53\\nuid                   [ultimate] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519/0x9BF4AE470EFC24DD 2022-12-20 [S]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--keyid-format\"",
+        "\"0xlong\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:u:255:22:2CB66794733B0D53:1671553073:::u:::cSCD:::::ed25519:::0:\\nfpr:::::::::FCA1114B6F0595A26028A41F2CB66794733B0D53:\\nuid:u::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsub:u:255:22:9BF4AE470EFC24DD:1671553073::::::s:::::ed25519::\\nfpr:::::::::41056B630D6E80C8CDDD35599BF4AE470EFC24DD:\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
         "\"--with-secret\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
@@ -791,6 +897,26 @@
     ],
     [
       0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      1,
       0,
       0
     ],
