@@ -19,7 +19,6 @@ use openpgp::{
     serialize::{Serialize, stream::*},
     types::*,
 };
-use sequoia_ipc as ipc;
 
 use crate::{
     babel,
@@ -362,25 +361,14 @@ fn do_encrypt(config: &crate::Config, args: &[String],
 async fn ask_password(config: &crate::Config<'_>, cacheid: Option<String>)
                       -> Result<Password> {
     let mut agent = config.connect_agent().await?;
-    Ok(crate::gpg_agent::get_passphrase(
+    Ok(config.get_passphrase(
         &mut agent,
         &cacheid, &None, None, None, false, 0, false, false,
-        |_agent, response| if let ipc::assuan::Response::Inquire {
-            keyword, parameters } = response
-        {
-            match keyword.as_str() {
-                "PINENTRY_LAUNCHED" => {
-                    let p = parameters.unwrap_or_default();
-                    let info = String::from_utf8_lossy(&p);
-                    let _ = config.status().emit(
-                        Status::PinentryLaunched(info.into()));
-                    None
-                },
-                _ => None,
-            }
-        } else {
-            None
-        }
+        |p| {
+            let info = String::from_utf8_lossy(&p);
+            let _ = config.status().emit(
+                Status::PinentryLaunched(info.into()));
+        },
     ).await?)
 }
 

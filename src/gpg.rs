@@ -869,6 +869,49 @@ impl<'store> Config<'store> {
         Ok(Box::new(pair))
     }
 
+    /// Makes the agent ask for a password.
+    pub async fn get_passphrase<P>(&self,
+                                   agent: &mut gpg_agent::Agent,
+                                   cache_id: &Option<String>,
+                                   err_msg: &Option<String>,
+                                   prompt: Option<String>,
+                                   desc_msg: Option<String>,
+                                   newsymkey: bool,
+                                   repeat: usize,
+                                   check: bool,
+                                   qualitybar: bool,
+                                   mut pinentry_launched_cb: P)
+                                   -> Result<Password>
+    where
+        P: FnMut(&[u8]),
+    {
+        use gpg_agent::PinentryMode;
+        use ipc::assuan::Response;
+
+        let callback = |_agent: &mut _, response| {
+            if let Response::Inquire { keyword, parameters } = &response {
+                match (keyword.as_str(), parameters, &self.pinentry_mode) {
+                    ("PASSPHRASE", _, PinentryMode::Loopback) => {
+                        self.static_passphrase.borrow().as_ref()
+                        .map(|encrypted| encrypted.map(
+                            |decrypted| decrypted.clone()))
+                    },
+                    ("PINENTRY_LAUNCHED", Some(p), _) => {
+                        pinentry_launched_cb(p.as_slice());
+                        None
+                    },
+                    _ => None,
+                }
+            } else {
+                None
+            }
+        };
+
+        Ok(gpg_agent::get_passphrase(agent, cache_id, err_msg, prompt, desc_msg,
+                                     newsymkey, repeat, check, qualitybar,
+                                     callback).await?)
+    }
+
     /// Returns the local users used e.g. in signing operations.
     pub async fn local_users(&self, flags: KeyFlags) -> Result<Vec<String>> {
         if self.local_user.is_empty() {

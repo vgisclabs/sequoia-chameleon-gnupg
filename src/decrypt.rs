@@ -24,7 +24,6 @@ use openpgp::{
         stream::*,
     },
 };
-use sequoia_ipc as ipc;
 
 use sequoia_gpg_agent as gpg_agent;
 use gpg_agent::{
@@ -585,29 +584,14 @@ impl<'a, 'store> DHelper<'a, 'store> {
             }
 
             let p =
-                crate::gpg_agent::get_passphrase(
+                self.config.get_passphrase(
                     &mut agent,
                     &cacheid, &error, None, None, false, 0, false, false,
-                    |_agent, response| if let ipc::assuan::Response::Inquire {
-                        keyword, parameters } = response
-                    {
-                        match keyword.as_str() {
-                            "PINENTRY_LAUNCHED" => {
-                                let p = parameters.unwrap_or_default();
-                                let info = String::from_utf8_lossy(&p);
-                                let _ = self.config.status().emit(
-                                    Status::PinentryLaunched(info.into()));
-                                None
-                            },
-                            "PASSPHRASE" =>
-                                self.config.static_passphrase.borrow().as_ref()
-                                .map(|encrypted| encrypted.map(
-                                    |decrypted| decrypted.clone())),
-                            _ => None,
-                        }
-                    } else {
-                        None
-                    }
+                    |p| {
+                        let info = String::from_utf8_lossy(&p);
+                        let _ = self.config.status().emit(
+                            Status::PinentryLaunched(info.into()));
+                    },
                 ).await?;
 
             for skesk in skesks {

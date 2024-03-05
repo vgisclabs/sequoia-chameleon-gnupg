@@ -726,11 +726,11 @@ async fn create_key(config: &mut crate::Config<'_>, filename: &str, i: usize,
     let mut agent = config.connect_agent().await?;
     let passphrase_store;
     if passphrase.is_none() && ! no_protection {
-        passphrase_store = crate::gpg_agent::get_passphrase(
+        passphrase_store = config.get_passphrase(
             &mut agent, &None, &None,
             Some("Passphrase:".into()),
             Some("Please enter passphrase to protect your new key".into()),
-            false, 1, true, true, |_, _| None).await?;
+            false, 1, true, true, |_| ()).await?;
         passphrase = Some(&passphrase_store);
     };
 
