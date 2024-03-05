@@ -132,6 +132,28 @@ fn symmetric(algo: SymmetricAlgorithm) -> Result<()> {
     diff.assert_success();
     diff.assert_limits(0, 0, 0);
 
+    let diff = experiment.invoke(&[
+        "--batch",
+        "--pinentry-mode=loopback",
+        "--decrypt",
+        "--passphrase-file", &experiment.store("password", b"password")?,
+        &experiment.store("ciphertext", &ciphertext)?,
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(0, 0, 0);
+
+    experiment.kill_agent()?;
+
+    let diff = experiment.invoke(&[
+        "--batch",
+        "--pinentry-mode=loopback",
+        "--decrypt",
+        "--command-file", &experiment.store("password", b"password\n")?,
+        &experiment.store("ciphertext", &ciphertext)?,
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(0, 0, 0);
+
     Ok(())
 }
 

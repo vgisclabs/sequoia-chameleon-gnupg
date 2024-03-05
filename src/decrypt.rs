@@ -583,14 +583,23 @@ impl<'a, 'store> DHelper<'a, 'store> {
                 }
             }
 
+            if matches!(self.config.pinentry_mode, PinentryMode::Loopback)
+                && self.config.static_passphrase.borrow().is_none()
+            {
+                // GnuPG emits this twice, for good measure.  The second time
+                // we emit it from Config::get_passphrase.
+                self.config.status().emit(Status::InquireMaxLen(100))?;
+            }
+
             let p =
                 self.config.get_passphrase(
                     &mut agent,
                     &cacheid, &error, None, None, false, 0, false, false,
                     |p| {
                         let info = String::from_utf8_lossy(&p);
-                        let _ = self.config.status().emit(
-                            Status::PinentryLaunched(info.into()));
+                        self.config.status().emit(
+                            Status::PinentryLaunched(info.into()))?;
+                        Ok(())
                     },
                 ).await?;
 

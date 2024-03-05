@@ -730,7 +730,7 @@ async fn create_key(config: &mut crate::Config<'_>, filename: &str, i: usize,
             &mut agent, &None, &None,
             Some("Passphrase:".into()),
             Some("Please enter passphrase to protect your new key".into()),
-            false, 1, true, true, |_| ()).await?;
+            false, 1, true, true, |_| Ok(())).await?;
         passphrase = Some(&passphrase_store);
     };
 

@@ -325,6 +325,14 @@ impl Context {
             files,
         })
     }
+
+    /// Kills the gpg-agent.
+    pub fn kill_agent(&self) -> Result<()> {
+        Command::new("gpgconf").arg("--homedir").arg(self.home.path())
+            .arg("--kill").arg("gpg-agent")
+            .spawn()?.wait()?;
+        Ok(())
+    }
 }
 
 /// A dummy type so that we can serialize a Vec<u8> as an
@@ -634,6 +642,8 @@ enum Action {
     Store(PathBuf),
     /// Invoke a command.
     Invoke(Vec<String>),
+    /// Kills the gpg-agent.
+    KillAgent,
 }
 
 impl Experiment {
@@ -852,6 +862,19 @@ impl Experiment {
         })
     }
 
+    /// Kills the gpg-agent.
+    pub fn kill_agent(&self) -> Result<()> {
+        self.log.borrow_mut().push(Action::KillAgent);
+
+        eprintln!();
+        eprintln!("## Killing the gpg-agent");
+        eprintln!();
+
+        self.us.kill_agent()?;
+        self.oracle.kill_agent()?;
+        Ok(())
+    }
+
     /// Stores the given data in the state directory, returning a path
     /// to that file.
     ///
@@ -893,6 +916,9 @@ impl Experiment {
                     w.finalize()?;
                     writeln!(&mut sink, "EOF")?;
                 },
+                Action::KillAgent => {
+                    writeln!(&mut sink, "gpgconf --kill gpg-agent")?;
+                }
             }
         }
         writeln!(&mut sink)?;

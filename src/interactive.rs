@@ -9,6 +9,10 @@ use std::{
 
 use anyhow::Result;
 
+use sequoia_openpgp::{
+    crypto::Password,
+};
+
 use crate::{
     Config,
     status::Status,
@@ -66,6 +70,34 @@ impl Config<'_> {
         let response = self.command_fd.get_response()?;
         self.status_fd.emit(Status::GotIt)?;
         Ok(response)
+    }
+
+    /// Prompts for a password.
+    ///
+    /// Prompts the given question `keyword` (when reading via
+    /// command-fd) or `prompt` (when reading via `stdin`), and reads
+    /// a line from the command-fd or stdin, as appropriate.
+    pub fn prompt_password(&self) -> Result<Password>
+    {
+        if self.command_fd.interactive && self.batch {
+            return Err(anyhow::anyhow!(
+                "Sorry, we are in batchmode - can't get input"));
+        }
+
+        if self.command_fd.interactive {
+            Ok(rpassword::prompt_password("Enter passphrase: ")?.into())
+        } else {
+            self.status_fd.emit(Status::GetHidden("passphrase.enter".into()))?;
+            let mut password = String::new();
+            self.command_fd.handle.lock().expect("not poisoned").borrow_mut()
+                .read_line(&mut password)?;
+            if password.ends_with("\n") {
+                password.pop();
+            }
+            let password = password.into();
+            self.status_fd.emit(Status::GotIt)?;
+            Ok(password)
+        }
     }
 
     /// Prompts the given yes/no question, defaulting to no.

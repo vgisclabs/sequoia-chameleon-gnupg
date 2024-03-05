@@ -360,14 +360,25 @@ fn do_encrypt(config: &crate::Config, args: &[String],
 
 async fn ask_password(config: &crate::Config<'_>, cacheid: Option<String>)
                       -> Result<Password> {
+    use sequoia_gpg_agent::PinentryMode;
     let mut agent = config.connect_agent().await?;
+
+    if matches!(config.pinentry_mode, PinentryMode::Loopback)
+        && config.static_passphrase.borrow().is_none()
+    {
+        // GnuPG emits this twice, for good measure.  The second time
+        // we emit it from Config::get_passphrase.
+        config.status().emit(Status::InquireMaxLen(100))?;
+    }
+
     Ok(config.get_passphrase(
         &mut agent,
         &cacheid, &None, None, None, false, 0, false, false,
         |p| {
             let info = String::from_utf8_lossy(&p);
-            let _ = config.status().emit(
-                Status::PinentryLaunched(info.into()));
+            config.status().emit(
+                Status::PinentryLaunched(info.into()))?;
+            Ok(())
         },
     ).await?)
 }

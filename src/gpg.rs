@@ -883,7 +883,7 @@ impl<'store> Config<'store> {
                                    mut pinentry_launched_cb: P)
                                    -> Result<Password>
     where
-        P: FnMut(&[u8]),
+        P: FnMut(&[u8]) -> Result<()>,
     {
         use gpg_agent::PinentryMode;
         use ipc::assuan::Response;
@@ -892,12 +892,31 @@ impl<'store> Config<'store> {
             if let Response::Inquire { keyword, parameters } = &response {
                 match (keyword.as_str(), parameters, &self.pinentry_mode) {
                     ("PASSPHRASE", _, PinentryMode::Loopback) => {
-                        self.static_passphrase.borrow().as_ref()
-                        .map(|encrypted| encrypted.map(
-                            |decrypted| decrypted.clone()))
+                        // Do we have a pre-set password?
+                        if let Some(p) =
+                            self.static_passphrase.borrow().as_ref()
+                        {
+                            return Some(p.map(|decrypted| decrypted.clone()));
+                        }
+
+                        // We don't.  Prompt for a password.
+                        let _ = // XXX.
+                            self.status().emit(status::Status::InquireMaxLen(100));
+                        match self.prompt_password() {
+                            Ok(p) => Some(p.map(|decrypted| decrypted.clone())),
+                            Err(e) => {
+                                // XXX: Unfortunately,
+                                // gpg_agent::get_passphrase doesn't
+                                // let us return errors:
+                                // https://gitlab.com/sequoia-pgp/sequoia-gpg-agent/-/issues/1
+                                self.error(format_args!("{}", e));
+                                std::process::exit(2);
+                            },
+                        }
                     },
                     ("PINENTRY_LAUNCHED", Some(p), _) => {
-                        pinentry_launched_cb(p.as_slice());
+                        let _ = // XXX.
+                            pinentry_launched_cb(p.as_slice());
                         None
                     },
                     _ => None,

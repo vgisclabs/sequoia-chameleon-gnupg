@@ -300,8 +300,18 @@ pub enum Status<'a> {
     /// e.g. `ask_revocation_reason.text`.
     GetLine(String),
 
+    /// What to prompt for when asking for a password,
+    /// e.g. `passphrase.enter`.
+    GetHidden(String),
+
     /// Sent when we got an answer.
     GotIt,
+
+    /// Indicates the maximum length of the requested input.
+    ///
+    /// Note: We don't have that limitation, and I'm not sure GnuPG
+    /// has.
+    InquireMaxLen(usize),
 
     Failure {
         location: &'a str,
@@ -820,7 +830,11 @@ impl Status<'_> {
 
             GetLine(prompt) => writeln!(w, "GET_LINE {}", prompt)?,
 
+            GetHidden(prompt) => writeln!(w, "GET_HIDDEN {}", prompt)?,
+
             GotIt => writeln!(w, "GOT_IT")?,
+
+            InquireMaxLen(l) => writeln!(w, "INQUIRE_MAXLEN {}", l)?,
 
             Failure {
                 location,
