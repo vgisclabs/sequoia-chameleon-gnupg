@@ -714,7 +714,7 @@ impl<'store> Config<'store> {
 
             // Streams.
             attribute_fd: Box::new(io::sink()),
-            command_fd: io::stdin().into(),
+            command_fd: interactive::Fd::interactive(),
             logger_fd: Mutex::new(RefCell::new(Box::new(io::stderr()))),
             status_fd: status::Fd::sink(),
         })

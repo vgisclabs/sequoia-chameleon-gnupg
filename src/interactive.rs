@@ -14,20 +14,33 @@ use crate::{
     status::Status,
 };
 
-pub struct Fd(Mutex<RefCell<Box<dyn io::BufRead + Send + Sync>>>);
+pub struct Fd {
+    handle: Mutex<RefCell<Box<dyn io::BufRead + Send + Sync>>>,
+    interactive: bool,
+}
 
 impl<S: io::Read + Send + Sync + 'static> From<S> for Fd {
     fn from(s: S) -> Fd {
-        Fd(Mutex::new(RefCell::new(Box::new(io::BufReader::new(s)))))
+        Fd {
+            handle: Mutex::new(RefCell::new(Box::new(io::BufReader::new(s)))),
+            interactive: false,
+        }
     }
 }
 
 impl Fd {
+    /// Configures the Chameleon for interactive use.
+    pub fn interactive() -> Self {
+        let mut fd: Self = io::stdin().into();
+        fd.interactive = true;
+        fd
+    }
+
     /// Prompts the given question `prompt`, and reads a line from the
     /// command-fd or stdin.
     fn get_response(&self) -> Result<String> {
         let mut result = String::new();
-        self.0.lock().expect("not poisoned").borrow_mut()
+        self.handle.lock().expect("not poisoned").borrow_mut()
             .read_line(&mut result)?;
         Ok(result.trim_end().into())
     }
@@ -42,6 +55,11 @@ impl Config<'_> {
     pub fn prompt(&self, keyword: &str, prompt: fmt::Arguments)
         -> Result<String>
     {
+        if self.command_fd.interactive && self.batch {
+            return Err(anyhow::anyhow!(
+                "Sorry, we are in batchmode - can't get input"));
+        }
+
         self.status_fd.emit_or_prompt(
             Status::GetLine(keyword.into()),
             &format!("{}", prompt))?;
@@ -60,6 +78,11 @@ impl Config<'_> {
     pub fn prompt_yN(&self, keyword: &str, prompt: fmt::Arguments)
         -> Result<bool>
     {
+        if self.command_fd.interactive && self.batch {
+            return Err(anyhow::anyhow!(
+                "Sorry, we are in batchmode - can't get input"));
+        }
+
         self.status_fd.emit_or_prompt(
             Status::GetBool(keyword.into()),
             &format!("{} (y/N)", prompt))?;
