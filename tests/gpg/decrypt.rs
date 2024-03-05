@@ -85,6 +85,7 @@ fn symmetric(algo: SymmetricAlgorithm) -> Result<()> {
         "--list-only",
         &experiment.store("ciphertext", &ciphertext)?,
     ])?;
+    diff.assert_success();
     diff.assert_limits(0, 0, 0);
 
     let diff = experiment.invoke(&[
@@ -94,6 +95,7 @@ fn symmetric(algo: SymmetricAlgorithm) -> Result<()> {
         "--passphrase", "password",
         &experiment.store("ciphertext", &ciphertext)?,
     ])?;
+    diff.assert_success();
     diff.assert_limits(0, 0, 0);
 
     let diff = experiment.invoke(&[
@@ -104,6 +106,7 @@ fn symmetric(algo: SymmetricAlgorithm) -> Result<()> {
         "--passphrase", "password",
         &experiment.store("ciphertext", &ciphertext)?,
     ])?;
+    diff.assert_success();
     diff.assert_limits(0, 0, 0);
 
     let diff = experiment.invoke(&[
@@ -114,6 +117,7 @@ fn symmetric(algo: SymmetricAlgorithm) -> Result<()> {
         "--passphrase", "password",
         &experiment.store("ciphertext", &ciphertext)?,
     ])?;
+    diff.assert_success();
     diff.assert_limits(0, 0, 0);
 
     let diff = experiment.invoke(&[
@@ -125,6 +129,7 @@ fn symmetric(algo: SymmetricAlgorithm) -> Result<()> {
         "--passphrase", "password",
         &experiment.store("ciphertext", &ciphertext)?,
     ])?;
+    diff.assert_success();
     diff.assert_limits(0, 0, 0);
 
     Ok(())

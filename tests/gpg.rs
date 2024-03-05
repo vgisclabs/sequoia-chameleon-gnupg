@@ -708,7 +708,9 @@ impl Experiment {
         UNIX_EPOCH + Duration::new(1671553073, 0)
     }
 
-    /// Invokes the given command on both implementations.
+    /// Invokes the given gpg or gpgv command on both implementations.
+    ///
+    /// If args[0] is neither gpg nor gpgv, gpg is assumed.
     pub fn invoke(&mut self, args: &[&str]) -> Result<Diff> {
         // Get the number of commands invoked in this experiment.  We
         // use this to enumerate the stored artifacts.
