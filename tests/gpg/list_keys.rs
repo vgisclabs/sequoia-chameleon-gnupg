@@ -93,7 +93,7 @@ fn queries() -> Result<()> {
         "--list-keys",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(9, 0);
+    diff.assert_equal_up_to(1, 0);
 
     for query in ["alice",
                   "Alice",
@@ -110,7 +110,7 @@ fn queries() -> Result<()> {
             "--list-keys", query,
         ])?;
         diff.assert_success();
-        diff.assert_limits(9, 0, 67);
+        diff.assert_limits(1, 0, 67);
     }
 
     // It is possible to specify multiple search terms.  In this case
@@ -401,21 +401,21 @@ fn test_key_cert_imported(cert: Cert, mut experiment: Experiment) -> Result<()>
         "--list-keys",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(9, 0);
+    diff.assert_equal_up_to(1, 0);
 
     let diff = experiment.invoke(&[
         "--list-keys",
         "--list-options=show-uid-validity",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(9, 0);
+    diff.assert_equal_up_to(1, 0);
 
     let diff = experiment.invoke(&[
         "--list-keys",
         "--list-options=no-show-uid-validity",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(9, 0);
+    diff.assert_equal_up_to(1, 0);
 
     let diff = experiment.invoke(&[
         "--list-keys",
@@ -444,14 +444,14 @@ fn test_key_cert_imported(cert: Cert, mut experiment: Experiment) -> Result<()>
         "--fingerprint",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(9, 0);
+    diff.assert_equal_up_to(1, 0);
 
     let diff = experiment.invoke(&[
         "--fingerprint",
         "--fingerprint",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(9, 0);
+    diff.assert_equal_up_to(1, 0);
 
     let diff = experiment.invoke(&[
         "--fingerprint",
@@ -535,7 +535,7 @@ fn test_key_cert_imported(cert: Cert, mut experiment: Experiment) -> Result<()>
         "--with-secret",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(9, 0);
+    diff.assert_equal_up_to(1, 0);
 
     let diff = experiment.invoke(&[
         "--list-keys",
@@ -549,7 +549,7 @@ fn test_key_cert_imported(cert: Cert, mut experiment: Experiment) -> Result<()>
         "--list-secret-keys",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(9, 0);
+    diff.assert_equal_up_to(1, 0);
 
     let diff = experiment.invoke(&[
         "--list-secret-keys",
@@ -570,7 +570,7 @@ fn test_key_cert_imported(cert: Cert, mut experiment: Experiment) -> Result<()>
         "--list-keys",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(9, 0);
+    diff.assert_equal_up_to(1, 0);
 
     let diff = experiment.invoke(&[
         "--list-keys",
@@ -584,7 +584,7 @@ fn test_key_cert_imported(cert: Cert, mut experiment: Experiment) -> Result<()>
         "--with-secret",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(9, 0);
+    diff.assert_equal_up_to(1, 0);
 
     let diff = experiment.invoke(&[
         "--list-keys",
@@ -598,7 +598,7 @@ fn test_key_cert_imported(cert: Cert, mut experiment: Experiment) -> Result<()>
         "--list-secret-keys",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(9, 0);
+    diff.assert_equal_up_to(1, 0);
 
     let diff = experiment.invoke(&[
         "--list-secret-keys",
@@ -675,7 +675,7 @@ fn general_purpose(cs: CipherSuite) -> Result<()> {
         "--list-keys",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(9, 0);
+    diff.assert_equal_up_to(1, 0);
 
     let diff = experiment.invoke(&[
         "--list-keys",
@@ -695,7 +695,7 @@ fn general_purpose(cs: CipherSuite) -> Result<()> {
         "--list-secret-keys",
     ])?;
     diff.assert_success();
-    diff.assert_equal_up_to(9, 0);
+    diff.assert_equal_up_to(1, 0);
 
     let diff = experiment.invoke(&[
         "--list-secret-keys",
