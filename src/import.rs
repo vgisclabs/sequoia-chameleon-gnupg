@@ -479,10 +479,9 @@ pub async fn do_import_cert(config: &mut crate::Config<'_>,
 
         for subkey in key.to_cert()?.keys().secret() {
             // See if we import a new key or subkey.
-            let c = crate::gpg_agent::import(&mut agent,
-                                             config.policy(),
-                                             key.to_cert()?, &subkey,
-                                             config.batch).await?;
+            let c = agent.import(config.policy(),
+                                 key.to_cert()?, &subkey,
+                                 config.batch).await?;
 
             changed |= c;
             unchanged |= !c;

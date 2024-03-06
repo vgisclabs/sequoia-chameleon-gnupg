@@ -287,17 +287,16 @@ impl<'a, 'store> DHelper<'a, 'store> {
     /// Tries to decrypt the given PKESK packet with `keypair` and try
     /// to decrypt the packet parser using `decrypt`.
     async fn try_decrypt<D>(&self,
-                            agent: &mut gpg_agent::Agent,
                             cert: &Cert,
                             pkesk: &PKESK,
                             sym_algo: Option<SymmetricAlgorithm>,
-                            keypair: KeyPair,
+                            mut keypair: KeyPair,
                             decrypt: &mut D)
                             -> Result<Option<Fingerprint>>
         where D: FnMut(SymmetricAlgorithm, &SessionKey) -> bool
     {
-        let kek = agent.decrypt(&keypair, pkesk.esk(),
-                                sym_algo.and_then(|a| a.key_size().ok())).await
+        let kek = keypair.decrypt(pkesk.esk(),
+                                  sym_algo.and_then(|a| a.key_size().ok()))
             .map_err(|e| {
                 // XXX: All errors here likely indicate that the key
                 // is not available.  But, there could be other
@@ -449,7 +448,6 @@ impl<'a, 'store> DHelper<'a, 'store> {
             // XXX: Does GnuPG keep trying if this fails?
         }
 
-        let ctx = self.config.ipc()?;
         let mut agent = self.config.connect_agent().await?;
 
         let emit_no_seckey = |keyid: &openpgp::KeyID| -> Result<()> {
@@ -511,7 +509,7 @@ impl<'a, 'store> DHelper<'a, 'store> {
             };
 
             if self.config.list_only {
-                if ! crate::gpg_agent::has_key(&mut agent, key.key()).await? {
+                if ! agent.has_key(key.key()).await? {
                     emit_no_seckey(keyid)?;
                 }
 
@@ -519,7 +517,7 @@ impl<'a, 'store> DHelper<'a, 'store> {
             }
 
             // And just try to decrypt it using the agent.
-            let mut pair = KeyPair::new(&ctx, &key)?
+            let mut pair = agent.keypair(&key)?
                 .with_cert(&vcert);
 
             // See if we have a static password to loop back to the
@@ -532,8 +530,7 @@ impl<'a, 'store> DHelper<'a, 'store> {
             }
 
             if let Ok(maybe_fp) = self.try_decrypt(
-                &mut agent, &cert, pkesk, sym_algo, pair, &mut decrypt)
-                .await
+                &cert, pkesk, sym_algo, pair, &mut decrypt).await
             {
                 // Success!
                 success = Some(maybe_fp);
@@ -620,8 +617,7 @@ impl<'a, 'store> DHelper<'a, 'store> {
             error = Some("Decryption failed".to_string());
             if let Some(cacheid) = &cacheid {
                 // Make gpg-agent forget the bad passphrase.
-                crate::gpg_agent::forget_passphrase(
-                    &mut agent,
+                agent.forget_passphrase(
                     &cacheid,
                     |info| {
                         let info = String::from_utf8_lossy(&info);

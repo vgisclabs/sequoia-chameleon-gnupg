@@ -36,11 +36,11 @@ rayon = "1"
 reqwest = { version = "0.11", features = ["socks"] }
 rpassword = "7"
 sequoia-cert-store = "0.5"
-sequoia-gpg-agent = "0.1"
+sequoia-gpg-agent = "0.2"
 sequoia-openpgp = { version = "1.19", default-features = false, features = ["compression"] }
 sequoia-openpgp-mt = "0.1"
 sequoia-policy-config = "0.6"
-sequoia-ipc = "0.33"
+sequoia-ipc = "0.34.1"
 sequoia-net = "0.28"
 sequoia-wot = "0.11"
 shellexpand = "3"

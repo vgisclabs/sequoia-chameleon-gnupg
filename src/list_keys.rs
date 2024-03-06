@@ -370,7 +370,7 @@ where
 
     for cert in certs {
         let mut has_secret = if let Some(a) = agent.as_mut() {
-            crate::gpg_agent::has_keys(a, &cert).await?
+            a.has_keys(&cert).await?
         } else {
             Default::default()
         };

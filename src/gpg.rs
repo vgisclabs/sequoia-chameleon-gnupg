@@ -735,16 +735,13 @@ impl<'store> Config<'store> {
 
     /// Returns a connection to the GnuPG agent.
     pub async fn connect_agent(&self) -> Result<gpg_agent::Agent> {
-        use sequoia_gpg_agent::{connect, send_simple};
+        let mut agent = gpg_agent::Agent::connect_to(&self.homedir).await?;
 
-        let ctx = self.ipc()?;
-        let mut agent: gpg_agent::Agent = connect(ctx).await?;
-
-        send_simple(&mut agent, "RESET").await?;
+        agent.send_simple("RESET").await?;
 
         if let Ok(tty) = std::env::var("GPG_TTY") {
-            send_simple(&mut agent, format!(
-                "OPTION ttyname={}", tty)).await?;
+            agent.send_simple(
+                format!("OPTION ttyname={}", tty)).await?;
         } else {
             #[cfg(unix)]
             {
@@ -759,36 +756,36 @@ impl<'store> Config<'store> {
                 };
 
                 if let Some(tty) = tty {
-                    send_simple(&mut agent, format!(
-                        "OPTION ttyname={}", tty)).await?;
+                    agent.send_simple(
+                        format!("OPTION ttyname={}", tty)).await?;
                 }
             }
         }
         let ttyname = unsafe { libc::ttyname(0) };
         if ! ttyname.is_null() {
             let ttyname = unsafe { std::ffi::CStr::from_ptr(ttyname) };
-            send_simple(&mut agent, format!(
+            agent.send_simple(format!(
                 "OPTION ttyname={}",
                 String::from_utf8_lossy(ttyname.to_bytes()))).await?;
         }
         if let Ok(term) = std::env::var("TERM") {
-            send_simple(&mut agent, format!("OPTION ttytype={}", term)).await?;
+            agent.send_simple(format!("OPTION ttytype={}", term)).await?;
         }
         if let Ok(display) = std::env::var("DISPLAY") {
-            send_simple(&mut agent, format!("OPTION display={}", display)).await?;
+            agent.send_simple(format!("OPTION display={}", display)).await?;
         }
         if let Ok(xauthority) = std::env::var("XAUTHORITY") {
-            send_simple(&mut agent, format!("OPTION xauthority={}", xauthority)).await?;
+            agent.send_simple(format!("OPTION xauthority={}", xauthority)).await?;
         }
         if let Ok(dbus) = std::env::var("DBUS_SESSION_BUS_ADDRESS") {
-            send_simple(&mut agent,
-                        format!("OPTION putenv=DBUS_SESSION_BUS_ADDRESS={}",
-                                dbus)).await?;
+            agent.send_simple(
+                format!("OPTION putenv=DBUS_SESSION_BUS_ADDRESS={}",
+                        dbus)).await?;
         }
-        send_simple(&mut agent, "OPTION allow-pinentry-notify").await?;
-        send_simple(&mut agent, "OPTION agent-awareness=2.1.0").await?;
-        send_simple(&mut agent, format!("OPTION pinentry-mode={}",
-                                        self.pinentry_mode.as_str())).await?;
+        agent.send_simple("OPTION allow-pinentry-notify").await?;
+        agent.send_simple("OPTION agent-awareness=2.1.0").await?;
+        agent.send_simple(format!("OPTION pinentry-mode={}",
+                                  self.pinentry_mode.as_str())).await?;
 
         Ok(agent)
     }
@@ -855,11 +852,9 @@ impl<'store> Config<'store> {
                             -> Result<Box<dyn openpgp::crypto::Signer + Send + Sync>>
     {
         let mut agent = self.connect_agent().await?;
-        gpg_agent::has_key(&mut agent, subkey).await?;
+        agent.has_key(subkey).await?;
 
-        let ctx = self.ipc()?;
-        let mut pair = ipc::gnupg::KeyPair::new(&ctx, subkey)?
-            .with_cert(vcert);
+        let mut pair = agent.keypair(subkey)?.with_cert(vcert);
 
         // See if we have a static password to loop back to the agent.
         if let (gpg_agent::PinentryMode::Loopback, Some(p)) =
@@ -888,7 +883,7 @@ impl<'store> Config<'store> {
         P: FnMut(&[u8]) -> Result<()>,
     {
         use gpg_agent::PinentryMode;
-        use ipc::assuan::Response;
+        use gpg_agent::sequoia_ipc::assuan::Response;
 
         let callback = |_agent: &mut _, response| {
             if let Response::Inquire { keyword, parameters } = &response {
@@ -898,39 +893,32 @@ impl<'store> Config<'store> {
                         if let Some(p) =
                             self.static_passphrase.borrow().as_ref()
                         {
-                            return Some(p.map(|decrypted| decrypted.clone()));
+                            return Ok(Some(p.map(|decrypted| decrypted.clone())));
                         }
 
                         // We don't.  Prompt for a password.
                         let _ = // XXX.
                             self.status().emit(status::Status::InquireMaxLen(100));
-                        match self.prompt_password() {
-                            Ok(p) => Some(p.map(|decrypted| decrypted.clone())),
-                            Err(e) => {
-                                // XXX: Unfortunately,
-                                // gpg_agent::get_passphrase doesn't
-                                // let us return errors:
-                                // https://gitlab.com/sequoia-pgp/sequoia-gpg-agent/-/issues/1
-                                self.error(format_args!("{}", e));
-                                std::process::exit(2);
-                            },
-                        }
+                        let p = self.prompt_password()?;
+                        Ok(Some(p.map(|decrypted| decrypted.clone())))
                     },
                     ("PINENTRY_LAUNCHED", Some(p), _) => {
                         let _ = // XXX.
                             pinentry_launched_cb(p.as_slice());
-                        None
+                        Ok(None)
                     },
-                    _ => None,
+                    // We silently ignore unknown inquiries.
+                    // Alternatively, we could return an error.
+                    _ => Ok(None),
                 }
             } else {
-                None
+                Ok(None)
             }
         };
 
-        Ok(gpg_agent::get_passphrase(agent, cache_id, err_msg, prompt, desc_msg,
-                                     newsymkey, repeat, check, qualitybar,
-                                     callback).await?)
+        Ok(agent.get_passphrase(cache_id, err_msg, prompt, desc_msg,
+                                newsymkey, repeat, check, qualitybar,
+                                callback).await?)
     }
 
     /// Returns the local users used e.g. in signing operations.
@@ -966,7 +954,7 @@ impl<'store> Config<'store> {
                         for sk in vcert.keys().key_flags(&flags).alive()
                             .revoked(false)
                         {
-                            if gpg_agent::has_key(&mut agent, sk.key()).await? {
+                            if agent.has_key(sk.key()).await? {
                                 return Ok(vec![cert.fingerprint().to_string()]);
                             }
                         }
