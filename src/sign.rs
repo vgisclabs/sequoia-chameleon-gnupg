@@ -78,7 +78,7 @@ pub fn cmd_sign(config: &crate::Config, args: &[String],
         SignatureType::Binary
     };
     let timestamp = config.now().try_into()?;
-    let hash_algo = config.def_digest;
+    let hash_algo = config.def_digest.unwrap_or_default();
 
     let mut signer = Signer::with_template(
         message,

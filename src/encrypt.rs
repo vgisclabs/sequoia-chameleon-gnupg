@@ -264,7 +264,23 @@ fn do_encrypt(config: &crate::Config, args: &[String],
     // The reason is that we want to produce the SKESK ourselves so
     // that we can cache the password in the agent.  To that end, fix
     // cipher and session key here.
-    let cipher = config.def_cipher;
+
+    let cipher = if let Some(def_cipher) = config.def_cipher {
+        // This overrides the recipients preferences, but we may warn
+        // about that, unless we deem ourselves an expert.
+        if ! config.expert && ! cipher_preferences.contains(&def_cipher) {
+            config.warn(format_args!(
+                "WARNING: forcing symmetric cipher {} ({}) \
+                 violates recipient preferences",
+                babel::Fish(def_cipher), u8::from(def_cipher)));
+        }
+
+        def_cipher
+    } else {
+        // Select best cipher from the recipient's preferences.
+        cipher_preferences.get(0).cloned().unwrap_or_default()
+    };
+
     let sk = SessionKey::new(cipher.key_size()?);
     de_vs_compliant &=
         config.de_vs_producer.symmetric_algorithm(cipher).is_ok();
@@ -287,20 +303,15 @@ fn do_encrypt(config: &crate::Config, args: &[String],
         de_vs_compliant &= recipients.is_empty();
     }
 
-    if ! cipher_preferences.contains(&cipher) {
-        config.warn(format_args!(
-            "WARNING: forcing symmetric cipher {} ({}) \
-             violates recipient preferences",
-            babel::Fish(cipher), u8::from(cipher)));
-    }
-
     let encryptor = Encryptor2::with_session_key(message, cipher, sk)?
         .add_recipients(recipients);
 
     let mut message = encryptor.build()?;
 
-    if config.compress_algo != CompressionAlgorithm::Uncompressed {
-        message = Compressor::new(message).algo(config.compress_algo).build()?;
+    if let Some(algo) = config.compress_algo
+        .filter(|&a| a != CompressionAlgorithm::Uncompressed)
+    {
+        message = Compressor::new(message).algo(algo).build()?;
     }
 
     if sign {
@@ -309,7 +320,7 @@ fn do_encrypt(config: &crate::Config, args: &[String],
             rt.block_on(crate::sign::get_signers(config))?;
 
         let timestamp = config.now().try_into()?;
-        let hash_algo = config.def_digest;
+        let hash_algo = config.def_digest.unwrap_or_default();
         let mut signer =
             Signer::new(message, signers.pop().expect("at least one"))
             .creation_time(timestamp)
