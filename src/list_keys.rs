@@ -1,5 +1,9 @@
 use std::{
-    collections::BTreeMap,
+    collections::{
+        BTreeMap,
+        BTreeSet,
+        HashSet,
+    },
     io::{self, Write},
     sync::Arc,
 };
@@ -8,6 +12,7 @@ use anyhow::Result;
 
 use sequoia_openpgp as openpgp;
 use openpgp::{
+    Fingerprint,
     cert::amalgamation::{ValidateAmalgamation, ValidAmalgamation},
     packet::{UserID, signature::subpacket::SubpacketTag},
     types::*,
@@ -357,23 +362,35 @@ where
         config, Some(config.now()), list_all && ! list_secret_keys_mode)?;
     let p = vtm.policy();
 
-    let mut agent =
-        if list_secret || (config.with_secret && config.with_colons) {
-            config.connect_agent().await.ok()
-        } else {
-            None
-        };
+    let mut secrets = Default::default();
+    if list_secret || (config.with_secret && config.with_colons) {
+        if let Ok(mut agent) = config.connect_agent().await {
+            secrets = agent.list_keys().await
+                .map(|keys| {
+                    keys.into_iter()
+                        .map(|k| k.keygrip().clone())
+                        .collect::<HashSet<_>>()
+                })
+                .unwrap_or(Default::default())
+        }
+    }
 
     // We emit the location header for humans only if we actually list
     // at least one key.
     let mut emitted_header = false;
 
     for cert in certs {
-        let mut has_secret = if let Some(a) = agent.as_mut() {
-            a.has_keys(&cert).await?
-        } else {
-            Default::default()
-        };
+        let mut has_secret: BTreeSet<Fingerprint> = cert
+            .keys()
+            .filter_map(|k| {
+                let keygrip = Keygrip::of(k.mpis()).ok()?;
+                if secrets.contains(&keygrip) {
+                    Some(k.fingerprint())
+                } else {
+                    None
+                }
+            })
+            .collect();
 
         // When we are importing secret keys, we may have the secret
         // while the agent does not yet have it.  Nevertheless, we

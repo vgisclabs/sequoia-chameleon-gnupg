@@ -449,6 +449,7 @@ impl<'a, 'store> DHelper<'a, 'store> {
         }
 
         let mut agent = self.config.connect_agent().await?;
+        let secret_keys = agent.list_keys().await.unwrap_or_default();
 
         let emit_no_seckey = |keyid: &openpgp::KeyID| -> Result<()> {
             self.config.status().emit(
@@ -509,7 +510,7 @@ impl<'a, 'store> DHelper<'a, 'store> {
             };
 
             if self.config.list_only {
-                if ! agent.has_key(key.key()).await? {
+                if secret_keys.lookup_by_key(key.key()).is_none() {
                     emit_no_seckey(keyid)?;
                 }
 
