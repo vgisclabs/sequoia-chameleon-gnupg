@@ -60,20 +60,37 @@ struct Metadata {
 impl Default for Metadata {
     fn default() -> Metadata {
         Metadata {
-            package: env::var("SQ_RECORDER_PACKAGE").unwrap_or_default(),
-            version: env::var("SQ_RECORDER_VERSION").unwrap_or_default(),
-            source: env::var("SQ_RECORDER_SOURCE").unwrap_or_default(),
+            package: Default::default(),
+            version: Default::default(),
+            source: Default::default(),
             creation_time: time::SystemTime::now(),
-        }
+        }.complete_from_env()
     }
 }
 
 impl Metadata {
     /// Checks whether the metadata record looks complete.
-    fn complete(&self) -> bool {
+    fn is_complete(&self) -> bool {
         ! (self.package.is_empty()
            || self.version.is_empty()
            || self.source.is_empty())
+    }
+
+    /// Completes metadata from the environment.
+    fn complete_from_env(mut self) -> Self {
+        if self.package.is_empty() {
+            self.package = env::var("SQ_RECORDER_PACKAGE").unwrap_or_default();
+        }
+
+        if self.version.is_empty() {
+            self.version = env::var("SQ_RECORDER_VERSION").unwrap_or_default();
+        }
+
+        if self.source.is_empty() {
+            self.source = env::var("SQ_RECORDER_SOURCE").unwrap_or_default();
+        }
+
+        self
     }
 }
 
@@ -1337,8 +1354,9 @@ fn clean_recording() -> Result<()> {
 
     let metadata: Metadata =
         fs::File::open(source.join("metadata.json"))
-        .and_then(|f| Ok(serde_json::from_reader(f)?))
-        .unwrap_or_default();
+        .and_then(|f| Ok(serde_json::from_reader::<_, Metadata>(f)?))
+        .unwrap_or_default()
+        .complete_from_env();
 
     let mut i = 0; // Index into source.
     let mut j = 0; // Index into target.
@@ -1394,7 +1412,7 @@ fn clean_recording() -> Result<()> {
 
     let target_metadata = target.join("metadata.json");
     serde_json::to_writer_pretty(create_file(&target_metadata)?, &metadata)?;
-    if ! metadata.complete() {
+    if ! metadata.is_complete() {
         eprintln!("Launching editor to complete the metadata...");
 
         loop {
