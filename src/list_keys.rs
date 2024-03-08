@@ -319,14 +319,14 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String], list_secret: bool)
     };
 
     list_keys(config, certs, list_secret,
-              args.is_empty(), // Only print header if no query is given.
+              args.is_empty(), // Are we listing all certs?
               sink)
 }
 
 pub fn list_keys<'a, 'store: 'a, S>(config: &'a crate::Config<'store>,
                                     certs: impl Iterator<Item = Arc<LazyCert<'store>>>,
                                     list_secret: bool,
-                                    emit_header: bool,
+                                    list_all: bool,
                                     sink: S)
     -> Result<()>
 where
@@ -336,7 +336,7 @@ where
     rt.block_on(async_list_keys(config, certs,
                                 list_secret, list_secret,
                                 config.list_options.uid_validity,
-                                emit_header,
+                                list_all,
                                 sink))
 }
 
@@ -347,7 +347,7 @@ pub async fn async_list_keys<'a, 'store: 'a, S>(
     // Tunes behavior for gpg --list-secret-keys.
     list_secret_keys_mode: bool,
     list_uid_validity: bool,
-    emit_header: bool,
+    list_all: bool,
     mut sink: S)
     -> Result<()>
 where
@@ -392,9 +392,10 @@ where
             continue;
         };
 
-        // For humans, we print the location of the store if we list
+        // For humans, we print the location of the store if the user
+        // requested all keys (i.e. no pattern was given) and we list
         // at least one key.
-        if emit_header && ! emitted_header && ! config.with_colons {
+        if list_all && ! emitted_header && ! config.with_colons {
             emitted_header = true;
 
             let path =
