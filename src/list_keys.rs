@@ -353,7 +353,8 @@ pub async fn async_list_keys<'a, 'store: 'a, S>(
 where
     S: Write,
 {
-    let vtm = config.trust_model_impl.with_policy(config, Some(config.now()))?;
+    let vtm = config.trust_model_impl.with_policy_and_precompute(
+        config, Some(config.now()), list_all && ! list_secret_keys_mode)?;
     let p = vtm.policy();
 
     let mut agent =
