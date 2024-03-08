@@ -198,17 +198,41 @@ impl fmt::Display for TrustModel {
 }
 
 pub trait Model {
-    fn with_policy<'a, 'store>(&self, config: &'a crate::Config<'store>,
-                               at: Option<SystemTime>)
+    /// Creates a view under the given configuration, policy, and
+    /// time.
+    fn with_policy<'a, 'store>(
+        &self,
+        config: &'a crate::Config<'store>,
+        at: Option<SystemTime>)
         -> Result<Box<dyn ModelViewAt<'a, 'store> + 'a>>
-        where 'store: 'a;
+    where
+        'store: 'a,
+    {
+        self.with_policy_and_precompute(config, at, false)
+    }
+
+    /// Creates a view under the given configuration, policy, and
+    /// time, and possibly pre-compute the network.
+    ///
+    /// Note: when considering all or most of the certificates,
+    /// pre-computing will improve performance.
+    fn with_policy_and_precompute<'a, 'store>(
+        &self,
+        config: &'a crate::Config<'store>,
+        at: Option<SystemTime>,
+        precompute: bool)
+        -> Result<Box<dyn ModelViewAt<'a, 'store> + 'a>>
+    where
+        'store: 'a;
 }
 
 pub fn null_model() -> Box<dyn Model> {
     struct Null(());
     impl Model for Null {
-        fn with_policy<'a, 'store>(&self, _: &'a crate::Config,
-                                   _: Option<SystemTime>)
+        fn with_policy_and_precompute<'a, 'store>(
+            &self, _: &'a crate::Config,
+            _: Option<SystemTime>,
+            _: bool)
             -> Result<Box<dyn ModelViewAt<'a, 'store> + 'a>>
             where 'store: 'a
         {

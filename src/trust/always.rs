@@ -35,8 +35,10 @@ use crate::{
 pub struct Always(());
 
 impl Model for Always {
-    fn with_policy<'a, 'store>(&self, config: &'a Config<'store>,
-                               time: Option<SystemTime>)
+    fn with_policy_and_precompute<'a, 'store>(
+        &self, config: &'a Config<'store>,
+        time: Option<SystemTime>,
+        _: bool)
         -> Result<Box<dyn ModelViewAt<'a, 'store> + 'a>>
     where 'store: 'a
     {

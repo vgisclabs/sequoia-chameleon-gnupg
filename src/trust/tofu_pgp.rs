@@ -43,13 +43,16 @@ impl TofuPGP {
 }
 
 impl Model for TofuPGP {
-    fn with_policy<'a, 'store>(&self, config: &'a Config<'store>,
-                               time: Option<SystemTime>)
+    fn with_policy_and_precompute<'a, 'store>(
+        &self, config: &'a Config<'store>,
+        time: Option<SystemTime>,
+        precompute: bool)
         -> Result<Box<dyn ModelViewAt<'a, 'store> + 'a>>
     where 'store: 'a
     {
         Ok(Box::new(TofuPGPViewAt {
-            pgp: self.pgp.with_policy(config, time)?,
+            pgp: self.pgp.with_policy_and_precompute(
+                config, time, precompute)?,
         }))
     }
 }

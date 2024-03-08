@@ -12,6 +12,7 @@ use openpgp::{
     policy::Policy,
 };
 use sequoia_wot as wot;
+use wot::store::Backend;
 
 use sequoia_cert_store as cert_store;
 use cert_store::LazyCert;
@@ -40,10 +41,12 @@ impl WoT {
 }
 
 impl Model for WoT {
-    fn with_policy<'a, 'store>(&self, config: &'a Config<'store>,
-                               at: Option<SystemTime>)
+    fn with_policy_and_precompute<'a, 'store>(
+        &self, config: &'a Config<'store>,
+        at: Option<SystemTime>,
+        precompute: bool)
         -> Result<Box<dyn ModelViewAt<'a, 'store> + 'a>>
-        where 'store: 'a
+    where 'store: 'a
     {
         // Start with the roots from the trust database.
         let mut roots = config.trustdb.ultimately_trusted_keys();
@@ -63,6 +66,9 @@ impl Model for WoT {
 
         let store = wot::store::CertStore::from_store(
             &config.keydb, &config.policy, at.unwrap_or_else(SystemTime::now));
+        if precompute {
+            store.precompute();
+        }
         let n = wot::Network::new(store)?;
 
         Ok(Box::new(WoTViewAt {
