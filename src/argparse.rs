@@ -212,7 +212,11 @@ impl<T: Copy + Debug + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
 
     /// Displays version information.
     pub fn version(&self, config: &crate::Config) {
-        println!("{} (GnuPG-compatible Sequoia Chameleon) {}",
+        // The first line needs to exactly match what gpg emits, as
+        // programs try and parse it.  See
+        //
+        // https://gitlab.com/sequoia-pgp/sequoia-chameleon-gnupg/-/issues/61
+        println!("{} (GnuPG) {}",
                  self.name, crate::gnupg_interface::VERSION);
         println!("Sequoia {} Chameleon {}",
                  self.name, env!("CARGO_PKG_VERSION"));
