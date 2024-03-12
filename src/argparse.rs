@@ -212,7 +212,8 @@ impl<T: Copy + Debug + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
 
     /// Displays version information.
     pub fn version(&self, config: &crate::Config) {
-        println!("{} (GnuPG-compatible Sequoia Chameleon) {}",
+        const NBSP: char = '\u{00A0}'; // A non-breaking space.
+        println!("{} (GnuPG-compatible{NBSP}Sequoia{NBSP}Chameleon) {}",
                  self.name, crate::gnupg_interface::VERSION);
         println!("Sequoia {} Chameleon {}",
                  self.name, env!("CARGO_PKG_VERSION"));
