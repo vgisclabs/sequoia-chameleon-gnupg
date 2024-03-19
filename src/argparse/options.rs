@@ -112,6 +112,7 @@ pub fn parse<T>(opts: &[Opt<T>], s: &str, o: &mut T) -> Result<()> {
                 if opt.name != key {
                     if let Some(other) = opts[i + 1..].iter()
                         .filter(|o| o.enabled)
+                        .filter(|o| o.name != opt.name)
                         .find(|o| o.name.starts_with(key))
                     {
                         return Err(Error::Ambiguous(
