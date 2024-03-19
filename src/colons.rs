@@ -19,7 +19,12 @@ use openpgp::{
     cert::prelude::*,
     crypto::hash::Digest,
     crypto::mpi::PublicKey,
-    packet::{UserID, Key, key::{PublicParts, PrimaryRole, SubordinateRole}},
+    packet::{
+        Key,
+        Signature,
+        UserID,
+        key::{PublicParts, PrimaryRole, SubordinateRole},
+    },
     types::*,
 };
 use sequoia_ipc as ipc;
@@ -64,6 +69,7 @@ pub enum Record<'k> {
     },
 
     Signature {
+        sig: &'k Signature,
         issuer: Option<KeyID>,
         issuer_fp: Option<Fingerprint>,
         issuer_uid: Option<UserID>,
@@ -380,6 +386,7 @@ impl Record<'_> {
             },
 
             Signature {
+                sig,
                 issuer,
                 issuer_fp,
                 issuer_uid,
@@ -425,7 +432,7 @@ impl Record<'_> {
                              u8::from(*hash_algo))?;
                 } else {
                     use SignatureType::*;
-                    writeln!(w, "{} {}    {} {} {} {}  {}",
+                    writeln!(w, "{} {}   {}{} {} {} {}  {}",
                              class,
                              match typ {
                                  PersonaCertification => '1',
@@ -433,6 +440,7 @@ impl Record<'_> {
                                  PositiveCertification => '3',
                                  _ => ' ',
                              },
+                             sig.policy_uri().map(|_| 'P').unwrap_or(' '),
                              has_notations.then_some('N').unwrap_or(' '),
                              trust.map(|(depth, _amount)| depth.to_string())
                              .unwrap_or_else(|| " ".into()),
@@ -444,6 +452,12 @@ impl Record<'_> {
                                   String::from_utf8_lossy(u.value()).to_string())
                              .unwrap_or_else(
                                  || "[User ID not found]".to_string()))?;
+                    if let Some(p) = sig.policy_uri()
+                        .filter(|_| config.list_options.policy_urls)
+                    {
+                        writeln!(w, "   Signature policy: {}",
+                                 String::from_utf8_lossy(p))?;
+                    }
                 }
             },
 

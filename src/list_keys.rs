@@ -119,7 +119,7 @@ impl ListOptions {
             "show key usage information during key listings",
         },
 
-        opt_todo! {
+        opt! {
             "show-policy-urls",
             |o, s, _| Ok({ o.policy_urls = s; }),
             "show policy URLs during signature listings",
@@ -526,6 +526,7 @@ where
                     };
 
                 Record::Signature {
+                    sig: s,
                     issuer: s.issuers().cloned().next().or_else(
                         || s.issuer_fingerprints().cloned().next().map(Into::into)),
                     issuer_fp: s.issuer_fingerprints().cloned().next(),
@@ -615,6 +616,7 @@ where
                         };
 
                     Record::Signature {
+                        sig: s,
                         issuer: s.issuers().cloned().next().or_else(
                             || s.issuer_fingerprints().cloned().next().map(Into::into)),
                         issuer_fp: s.issuer_fingerprints().cloned().next(),
@@ -704,6 +706,7 @@ where
                         };
 
                     Record::Signature {
+                        sig: s,
                         issuer: s.issuers().cloned().next().or_else(
                             || s.issuer_fingerprints().cloned().next().map(Into::into)),
                         issuer_fp: s.issuer_fingerprints().cloned().next(),

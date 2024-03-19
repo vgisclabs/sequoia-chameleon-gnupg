@@ -1088,3 +1088,83 @@ fn unusable_uids() -> Result<()> {
 
     Ok(())
 }
+
+#[test]
+#[ntest::timeout(600000)]
+fn policy_url() -> Result<()> {
+    let mut experiment = make_experiment!()?;
+    let cert = experiment.artifact(
+        "cert",
+        || {
+            let (cert, _rev) = CertBuilder::new()
+                .set_creation_time(Experiment::now())
+                .add_userid_with(
+                    "Alice Lovelace <alice@lovelace.name>",
+                    SignatureBuilder::new(SignatureType::PositiveCertification)
+                        .set_policy_uri("https://example.org/openpgp-policy")?)?
+                .add_signing_subkey()
+                .generate()?;
+            Ok(cert)
+        },
+        |a, f| a.as_tsk().serialize(f),
+        |b| Cert::from_bytes(&b))?;
+
+    experiment.section("Importing cert...");
+    let diff = experiment.invoke(&[
+        "--import",
+        &experiment.store("cert", &cert.to_vec()?)?,
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(0, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-sig-list",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(1, 0, 67);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-sig-list",
+        "--with-colons",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(0, 0, 67);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-sig-list",
+        "--list-options", "no-show-policy-urls",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(1, 0, 67);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-sig-list",
+        "--with-colons",
+        "--list-options", "no-show-policy-urls",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(0, 0, 67);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-sig-list",
+        "--list-options", "show-policy-urls",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(1, 0, 67);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-sig-list",
+        "--with-colons",
+        "--list-options", "show-policy-urls",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(0, 0, 67);
+
+    Ok(())
+}
