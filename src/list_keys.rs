@@ -1,4 +1,5 @@
 use std::{
+    cell::OnceCell,
     collections::{
         BTreeMap,
         BTreeSet,
@@ -12,9 +13,15 @@ use anyhow::Result;
 
 use sequoia_openpgp as openpgp;
 use openpgp::{
+    Cert,
     Fingerprint,
     cert::amalgamation::{ValidateAmalgamation, ValidAmalgamation},
-    packet::UserID,
+    packet::{
+        Key,
+        Signature,
+        UserID,
+        key,
+    },
     types::*,
 };
 use sequoia_ipc as ipc;
@@ -251,7 +258,6 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String], list_secret: bool)
                     overlay.cert_store.certd().map(|c| c.certd())
                 {
                     use openpgp::{
-                        Cert,
                         parse::Parse,
                         serialize::SerializeInto,
                     };
@@ -379,6 +385,9 @@ where
     // at least one key.
     let mut emitted_header = false;
 
+    // For --check-sigs, we compute some stats.
+    let mut sig_stats = SigStats::default();
+
     for cert in certs {
         let mut has_secret: BTreeSet<Fingerprint> = cert
             .keys()
@@ -426,7 +435,6 @@ where
         let acert = AuthenticatedCert::new(vtm.as_ref(), &cert)?;
         let vcert = cert.with_policy(p, config.now()).ok();
         let cert_fp = cert.fingerprint();
-        let cert_kh = cert.key_handle();
         let have_secret = has_secret.contains(&cert_fp);
         let ownertrust = config.trustdb.get_ownertrust(&cert_fp)
             .unwrap_or_else(|| OwnerTrustLevel::Undefined.into());
@@ -503,27 +511,15 @@ where
 
         if config.list_options.list_sigs {
             for s in cert.primary_key().signatures() {
-                let is_self_sig =
-                    s.get_issuers().iter().any(|i| i.aliases(&cert_kh));
-
                 let (issuer_uid, validity) =
-                    if config.list_options.fast_list {
-                        (Some("".into()), None)
-                    } else if is_self_sig {
-                        (Some(best_effort_primary_userid.clone()), None)
-                    } else {
-                        if let Some(signer) =
-                            s.get_issuers().into_iter().find_map(
-                                |k| config.keydb().lookup_by_cert_or_subkey(&k).ok())
-                            .and_then(|certs| certs.into_iter().next())
-                            .and_then(|cert| cert.to_cert().ok().cloned())
-                        {
-                            (Some(best_effort_primary_uid(config.policy(), &signer).into()),
-                             None)
-                        } else {
-                            (None, Some(SignatureValidity::MissingKey))
-                        }
-                    };
+                    compute_sig_issuer_uid_and_validity(
+                        config, &mut sig_stats,
+                        cert, &best_effort_primary_userid, s,
+                        |k| s.clone().verify_direct_key(
+                            k, cert.primary_key().key()));
+                if validity.suppress(config) {
+                    continue; // Skip this signature.
+                }
 
                 Record::Signature {
                     sig: s,
@@ -581,27 +577,16 @@ where
 
             if config.list_options.list_sigs {
                 for s in uid.signatures() {
-                    let is_self_sig =
-                        s.get_issuers().iter().any(|i| i.aliases(&cert_kh));
-
                     let (issuer_uid, validity) =
-                        if config.list_options.fast_list {
-                            (Some("".into()), None)
-                        } else if is_self_sig {
-                            (Some(best_effort_primary_userid.clone()), None)
-                        } else {
-                            if let Some(signer) =
-                                s.get_issuers().into_iter().find_map(
-                                    |k| config.keydb().lookup_by_cert_or_subkey(&k).ok())
-                                .and_then(|certs| certs.into_iter().next())
-                                .and_then(|cert| cert.to_cert().ok().cloned())
-                            {
-                                (Some(best_effort_primary_uid(config.policy(), &signer).into()),
-                                 None)
-                            } else {
-                                (None, Some(SignatureValidity::MissingKey))
-                            }
-                        };
+                        compute_sig_issuer_uid_and_validity(
+                            config, &mut sig_stats,
+                            cert, &best_effort_primary_userid, s,
+                            |k| s.clone().verify_userid_binding(
+                                k, cert.primary_key().key(), uid.userid()));
+
+                    if validity.suppress(config) {
+                        continue; // Skip this signature.
+                    }
 
                     Record::Signature {
                         sig: s,
@@ -659,27 +644,16 @@ where
 
             if config.list_options.list_sigs {
                 for s in subkey.signatures() {
-                    let is_self_sig =
-                        s.get_issuers().iter().any(|i| i.aliases(&cert_kh));
-
                     let (issuer_uid, validity) =
-                        if config.list_options.fast_list {
-                            (Some("".into()), None)
-                        } else if is_self_sig {
-                            (Some(best_effort_primary_userid.clone()), None)
-                        } else {
-                            if let Some(signer) =
-                                s.get_issuers().into_iter().find_map(
-                                    |k| config.keydb().lookup_by_cert_or_subkey(&k).ok())
-                                .and_then(|certs| certs.into_iter().next())
-                                .and_then(|cert| cert.to_cert().ok().cloned())
-                            {
-                                (Some(best_effort_primary_uid(config.policy(), &signer).into()),
-                                 None)
-                            } else {
-                                (None, Some(SignatureValidity::MissingKey))
-                            }
-                        };
+                        compute_sig_issuer_uid_and_validity(
+                            config, &mut sig_stats,
+                            cert, &best_effort_primary_userid, s,
+                            |k| s.clone().verify_subkey_binding(
+                                k, cert.primary_key().key(), subkey.key()));
+
+                    if validity.suppress(config) {
+                        continue; // Skip this signature.
+                    }
 
                     Record::Signature {
                         sig: s,
@@ -696,5 +670,167 @@ where
         }
     }
 
+    sig_stats.emit(config);
     Ok(())
+}
+
+impl SignatureValidity {
+    /// Returns whether this signature should be skipped in the
+    /// signature listing.
+    pub fn suppress(&self, config: &crate::Config) -> bool {
+        config.check_sigs && ! config.with_colons
+            && (self == &SignatureValidity::NotChecked
+                || self == &SignatureValidity::MissingKey)
+    }
+}
+
+/// Computes IssuerUserID and SignatureValidity for the given
+/// signature.
+///
+/// This computes various checks on the signature, depending on the
+/// options given.  It also encapsulates some of the complexity with
+/// matching GnuPG's output.
+///
+/// Notably, GnuPG has two different sets of functions, one for the
+/// human-readable output (list_signature_print), and one for the
+/// machine-readable output (list_keyblock_colon).  What is computed
+/// and what is shown deviates slightly.  On the other hand, we have a
+/// unified output function, and capture the difference here in this
+/// function.
+fn compute_sig_issuer_uid_and_validity<C>(config: &crate::Config,
+                                          sig_stats: &mut SigStats,
+                                          cert: &Cert,
+                                          best_effort_primary_userid: &UserID,
+                                          s: &Signature,
+                                          mut check_sig: C)
+                                          -> (IssuerUserID, SignatureValidity)
+where
+    C: FnMut(&Key<key::PublicParts, key::UnspecifiedRole>) -> Result<()>,
+{
+    let cert_kh = cert.key_handle();
+    let is_self_sig =
+        s.get_issuers().iter().any(|i| i.aliases(&cert_kh));
+
+    // Lazily look up the signer cert.
+    //
+    // XXX: Currently, we only consider the first candidate.  It'd be
+    // better to consider all, then set the signers_uid to the first
+    // cert that successfully verifies the signature.
+    let signer = OnceCell::<Option<Cert>>::new();
+    let lookup_signer = |config: &crate::Config, sig: &Signature| {
+        signer.get_or_init(|| {
+            sig.get_issuers().into_iter()
+                .find_map(
+                    |k| config.keydb().lookup_by_cert_or_subkey(&k).ok())
+                .and_then(|certs| certs.into_iter().next())
+                .and_then(|cert| cert.to_cert().ok().cloned())
+        })
+    };
+
+    // Compute the issuer certificates (best effort) primary user ID
+    // for display.
+    let issuer_uid = if config.check_sigs && s.signature_creation_time()
+        .map(|sct| sct < cert.primary_key().creation_time())
+        .unwrap_or(false)
+    {
+        IssuerUserID::TimeConflict
+    } else if config.list_options.fast_list {
+        IssuerUserID::Empty
+    } else if is_self_sig {
+        if config.list_options.fast_list {
+            IssuerUserID::Empty
+        } else {
+            best_effort_primary_userid.into()
+        }
+    } else if let Some(signer) = lookup_signer(config, s) {
+        best_effort_primary_uid(config.policy(), &signer).into()
+    } else {
+        IssuerUserID::NotFound
+    };
+
+    // Now compute the signature validity.
+    let sig_validity = if is_self_sig {
+        if config.check_sigs {
+            // Self-signatures are always checked by the cert
+            // canonicalization.
+            sig_stats.good += 1;
+            SignatureValidity::Good
+        } else {
+            SignatureValidity::NotChecked
+        }
+    } else if config.check_sigs && s.signature_creation_time()
+        .map(|sct| sct < cert.primary_key().creation_time())
+        .unwrap_or(false)
+    {
+        config.warn(format_args!(
+            "public key {:X} is {} seconds newer than the signature",
+            cert.keyid(),
+            (cert.primary_key().creation_time().duration_since(
+                s.signature_creation_time().unwrap()).unwrap().as_secs())));
+        sig_stats.errors += 1;
+        SignatureValidity::OtherError
+    } else if ! config.check_sigs && config.list_options.fast_list {
+        sig_stats.missing_key += 1;
+        SignatureValidity::NotChecked
+    } else if let Some(signer) = lookup_signer(config, s) {
+        if config.check_sigs {
+            if signer.keys().key_handles(s.get_issuers().iter())
+                .any(|k| check_sig(k.key()).is_ok())
+            {
+                // XXX: check certification key flag above?
+                sig_stats.good += 1;
+                SignatureValidity::Good
+            } else {
+                sig_stats.bad += 1;
+                SignatureValidity::Bad
+            }
+        } else {
+            SignatureValidity::NotChecked
+        }
+    } else {
+        sig_stats.missing_key += 1;
+        SignatureValidity::MissingKey
+    };
+
+    (issuer_uid, sig_validity)
+}
+
+/// Signature statistics for --check-sigs.
+#[derive(Default)]
+struct SigStats {
+    good: usize,
+    bad: usize,
+    missing_key: usize,
+    errors: usize,
+}
+
+impl SigStats {
+    /// Emits statistics, if appropriate.
+    fn emit(&self, config: &crate::Config) {
+        if config.check_sigs && ! config.with_colons {
+            if self.good > 0 {
+                config.warn(format_args!(
+                    "{} good signatures",
+                    self.good));
+            }
+
+            if self.bad > 0 {
+                config.warn(format_args!(
+                    "{} bad signatures",
+                    self.bad));
+            }
+
+            if self.missing_key > 0 {
+                config.warn(format_args!(
+                    "{} signatures not checked due to missing keys",
+                    self.missing_key));
+            }
+
+            if self.errors > 0 {
+                config.warn(format_args!(
+                    "{} signatures not checked due to errors",
+                    self.errors));
+            }
+        }
+    }
 }

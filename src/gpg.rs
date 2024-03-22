@@ -2819,6 +2819,11 @@ fn real_main() -> anyhow::Result<()> {
             opt.list_options.list_sigs = true;
             list_keys::cmd_list_keys(&mut opt, &args, false)
         },
+        Some(aCheckKeys) => {
+            opt.check_sigs = true;
+            opt.list_options.list_sigs = true;
+            list_keys::cmd_list_keys(&mut opt, &args, false)
+        },
         Some(aListSecretKeys) =>
             list_keys::cmd_list_keys(&mut opt, &args, true),
         Some(aCheckTrustDB) => Ok(()), // This is a NOP for us.

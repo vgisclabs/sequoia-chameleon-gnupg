@@ -70,8 +70,8 @@ pub enum Record<'k> {
 
     Signature {
         sig: &'k Signature,
-        issuer_uid: Option<UserID>,
-        validity: Option<SignatureValidity>,
+        issuer_uid: IssuerUserID,
+        validity: SignatureValidity,
     },
 
     /// rvk: Revocation key
@@ -407,10 +407,17 @@ impl Record<'_> {
                     chrono::DateTime::<chrono::Utc>::from(creation_time);
 
                 if mr {
-                    writeln!(w, "{}:{}::{}:{}:{}::{}::{}:{:02x}{}::{}:::{}:",
+                    // For some reason, GnuPG suppresses this in colon-mode.
+                    let issuer_uid =
+                        if issuer_uid == &IssuerUserID::NotFound && config.check_sigs {
+                            &IssuerUserID::Empty
+                        } else {
+                            issuer_uid
+                        };
+
+                    writeln!(w, "{}:{:#}::{}:{}:{}::{}::{}:{:02x}{}::{}:::{}:",
                              class,
-                             validity.as_ref().map(|i| i.to_string())
-                             .unwrap_or_default(),
+                             validity,
                              u8::from(pk_algo),
                              issuer.as_ref().map(|i| i.to_string())
                              .unwrap_or_default(),
@@ -418,9 +425,7 @@ impl Record<'_> {
                              trust.map(|(depth, amount)|
                                        format!("{} {}", depth, amount))
                              .unwrap_or_else(|| "".into()),
-                             issuer_uid.as_ref()
-                             .map(|u| String::from_utf8_lossy(u.value()).to_string())
-                             .unwrap_or_else(|| "[User ID not found]".to_string()),
+                             issuer_uid,
                              u8::from(typ),
                              if exportable { 'x' } else { 'l' },
                              issuer_fp.as_ref().map(|i| i.to_string())
@@ -428,8 +433,9 @@ impl Record<'_> {
                              u8::from(hash_algo))?;
                 } else {
                     use SignatureType::*;
-                    writeln!(w, "{} {}   {}{} {} {} {}  {}",
+                    writeln!(w, "{}{}{}   {}{} {} {} {}  {}",
                              class,
+                             validity,
                              match typ {
                                  PersonaCertification => '1',
                                  CasualCertification => '2',
@@ -443,11 +449,7 @@ impl Record<'_> {
                              issuer.as_ref().map(|i| i.to_string())
                              .unwrap_or_default(),
                              creation_time.format("%Y-%m-%d"),
-                             issuer_uid.as_ref()
-                             .map(|u|
-                                  String::from_utf8_lossy(u.value()).to_string())
-                             .unwrap_or_else(
-                                 || "[User ID not found]".to_string()))?;
+                             issuer_uid)?;
                     if let Some(p) = sig.policy_uri()
                         .filter(|_| config.list_options.policy_urls)
                     {
@@ -528,7 +530,9 @@ impl fmt::Display for TokenSN {
     }
 }
 
+#[derive(Debug, PartialEq, Eq)]
 pub enum SignatureValidity {
+    NotChecked,
     Good,
     Bad,
     MissingKey,
@@ -539,10 +543,53 @@ impl fmt::Display for SignatureValidity {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         use SignatureValidity::*;
         match self {
+            NotChecked => if f.alternate() {
+                // Suppress output for machine-readable interface.
+                Ok(())
+            } else {
+                f.write_str(" ")
+            },
             Good => f.write_str("!"),
             Bad => f.write_str("-"),
-            MissingKey => f.write_str("?"),
+            MissingKey =>  if f.alternate() {
+                f.write_str("?")
+            } else {
+                // Suppress output for human-readable interface.
+                f.write_str(" ")
+            },
             OtherError => f.write_str("%"),
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq)]
+pub enum IssuerUserID {
+    NotFound,
+    TimeConflict,
+    Empty,
+    Some(String),
+}
+
+impl From<&UserID> for IssuerUserID {
+    fn from(u: &UserID) -> IssuerUserID {
+        IssuerUserID::Some(String::from_utf8_lossy(u.value()).into())
+    }
+}
+
+impl From<String> for IssuerUserID {
+    fn from(u: String) -> IssuerUserID {
+        IssuerUserID::Some(u)
+    }
+}
+
+impl fmt::Display for IssuerUserID {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        use IssuerUserID::*;
+        match self {
+            NotFound => f.write_str("[User ID not found]"),
+            TimeConflict => f.write_str("[Time conflict] "),
+            Empty => Ok(()),
+            Some(u) => f.write_str(&u),
         }
     }
 }

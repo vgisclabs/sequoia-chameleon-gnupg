@@ -925,6 +925,50 @@ fn list_signatures() -> Result<()> {
     diff.assert_success();
     diff.assert_limits(4, 0, 0);
 
+    // Again, this time with checking.
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-sig-check",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(1, 0, 67);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-sig-check",
+        "--with-colons",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(0, 0, 67);
+
+    let diff = experiment.invoke(&[
+        "--check-signatures",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(1, 0, 67);
+
+    let diff = experiment.invoke(&[
+        "--check-signatures",
+        "--with-colons",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(0, 0, 67);
+
+    let diff = experiment.invoke(&[
+        "--check-signatures",
+        "--fast-list-mode",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(1, 0, 0);
+
+    let diff = experiment.invoke(&[
+        "--check-signatures",
+        "--fast-list-mode",
+        "--with-colons",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(4, 0, 0);
+
     let mut experiment = make_experiment!("all-certs")?;
     experiment.section("Importing the other certs ...");
     let mut certs =
@@ -980,6 +1024,50 @@ fn list_signatures() -> Result<()> {
     ])?;
     diff.assert_success();
     diff.assert_limits(0, 0, 536);
+
+    // Again, this time with checking.
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-sig-check",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(1, 0, 603);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-sig-check",
+        "--with-colons",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(0, 0, 603);
+
+    let diff = experiment.invoke(&[
+        "--check-signatures",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(1, 0, 603);
+
+    let diff = experiment.invoke(&[
+        "--check-signatures",
+        "--with-colons",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(0, 0, 603);
+
+    let diff = experiment.invoke(&[
+        "--check-signatures",
+        "--fast-list-mode",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(1, 0, 335);
+
+    let diff = experiment.invoke(&[
+        "--check-signatures",
+        "--fast-list-mode",
+        "--with-colons",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(32, 0, 335);
 
     Ok(())
 }

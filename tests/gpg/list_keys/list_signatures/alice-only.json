@@ -118,6 +118,79 @@
       "statusfd": "",
       "status": "exit status: 0",
       "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-sig-check\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: public key 656B037051641C74 is 3600 seconds newer than the signature\\ngpg: public key 656B037051641C74 is 1800 seconds newer than the signature\\ngpg: 4 good signatures\\ngpg: 5 signatures not checked due to missing keys\\ngpg: 2 signatures not checked due to errors\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n--------------------\\npub   ed25519 2022-12-20 [C] [expires: 2025-12-16]\\n      2E69B7EB602039AAC9059D36656B037051641C74\\nsig!     N   656B037051641C74 2022-12-20  Alice Lovelace <alice@lovelace.name>\\nuid           [ unknown] Alice Lovelace <alice@lovelace.name>\\nsig!3    N   656B037051641C74 2022-12-20  Alice Lovelace <alice@lovelace.name>\\nsig%3    N   D06030B98E0F2EB8 2022-12-20  [Time conflict] \\nrev%     N   D06030B98E0F2EB8 2022-12-20  [Time conflict] \\nsub   ed25519 2022-12-20 [S] [expires: 2025-12-16]\\nsig!     N   656B037051641C74 2022-12-20  Alice Lovelace <alice@lovelace.name>\\nsub   cv25519 2022-12-20 [E] [expires: 2025-12-16]\\nsig!     N   656B037051641C74 2022-12-20  Alice Lovelace <alice@lovelace.name>\\n\\n",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 2E69B7EB602039AAC9059D36656B037051641C74 0\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-sig-check\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: public key 656B037051641C74 is 3600 seconds newer than the signature\\ngpg: public key 656B037051641C74 is 1800 seconds newer than the signature\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:255:22:656B037051641C74:1671553073:1765901873::-:::cESC:::::ed25519:::0:\\nfpr:::::::::2E69B7EB602039AAC9059D36656B037051641C74:\\nsig:!::22:656B037051641C74:1671553073::::Alice Lovelace <alice@lovelace.name>:1fx::2E69B7EB602039AAC9059D36656B037051641C74:::10:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsig:!::22:656B037051641C74:1671553073::::Alice Lovelace <alice@lovelace.name>:13x::2E69B7EB602039AAC9059D36656B037051641C74:::10:\\nsig:?::22:33ACE5FDEEFD9C89:1671553073::3 120:::13x::C63B3AF44F505B33DD89490933ACE5FDEEFD9C89:::10:\\nsig:?::22:56EA0223A50C4CE2:1671553073:::::10x::7268FD9B5D9C67B62DC733A756EA0223A50C4CE2:::10:\\nsig:?::22:B77688D524EE3401:1671553073:::::12x::111B7AFAB102ED03726DA353B77688D524EE3401:::10:\\nsig:?::22:A65BAC0B67C0D75E:1671553073:::::11x::ECE9E547F222C95EB964CFC6A65BAC0B67C0D75E:::10:\\nsig:?::22:99DA2E253E2B5BB5:1671553073:::::13x::658B07D23FA44BD7A1519BED99DA2E253E2B5BB5:::10:\\nsig:%::22:D06030B98E0F2EB8:1671549473::::[Time conflict] :13x::E0E6ED4D62D9A8642DE37B46D06030B98E0F2EB8:::10:\\nrev:%::22:D06030B98E0F2EB8:1671551273::::[Time conflict] :30x::E0E6ED4D62D9A8642DE37B46D06030B98E0F2EB8:::10:\\nsub:-:255:22:4ADAF10E1E767D39:1671553073:1765901873:::::s:::::ed25519::\\nfpr:::::::::2838F9A308EF7D8B1E735A4A4ADAF10E1E767D39:\\nsig:!::22:656B037051641C74:1671553073::::Alice Lovelace <alice@lovelace.name>:18x::2E69B7EB602039AAC9059D36656B037051641C74:::10:\\nsub:-:255:18:32E1B5CFAE44FBE7:1671553073:1765901873:::::e:::::cv25519::\\nfpr:::::::::D8859653FB1EABC4F6C4000F32E1B5CFAE44FBE7:\\nsig:!::22:656B037051641C74:1671553073::::Alice Lovelace <alice@lovelace.name>:18x::2E69B7EB602039AAC9059D36656B037051641C74:::10:\\n",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 2E69B7EB602039AAC9059D36656B037051641C74 0\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--check-signatures\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: public key 656B037051641C74 is 3600 seconds newer than the signature\\ngpg: public key 656B037051641C74 is 1800 seconds newer than the signature\\ngpg: 4 good signatures\\ngpg: 5 signatures not checked due to missing keys\\ngpg: 2 signatures not checked due to errors\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n--------------------\\npub   ed25519 2022-12-20 [C] [expires: 2025-12-16]\\n      2E69B7EB602039AAC9059D36656B037051641C74\\nsig!     N   656B037051641C74 2022-12-20  Alice Lovelace <alice@lovelace.name>\\nuid           [ unknown] Alice Lovelace <alice@lovelace.name>\\nsig!3    N   656B037051641C74 2022-12-20  Alice Lovelace <alice@lovelace.name>\\nsig%3    N   D06030B98E0F2EB8 2022-12-20  [Time conflict] \\nrev%     N   D06030B98E0F2EB8 2022-12-20  [Time conflict] \\nsub   ed25519 2022-12-20 [S] [expires: 2025-12-16]\\nsig!     N   656B037051641C74 2022-12-20  Alice Lovelace <alice@lovelace.name>\\nsub   cv25519 2022-12-20 [E] [expires: 2025-12-16]\\nsig!     N   656B037051641C74 2022-12-20  Alice Lovelace <alice@lovelace.name>\\n\\n",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 2E69B7EB602039AAC9059D36656B037051641C74 0\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--check-signatures\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: public key 656B037051641C74 is 3600 seconds newer than the signature\\ngpg: public key 656B037051641C74 is 1800 seconds newer than the signature\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:255:22:656B037051641C74:1671553073:1765901873::-:::cESC:::::ed25519:::0:\\nfpr:::::::::2E69B7EB602039AAC9059D36656B037051641C74:\\nsig:!::22:656B037051641C74:1671553073::::Alice Lovelace <alice@lovelace.name>:1fx::2E69B7EB602039AAC9059D36656B037051641C74:::10:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsig:!::22:656B037051641C74:1671553073::::Alice Lovelace <alice@lovelace.name>:13x::2E69B7EB602039AAC9059D36656B037051641C74:::10:\\nsig:?::22:33ACE5FDEEFD9C89:1671553073::3 120:::13x::C63B3AF44F505B33DD89490933ACE5FDEEFD9C89:::10:\\nsig:?::22:56EA0223A50C4CE2:1671553073:::::10x::7268FD9B5D9C67B62DC733A756EA0223A50C4CE2:::10:\\nsig:?::22:B77688D524EE3401:1671553073:::::12x::111B7AFAB102ED03726DA353B77688D524EE3401:::10:\\nsig:?::22:A65BAC0B67C0D75E:1671553073:::::11x::ECE9E547F222C95EB964CFC6A65BAC0B67C0D75E:::10:\\nsig:?::22:99DA2E253E2B5BB5:1671553073:::::13x::658B07D23FA44BD7A1519BED99DA2E253E2B5BB5:::10:\\nsig:%::22:D06030B98E0F2EB8:1671549473::::[Time conflict] :13x::E0E6ED4D62D9A8642DE37B46D06030B98E0F2EB8:::10:\\nrev:%::22:D06030B98E0F2EB8:1671551273::::[Time conflict] :30x::E0E6ED4D62D9A8642DE37B46D06030B98E0F2EB8:::10:\\nsub:-:255:22:4ADAF10E1E767D39:1671553073:1765901873:::::s:::::ed25519::\\nfpr:::::::::2838F9A308EF7D8B1E735A4A4ADAF10E1E767D39:\\nsig:!::22:656B037051641C74:1671553073::::Alice Lovelace <alice@lovelace.name>:18x::2E69B7EB602039AAC9059D36656B037051641C74:::10:\\nsub:-:255:18:32E1B5CFAE44FBE7:1671553073:1765901873:::::e:::::cv25519::\\nfpr:::::::::D8859653FB1EABC4F6C4000F32E1B5CFAE44FBE7:\\nsig:!::22:656B037051641C74:1671553073::::Alice Lovelace <alice@lovelace.name>:18x::2E69B7EB602039AAC9059D36656B037051641C74:::10:\\n",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 2E69B7EB602039AAC9059D36656B037051641C74 0\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--check-signatures\"",
+        "\"--fast-list-mode\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: public key 656B037051641C74 is 3600 seconds newer than the signature\\ngpg: public key 656B037051641C74 is 1800 seconds newer than the signature\\ngpg: 4 good signatures\\ngpg: 5 signatures not checked due to missing keys\\ngpg: 2 signatures not checked due to errors\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n--------------------\\npub   ed25519 2022-12-20 [C] [expires: 2025-12-16]\\n      2E69B7EB602039AAC9059D36656B037051641C74\\nsig!     N   656B037051641C74 2022-12-20  \\nuid           [ unknown] Alice Lovelace <alice@lovelace.name>\\nsig!3    N   656B037051641C74 2022-12-20  \\nsig%3    N   D06030B98E0F2EB8 2022-12-20  [Time conflict] \\nrev%     N   D06030B98E0F2EB8 2022-12-20  [Time conflict] \\nsub   ed25519 2022-12-20 [S] [expires: 2025-12-16]\\nsig!     N   656B037051641C74 2022-12-20  \\nsub   cv25519 2022-12-20 [E] [expires: 2025-12-16]\\nsig!     N   656B037051641C74 2022-12-20  \\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--check-signatures\"",
+        "\"--fast-list-mode\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: public key 656B037051641C74 is 3600 seconds newer than the signature\\ngpg: public key 656B037051641C74 is 1800 seconds newer than the signature\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub::255:22:656B037051641C74:1671553073:1765901873:::::cESC:::::ed25519:::0:\\nfpr:::::::::2E69B7EB602039AAC9059D36656B037051641C74:\\nsig:!::22:656B037051641C74:1671553073:::::1fx::2E69B7EB602039AAC9059D36656B037051641C74:::10:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsig:!::22:656B037051641C74:1671553073:::::13x::2E69B7EB602039AAC9059D36656B037051641C74:::10:\\nsig:?::22:33ACE5FDEEFD9C89:1671553073::3 120:::13x::C63B3AF44F505B33DD89490933ACE5FDEEFD9C89:::10:\\nsig:?::22:56EA0223A50C4CE2:1671553073:::::10x::7268FD9B5D9C67B62DC733A756EA0223A50C4CE2:::10:\\nsig:?::22:B77688D524EE3401:1671553073:::::12x::111B7AFAB102ED03726DA353B77688D524EE3401:::10:\\nsig:?::22:A65BAC0B67C0D75E:1671553073:::::11x::ECE9E547F222C95EB964CFC6A65BAC0B67C0D75E:::10:\\nsig:?::22:99DA2E253E2B5BB5:1671553073:::::13x::658B07D23FA44BD7A1519BED99DA2E253E2B5BB5:::10:\\nsig:%::22:D06030B98E0F2EB8:1671549473::::[Time conflict] :13x::E0E6ED4D62D9A8642DE37B46D06030B98E0F2EB8:::10:\\nrev:%::22:D06030B98E0F2EB8:1671551273::::[Time conflict] :30x::E0E6ED4D62D9A8642DE37B46D06030B98E0F2EB8:::10:\\nsub::255:22:4ADAF10E1E767D39:1671553073:1765901873:::::s:::::ed25519::\\nfpr:::::::::2838F9A308EF7D8B1E735A4A4ADAF10E1E767D39:\\nsig:!::22:656B037051641C74:1671553073:::::18x::2E69B7EB602039AAC9059D36656B037051641C74:::10:\\nsub::255:18:32E1B5CFAE44FBE7:1671553073:1765901873:::::e:::::cv25519::\\nfpr:::::::::D8859653FB1EABC4F6C4000F32E1B5CFAE44FBE7:\\nsig:!::22:656B037051641C74:1671553073:::::18x::2E69B7EB602039AAC9059D36656B037051641C74:::10:\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
     }
   ],
   "former_us_outputs": [
@@ -239,6 +312,79 @@
       "statusfd": "",
       "status": "exit status: 0",
       "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-sig-check\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: public key 656B037051641C74 is 3600 seconds newer than the signature\\ngpg: public key 656B037051641C74 is 1800 seconds newer than the signature\\ngpg: 4 good signatures\\ngpg: 5 signatures not checked due to missing keys\\ngpg: 2 signatures not checked due to errors\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   ed25519 2022-12-20 [C] [expires: 2025-12-16]\\n      2E69B7EB602039AAC9059D36656B037051641C74\\nsig!     N   656B037051641C74 2022-12-20  Alice Lovelace <alice@lovelace.name>\\nuid           [ unknown] Alice Lovelace <alice@lovelace.name>\\nsig!3    N   656B037051641C74 2022-12-20  Alice Lovelace <alice@lovelace.name>\\nsig%3    N   D06030B98E0F2EB8 2022-12-20  [Time conflict] \\nrev%     N   D06030B98E0F2EB8 2022-12-20  [Time conflict] \\nsub   ed25519 2022-12-20 [S] [expires: 2025-12-16]\\nsig!     N   656B037051641C74 2022-12-20  Alice Lovelace <alice@lovelace.name>\\nsub   cv25519 2022-12-20 [E] [expires: 2025-12-16]\\nsig!     N   656B037051641C74 2022-12-20  Alice Lovelace <alice@lovelace.name>\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-sig-check\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: public key 656B037051641C74 is 3600 seconds newer than the signature\\ngpg: public key 656B037051641C74 is 1800 seconds newer than the signature\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:255:22:656B037051641C74:1671553073:1765901873::-:::cESC:::::ed25519:::0:\\nfpr:::::::::2E69B7EB602039AAC9059D36656B037051641C74:\\nsig:!::22:656B037051641C74:1671553073::::Alice Lovelace <alice@lovelace.name>:1fx::2E69B7EB602039AAC9059D36656B037051641C74:::10:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsig:!::22:656B037051641C74:1671553073::::Alice Lovelace <alice@lovelace.name>:13x::2E69B7EB602039AAC9059D36656B037051641C74:::10:\\nsig:?::22:33ACE5FDEEFD9C89:1671553073::3 120:::13x::C63B3AF44F505B33DD89490933ACE5FDEEFD9C89:::10:\\nsig:?::22:56EA0223A50C4CE2:1671553073:::::10x::7268FD9B5D9C67B62DC733A756EA0223A50C4CE2:::10:\\nsig:?::22:B77688D524EE3401:1671553073:::::12x::111B7AFAB102ED03726DA353B77688D524EE3401:::10:\\nsig:?::22:A65BAC0B67C0D75E:1671553073:::::11x::ECE9E547F222C95EB964CFC6A65BAC0B67C0D75E:::10:\\nsig:?::22:99DA2E253E2B5BB5:1671553073:::::13x::658B07D23FA44BD7A1519BED99DA2E253E2B5BB5:::10:\\nsig:%::22:D06030B98E0F2EB8:1671549473::::[Time conflict] :13x::E0E6ED4D62D9A8642DE37B46D06030B98E0F2EB8:::10:\\nrev:%::22:D06030B98E0F2EB8:1671551273::::[Time conflict] :30x::E0E6ED4D62D9A8642DE37B46D06030B98E0F2EB8:::10:\\nsub:-:255:22:4ADAF10E1E767D39:1671553073:1765901873:::::s:::::ed25519::\\nfpr:::::::::2838F9A308EF7D8B1E735A4A4ADAF10E1E767D39:\\nsig:!::22:656B037051641C74:1671553073::::Alice Lovelace <alice@lovelace.name>:18x::2E69B7EB602039AAC9059D36656B037051641C74:::10:\\nsub:-:255:18:32E1B5CFAE44FBE7:1671553073:1765901873:::::e:::::cv25519::\\nfpr:::::::::D8859653FB1EABC4F6C4000F32E1B5CFAE44FBE7:\\nsig:!::22:656B037051641C74:1671553073::::Alice Lovelace <alice@lovelace.name>:18x::2E69B7EB602039AAC9059D36656B037051641C74:::10:\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--check-signatures\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: public key 656B037051641C74 is 3600 seconds newer than the signature\\ngpg: public key 656B037051641C74 is 1800 seconds newer than the signature\\ngpg: 4 good signatures\\ngpg: 5 signatures not checked due to missing keys\\ngpg: 2 signatures not checked due to errors\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   ed25519 2022-12-20 [C] [expires: 2025-12-16]\\n      2E69B7EB602039AAC9059D36656B037051641C74\\nsig!     N   656B037051641C74 2022-12-20  Alice Lovelace <alice@lovelace.name>\\nuid           [ unknown] Alice Lovelace <alice@lovelace.name>\\nsig!3    N   656B037051641C74 2022-12-20  Alice Lovelace <alice@lovelace.name>\\nsig%3    N   D06030B98E0F2EB8 2022-12-20  [Time conflict] \\nrev%     N   D06030B98E0F2EB8 2022-12-20  [Time conflict] \\nsub   ed25519 2022-12-20 [S] [expires: 2025-12-16]\\nsig!     N   656B037051641C74 2022-12-20  Alice Lovelace <alice@lovelace.name>\\nsub   cv25519 2022-12-20 [E] [expires: 2025-12-16]\\nsig!     N   656B037051641C74 2022-12-20  Alice Lovelace <alice@lovelace.name>\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--check-signatures\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: public key 656B037051641C74 is 3600 seconds newer than the signature\\ngpg: public key 656B037051641C74 is 1800 seconds newer than the signature\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:255:22:656B037051641C74:1671553073:1765901873::-:::cESC:::::ed25519:::0:\\nfpr:::::::::2E69B7EB602039AAC9059D36656B037051641C74:\\nsig:!::22:656B037051641C74:1671553073::::Alice Lovelace <alice@lovelace.name>:1fx::2E69B7EB602039AAC9059D36656B037051641C74:::10:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsig:!::22:656B037051641C74:1671553073::::Alice Lovelace <alice@lovelace.name>:13x::2E69B7EB602039AAC9059D36656B037051641C74:::10:\\nsig:?::22:33ACE5FDEEFD9C89:1671553073::3 120:::13x::C63B3AF44F505B33DD89490933ACE5FDEEFD9C89:::10:\\nsig:?::22:56EA0223A50C4CE2:1671553073:::::10x::7268FD9B5D9C67B62DC733A756EA0223A50C4CE2:::10:\\nsig:?::22:B77688D524EE3401:1671553073:::::12x::111B7AFAB102ED03726DA353B77688D524EE3401:::10:\\nsig:?::22:A65BAC0B67C0D75E:1671553073:::::11x::ECE9E547F222C95EB964CFC6A65BAC0B67C0D75E:::10:\\nsig:?::22:99DA2E253E2B5BB5:1671553073:::::13x::658B07D23FA44BD7A1519BED99DA2E253E2B5BB5:::10:\\nsig:%::22:D06030B98E0F2EB8:1671549473::::[Time conflict] :13x::E0E6ED4D62D9A8642DE37B46D06030B98E0F2EB8:::10:\\nrev:%::22:D06030B98E0F2EB8:1671551273::::[Time conflict] :30x::E0E6ED4D62D9A8642DE37B46D06030B98E0F2EB8:::10:\\nsub:-:255:22:4ADAF10E1E767D39:1671553073:1765901873:::::s:::::ed25519::\\nfpr:::::::::2838F9A308EF7D8B1E735A4A4ADAF10E1E767D39:\\nsig:!::22:656B037051641C74:1671553073::::Alice Lovelace <alice@lovelace.name>:18x::2E69B7EB602039AAC9059D36656B037051641C74:::10:\\nsub:-:255:18:32E1B5CFAE44FBE7:1671553073:1765901873:::::e:::::cv25519::\\nfpr:::::::::D8859653FB1EABC4F6C4000F32E1B5CFAE44FBE7:\\nsig:!::22:656B037051641C74:1671553073::::Alice Lovelace <alice@lovelace.name>:18x::2E69B7EB602039AAC9059D36656B037051641C74:::10:\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--check-signatures\"",
+        "\"--fast-list-mode\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: public key 656B037051641C74 is 3600 seconds newer than the signature\\ngpg: public key 656B037051641C74 is 1800 seconds newer than the signature\\ngpg: 4 good signatures\\ngpg: 5 signatures not checked due to missing keys\\ngpg: 2 signatures not checked due to errors\\n",
+      "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   ed25519 2022-12-20 [C] [expires: 2025-12-16]\\n      2E69B7EB602039AAC9059D36656B037051641C74\\nsig!     N   656B037051641C74 2022-12-20  \\nuid           [ unknown] Alice Lovelace <alice@lovelace.name>\\nsig!3    N   656B037051641C74 2022-12-20  \\nsig%3    N   D06030B98E0F2EB8 2022-12-20  [Time conflict] \\nrev%     N   D06030B98E0F2EB8 2022-12-20  [Time conflict] \\nsub   ed25519 2022-12-20 [S] [expires: 2025-12-16]\\nsig!     N   656B037051641C74 2022-12-20  \\nsub   cv25519 2022-12-20 [E] [expires: 2025-12-16]\\nsig!     N   656B037051641C74 2022-12-20  \\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--check-signatures\"",
+        "\"--fast-list-mode\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: public key 656B037051641C74 is 3600 seconds newer than the signature\\ngpg: public key 656B037051641C74 is 1800 seconds newer than the signature\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:255:22:656B037051641C74:1671553073:1765901873::-:::cESC:::::ed25519:::0:\\nfpr:::::::::2E69B7EB602039AAC9059D36656B037051641C74:\\nsig:!::22:656B037051641C74:1671553073:::::1fx::2E69B7EB602039AAC9059D36656B037051641C74:::10:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsig:!::22:656B037051641C74:1671553073:::::13x::2E69B7EB602039AAC9059D36656B037051641C74:::10:\\nsig:?::22:33ACE5FDEEFD9C89:1671553073::3 120:::13x::C63B3AF44F505B33DD89490933ACE5FDEEFD9C89:::10:\\nsig:?::22:56EA0223A50C4CE2:1671553073:::::10x::7268FD9B5D9C67B62DC733A756EA0223A50C4CE2:::10:\\nsig:?::22:B77688D524EE3401:1671553073:::::12x::111B7AFAB102ED03726DA353B77688D524EE3401:::10:\\nsig:?::22:A65BAC0B67C0D75E:1671553073:::::11x::ECE9E547F222C95EB964CFC6A65BAC0B67C0D75E:::10:\\nsig:?::22:99DA2E253E2B5BB5:1671553073:::::13x::658B07D23FA44BD7A1519BED99DA2E253E2B5BB5:::10:\\nsig:%::22:D06030B98E0F2EB8:1671549473::::[Time conflict] :13x::E0E6ED4D62D9A8642DE37B46D06030B98E0F2EB8:::10:\\nrev:%::22:D06030B98E0F2EB8:1671551273::::[Time conflict] :30x::E0E6ED4D62D9A8642DE37B46D06030B98E0F2EB8:::10:\\nsub:-:255:22:4ADAF10E1E767D39:1671553073:1765901873:::::s:::::ed25519::\\nfpr:::::::::2838F9A308EF7D8B1E735A4A4ADAF10E1E767D39:\\nsig:!::22:656B037051641C74:1671553073:::::18x::2E69B7EB602039AAC9059D36656B037051641C74:::10:\\nsub:-:255:18:32E1B5CFAE44FBE7:1671553073:1765901873:::::e:::::cv25519::\\nfpr:::::::::D8859653FB1EABC4F6C4000F32E1B5CFAE44FBE7:\\nsig:!::22:656B037051641C74:1671553073:::::18x::2E69B7EB602039AAC9059D36656B037051641C74:::10:\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
     }
   ],
   "artifacts": {},
@@ -260,6 +406,36 @@
     ],
     [
       0,
+      0,
+      0
+    ],
+    [
+      1,
+      0,
+      67
+    ],
+    [
+      0,
+      0,
+      67
+    ],
+    [
+      1,
+      0,
+      67
+    ],
+    [
+      0,
+      0,
+      67
+    ],
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      4,
       0,
       0
     ],
