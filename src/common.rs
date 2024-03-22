@@ -400,6 +400,17 @@ impl Query {
     ///
     /// Note: the match must be authenticated!
     pub fn matches(&self, cert: &Arc<LazyCert>) -> bool {
+        // We do the test twice.  First, potentially on the RawCert,
+        // where the binding signatures haven't been checked.  Only if
+        // that matches do we canonicalize the cert, and re-do the
+        // check to make sure.
+        self.matches_internal(cert)
+            && cert.to_cert()
+            .map(|_| self.matches_internal(cert))
+            .unwrap_or(false)
+    }
+
+    fn matches_internal(&self, cert: &Arc<LazyCert>) -> bool {
         match self {
             Query::Key(h) | Query::ExactKey(h) =>
                 cert.keys().any(|k| k.key_handle().aliases(h)),
