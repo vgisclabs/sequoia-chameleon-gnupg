@@ -1,6 +1,7 @@
 use std::{
     borrow::Cow,
     io::Write,
+    time::{Duration, SystemTime},
 };
 
 use anyhow::Result;
@@ -12,7 +13,7 @@ use openpgp::{
 };
 
 use sequoia_cert_store as cert_store;
-use cert_store::Store;
+use cert_store::{LazyCert, Store};
 use sequoia_net::dane;
 
 use crate::{
@@ -190,8 +191,8 @@ pub fn cmd_export(config: &mut crate::Config, args: &[String],
         .collect::<Vec<_>>();
 
     for cert in config.keydb().certs() {
-        // Filter out non-exportable certs, like the trust root.
-        if ! cert.to_cert().map(Cert::exportable).unwrap_or(false) {
+        // Filter out the trust root and all shadow CAs.
+        if is_trust_root_or_shadow_ca(&cert) {
             continue;
         }
 
@@ -219,6 +220,11 @@ pub fn cmd_export(config: &mut crate::Config, args: &[String],
 
         // For some output options, we skip the cert if it isn't valid.
         if config.export_options.dane && vcert.is_none() {
+            continue;
+        }
+
+        // Filter out non-exportable certs.
+        if ! cert.to_cert().map(Cert::exportable).unwrap_or(false) {
             continue;
         }
 
@@ -301,3 +307,16 @@ pub fn cmd_export(config: &mut crate::Config, args: &[String],
 
     Ok(())
 }
+
+/// Returns whether or not this looks like a trust root or shadow CA.
+///
+/// These certs are created with a very specific creation time.  Use
+/// this to quickly detect whether this is plausibly one before
+/// canonicalizing the cert and checking for exportability.
+fn is_trust_root_or_shadow_ca<'a>(cert: &LazyCert<'a>) -> bool {
+    let ca_creation_time =
+        SystemTime::UNIX_EPOCH + Duration::new(1014235320, 0);
+    cert.primary_key().creation_time() == ca_creation_time
+        && ! cert.to_cert().map(Cert::exportable).unwrap_or(false)
+}
+
