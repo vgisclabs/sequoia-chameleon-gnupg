@@ -129,8 +129,8 @@ $ cargo build --release --no-default-features --features=crypto-openssl
 
 #### Running the tests
 
-To run the tests, you also need `faketime` and Sequoia's command-line
-frontend `sq`.  Then, you can run the tests using `cargo`:
+To run the tests, you also need Sequoia's command-line frontend `sq`.
+Then, you can run the tests using `cargo`:
 
 ```sh
 $ cargo test

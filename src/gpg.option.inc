@@ -529,6 +529,7 @@ const OPTIONS: &[Opt<CmdOrOpt>] = &[
   Opt { short_opt: aXSequoiaParcimonie, long_opt: "x-sequoia-parcimonie", flags: (TYPE_NONE | OPT_COMMAND), description: "continuously update certificates", },
   Opt { short_opt: oXSequoiaAutostartParcimonie, long_opt: "x-sequoia-autostart-parcimonie", flags: TYPE_NONE, description: "automatically start daemon to update certs", },
   Opt { short_opt: aXSequoiaParcimonieDaemonize, long_opt: "x-sequoia-parcimonie-daemonize", flags: (TYPE_NONE | OPT_COMMAND), description: "@", },
+  Opt { short_opt: oXSequoiaQuietFakedSystemTime, long_opt: "x-sequoia-quiet-faked-system-time", flags: TYPE_STRING, description: "@", },
 
 
  

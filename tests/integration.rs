@@ -242,20 +242,16 @@ impl<'env> Context<'env> {
         // We're going to change directories before execve(2)ing in
         // the child, so make sure the path is absolute.
         let exe = fs::canonicalize(&executable[0])?;
-        let mut c = {
-            if let Some(unix_now) =
-                fs::read(self.recorder_dir.join("time")).ok()
-                .and_then(|v| String::from_utf8(v).ok())
-                .and_then(|v| v.parse::<u64>().ok())
-            {
-                let mut c = Command::new("faketime");
-                c.arg(format!("@{}", unix_now));
-                c.arg(&exe);
-                c
-            } else {
-                Command::new(&exe)
-            }
-        };
+        let mut c = Command::new(&exe);
+        if let Some(unix_now) =
+            fs::read(self.recorder_dir.join("time")).ok()
+            .and_then(|v| String::from_utf8(v).ok())
+            .and_then(|v| v.parse::<u64>().ok())
+        {
+            c.arg("--x-sequoia-quiet-faked-system-time");
+            c.arg(format!("{}!", unix_now));
+        }
+
         c.env("LC_ALL", "C");
         c.env("TZ", "UTC"); // XXX: maybe track and store the TZ.
         for (k, v) in self.env.iter() {

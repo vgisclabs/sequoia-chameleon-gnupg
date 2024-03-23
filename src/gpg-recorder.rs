@@ -465,6 +465,7 @@ pub enum CmdOrOpt {
     aXSequoiaParcimonie,
     oXSequoiaAutostartParcimonie,
     aXSequoiaParcimonieDaemonize,
+    oXSequoiaQuietFakedSystemTime,
 
     // Special, implicit commands.
     aHelp = 'h' as isize,

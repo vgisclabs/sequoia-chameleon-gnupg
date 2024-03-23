@@ -528,6 +528,7 @@
   ARGPARSE_c (aXSequoiaParcimonie, "x-sequoia-parcimonie", "continuously update certificates"),
   ARGPARSE_s_n (oXSequoiaAutostartParcimonie, "x-sequoia-autostart-parcimonie", "automatically start daemon to update certs"),
   ARGPARSE_c (aXSequoiaParcimonieDaemonize, "x-sequoia-parcimonie-daemonize", "@"),
+  ARGPARSE_s_s (oXSequoiaQuietFakedSystemTime, "x-sequoia-quiet-faked-system-time", "@"),
   /* Our own extensions.  Do not strip them while updating!!! */
 
   ARGPARSE_end ()

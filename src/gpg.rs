@@ -445,6 +445,7 @@ pub enum CmdOrOpt {
     aXSequoiaParcimonie,
     oXSequoiaAutostartParcimonie,
     aXSequoiaParcimonieDaemonize,
+    oXSequoiaQuietFakedSystemTime,
 
     // Special, implicit commands.
     aHelp = 'h' as isize,
@@ -2548,15 +2549,18 @@ fn real_main() -> anyhow::Result<()> {
                 auto_key_locate_given = true;
                 opt.auto_key_locate.clear();
             },
-            oFakedSystemTime => {
+
+            oFakedSystemTime | oXSequoiaQuietFakedSystemTime => {
                 opt.clock = value.as_str().unwrap().parse()?;
-                // XXX: GnuPG prints this warning later.
-                use chrono::{DateTime, Utc};
-                opt.warn(format_args!(
-                    "WARNING: running with faked system time: {}",
-                    // 2022-09-19 10:37:42
-                    DateTime::<Utc>::from(opt.now())
-                        .format("%Y-%m-%d %H:%M:%S")));
+                if cmd == oFakedSystemTime {
+                    // XXX: GnuPG prints this warning later.
+                    use chrono::{DateTime, Utc};
+                    opt.warn(format_args!(
+                        "WARNING: running with faked system time: {}",
+                        // 2022-09-19 10:37:42
+                        DateTime::<Utc>::from(opt.now())
+                            .format("%Y-%m-%d %H:%M:%S")));
+                }
             },
 
             oForbidGenKey => opt.forbid_gen_key = true,
