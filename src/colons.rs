@@ -15,7 +15,6 @@ use anyhow::Result;
 use sequoia_openpgp as openpgp;
 use openpgp::{
     Fingerprint,
-    KeyID,
     cert::prelude::*,
     crypto::hash::Digest,
     crypto::mpi::PublicKey,
@@ -24,6 +23,7 @@ use openpgp::{
         Signature,
         UserID,
         key::{PublicParts, PrimaryRole, SubordinateRole},
+        signature::subpacket::SubpacketTag,
     },
     types::*,
 };
@@ -70,17 +70,8 @@ pub enum Record<'k> {
 
     Signature {
         sig: &'k Signature,
-        issuer: Option<KeyID>,
-        issuer_fp: Option<Fingerprint>,
         issuer_uid: Option<UserID>,
         validity: Option<SignatureValidity>,
-        pk_algo: PublicKeyAlgorithm,
-        hash_algo: HashAlgorithm,
-        creation_time: SystemTime,
-        typ: SignatureType,
-        exportable: bool,
-        trust: Option<(u8, u8)>,
-        has_notations: bool,
     },
 
     /// rvk: Revocation key
@@ -387,19 +378,24 @@ impl Record<'_> {
 
             Signature {
                 sig,
-                issuer,
-                issuer_fp,
                 issuer_uid,
                 validity,
-                pk_algo,
-                hash_algo,
-                creation_time,
-                typ,
-                exportable,
-                trust,
-                has_notations,
             } => {
                 use SignatureType::*;
+                let issuer =  sig.issuers().cloned().next().or_else(
+                    || sig.issuer_fingerprints().cloned().next().map(Into::into));
+                let issuer_fp = sig.issuer_fingerprints().cloned().next();
+
+                let pk_algo = sig.pk_algo();
+                let hash_algo = sig.hash_algo();
+                let creation_time = sig.signature_creation_time()
+                    .expect("valid signatures have a creation time");
+                let typ = sig.typ();
+                let exportable = sig.exportable().is_ok();
+                let trust = sig.trust_signature();
+                let has_notations = sig.subpackets(SubpacketTag::NotationData)
+                    .next().is_some();
+
                 let class = match typ {
                     CertificationRevocation
                         | KeyRevocation
@@ -408,14 +404,14 @@ impl Record<'_> {
                 };
 
                 let creation_time =
-                    chrono::DateTime::<chrono::Utc>::from(*creation_time);
+                    chrono::DateTime::<chrono::Utc>::from(creation_time);
 
                 if mr {
                     writeln!(w, "{}:{}::{}:{}:{}::{}::{}:{:02x}{}::{}:::{}:",
                              class,
                              validity.as_ref().map(|i| i.to_string())
                              .unwrap_or_default(),
-                             u8::from(*pk_algo),
+                             u8::from(pk_algo),
                              issuer.as_ref().map(|i| i.to_string())
                              .unwrap_or_default(),
                              creation_time.format("%s"),
@@ -425,11 +421,11 @@ impl Record<'_> {
                              issuer_uid.as_ref()
                              .map(|u| String::from_utf8_lossy(u.value()).to_string())
                              .unwrap_or_else(|| "[User ID not found]".to_string()),
-                             u8::from(*typ),
-                             if *exportable { 'x' } else { 'l' },
+                             u8::from(typ),
+                             if exportable { 'x' } else { 'l' },
                              issuer_fp.as_ref().map(|i| i.to_string())
                              .unwrap_or_default(),
-                             u8::from(*hash_algo))?;
+                             u8::from(hash_algo))?;
                 } else {
                     use SignatureType::*;
                     writeln!(w, "{} {}   {}{} {} {} {}  {}",

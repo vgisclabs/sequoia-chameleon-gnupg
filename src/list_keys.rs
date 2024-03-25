@@ -14,7 +14,7 @@ use sequoia_openpgp as openpgp;
 use openpgp::{
     Fingerprint,
     cert::amalgamation::{ValidateAmalgamation, ValidAmalgamation},
-    packet::{UserID, signature::subpacket::SubpacketTag},
+    packet::UserID,
     types::*,
 };
 use sequoia_ipc as ipc;
@@ -527,20 +527,8 @@ where
 
                 Record::Signature {
                     sig: s,
-                    issuer: s.issuers().cloned().next().or_else(
-                        || s.issuer_fingerprints().cloned().next().map(Into::into)),
-                    issuer_fp: s.issuer_fingerprints().cloned().next(),
                     issuer_uid,
                     validity,
-                    pk_algo: s.pk_algo(),
-                    hash_algo: s.hash_algo(),
-                    creation_time: s.signature_creation_time()
-                        .expect("valid signatures have a creation time"),
-                    typ: s.typ(),
-                    exportable: s.exportable().is_ok(),
-                    trust: s.trust_signature(),
-                    has_notations: s.subpackets(SubpacketTag::NotationData)
-                        .next().is_some(),
                 }.emit(config, &mut sink)?;
             }
         }
@@ -617,20 +605,8 @@ where
 
                     Record::Signature {
                         sig: s,
-                        issuer: s.issuers().cloned().next().or_else(
-                            || s.issuer_fingerprints().cloned().next().map(Into::into)),
-                        issuer_fp: s.issuer_fingerprints().cloned().next(),
                         issuer_uid,
                         validity,
-                        pk_algo: s.pk_algo(),
-                        hash_algo: s.hash_algo(),
-                        creation_time: s.signature_creation_time()
-                            .expect("valid signatures have a creation time"),
-                        typ: s.typ(),
-                        exportable: s.exportable().is_ok(),
-                        trust: s.trust_signature(),
-                        has_notations: s.subpackets(SubpacketTag::NotationData)
-                            .next().is_some(),
                     }.emit(config, &mut sink)?;
                 }
             }
@@ -707,20 +683,8 @@ where
 
                     Record::Signature {
                         sig: s,
-                        issuer: s.issuers().cloned().next().or_else(
-                            || s.issuer_fingerprints().cloned().next().map(Into::into)),
-                        issuer_fp: s.issuer_fingerprints().cloned().next(),
                         issuer_uid,
                         validity,
-                        pk_algo: s.pk_algo(),
-                        hash_algo: s.hash_algo(),
-                        creation_time: s.signature_creation_time()
-                            .expect("valid signatures have a creation time"),
-                        typ: s.typ(),
-                        exportable: s.exportable().is_ok(),
-                        trust: s.trust_signature(),
-                        has_notations: s.subpackets(SubpacketTag::NotationData)
-                            .next().is_some(),
                     }.emit(config, &mut sink)?;
                 }
             }
