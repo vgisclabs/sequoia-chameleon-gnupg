@@ -712,6 +712,19 @@ fn general_purpose(cs: CipherSuite) -> Result<()> {
 fn list_signatures() -> Result<()> {
     let mut experiment = make_experiment!("setup")?;
 
+    const HOUR: Duration = Duration::new(3600, 0);
+
+    // One key is created earlier, and it makes signatures predating
+    // the key_creation_time.
+    let early_key_creation_time = Experiment::now() - 6 * HOUR;
+    let early_sig_creation_time = Experiment::now() - 5 * HOUR;
+    let early_sig_revocation_time = Experiment::now() - 4 * HOUR;
+
+    // These times are all plausible, i.e. in-order, and before now.
+    let key_creation_time = Experiment::now() - 3 * HOUR;
+    let _sig_creation_time = Experiment::now() - 2 * HOUR;
+    let sig_revocation_time = Experiment::now() - 1 * HOUR;
+
     fn certify<F>(certifier: &Cert, target_cert: Cert, target_userid: &UserID,
                   typ: SignatureType, frobber: F)
                   -> Result<Cert>
@@ -719,6 +732,7 @@ fn list_signatures() -> Result<()> {
         F: Fn(SignatureBuilder) -> Result<SignatureBuilder>,
     {
         let p = StandardPolicy::new();
+        let sig_creation_time = Experiment::now() - 2 * HOUR; // Grrr.
 
         // Get a usable (alive, non-revoked) certification key.
         let key = certifier
@@ -729,7 +743,7 @@ fn list_signatures() -> Result<()> {
 
         // Update the User ID's binding signature.
         let mut builder = SignatureBuilder::new(typ)
-            .set_signature_creation_time(Experiment::now())?;
+            .set_signature_creation_time(sig_creation_time)?;
         builder = frobber(builder)?;
         let new_sig =
             builder.sign_userid_binding(&mut signer,
@@ -747,7 +761,7 @@ fn list_signatures() -> Result<()> {
         "alice",
         || CertBuilder::general_purpose(
             None, Some(alice_uid.clone()))
-            .set_creation_time(Experiment::now())
+            .set_creation_time(key_creation_time)
             .generate()
             .map(|(cert, _rev)| cert),
         |a, f| a.as_tsk().serialize(f),
@@ -757,7 +771,7 @@ fn list_signatures() -> Result<()> {
         "barbara",
         || CertBuilder::general_purpose(
             None, Some("Barbara Lovelace <barbara@lovelace.name>"))
-            .set_creation_time(Experiment::now())
+            .set_creation_time(key_creation_time)
             .generate()
             .map(|(cert, _rev)| cert),
         |a, f| a.as_tsk().serialize(f),
@@ -767,7 +781,7 @@ fn list_signatures() -> Result<()> {
         "clara",
         || CertBuilder::general_purpose(
             None, Some("Clara Lovelace <clara@lovelace.name>"))
-            .set_creation_time(Experiment::now())
+            .set_creation_time(key_creation_time)
             .generate()
             .map(|(cert, _rev)| cert),
         |a, f| a.as_tsk().serialize(f),
@@ -777,7 +791,7 @@ fn list_signatures() -> Result<()> {
         "daniela",
         || CertBuilder::general_purpose(
             None, Some("Daniela Lovelace <daniela@lovelace.name>"))
-            .set_creation_time(Experiment::now())
+            .set_creation_time(key_creation_time)
             .generate()
             .map(|(cert, _rev)| cert),
         |a, f| a.as_tsk().serialize(f),
@@ -787,7 +801,7 @@ fn list_signatures() -> Result<()> {
         "emelie",
         || CertBuilder::general_purpose(
             None, Some("Emelie Lovelace <emelie@lovelace.name>"))
-            .set_creation_time(Experiment::now())
+            .set_creation_time(key_creation_time)
             .generate()
             .map(|(cert, _rev)| cert),
         |a, f| a.as_tsk().serialize(f),
@@ -797,7 +811,7 @@ fn list_signatures() -> Result<()> {
         "finja",
         || CertBuilder::general_purpose(
             None, Some("Finja Lovelace <finja@lovelace.name>"))
-            .set_creation_time(Experiment::now())
+            .set_creation_time(key_creation_time)
             .generate()
             .map(|(cert, _rev)| cert),
         |a, f| a.as_tsk().serialize(f),
@@ -807,7 +821,7 @@ fn list_signatures() -> Result<()> {
         "gale",
         || CertBuilder::general_purpose(
             None, Some("Gale Lovelace <gale@lovelace.name>"))
-            .set_creation_time(Experiment::now())
+            .set_creation_time(key_creation_time)
             .generate()
             .map(|(cert, _rev)| cert),
         |a, f| a.as_tsk().serialize(f),
@@ -817,7 +831,17 @@ fn list_signatures() -> Result<()> {
         "hannah",
         || CertBuilder::general_purpose(
             None, Some("Hannah Lovelace <hannah@lovelace.name>"))
-            .set_creation_time(Experiment::now())
+            .set_creation_time(key_creation_time)
+            .generate()
+            .map(|(cert, _rev)| cert),
+        |a, f| a.as_tsk().serialize(f),
+        |b| Cert::from_bytes(&b))?;
+
+    let iris = experiment.artifact(
+        "iris",
+        || CertBuilder::general_purpose(
+            None, Some("Iris Lovelace <iris@lovelace.name>"))
+            .set_creation_time(early_key_creation_time)
             .generate()
             .map(|(cert, _rev)| cert),
         |a, f| a.as_tsk().serialize(f),
@@ -844,17 +868,25 @@ fn list_signatures() -> Result<()> {
                         |b: SignatureBuilder| b.set_trust_signature(3, 120))?;
             let alice =
                 certify(&gale, alice, &alice_uid,
-                        SignatureType::PositiveCertification,
-                        |b: SignatureBuilder| b.set_signature_creation_time(
-                            Experiment::now() - Duration::new(3600, 0)))?;
+                        SignatureType::PositiveCertification, |b| Ok(b))?;
             let alice =
                 certify(&gale, alice, &alice_uid,
                         SignatureType::CertificationRevocation,
                         |b: SignatureBuilder| b.set_signature_creation_time(
-                            Experiment::now() - Duration::new(1800, 0)))?;
+                            sig_revocation_time))?;
             let alice =
                 certify(&hannah, alice, &"<alice@example.org>".into(),
                         SignatureType::PositiveCertification, |b| Ok(b))?;
+            let alice =
+                certify(&iris, alice, &alice_uid,
+                        SignatureType::PositiveCertification,
+                        |b: SignatureBuilder| b.set_signature_creation_time(
+                            early_sig_creation_time))?;
+            let alice =
+                certify(&iris, alice, &alice_uid,
+                        SignatureType::CertificationRevocation,
+                        |b: SignatureBuilder| b.set_signature_creation_time(
+                            early_sig_revocation_time))?;
             Ok(alice)
         },
         |a, f| a.as_tsk().serialize(f),
@@ -1031,7 +1063,7 @@ fn list_signatures() -> Result<()> {
         "--with-sig-check",
     ])?;
     diff.assert_success();
-    diff.assert_limits(1, 0, 603);
+    diff.assert_limits(1, 0, 737);
 
     let diff = experiment.invoke(&[
         "--list-keys",
@@ -1039,27 +1071,27 @@ fn list_signatures() -> Result<()> {
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_limits(0, 0, 603);
+    diff.assert_limits(0, 0, 737);
 
     let diff = experiment.invoke(&[
         "--check-signatures",
     ])?;
     diff.assert_success();
-    diff.assert_limits(1, 0, 603);
+    diff.assert_limits(1, 0, 737);
 
     let diff = experiment.invoke(&[
         "--check-signatures",
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_limits(0, 0, 603);
+    diff.assert_limits(0, 0, 737);
 
     let diff = experiment.invoke(&[
         "--check-signatures",
         "--fast-list-mode",
     ])?;
     diff.assert_success();
-    diff.assert_limits(1, 0, 335);
+    diff.assert_limits(1, 0, 469);
 
     let diff = experiment.invoke(&[
         "--check-signatures",
@@ -1067,7 +1099,7 @@ fn list_signatures() -> Result<()> {
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_limits(32, 0, 335);
+    diff.assert_limits(32, 0, 469);
 
     Ok(())
 }
