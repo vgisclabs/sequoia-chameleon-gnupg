@@ -515,8 +515,13 @@ where
                     compute_sig_issuer_uid_and_validity(
                         config, &mut sig_stats,
                         cert, &best_effort_primary_userid, s,
-                        |k| s.clone().verify_direct_key(
-                            k, cert.primary_key().key()));
+                        |k| if s.typ() == SignatureType::KeyRevocation {
+                            s.clone().verify_primary_key_revocation(
+                                k, cert.primary_key().key())
+                        } else {
+                            s.clone().verify_direct_key(
+                                k, cert.primary_key().key())
+                        });
                 if validity.suppress(config) {
                     continue; // Skip this signature.
                 }
@@ -581,8 +586,13 @@ where
                         compute_sig_issuer_uid_and_validity(
                             config, &mut sig_stats,
                             cert, &best_effort_primary_userid, s,
-                            |k| s.clone().verify_userid_binding(
-                                k, cert.primary_key().key(), uid.userid()));
+                            |k| if s.typ() == SignatureType::CertificationRevocation {
+                                s.clone().verify_userid_revocation(
+                                    k, cert.primary_key().key(), uid.userid())
+                            } else {
+                                s.clone().verify_userid_binding(
+                                    k, cert.primary_key().key(), uid.userid())
+                            });
 
                     if validity.suppress(config) {
                         continue; // Skip this signature.
@@ -648,8 +658,13 @@ where
                         compute_sig_issuer_uid_and_validity(
                             config, &mut sig_stats,
                             cert, &best_effort_primary_userid, s,
-                            |k| s.clone().verify_subkey_binding(
-                                k, cert.primary_key().key(), subkey.key()));
+                            |k| if s.typ() == SignatureType::SubkeyRevocation {
+                                s.clone().verify_subkey_revocation(
+                                    k, cert.primary_key().key(), subkey.key())
+                            } else {
+                                s.clone().verify_subkey_binding(
+                                    k, cert.primary_key().key(), subkey.key())
+                            });
 
                     if validity.suppress(config) {
                         continue; // Skip this signature.
