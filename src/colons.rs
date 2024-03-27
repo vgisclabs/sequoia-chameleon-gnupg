@@ -15,6 +15,7 @@ use anyhow::Result;
 use sequoia_openpgp as openpgp;
 use openpgp::{
     Fingerprint,
+    KeyHandle,
     cert::prelude::*,
     crypto::hash::Digest,
     crypto::mpi::PublicKey,
@@ -329,10 +330,41 @@ impl Record<'_> {
                 // binding signature is expired or revoked.
                 let creation_date =
                     (
-                        matches!(
-                            amalgamation.revocation_status(
-                                config.policy(), config.now()),
-                            RevocationStatus::NotAsFarAsWeKnow)
+                        match amalgamation.revocation_status(
+                            config.policy(), config.now())
+                        {
+                            // Never emit for revoked user IDs.
+                            RevocationStatus::Revoked(_) => false,
+
+                            RevocationStatus::CouldBe(revs) => {
+                                use openpgp::cert::amalgamation::ValidAmalgamation;
+                                let revokers = amalgamation.clone().
+                                    with_policy(config.policy(), config.now())
+                                    .map(|vca| vca.revocation_keys()
+                                         .map(|r| {
+                                             let (pk, fp) = r.revoker();
+                                             (pk, KeyHandle::from(fp))
+                                         })
+                                         .collect::<Vec<_>>())
+                                    .unwrap_or_default();
+
+                                // Never emit for third-party revoked
+                                // user IDs.
+                                //
+                                // XXX: We don't validate the
+                                // signature.
+                                ! revs.iter().any(|rev| {
+                                    let issuers = rev.get_issuers();
+                                    revokers.iter().any(|(pk, kh)| {
+                                        *pk == rev.pk_algo()
+                                            && issuers.contains(kh)
+                                    })
+                                })
+                            },
+
+                            // Always emit for non-revoked user IDs.
+                            RevocationStatus::NotAsFarAsWeKnow => true,
+                        }
                         && expiration_date.is_none()
                     ).then_some(
                         chrono::DateTime::<chrono::Utc>::from(creation_date)
