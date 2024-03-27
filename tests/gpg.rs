@@ -1423,10 +1423,12 @@ impl fmt::Display for Diff<'_> {
             writeln!(f, "Can't compare to previous run: output not recorded")?;
         }
 
-        let mut r = Vec::new();
-        self.experiment.borrow().reproducer(&mut r).unwrap();
-        writeln!(f, "reproducer:\n")?;
-        writeln!(f, "{}", String::from_utf8_lossy(&r))?;
+        if std::env::var("GPG_SQ_TEST_REPRODUCER").is_ok() {
+            let mut r = Vec::new();
+            self.experiment.borrow().reproducer(&mut r).unwrap();
+            writeln!(f, "reproducer:\n")?;
+            writeln!(f, "{}", String::from_utf8_lossy(&r))?;
+        }
         Ok(())
     }
 }
