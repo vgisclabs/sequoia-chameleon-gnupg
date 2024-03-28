@@ -17,7 +17,6 @@ use rusqlite::{
 use sequoia_openpgp as openpgp;
 use openpgp::{
     Fingerprint,
-    Cert,
     cert::raw::{RawCert, RawCertParser},
     crypto::hash::Digest,
     KeyHandle,
@@ -67,7 +66,6 @@ pub enum Kind {
     KeyboxX509,
     KeyboxDB,
     Keyring,
-    CertD,
 }
 
 impl Kind {
@@ -79,11 +77,6 @@ impl Kind {
     {
         tracer!(TRACE, "Kind::guess");
         t!("Guessing kind of {:?}", path.as_ref());
-
-        if path.as_ref().is_dir() {
-            // XXX: Is there a more robust way to detect cert-ds?
-            return Ok(Some(Kind::CertD));
-        }
 
         let mut f = fs::File::open(path)?;
 
@@ -163,9 +156,6 @@ impl<'store> KeyDB<'store> {
         } else if url.starts_with("gnupg-kbx:") {
             kind = Some(Kind::Keybox);
             url = &url[10..];
-        } else if url.starts_with("pgp-cert-d:") {
-            kind = Some(Kind::CertD);
-            url = &url[11..];
         } else if url.starts_with("gnupg-kbx-db:") {
             kind = Some(Kind::KeyboxDB);
             url = &url[13..];
@@ -307,111 +297,6 @@ impl<'store> KeyDB<'store> {
     /// Gets the writable pgp-cert-d overlay.
     pub fn get_certd_overlay(&self) -> Result<&Overlay<'store>> {
         self.overlay.as_ref().map_err(|_| anyhow::anyhow!("No overlay added"))
-    }
-
-    // Initialize a certd.
-    fn initialize_certd<P>(&mut self, path: P, lazy: bool)
-        -> Result<Vec<(openpgp_cert_d::Tag, LazyCert<'store>)>>
-        where P: AsRef<Path>,
-    {
-        tracer!(TRACE, "KeyDB::initialize_certd");
-        let path = path.as_ref();
-        t!("loading cert-d {:?}", path);
-
-        let certd = openpgp_cert_d::CertD::with_base_dir(&path)
-            .map_err(|err| {
-                let err = anyhow::Error::from(err)
-                    .context(format!("While opening the certd {:?}", path));
-                print_error_chain(&err);
-                err
-            })?;
-
-        let items = certd.fingerprints();
-
-        let open = |fp: String| -> Option<(String, _, _)> {
-            let f = match certd.get_file(&fp) {
-                Ok(f) => f?,
-                Err(err) => {
-                    t!("Reading {}: {}", fp, err);
-                    return None;
-                }
-            };
-            match openpgp_cert_d::Tag::try_from(&f) {
-                Ok(tag) => Some((fp, tag, f)),
-                Err(err) => {
-                    t!("Getting tag for entry {}: {}", fp, err);
-                    None
-                }
-            }
-        };
-
-        let result = if lazy {
-            items.into_iter().filter_map(Result::ok).filter_map(|fp| {
-                // XXX: Once we have a cached tag, avoid the
-                // work if tags match.
-                t!("loading {} from overlay", fp);
-
-                let (fp, tag, file) = open(fp)?;
-
-                let mut parser = match RawCertParser::from_reader(file) {
-                    Ok(parser) => parser,
-                    Err(err) => {
-                        let err = anyhow::Error::from(err).context(format!(
-                            "While reading {:?} from the certd {:?}",
-                            fp, path));
-                        print_error_chain(&err);
-                        return None;
-                    }
-                };
-
-                match parser.next() {
-                    Some(Ok(cert)) => Some((tag, LazyCert::from(cert))),
-                    Some(Err(err)) => {
-                        let err = anyhow::Error::from(err).context(format!(
-                            "While parsing {:?} from the certd {:?}",
-                            fp, path));
-                        print_error_chain(&err);
-                        None
-                    }
-                    None => {
-                        let err = anyhow::anyhow!(format!(
-                            "While parsing {:?} from the certd {:?}: empty file",
-                            fp, path));
-                        print_error_chain(&err);
-                        None
-                    }
-                }
-            }).collect()
-        } else {
-            use rayon::prelude::*;
-
-            // For performance reasons, we read, parse, and
-            // canonicalize certs in parallel.
-            items.collect::<Vec<_>>().into_par_iter()
-                .filter_map(Result::ok)
-                .filter_map(|fp| {
-                    // XXX: Once we have a cached tag and
-                    // presumably a Sync index, avoid the work if
-                    // tags match.
-                    t!("loading {} from overlay", fp);
-
-                    let (fp, tag, file) = open(fp)?;
-
-                    match Cert::from_reader(file) {
-                        Ok(cert) => Some((tag, LazyCert::from(cert))),
-                        Err(err) => {
-                            let err = anyhow::Error::from(err).context(format!(
-                                "While parsing {:?} from the certd {:?}",
-                                fp, path));
-                            print_error_chain(&err);
-                            None
-                        }
-                    }
-                })
-                .collect()
-        };
-
-        Ok(result)
     }
 
     // Initialize a keyring.
@@ -630,17 +515,6 @@ impl<'store> KeyDB<'store> {
                             "{}: reading the keybox database",
                             resource.path.display()))
                 },
-                Kind::CertD => {
-                    self.initialize_certd(&resource.path, lazy)
-                        .with_context(|| format!(
-                            "Reading the certd {:?}", resource.path))
-                        .map(|certs| {
-                            certs
-                                .into_iter()
-                                .map(|(_tag, cert)| cert)
-                                .collect()
-                        })
-                }
             };
 
             match certs {
