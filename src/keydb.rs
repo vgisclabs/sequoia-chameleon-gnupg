@@ -167,9 +167,7 @@ impl<'store> KeyDB<'store> {
         // Expand tildes.
         let mut path = PathBuf::from(shellexpand::tilde(url).as_ref());
 
-        // If the path contains just a single component, it is
-        // relative to the home directory.
-        if path.components().count() == 1 {
+        if ! path.is_absolute() {
             path = home_dir.join(path);
         }
         t!("abolute path: {:?}", path);
