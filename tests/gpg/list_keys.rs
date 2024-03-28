@@ -1034,7 +1034,7 @@ fn list_signatures() -> Result<()> {
         "--with-sig-list",
     ])?;
     diff.assert_success();
-    diff.assert_limits(1, 0, 536);
+    diff.assert_limits(1, 0, 300);
 
     let diff = experiment.invoke(&[
         "--list-keys",
@@ -1042,20 +1042,20 @@ fn list_signatures() -> Result<()> {
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_limits(0, 0, 536);
+    diff.assert_limits(0, 0, 300);
 
     let diff = experiment.invoke(&[
         "--list-signatures",
     ])?;
     diff.assert_success();
-    diff.assert_limits(1, 0, 536);
+    diff.assert_limits(1, 0, 300);
 
     let diff = experiment.invoke(&[
         "--list-signatures",
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_limits(0, 0, 536);
+    diff.assert_limits(0, 0, 300);
 
     // Again, this time with checking.
     let diff = experiment.invoke(&[
@@ -1063,7 +1063,7 @@ fn list_signatures() -> Result<()> {
         "--with-sig-check",
     ])?;
     diff.assert_success();
-    diff.assert_limits(1, 0, 737);
+    diff.assert_limits(1, 0, 300);
 
     let diff = experiment.invoke(&[
         "--list-keys",
@@ -1071,27 +1071,27 @@ fn list_signatures() -> Result<()> {
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_limits(0, 0, 737);
+    diff.assert_limits(0, 0, 300);
 
     let diff = experiment.invoke(&[
         "--check-signatures",
     ])?;
     diff.assert_success();
-    diff.assert_limits(1, 0, 737);
+    diff.assert_limits(1, 0, 300);
 
     let diff = experiment.invoke(&[
         "--check-signatures",
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_limits(0, 0, 737);
+    diff.assert_limits(0, 0, 300);
 
     let diff = experiment.invoke(&[
         "--check-signatures",
         "--fast-list-mode",
     ])?;
     diff.assert_success();
-    diff.assert_limits(1, 0, 469);
+    diff.assert_limits(1, 0, 0);
 
     let diff = experiment.invoke(&[
         "--check-signatures",
@@ -1099,7 +1099,7 @@ fn list_signatures() -> Result<()> {
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_limits(32, 0, 469);
+    diff.assert_limits(32, 0, 0);
 
     Ok(())
 }

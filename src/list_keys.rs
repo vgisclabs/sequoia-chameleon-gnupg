@@ -736,7 +736,7 @@ where
         signer.get_or_init(|| {
             sig.get_issuers().into_iter()
                 .find_map(
-                    |k| config.keydb().lookup_by_cert_or_subkey(&k).ok())
+                    |k| config.lookup_by_cert_or_subkey(&k).ok())
                 .and_then(|certs| certs.into_iter().next())
                 .and_then(|cert| cert.to_cert().ok().cloned())
         })
