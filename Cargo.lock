@@ -2378,6 +2378,7 @@ dependencies = [
  "regex",
  "reqwest",
  "rpassword",
+ "rusqlite",
  "sequoia-cert-store",
  "sequoia-gpg-agent",
  "sequoia-ipc",

@@ -9,12 +9,16 @@ use std::{
 };
 
 use anyhow::{anyhow, Context, Result};
+use rusqlite::{
+    Connection,
+    OpenFlags,
+};
 
 use sequoia_openpgp as openpgp;
 use openpgp::{
     Fingerprint,
     Cert,
-    cert::raw::RawCertParser,
+    cert::raw::{RawCert, RawCertParser},
     crypto::hash::Digest,
     KeyHandle,
     packet::UserID,
@@ -54,7 +58,6 @@ pub struct KeyDB<'a> {
 struct Resource {
     kind: Kind,
     path: PathBuf,
-    create: bool,
 }
 
 #[derive(PartialEq, Eq, Clone, Copy)]
@@ -62,6 +65,7 @@ struct Resource {
 pub enum Kind {
     Keybox,
     KeyboxX509,
+    KeyboxDB,
     Keyring,
     CertD,
 }
@@ -162,6 +166,9 @@ impl<'store> KeyDB<'store> {
         } else if url.starts_with("pgp-cert-d:") {
             kind = Some(Kind::CertD);
             url = &url[11..];
+        } else if url.starts_with("gnupg-kbx-db:") {
+            kind = Some(Kind::KeyboxDB);
+            url = &url[13..];
         }
 
         // Expand tildes.
@@ -239,7 +246,7 @@ impl<'store> KeyDB<'store> {
             None =>
                 Err(anyhow!("Unknown type of key resource {:?}", path)),
             Some(kind) => {
-                if ! create && ! path.exists() {
+                if ! create && ! path.exists() && kind != Kind::KeyboxDB {
                     return
                         Err(anyhow!("Key resource {:?} does not exist", path));
                 }
@@ -248,7 +255,6 @@ impl<'store> KeyDB<'store> {
                     Resource {
                         path,
                         kind,
-                        create,
                     }
                 );
                 Ok(())
@@ -516,6 +522,35 @@ impl<'store> KeyDB<'store> {
         Ok(results)
     }
 
+    /// Initialize a keybox database.
+    fn initialize_keybox_db<P>(&mut self, path: P, _lazy: bool)
+        -> Result<Vec<LazyCert<'store>>>
+        where P: AsRef<Path>,
+    {
+        tracer!(TRACE, "KeyDB::initialize_keybox_db");
+        let path = path.as_ref();
+        t!("loading keybox database at {}", path.display());
+
+        let conn = Connection::open_with_flags(
+            &path, OpenFlags::SQLITE_OPEN_READ_ONLY)?;
+
+        let mut stmt = conn.prepare("SELECT keyblob \
+                                     FROM pubkey \
+                                     WHERE type = 1")?;
+
+        let certs = stmt.query_map([], |row| Ok(row.get::<_, Vec<u8>>(0)?))?
+            .filter_map(|bytes| {
+                let bytes = std::io::Cursor::new(bytes.ok()?);
+                let cert = RawCert::from_reader(bytes).ok()?;
+                t!("loaded {}", cert.fingerprint());
+                Some(cert.into())
+            })
+            .collect();
+        drop(stmt);
+
+        Ok(certs)
+    }
+
     /// Initializes the store, if not already done.
     #[allow(dead_code)]
     pub fn initialize(&mut self, lazy: bool) -> Result<()> {
@@ -540,13 +575,17 @@ impl<'store> KeyDB<'store> {
         t!("initializing");
 
         for resource in &self.resources.clone() {
-            if resource.create && ! resource.path.exists() {
-                t!("skipping non-existing resource {:?}", resource.path);
+            if ! resource.path.exists() {
+                t!("{}: skipping non-existing resource", resource.path.display());
                 continue;
             }
 
-            let f = fs::File::open(&resource.path)?;
-            let modified = f.metadata()?.modified()?;
+            let f = fs::File::open(&resource.path);
+            let modified = match &f {
+                Ok(f) => Some(f.metadata()?.modified()?),
+                Err(_) => None,
+            };
+            t!("{}: last modified {:?}", resource.path.display(), modified);
 
             // If there is a writable openpgp-cert-d overlay on top of
             // the stack.  We import all certs from our resources
@@ -560,23 +599,23 @@ impl<'store> KeyDB<'store> {
 
             if self.overlay.as_ref().ok()
                 .and_then(|overlay| overlay.get_cached_mtime(&resource).ok())
-                .map(|cached| unix_time(modified) == unix_time(cached))
+                .map(|cached| modified.map(unix_time) == Some(unix_time(cached)))
                 .unwrap_or(false)
             {
                 // The overlay already contains all data from
                 // this resource.
-                t!("skipping up-to-date resource {:?}", resource.path);
+                t!("{}: skipping up-to-date resource", resource.path.display());
                 continue;
             }
 
             let certs = match resource.kind {
                 Kind::Keyring => {
-                    self.initialize_keyring(f, &resource.path, lazy)
+                    self.initialize_keyring(f?, &resource.path, lazy)
                         .with_context(|| format!(
                             "Reading the keyring {:?}", resource.path))
                 },
                 Kind::Keybox => {
-                    self.initialize_keybox(f, &resource.path, lazy)
+                    self.initialize_keybox(f?, &resource.path, lazy)
                         .with_context(|| format!(
                             "Reading the keybox {:?}", resource.path))
                 },
@@ -584,6 +623,12 @@ impl<'store> KeyDB<'store> {
                     t!("ignoring keybox {:?} only used fox X509",
                        resource.path);
                     Ok(Vec::new())
+                },
+                Kind::KeyboxDB => {
+                    self.initialize_keybox_db(&resource.path, lazy)
+                        .with_context(|| format!(
+                            "{}: reading the keybox database",
+                            resource.path.display()))
                 },
                 Kind::CertD => {
                     self.initialize_certd(&resource.path, lazy)
@@ -615,7 +660,7 @@ impl<'store> KeyDB<'store> {
                 Err(err) => print_error_chain(&err),
             }
 
-            if let Ok(overlay) = &self.overlay {
+            if let (Ok(overlay), Some(modified)) = (&self.overlay, modified) {
                 overlay.set_cached_mtime(&resource, modified)?;
             }
         }
