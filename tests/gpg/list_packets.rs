@@ -506,8 +506,7 @@ fn encrypted() -> Result<()> {
                   + 2,
                   // 255 bit key vs 256 bit key.
                   1,
-                  // Duplicated KEY_CONSIDERED lines.
-                  134,
+                  0,
                   p)?;
 
     Ok(())

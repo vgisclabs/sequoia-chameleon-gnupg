@@ -14,6 +14,7 @@ use indexmap::IndexMap;
 use sequoia_openpgp as openpgp;
 use sequoia_ipc as ipc;
 use openpgp::{
+    KeyHandle,
     cert::prelude::*,
     crypto::Password,
     packet::{
@@ -984,21 +985,9 @@ impl<'store> Config<'store> {
     /// Returns certs matching a given query using groups and the
     /// configured trust model.
     pub fn lookup_certs(&self, query: &Query) -> Result<Vec<(Validity, Arc<LazyCert<'store>>)>> {
-        let certs = self.lookup_certs_with(
+        self.lookup_certs_with(
             self.trust_model_impl.with_policy(self, Some(self.now()))?.as_ref(),
-            query, true)?;
-
-        // GnuPG emits a key considered status message on every
-        // lookup, even if it is repeated later on.  Do the same.
-        for (_, cert) in &certs {
-            self.status().emit(
-                status::Status::KeyConsidered {
-                    fingerprint: cert.fingerprint(),
-                    not_selected: false,
-                    all_expired_or_revoked: false,
-                })?;
-        }
-        Ok(certs)
+            query, true)
     }
 
     /// Returns certs matching a given query using groups and the
@@ -1043,6 +1032,24 @@ impl<'store> Config<'store> {
 
         // Then, use the trust model to lookup the cert.
         vtm.lookup(query)
+    }
+
+    /// Like `.keydb().lookup_by_cert_or_subkey` but emits
+    /// KEY_CONSIDERED lines.
+    pub fn lookup_by_cert_or_subkey(&self, kh: &KeyHandle)
+                                    -> Result<Vec<Arc<LazyCert<'store>>>>
+    {
+        self.keydb().lookup_by_cert_or_subkey(kh)
+            .map(|certs| {
+                for cert in &certs {
+                    let _ = self.status().emit(status::Status::KeyConsidered {
+                        fingerprint: cert.fingerprint(),
+                        not_selected: false,
+                        all_expired_or_revoked: false,
+                    });
+                }
+                certs
+            })
     }
 
     /// Stores a revocation certificate.

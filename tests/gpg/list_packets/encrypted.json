@@ -120,7 +120,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: encrypted with 256-bit ECDH key, ID FC867308995E4A4A, created 2022-12-20\\n      \"Alice Lovelace <alice@lovelace.name>\"\\n",
       "stdout": "# off=0 ctb=c1 tag=1 hlen=2 plen=94 new-ctb\\n:pubkey enc packet: version 3, algo 18, keyid FC867308995E4A4A\\n\\tdata: [263 bits]\\n\\tdata: [384 bits]\\n# off=96 ctb=d2 tag=18 hlen=2 plen=58 new-ctb\\n:encrypted data packet:\\n\\tlength: 58\\n\\tmdc_method: 2\\n# off=156 ctb=cb tag=11 hlen=2 plen=15 new-ctb\\n:literal data packet:\\n\\tmode b (62), created 0, name=\"\",\\n\\traw data: 9 bytes\\n",
-      "statusfd": "[GNUPG:] ENC_TO FC867308995E4A4A 18 0\\n[GNUPG:] KEY_CONSIDERED 5F722676B85215EDC7495C8DE4846579CF6EACD4 0\\n[GNUPG:] DECRYPTION_KEY 71D1E82D843364B9326ACA90FC867308995E4A4A 5F722676B85215EDC7495C8DE4846579CF6EACD4 -\\n[GNUPG:] BEGIN_DECRYPTION\\n[GNUPG:] DECRYPTION_INFO 2 7 0\\n[GNUPG:] DECRYPTION_OKAY\\n[GNUPG:] GOODMDC\\n[GNUPG:] END_DECRYPTION\\n",
+      "statusfd": "[GNUPG:] ENC_TO FC867308995E4A4A 18 0\\n[GNUPG:] KEY_CONSIDERED 5F722676B85215EDC7495C8DE4846579CF6EACD4 0\\n[GNUPG:] KEY_CONSIDERED 5F722676B85215EDC7495C8DE4846579CF6EACD4 0\\n[GNUPG:] DECRYPTION_KEY 71D1E82D843364B9326ACA90FC867308995E4A4A 5F722676B85215EDC7495C8DE4846579CF6EACD4 -\\n[GNUPG:] KEY_CONSIDERED 5F722676B85215EDC7495C8DE4846579CF6EACD4 0\\n[GNUPG:] BEGIN_DECRYPTION\\n[GNUPG:] DECRYPTION_INFO 2 7 0\\n[GNUPG:] DECRYPTION_OKAY\\n[GNUPG:] GOODMDC\\n[GNUPG:] END_DECRYPTION\\n",
       "status": "exit status: 0",
       "files": {}
     }
@@ -154,7 +154,7 @@
     [
       4,
       1,
-      134
+      0
     ]
   ]
 }

@@ -72,6 +72,7 @@ impl Model for WoT {
         let n = wot::Network::new(store)?;
 
         Ok(Box::new(WoTViewAt {
+            config,
             roots,
             network: n,
         }))
@@ -79,6 +80,7 @@ impl Model for WoT {
 }
 
 struct WoTViewAt<'a, 'store> {
+    config: &'a Config<'store>,
     roots: Vec<Fingerprint>,
     network: wot::Network<wot::store::CertStore<'store, 'a, &'a KeyDB<'store>>>,
 }
@@ -119,7 +121,7 @@ impl<'a, 'store> ModelViewAt<'a, 'store> for WoTViewAt<'a, 'store> {
     }
 
     fn lookup(&self, query: &Query) -> Result<Vec<(Validity, Arc<LazyCert<'store>>)>> {
-        let certs = self.network.backend().store().lookup_candidates(&query)?;
+        let certs = self.network.backend().store().lookup_candidates(self.config, &query)?;
         Ok(certs.into_iter()
            .map(|c| {
                let validity = match query {

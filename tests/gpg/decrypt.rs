@@ -210,7 +210,7 @@ fn locked_loopback() -> Result<()> {
         &experiment.store("ciphertext", &ciphertext)?,
     ])?;
     diff.assert_success();
-    diff.assert_limits(0, 1, 140);
+    diff.assert_limits(0, 1, 0);
     diff.with_working_dir(|p| {
         assert_eq!(p.get("decrypted-plaintext").expect("no output"), PLAINTEXT);
         Ok(())
@@ -358,7 +358,7 @@ fn test_key(cert: Cert, ciphertext: Vec<u8>, mut experiment: Experiment)
         &experiment.store("ciphertext", &ciphertext)?,
     ])?;
     diff.assert_success();
-    diff.assert_limits(0, 1, 140);
+    diff.assert_limits(0, 1, 0);
     diff.with_working_dir(|p| {
         assert_eq!(p.get("decrypted-plaintext").expect("no output"), PLAINTEXT);
         Ok(())
@@ -371,7 +371,7 @@ fn test_key(cert: Cert, ciphertext: Vec<u8>, mut experiment: Experiment)
         &experiment.store("ciphertext", &ciphertext)?,
     ])?;
     diff.assert_success();
-    diff.assert_limits(0, 110, 140);
+    diff.assert_limits(0, 110, 0);
     diff.with_working_dir(|p| {
         assert_eq!(p.get("decrypted-plaintext").expect("no output"), PLAINTEXT);
         Ok(())

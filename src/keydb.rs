@@ -33,7 +33,7 @@ use cert_store::store::UserIDQueryParams;
 use sequoia_wot as wot;
 
 use crate::{
-    common::Query,
+    common::{Common, Query},
     print_error_chain,
 };
 
@@ -262,7 +262,7 @@ impl<'store> KeyDB<'store> {
     ///
     /// Note: The returned certs have to be validated using a trust
     /// model!
-    pub fn lookup_candidates(&self, query: &Query)
+    pub fn lookup_candidates(&self, config: &crate::Config<'store>, query: &Query)
         -> Result<Vec<Arc<LazyCert<'store>>>>
     {
         tracer!(TRACE, "KeyDB::lookup_candidates");
@@ -274,7 +274,17 @@ impl<'store> KeyDB<'store> {
                 self.lookup_by_email(e),
             Query::UserIDFragment(f) =>
                 self.grep_userid(f),
-        }
+        }.map(|certs| {
+            for cert in &certs {
+                let _ = config.status().emit(
+                    crate::status::Status::KeyConsidered {
+                        fingerprint: cert.fingerprint(),
+                        not_selected: false,
+                        all_expired_or_revoked: false,
+                    });
+            }
+            certs
+        })
     }
 
     /// Adds a writable pgp-cert-d overlay to the resources, if not

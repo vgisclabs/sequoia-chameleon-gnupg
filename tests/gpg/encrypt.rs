@@ -178,7 +178,7 @@ fn test_decryption(cert: Cert,
             &experiment.store("ciphertext", &ciphertext)?,
         ])?;
         diff.assert_success();
-        diff.assert_limits(0, 1, 140);
+        diff.assert_limits(0, 1, 0);
         diff.with_working_dir(|p| {
             assert_eq!(p.get("plaintext").expect("no output"), PLAINTEXT);
             Ok(())

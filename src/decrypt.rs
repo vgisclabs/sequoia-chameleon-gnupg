@@ -232,7 +232,7 @@ impl<'a, 'store> DHelper<'a, 'store> {
             vhelper,
             used_mdc: false,
             filename: Default::default(),
-            de_vs_compliant: true,
+            de_vs_compliant: false,
         }
     }
 
@@ -292,21 +292,13 @@ impl<'a, 'store> DHelper<'a, 'store> {
                             sym_algo: Option<SymmetricAlgorithm>,
                             mut keypair: KeyPair,
                             decrypt: &mut D)
-                            -> Result<Option<Fingerprint>>
+                            -> Result<(Option<Fingerprint>,
+                                       SymmetricAlgorithm,
+                                       SessionKey)>
         where D: FnMut(SymmetricAlgorithm, &SessionKey) -> bool
     {
         let kek = keypair.decrypt(pkesk.esk(),
-                                  sym_algo.and_then(|a| a.key_size().ok()))
-            .map_err(|e| {
-                // XXX: All errors here likely indicate that the key
-                // is not available.  But, there could be other
-                // failure modes.
-                let _ = self.config.status().emit(
-                    Status::NoSeckey {
-                        issuer: keypair.public().keyid(),
-                    });
-                e
-            })?;
+                                  sym_algo.and_then(|a| a.key_size().ok()))?;
 
         // XXX: This is a bit rough.  We get the raw plaintext from
         // Agent::decrypt, but there is no nice API to decrypt a PKESK
@@ -345,11 +337,9 @@ impl<'a, 'store> DHelper<'a, 'store> {
                                 .unwrap_or(OwnerTrustLevel::Undefined.into()),
                         })?;
                 }
-
-                self.decryption_successful(algo, sk)?;
-                Ok(Some(cert.fingerprint()))
+                Ok((Some(cert.fingerprint()), algo, sk))
             },
-            None => Ok(None),
+            None => Err(anyhow::anyhow!("decryption failed")),
         }
     }
 
@@ -388,7 +378,14 @@ impl<'a, 'store> DHelper<'a, 'store> {
             }
         }
 
-        for pkesk in pkesks {
+        let mut agent = self.config.connect_agent().await?;
+        let secret_keys = agent.list_keys().await.unwrap_or_default();
+
+        // First, try public key encryption.
+        let mut success = None;
+        let mut pkesks_results: Vec<(&PKESK, Option<error_codes::Error>)> =
+            pkesks.into_iter().map(|p| (p, None)).collect();
+        for (pkesk, error) in pkesks_results.iter_mut() {
             let keyid = pkesk.recipient();
             let handle = KeyHandle::from(keyid);
             if ! self.config.quiet && self.config.verbose > 0 {
@@ -396,86 +393,44 @@ impl<'a, 'store> DHelper<'a, 'store> {
                     "public key is {}", handle));
             }
 
-            if let Some(cert) = self.config.keydb().lookup_by_cert_or_subkey(&handle).ok()
-                .and_then(|certs: Vec<_>| certs.into_iter().next())
-                .and_then(|cert| cert.to_cert().ok().cloned())
-            {
-                if ! self.config.quiet && self.config.verbose > 0 {
-                    self.config.warn(format_args!(
-                        "using subkey {} instead of primary key {}", handle,
-                        cert.keyid()));
-                }
-
-                let key = cert.keys().key_handle(handle.clone())
-                    .next().expect("the indices to be consistent");
-                let creation_time =
-                    chrono::DateTime::<chrono::Utc>::from(key.creation_time());
-
-                if ! self.config.quiet {
-                    self.config.warn(format_args!(
-                        "encrypted with {}-bit {} key, ID {}, created {}\n      {:?}",
-                        key.mpis().bits().unwrap_or(0),
-                        babel::Fish(pkesk.pk_algo()),
-                        pkesk.recipient(),
-                        creation_time.format("%Y-%m-%d"),
-                        utils::best_effort_primary_uid(self.config.policy(), &cert)));
-                }
-            } else {
-                if ! self.config.quiet {
-                    self.config.warn(format_args!(
-                        "encrypted with {} key, ID {}",
-                        babel::Fish(pkesk.pk_algo()), pkesk.recipient()));
-                }
-            }
-
             self.config.status().emit(
                 Status::EncTo {
-                    keyid: keyid.clone(),
+                    keyid: pkesk.recipient().clone(),
                     pk_algo: Some(pkesk.pk_algo()),
                     // According to doc/DETAILS, GnuPG always
                     // reports the length as 0.
                     pk_len: None,
                 })?;
-        }
 
-        // Before doing anything else, try if we were given a session
-        // key.
-        if let Some(sk) = &self.config.override_session_key {
-            if decrypt(sk.cipher(), sk.key()) {
-                self.decryption_successful(sk.cipher(), sk.key().clone())?;
-                return Ok(None);
+            if success.is_some() {
+                continue;
             }
-            // XXX: Does GnuPG keep trying if this fails?
-        }
 
-        let mut agent = self.config.connect_agent().await?;
-        let secret_keys = agent.list_keys().await.unwrap_or_default();
+            // Before doing anything else, try if we were given a session
+            // key.
+            if let Some(sk) = &self.config.override_session_key {
+                if decrypt(sk.cipher(), sk.key()) {
+                    success = Some((None, sk.cipher(), sk.key().clone()));
+                    continue;
+                }
+            }
 
-        let emit_no_seckey = |keyid: &openpgp::KeyID| -> Result<()> {
-            self.config.status().emit(
-                Status::NoSeckey {
-                    issuer: keyid.clone(),
-                })?;
-                Ok(())
-        };
-
-        // First, try public key encryption.
-        let mut success = None;
-        for pkesk in pkesks {
             let keyid = pkesk.recipient();
             if keyid.is_wildcard() {
                 continue; // XXX
             }
             let handle = KeyHandle::from(keyid);
 
-            // See if we have the recipient cert.
+            // See if we have the recipient cert.  We *don't* emit the
+            // KeyConsidered here, we only do it if we really have a
+            // secret.
             let cert = match self.config.keydb().lookup_by_cert_or_subkey(&handle).ok()
                 .and_then(|c| c.into_iter().next())
                 .and_then(|c| c.to_cert().ok().cloned())
             {
                 Some(c) => c,
                 None => {
-                    emit_no_seckey(keyid)?;
+                    *error = Some(error_codes::Error::GPG_ERR_NO_SECKEY);
                     continue;
                 },
             };
@@ -483,17 +438,10 @@ impl<'a, 'store> DHelper<'a, 'store> {
                                                self.config.now()) {
                 Ok(c) => c,
                 Err(_) => {
-                    emit_no_seckey(keyid)?;
+                    *error = Some(error_codes::Error::GPG_ERR_NO_SECKEY);
                     continue;
                 },
             };
-
-            self.config.status().emit(
-                Status::KeyConsidered {
-                    fingerprint: cert.fingerprint(),
-                    not_selected: false,
-                    all_expired_or_revoked: false,
-                })?;
 
             // Get the subkey.
             let key = match vcert.keys().key_handle(handle)
@@ -504,17 +452,30 @@ impl<'a, 'store> DHelper<'a, 'store> {
                 Some(k) => k,
                 None => {
                     // Key was not encryption-capable.
-                    emit_no_seckey(keyid)?;
+                    *error = Some(error_codes::Error::GPG_ERR_NO_SECKEY);
                     continue;
                 },
             };
 
-            if self.config.list_only {
-                if secret_keys.lookup_by_key(key.key()).is_none() {
-                    emit_no_seckey(keyid)?;
-                }
-
+            if secret_keys.lookup_by_key(key.key()).is_none() {
+                *error = Some(error_codes::Error::GPG_ERR_NO_SECKEY);
                 continue;
+            }
+
+            if self.config.list_only {
+                continue;
+            }
+
+            // GnuPG emits this line twice in `get_session_key`.
+            // First to get the secret key using `get_seckey`, then
+            // once more in `get_it`.
+            for _ in 0..2 {
+                self.config.status().emit(
+                    Status::KeyConsidered {
+                        fingerprint: cert.fingerprint(),
+                        not_selected: false,
+                        all_expired_or_revoked: false,
+                    })?;
             }
 
             // And just try to decrypt it using the agent.
@@ -530,16 +491,74 @@ impl<'a, 'store> DHelper<'a, 'store> {
                 pair = pair.with_password(p.clone());
             }
 
-            if let Ok(maybe_fp) = self.try_decrypt(
+            if let Ok(r) = self.try_decrypt(
                 &cert, pkesk, sym_algo, pair, &mut decrypt).await
             {
                 // Success!
-                success = Some(maybe_fp);
-                break;
+                success = Some(r);
+                continue;
+            } else {
+                // XXX: map and handle other errors.
+                *error = Some(error_codes::Error::GPG_ERR_NO_SECKEY);
             }
         }
 
-        if let Some(maybe_fp) = success {
+        // Emit the PKESK infos.  GnuPG construct a linked list, hence
+        // we reverse the order.  First, print all those keys we tried
+        // but failed to decrypt the message with.
+        for (p, err) in pkesks_results.iter().rev()
+            .filter(|(_p, r)| r.is_some())
+        {
+            self.emit_pkesk_info(p, err)?;
+        }
+
+        // Then print the keys that we didn't try or successfully used.
+        for (p, err) in pkesks_results.iter().rev()
+            .filter(|(_p, r)| r.is_none())
+        {
+            self.emit_pkesk_info(p, err)?;
+        }
+
+        // Compute decryption compliance with DeVS.
+        self.de_vs_compliant =
+            success.is_some() // PK decryption successful.
+            && self.config.override_session_key.is_none() // Voids compliance.
+            && crate::compliance::CRYPTO_LIBRARY_IS_DE_VS
+            && (pkesks.is_empty() || skesks.is_empty()) // Both => void.
+            && {
+                let mut compliant = true;
+
+                // XXX: check all skesk ciphers.
+
+                // Check all recipients.
+                for pkesk in pkesks {
+                    let certs = if let Ok(certs) = self.config
+                        .lookup_by_cert_or_subkey(&pkesk.recipient().into())
+                    {
+                        certs
+                    } else {
+                        compliant = false;
+                        continue;
+                    };
+
+                    for cert in certs.into_iter()
+                        .filter_map(|cert| cert.to_cert().ok().cloned())
+                    {
+                        if let Some(key) = cert.keys()
+                            .with_policy(&self.config.de_vs_producer, None)
+                            .key_handle(pkesk.recipient()).next()
+                        {
+                            compliant = compliant &&
+                                self.config.de_vs_producer.key(&key).is_ok();
+                        }
+                    }
+                }
+
+                compliant
+            };
+
+        if let Some((maybe_fp, algo, sk)) = success {
+            self.decryption_successful(algo, sk)?;
             return Ok(maybe_fp);
         }
 
@@ -550,6 +569,15 @@ impl<'a, 'store> DHelper<'a, 'store> {
             self.config.status().emit(Status::BeginDecryption)?;
             // And short-circuit so that we don't ask for passwords.
             return Ok(None);
+        }
+
+        // See if we were given a session key.  We do that here again
+        // in case there were no PKESK packets.
+        if let Some(sk) = &self.config.override_session_key {
+            if decrypt(sk.cipher(), sk.key()) {
+                self.decryption_successful(sk.cipher(), sk.key().clone())?;
+                return Ok(None);
+            }
         }
 
         // Then, try password-based encryption.
@@ -635,6 +663,54 @@ impl<'a, 'store> DHelper<'a, 'store> {
             }
         }
     }
+
+    /// Emits the KEY_CONSIDERED lines and human-readable information
+    /// about the recipients.
+    fn emit_pkesk_info(&self, pkesk: &PKESK, err: &Option<error_codes::Error>)
+                       -> Result<()>
+    {
+        let keyid = pkesk.recipient();
+        let handle = KeyHandle::from(keyid);
+
+        if ! self.config.quiet {
+            if let Some(cert) = self.config.lookup_by_cert_or_subkey(&handle).ok()
+                .and_then(|certs: Vec<_>| certs.into_iter().next())
+                .and_then(|cert| cert.to_cert().ok().cloned())
+            {
+                if self.config.verbose > 0 {
+                    self.config.warn(format_args!(
+                        "using subkey {} instead of primary key {}", handle,
+                        cert.keyid()));
+                }
+
+                let key = cert.keys().key_handle(handle.clone())
+                    .next().expect("the indices to be consistent");
+                let creation_time =
+                    chrono::DateTime::<chrono::Utc>::from(key.creation_time());
+
+                self.config.warn(format_args!(
+                    "encrypted with {}-bit {} key, ID {}, created {}\n      {:?}",
+                    key.mpis().bits().unwrap_or(0),
+                    babel::Fish(pkesk.pk_algo()),
+                    pkesk.recipient(),
+                    creation_time.format("%Y-%m-%d"),
+                    utils::best_effort_primary_uid(self.config.policy(), &cert)));
+            } else {
+                self.config.warn(format_args!(
+                    "encrypted with {} key, ID {}",
+                    babel::Fish(pkesk.pk_algo()), pkesk.recipient()));
+            }
+        }
+
+        if let Some(error_codes::Error::GPG_ERR_NO_SECKEY) = err {
+            self.config.status().emit(
+                Status::NoSeckey {
+                    issuer: keyid.clone(),
+                })?;
+        }
+
+        Ok(())
+    }
 }
 
 impl<'a, 'store> DecryptionHelper for DHelper<'a, 'store> {
@@ -643,32 +719,6 @@ impl<'a, 'store> DecryptionHelper for DHelper<'a, 'store> {
                   decrypt: D) -> Result<Option<openpgp::Fingerprint>>
         where D: FnMut(SymmetricAlgorithm, &SessionKey) -> bool
     {
-        // Compute decryption compliance with DeVS.
-        self.de_vs_compliant &=
-            self.config.override_session_key.is_none() // Voids compliance.
-            && (pkesks.is_empty() || skesks.is_empty()) // Both => void.
-            && pkesks.iter().all(|pkesk| { // Check all recipients.
-                let certs = if let Ok(certs) = self.config.keydb()
-                    .lookup_by_cert_or_subkey(&pkesk.recipient().into())
-                {
-                    certs
-                } else {
-                    return false;
-                };
-
-                for cert in certs.into_iter().filter_map(|cert| cert.to_cert().ok().cloned()) {
-                    if let Some(key) = cert.keys()
-                        .with_policy(&self.config.de_vs_producer, None)
-                        .key_handle(pkesk.recipient()).next()
-                    {
-                        if self.config.de_vs_producer.key(&key).is_ok() {
-                            return true;
-                        }
-                    }
-                }
-                false
-            });
-
         let rt = tokio::runtime::Runtime::new()?;
         let r =
             rt.block_on(self.async_decrypt(pkesks, skesks, sym_algo, decrypt));

@@ -17,6 +17,11 @@ pub use crate::common::{
     Compliance,
 };
 
+/// Whether the underlying crypto library is compliant.
+///
+/// This approximates `gnupg_gcrypt_is_compliant`.
+pub const CRYPTO_LIBRARY_IS_DE_VS: bool = false;
+
 const STANDARD_POLICY: &dyn Policy = &StandardPolicy::new();
 
 #[derive(Debug, Default)]

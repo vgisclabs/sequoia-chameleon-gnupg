@@ -74,7 +74,7 @@ impl<'a, 'store> ModelViewAt<'a, 'store> for AlwaysViewAt<'a, 'store> {
     }
 
     fn lookup(&self, query: &Query) -> Result<Vec<(Validity, Arc<LazyCert<'store>>)>> {
-        Ok(self.config.keydb.lookup_candidates(query)?
+        Ok(self.config.keydb.lookup_candidates(self.config, query)?
            .into_iter()
            .map(|c| (ValidityLevel::Unknown.into(), c))
            .collect())
