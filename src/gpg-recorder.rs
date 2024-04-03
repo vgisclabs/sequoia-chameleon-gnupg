@@ -1376,9 +1376,12 @@ fn clean_recording() -> Result<()> {
             .and_then(|f| Ok(serde_json::from_reader(f)?))
             .with_context(|| format!("opening {}", args.display()))?;
 
-        if args.iter().any(|a| a.starts_with("--vers")) {
+        if let Some(arg) = args.iter().find_map(
+            |a| (a.starts_with("--vers") || a.starts_with("--list-c"))
+                .then_some(a))
+        {
             if VERBOSE {
-                eprintln!("{}: skipping because --version", path.display());
+                eprintln!("{}: skipping because {}", path.display(), arg);
             }
             continue;
         }
