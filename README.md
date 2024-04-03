@@ -25,6 +25,12 @@ There are two ways the Chameleon will change your `$GNUPGHOME`:
 
 [sq]: https://gitlab.com/sequoia-pgp/sequoia-sq
 
+The Chameleon is compatible with the state of and `gpg-agent` from
+GnuPG 2.2.x and 2.4.x.  If it discovers state of GnuPG < 2.1.x
+(i.e. with `secring.gpg`), it will convert it to 2.2.x state the same
+way GnuPG would (i.e. import the secret keys into the `gpg-agent` and
+add a flag file).
+
 ### Switching to Sequoia's gpg-sq
 
 To use the Chameleon, you need to install it, and then make sure that
@@ -40,10 +46,11 @@ g10code's GnuPG.
 #### Replace /bin/gpg
 
 To globally replace g10code's `gpg` with the Chameleon, install it as
-`/bin/gpg` replacing g10code's `gpg`, for example using `dpkg-divert`
-or a similar mechanism.  This is more convenient and robust than
-invoking it using `gpg-sq`, but has the downside of being a
-system-wide all-or-nothing switch.
+`/bin/gpg` (or `/usr/bin/gpg`, or wherever `gpg` is installed on your
+system; hint: try `type gpg` in your shell) replacing g10code's `gpg`,
+for example using `dpkg-divert` or a similar mechanism.  This is more
+convenient and robust than invoking it using `gpg-sq`, but has the
+downside of being a system-wide all-or-nothing switch.
 
 #### Take precedence using PATH
 
@@ -196,7 +203,14 @@ we are only honoring ultimately trusted certificates as trust root
 
 Some features of g10code's GnuPG are deliberately not implemented to
 improve security, or to reduce complexity in the reimplementation.
-This is a non-exhaustive list.
+
+This is a non-exhaustive list.  If you note a divergence that is not
+listed here, please open an issue, so that we can either align with
+GnuPG's behavior, or add the divergence to this list.
+
+Conversely, if you take issue with a divergence listed here, and have
+good arguments not mentioned here that support aligning with GnuPG on
+that aspect, please also open an issue.
 
 #### Weak algorithms are rejected
 
@@ -211,6 +225,20 @@ keys is insecure.  See https://evil32.com .
 
 When a short key ID is used in an command line argument or
 configuration file, an error is printed and the operation fails.
+
+#### We don't use dirmngr
+
+We don't use GnuPG's `dirmngr` to connect to network services to
+discover certificates.  Instead, we read its configuration file and do
+the requests ourselves.  This is more robust and offers more features,
+for example, if you have more than one `keyserver` directive in
+`dirmngr.conf`, we will query all keyservers simultaneously.
+
+#### We don't use keyboxd
+
+We don't use GnuPG's `keyboxd` to access keybox databases.  Instead,
+we read the certificates directly from the keybox database if we
+discover one.
 
 #### We reject --use-embedded-filename
 
