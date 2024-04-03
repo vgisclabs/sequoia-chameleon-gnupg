@@ -327,13 +327,13 @@ pub fn cmd_list_config(config: &crate::Config, args: &[String])
 pub fn cmd_generate_revocation(config: &crate::Config, args: &[String])
                                -> Result<()>
 {
-    use crate::trust::{self, Query, Model};
+    use crate::trust::{self, Model};
 
     if args.len() > 1 {
         return Err(anyhow::anyhow!("Expected only one argument, got more"));
     }
 
-    let q = Query::from(args[0].as_str());
+    let q = args[0].parse()?;
     let always = trust::Always::default();
     let vtm = always.with_policy(config, Some(config.now()))?;
     let certs = config.lookup_certs_with(vtm.as_ref(), &q, true)?;

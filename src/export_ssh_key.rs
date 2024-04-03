@@ -29,7 +29,7 @@ pub fn cmd_export_ssh_key(config: &mut crate::Config, args: &[String])
         config.wrong_args(format_args!("--export-ssh-key <user-id>"));
     }
 
-    let query: Query = args[0].as_str().into();
+    let query: Query = args[0].parse()?;
     let certs = config.lookup_certs(&query)?;
     match certs.len() {
         0 => Err(anyhow::anyhow!(

@@ -168,7 +168,7 @@ pub async fn get_signers(config: &crate::Config<'_>)
             continue;
         }
 
-        let query = crate::trust::Query::from(local_user.as_str());
+        let query = local_user.parse::<crate::trust::Query>()?;
         let certs = config.lookup_certs(&query)?;
 
         // Cowardly refuse any queries that resolve to multiple keys.

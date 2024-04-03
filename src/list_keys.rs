@@ -296,8 +296,8 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String], list_secret: bool)
                         .unwrap_or(true)))
     } else {
         let mut certs = BTreeMap::new();
-        for query in args.iter().map(|a| Query::from(&a[..])) {
-            let r = match query {
+        for query in args.iter().map(|a| a.parse()) {
+            let r = match query? {
                 Query::Key(h) | Query::ExactKey(h) =>
                     config.keydb().lookup_by_cert_or_subkey(&h),
                 Query::Email(e) =>

@@ -1009,7 +1009,7 @@ impl<'store> Config<'store> {
                 if let Some(queries) = self.groups.get(e.as_str()) {
                     let mut acc = Vec::new();
                     for query in queries {
-                        let q = query.as_str().into();
+                        let q = query.parse()?;
                         acc.append(
                             &mut self.lookup_certs_with(vtm, &q, false)?);
                     }
@@ -1021,7 +1021,7 @@ impl<'store> Config<'store> {
                 if let Some(queries) = self.groups.get(&f[..]) {
                     let mut acc = Vec::new();
                     for query in queries {
-                        let q = query.as_str().into();
+                        let q = query.parse()?;
                         acc.append(
                             &mut self.lookup_certs_with(vtm, &q, false)?);
                     }

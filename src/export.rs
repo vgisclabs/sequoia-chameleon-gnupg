@@ -187,8 +187,8 @@ pub fn cmd_export(config: &mut crate::Config, args: &[String],
     }
 
     let filter: Vec<Query> = args.iter()
-        .map(|a| Query::from(&a[..]))
-        .collect::<Vec<_>>();
+        .map(|a| a.parse())
+        .collect::<Result<Vec<_>>>()?;
 
     for cert in config.keydb().certs() {
         // Filter out the trust root and all shadow CAs.

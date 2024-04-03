@@ -377,20 +377,22 @@ impl fmt::Display for Query {
     }
 }
 
-impl From<&str> for Query {
-    fn from(s: &str) -> Query {
+impl std::str::FromStr for Query {
+    type Err = anyhow::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
         if s.ends_with("!") {
             if let Ok(h) = s[..s.len()-1].parse() {
-                return Query::ExactKey(h);
+                return Ok(Query::ExactKey(h));
             }
         }
 
         if let Ok(h) = s.parse() {
-            Query::Key(h)
+            Ok(Query::Key(h))
         } else if s.starts_with("<") && s.ends_with(">") {
-            Query::Email(s[1..s.len()-1].to_lowercase())
+            Ok(Query::Email(s[1..s.len()-1].to_lowercase()))
         } else {
-            Query::UserIDFragment(s.to_lowercase())
+            Ok(Query::UserIDFragment(s.to_lowercase()))
         }
     }
 }

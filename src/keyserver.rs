@@ -188,13 +188,18 @@ async fn keyserver_import(config: &mut crate::Config<'_>, args: &[String],
 	config.keydb().fingerprints().map(Into::into).collect()
     } else {
 	args.iter()
-	    .filter_map(|a| match Query::from(a.as_str()) {
-		Query::Key(h) | Query::ExactKey(h) => Some(h),
-		_ => {
+	    .filter_map(|a| match a.parse() {
+		Ok(Query::Key(h)) | Ok(Query::ExactKey(h)) => Some(h),
+		Ok(_) => {
 		    config.error(format_args!(
 			"{:?} not a key ID: skipping", a));
 		    None
 		},
+                Err(e) => {
+		    config.error(format_args!(
+			"{:?} not a key ID, skipping: {}", a, e));
+		    None
+		}
 	    })
 	    .collect()
     };

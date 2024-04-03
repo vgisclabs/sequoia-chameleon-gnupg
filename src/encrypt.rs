@@ -125,7 +125,7 @@ fn do_encrypt(config: &crate::Config, args: &[String],
 
     for recipient in &config.remote_user {
         // XXX: honor constraints
-        let query = crate::trust::Query::from(recipient.name.as_str());
+        let query: crate::trust::Query = recipient.name.parse()?;
 
         // XXX: One remote user may expand to multiple recipients.  In
         // the case of groups, this is a feature.  In the case of
