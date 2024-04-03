@@ -388,6 +388,13 @@ impl std::str::FromStr for Query {
         }
 
         if let Ok(h) = s.parse() {
+            if let KeyHandle::Fingerprint(Fingerprint::Invalid(b)) = &h {
+                if b.len() == 4 {
+                    return Err(anyhow::anyhow!(
+                        "Short key IDs are insecure and not supported: {}", s));
+                }
+            }
+
             Ok(Query::Key(h))
         } else if s.starts_with("<") && s.ends_with(">") {
             Ok(Query::Email(s[1..s.len()-1].to_lowercase()))

@@ -209,6 +209,9 @@ Short key IDs, aka 32-bit key IDs, are not supported.  Creating keys
 with colliding short key IDs is trivial, so using them to refer to
 keys is insecure.  See https://evil32.com .
 
+When a short key ID is used in an command line argument or
+configuration file, an error is printed and the operation fails.
+
 #### We reject --use-embedded-filename
 
 This flag is insecure and may overwrite arbitrary files with
