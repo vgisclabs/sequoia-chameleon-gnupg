@@ -2384,7 +2384,6 @@ dependencies = [
  "sequoia-ipc",
  "sequoia-net",
  "sequoia-openpgp",
- "sequoia-openpgp-mt",
  "sequoia-policy-config",
  "sequoia-wot",
  "serde",
@@ -2510,18 +2509,6 @@ dependencies = [
  "win-crypto-ng",
  "winapi",
  "xxhash-rust",
-]
-
-[[package]]
-name = "sequoia-openpgp-mt"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "02a86b047ba5a71263eb36a1baba6c3124ceb4a34c221592e878a82fc34e4445"
-dependencies = [
- "anyhow",
- "buffered-reader",
- "num_cpus",
- "sequoia-openpgp",
 ]
 
 [[package]]

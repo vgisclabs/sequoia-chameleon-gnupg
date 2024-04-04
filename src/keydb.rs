@@ -300,7 +300,7 @@ impl<'store> KeyDB<'store> {
     }
 
     // Initialize a keyring.
-    fn initialize_keyring<P>(&mut self, file: fs::File, path: P, lazy: bool)
+    fn initialize_keyring<P>(&mut self, file: fs::File, path: P)
         -> Result<Vec<LazyCert<'store>>>
         where P: AsRef<Path>,
     {
@@ -308,7 +308,7 @@ impl<'store> KeyDB<'store> {
         let path = path.as_ref();
         t!("loading keyring {:?}", path);
 
-        let results = if lazy {
+        let results = {
             let iter = match RawCertParser::from_reader(file) {
                 Ok(iter) => iter,
                 Err(err) => {
@@ -330,35 +330,13 @@ impl<'store> KeyDB<'store> {
                     }
                 }
             }).collect()
-        } else {
-            let iter = match sequoia_openpgp_mt::keyring::parse(file) {
-                Ok(iter) => iter,
-                Err(err) => {
-                    let err = anyhow::Error::from(err).context(
-                        format!("Loading keyring {:?}", path));
-                    print_error_chain(&err);
-                    return Err(err);
-                }
-            };
-
-            iter.into_iter().filter_map(|cert| {
-                match cert {
-                    Ok(cert) => Some(LazyCert::from(cert)),
-                    Err(err) => {
-                        let err = anyhow::Error::from(err).context(format!(
-                            "While parsing cert from keyring {:?}", path));
-                        print_error_chain(&err);
-                        None
-                    }
-                }
-            }).collect()
         };
 
         Ok(results)
     }
 
     // Initialize a keybox.
-    fn initialize_keybox<P>(&mut self, file: fs::File, path: P, _lazy: bool)
+    fn initialize_keybox<P>(&mut self, file: fs::File, path: P)
         -> Result<Vec<LazyCert<'store>>>
         where P: AsRef<Path>,
     {
@@ -408,7 +386,7 @@ impl<'store> KeyDB<'store> {
     }
 
     /// Initialize a keybox database.
-    fn initialize_keybox_db<P>(&mut self, path: P, _lazy: bool)
+    fn initialize_keybox_db<P>(&mut self, path: P)
         -> Result<Vec<LazyCert<'store>>>
         where P: AsRef<Path>,
     {
@@ -495,12 +473,12 @@ impl<'store> KeyDB<'store> {
 
             let certs = match resource.kind {
                 Kind::Keyring => {
-                    self.initialize_keyring(f?, &resource.path, lazy)
+                    self.initialize_keyring(f?, &resource.path)
                         .with_context(|| format!(
                             "Reading the keyring {:?}", resource.path))
                 },
                 Kind::Keybox => {
-                    self.initialize_keybox(f?, &resource.path, lazy)
+                    self.initialize_keybox(f?, &resource.path)
                         .with_context(|| format!(
                             "Reading the keybox {:?}", resource.path))
                 },
@@ -510,7 +488,7 @@ impl<'store> KeyDB<'store> {
                     Ok(Vec::new())
                 },
                 Kind::KeyboxDB => {
-                    self.initialize_keybox_db(&resource.path, lazy)
+                    self.initialize_keybox_db(&resource.path)
                         .with_context(|| format!(
                             "{}: reading the keybox database",
                             resource.path.display()))

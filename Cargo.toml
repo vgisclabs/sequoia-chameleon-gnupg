@@ -39,7 +39,6 @@ rusqlite = { version = ">=0.29, <0.32" }
 sequoia-cert-store = "0.5"
 sequoia-gpg-agent = "0.2"
 sequoia-openpgp = { version = "1.19", default-features = false, features = ["compression"] }
-sequoia-openpgp-mt = "0.1"
 sequoia-policy-config = "0.6"
 sequoia-ipc = "0.34.1"
 sequoia-net = "0.28"
