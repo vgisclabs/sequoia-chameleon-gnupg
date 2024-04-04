@@ -19,7 +19,10 @@ use openpgp::{
     KeyID,
     crypto::{S2K, SessionKey},
     fmt::hex,
-    packet::UserID,
+    packet::{
+        PKESK,
+        UserID,
+    },
     types::*,
 };
 
@@ -134,9 +137,7 @@ pub enum Status<'a> {
 
     // Encryption-related.
     EncTo {
-        keyid: KeyID,
-        pk_algo: Option<PublicKeyAlgorithm>,
-        pk_len: Option<usize>,
+        pkesk: &'a PKESK,
     },
     BeginDecryption,
     EndDecryption,
@@ -469,14 +470,16 @@ impl Status<'_> {
             },
 
             EncTo {
-                keyid,
-                pk_algo,
-                pk_len,
+                pkesk,
             } => {
+                // According to doc/DETAILS, GnuPG always reports the
+                // length as 0.
+                let pk_len = 0;
+
                 writeln!(w, "ENC_TO {:X} {} {}",
-                         keyid,
-                         pk_algo.map(|a| u8::from(a)).unwrap_or(0),
-                         pk_len.unwrap_or(0))?;
+                         pkesk.recipient(),
+                         u8::from(pkesk.pk_algo()),
+                         pk_len)?;
             },
 
             BeginDecryption => writeln!(w, "BEGIN_DECRYPTION")?,

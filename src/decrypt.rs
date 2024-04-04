@@ -395,11 +395,7 @@ impl<'a, 'store> DHelper<'a, 'store> {
 
             self.config.status().emit(
                 Status::EncTo {
-                    keyid: pkesk.recipient().clone(),
-                    pk_algo: Some(pkesk.pk_algo()),
-                    // According to doc/DETAILS, GnuPG always
-                    // reports the length as 0.
-                    pk_len: None,
+                    pkesk,
                 })?;
 
             if success.is_some() {
