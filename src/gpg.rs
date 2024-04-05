@@ -2857,6 +2857,7 @@ fn real_main() -> anyhow::Result<()> {
         Some(aFullKeygen) => generate_key::cmd_generate_key(&mut opt, &args, true),
         Some(aQuickAddKey) => generate_key::cmd_quick_add_key(&mut opt, &args),
         Some(aQuickAddUid) => quick::cmd_quick_add_uid(&mut opt, &args),
+        Some(aQuickRevUid) => quick::cmd_quick_revoke_uid(&mut opt, &args),
         None => commands::cmd_implicit(&opt, &args),
 
         // Our own extensions.
