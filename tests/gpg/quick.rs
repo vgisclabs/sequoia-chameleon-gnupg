@@ -194,3 +194,59 @@ fn add_key(parameters: &[&str], mut experiment: Experiment) -> Result<()>
 
     Ok(())
 }
+
+#[test]
+#[ntest::timeout(600000)]
+fn add_uid() -> Result<()> {
+    let mut experiment = make_experiment!()?;
+    let key = experiment.artifact(
+        "key",
+        || CertBuilder::new()
+            .set_creation_time(Experiment::now())
+            .add_userid("Alice Lovelace <alice@lovelace.name>")
+            .generate()
+            .map(|(cert, _rev)| cert),
+        |a, f| a.as_tsk().serialize(f),
+        |b| Cert::from_bytes(&b))?;
+
+    experiment.section("Importing key...");
+    let diff = experiment.invoke(&[
+        "--import",
+        &experiment.store("key", &key.as_tsk().to_vec()?)?,
+    ])?;
+    diff.assert_success();
+
+    experiment.section("Adding a uid to key by fingerprint, quickly...");
+    let fp = key.fingerprint().to_string();
+    let diff = experiment.invoke(&[
+        "--batch",
+        "--quick-add-uid", fp.as_str(), "<hacker@example.org>",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(0, 0, 0);
+
+    experiment.section("Adding a uid to key by email, quickly...");
+    let diff = experiment.invoke(&[
+        "--batch",
+        "--quick-add-uid", "<alice@lovelace.name>", "<phreaker@example.net>",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(0, 0, 0);
+
+    experiment.section("Adding a uid to key by substring match, quickly...");
+    let diff = experiment.invoke(&[
+        "--batch",
+        "--quick-add-uid", "alice", "<punk@example.com>",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(0, 0, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-colons",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(0, 0, 0);
+
+    Ok(())
+}

@@ -74,6 +74,7 @@ pub mod dirmngr;
 pub mod migrate;
 pub mod generate_key;
 pub mod filter;
+pub mod quick;
 
 /// Commands and options.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -542,9 +543,9 @@ pub struct Config<'store> {
     outfile: Option<String>,
     override_session_key: Option<SessionKey>,
     passphrase_repeat: i64,
-    personal_cipher_prefs: Vec<SymmetricAlgorithm>,
-    personal_digest_prefs: Vec<HashAlgorithm>,
-    personal_compress_prefs: Vec<CompressionAlgorithm>,
+    personal_cipher_prefs: Option<Vec<SymmetricAlgorithm>>,
+    personal_digest_prefs: Option<Vec<HashAlgorithm>>,
+    personal_compress_prefs: Option<Vec<CompressionAlgorithm>>,
     photo_viewer: Option<PathBuf>,
     pinentry_mode: gpg_agent::PinentryMode,
     quiet: bool,
@@ -673,9 +674,9 @@ impl<'store> Config<'store> {
             outfile: None,
             override_session_key: None,
             passphrase_repeat: 0, // XXX
-            personal_cipher_prefs: Preferences::default().symmetric,
-            personal_digest_prefs: Preferences::default().hash,
-            personal_compress_prefs: Preferences::default().compression,
+            personal_cipher_prefs: None,
+            personal_digest_prefs: None,
+            personal_compress_prefs: None,
             photo_viewer: None,
             pinentry_mode: Default::default(),
             quiet: false,
@@ -2499,15 +2500,15 @@ fn real_main() -> anyhow::Result<()> {
                 opt.def_keyserver_url = Some(value.as_str().unwrap().parse()?),
             oPersonalCipherPreferences =>
                 if let Some(p) = Preferences::parse(value.as_str().unwrap())? {
-                    opt.personal_cipher_prefs = p.symmetric;
+                    opt.personal_cipher_prefs = Some(p.symmetric);
                 },
             oPersonalDigestPreferences =>
                 if let Some(p) = Preferences::parse(value.as_str().unwrap())? {
-                    opt.personal_digest_prefs = p.hash;
+                    opt.personal_digest_prefs = Some(p.hash);
                 },
             oPersonalCompressPreferences =>
                 if let Some(p) = Preferences::parse(value.as_str().unwrap())? {
-                    opt.personal_compress_prefs = p.compression;
+                    opt.personal_compress_prefs = Some(p.compression);
                 },
             oWeakDigest => {
                 opt.policy.weak_digest(
@@ -2855,6 +2856,7 @@ fn real_main() -> anyhow::Result<()> {
         Some(aKeygen) => generate_key::cmd_generate_key(&mut opt, &args, false),
         Some(aFullKeygen) => generate_key::cmd_generate_key(&mut opt, &args, true),
         Some(aQuickAddKey) => generate_key::cmd_quick_add_key(&mut opt, &args),
+        Some(aQuickAddUid) => quick::cmd_quick_add_uid(&mut opt, &args),
         None => commands::cmd_implicit(&opt, &args),
 
         // Our own extensions.
