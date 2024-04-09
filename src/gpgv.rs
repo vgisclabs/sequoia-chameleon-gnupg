@@ -158,6 +158,12 @@ impl<'store> Config<'store> {
     }
 }
 
+impl sequoia_chameleon_gnupg_common::Common for Config<'_> {
+    fn homedir(&self) -> &Path {
+        &self.homedir
+    }
+}
+
 impl<'store> common::Common<'store> for Config<'store> {
     fn argv0(&self) -> &'static str {
         "gpgv"
@@ -175,10 +181,6 @@ impl<'store> common::Common<'store> for Config<'store> {
 
     fn debug(&self) -> u32 {
         self.debug
-    }
-
-    fn homedir(&self) -> &Path {
-        &self.homedir
     }
 
     fn keydb(&self) -> &keydb::KeyDB<'store> {

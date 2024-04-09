@@ -1,0 +1,32 @@
+[package]
+name = "sequoia-chameleon-gnupg-common"
+version = "0.1.0"
+authors = ["Justus Winter <justus@sequoia-pgp.org>"]
+edition = "2021"
+keywords = ["cryptography", "openpgp", "pgp", "encryption", "signing"]
+categories = ["cryptography", "authentication", "command-line-utilities"]
+license = "GPL-3.0-or-later"
+documentation = "https://docs.rs/sequoia-chameleon-gnupg-common"
+homepage = "https://sequoia-pgp.org/"
+repository = "https://gitlab.com/sequoia-pgp/sequoia-chameleon-gnupg"
+rust-version = "1.70"
+
+[dependencies]
+anyhow = "1"
+sequoia-openpgp = { version = "1.19", default-features = false }
+thiserror = "1"
+
+[lib]
+path = "lib.rs"
+
+[target.'cfg(not(windows))'.dev-dependencies]
+# Enables a crypto backend for the tests:
+sequoia-openpgp = { version = "1", default-features = false, features = ["crypto-nettle", "__implicit-crypto-backend-for-tests"]  }
+
+[target.'cfg(windows)'.dev-dependencies]
+# Enables a crypto backend for the tests:
+sequoia-openpgp = { version = "1", default-features = false, features = ["crypto-cng", "__implicit-crypto-backend-for-tests"] }
+
+[package.metadata.docs.rs]
+# Enables a crypto backend for the docs.rs generation:
+features = ["sequoia-openpgp/default"]

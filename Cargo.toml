@@ -1,3 +1,6 @@
+[workspace]
+members = ["common"]
+
 [package]
 name = "sequoia-chameleon-gnupg"
 description = "Sequoia's reimplementation of the GnuPG interface"
@@ -15,6 +18,7 @@ include = ["src", "tests", "AUTHORS.GnuPG", "LICENSE.txt", "README.md", "!/integ
 rust-version = "1.70"
 
 [dependencies]
+sequoia-chameleon-gnupg-common = { path = "common" }
 anyhow = "1"
 base64 = "0.21"
 buffered-reader = "1"

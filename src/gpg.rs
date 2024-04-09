@@ -32,6 +32,7 @@ use sequoia_cert_store::{
 };
 
 use sequoia_gpg_agent as gpg_agent;
+use sequoia_chameleon_gnupg_common::Common as _;
 
 pub mod gnupg_interface;
 
@@ -1110,6 +1111,12 @@ impl<'store> Config<'store> {
     }
 }
 
+impl sequoia_chameleon_gnupg_common::Common for Config<'_> {
+    fn homedir(&self) -> &Path {
+        &self.homedir
+    }
+}
+
 impl<'store> common::Common<'store> for Config<'store> {
     fn argv0(&self) -> &'static str {
         "gpg"
@@ -1137,10 +1144,6 @@ impl<'store> common::Common<'store> for Config<'store> {
 
     fn debug(&self) -> u32 {
         self.debug
-    }
-
-    fn homedir(&self) -> &Path {
-        &self.homedir
     }
 
     fn keydb(&self) -> &keydb::KeyDB<'store> {
@@ -1503,9 +1506,9 @@ impl std::str::FromStr for SessionKey {
     }
 }
 
-fn print_additional_version(config: &Config) {
+fn print_additional_version(config: &dyn sequoia_chameleon_gnupg_common::Common) {
     println!();
-    println!("Home: {}", config.homedir.display());
+    println!("Home: {}", config.homedir().display());
 
     println!("Supported algorithms:");
 

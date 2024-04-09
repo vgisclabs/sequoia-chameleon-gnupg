@@ -2390,6 +2390,7 @@ dependencies = [
  "rpassword",
  "rusqlite",
  "sequoia-cert-store",
+ "sequoia-chameleon-gnupg-common",
  "sequoia-gpg-agent",
  "sequoia-ipc",
  "sequoia-net",
@@ -2406,6 +2407,15 @@ dependencies = [
  "thiserror",
  "tokio",
  "zbase32",
+]
+
+[[package]]
+name = "sequoia-chameleon-gnupg-common"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "sequoia-openpgp",
+ "thiserror",
 ]
 
 [[package]]

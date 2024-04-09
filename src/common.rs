@@ -2,7 +2,6 @@
 
 use std::{
     fmt,
-    path::{Path, PathBuf},
     time::SystemTime,
     sync::Arc,
 };
@@ -33,7 +32,7 @@ pub const BRAINPOOL_P384_OID: &[u8] =
     &[0x2B, 0x24, 0x03, 0x03, 0x02, 0x08, 0x01, 0x01, 0x0B];
 
 /// Controls common to gpgv and gpg.
-pub trait Common<'store> {
+pub trait Common<'store>: sequoia_chameleon_gnupg_common::Common {
     /// Returns the name of the program.
     fn argv0(&self) -> &'static str;
 
@@ -76,22 +75,6 @@ pub trait Common<'store> {
 
     /// Returns the debug level.
     fn debug(&self) -> u32;
-
-    /// Returns the home directory.
-    fn homedir(&self) -> &Path;
-
-    /// Returns a path that can be relative to the home directory.
-    ///
-    /// Canonicalizes the given path name with the property that if it
-    /// contains no slash (i.e. just one component), it is interpreted
-    /// as being relative to the GnuPG home directory.
-    fn make_filename(&self, name: &Path) -> PathBuf {
-        if name.is_relative() && name.components().count() == 1 {
-            self.homedir().join(name)
-        } else {
-            name.into()
-        }
-    }
 
     /// Returns a reference to the key database.
     fn keydb(&self) -> &KeyDB<'store>;

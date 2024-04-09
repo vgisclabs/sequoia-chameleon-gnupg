@@ -7,6 +7,8 @@ use std::{
     path::Path,
 };
 
+use sequoia_chameleon_gnupg_common::Common;
+
 pub mod flags;
 use flags::*;
 #[macro_use]
@@ -91,7 +93,7 @@ pub struct Parser<T: Copy + Debug + PartialEq + Eq + Into<isize> + 'static> {
     name: &'static str,
     gnupg_version: &'static str,
     synopsis: &'static str,
-    additional_version: Box<dyn Fn(&crate::Config)>,
+    additional_version: Box<dyn Fn(&dyn Common)>,
     options: &'static [Opt<T>],
 }
 
@@ -120,7 +122,7 @@ impl<T: Copy + Debug + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
     /// Registers a callback to print additional version information.
     pub fn with_additional_version_information<F>(mut self, fun: F) -> Self
     where
-        F: Fn(&crate::Config) + 'static,
+        F: Fn(&dyn Common) + 'static,
     {
         self.additional_version = Box::new(fun);
         self
@@ -214,7 +216,7 @@ impl<T: Copy + Debug + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
     }
 
     /// Displays version information.
-    pub fn version(&self, config: &crate::Config) {
+    pub fn version(&self, config: &dyn Common) {
         const NBSP: char = '\u{00A0}'; // A non-breaking space.
         println!("{} (GnuPG-compatible{NBSP}Sequoia{NBSP}Chameleon) {}",
                  self.name, self.gnupg_version);
@@ -232,7 +234,7 @@ impl<T: Copy + Debug + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
     }
 
     /// Displays help.
-    pub fn help(&self, config: &crate::Config) {
+    pub fn help(&self, config: &dyn Common) {
         self.version(config);
         println!();
         println!("Syntax: {} [options] [files]", self.name);

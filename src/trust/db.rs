@@ -22,6 +22,8 @@ use openpgp::{
     Fingerprint,
 };
 
+use sequoia_chameleon_gnupg_common::Common as _;
+
 use crate::{
     Config,
     common::Common,
