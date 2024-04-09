@@ -38,6 +38,7 @@ rpassword = "7"
 rusqlite = { version = ">=0.29, <0.32" }
 sequoia-cert-store = "0.5"
 sequoia-gpg-agent = "0.2"
+sequoia-keystore = "0.3"
 sequoia-openpgp = { version = "1.19", default-features = false, features = ["compression"] }
 sequoia-policy-config = "0.6"
 sequoia-ipc = "0.34.1"
@@ -90,3 +91,7 @@ crypto-botan = ["sequoia-openpgp/crypto-botan"]
 crypto-botan2 = ["sequoia-openpgp/crypto-botan2"]
 crypto-cng = ["sequoia-openpgp/crypto-cng"]
 the-recorder-steals-secrets-and-i-wont-package-it-in-slash-bin = []
+
+[patch.crates-io]
+sequoia-keystore = { path = '../sequoia-keystore/keystore' }
+sequoia-keystore-softkeys = { path = '../sequoia-keystore/softkeys' }

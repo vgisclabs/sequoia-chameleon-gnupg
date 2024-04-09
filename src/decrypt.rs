@@ -1,4 +1,5 @@
 use std::{
+    collections::BTreeSet,
     io,
 };
 
@@ -10,15 +11,12 @@ use openpgp::{
     Fingerprint,
     KeyHandle,
     crypto::{
-        self,
-        Decryptor as _,
         SessionKey,
     },
     fmt::hex,
     packet::prelude::*,
     policy::Policy,
     types::*,
-    packet::key::*,
     parse::{
         Parse,
         stream::*,
@@ -26,9 +24,6 @@ use openpgp::{
 };
 
 use sequoia_gpg_agent as gpg_agent;
-use gpg_agent::{
-    KeyPair,
-};
 
 use sequoia_cert_store as cert_store;
 use cert_store::Store;
@@ -286,51 +281,61 @@ impl<'a, 'store> DHelper<'a, 'store> {
 
     /// Tries to decrypt the given PKESK packet with `keypair` and try
     /// to decrypt the packet parser using `decrypt`.
-    async fn try_decrypt<D>(&self,
+    fn try_decrypt<D>(&self,
                             cert: &Cert,
                             pkesk: &PKESK,
-                            sym_algo: Option<SymmetricAlgorithm>,
-                            mut keypair: KeyPair,
+                            sym_algo_hint: Option<SymmetricAlgorithm>,
                             decrypt: &mut D)
                             -> Result<(Option<Fingerprint>,
                                        SymmetricAlgorithm,
                                        SessionKey)>
         where D: FnMut(SymmetricAlgorithm, &SessionKey) -> bool
     {
-        let kek = keypair.decrypt(pkesk.esk(),
-                                  sym_algo.and_then(|a| a.key_size().ok()))?;
+        // XXX: passwords
+        //
+        // // See if we have a static password to loop back to the
+        // // agent.
 
-        // XXX: This is a bit rough.  We get the raw plaintext from
-        // Agent::decrypt, but there is no nice API to decrypt a PKESK
-        // with that.  What we can do, is use a shim that implements
-        // the low-level crypto::Decryptor and merely returns the
-        // plaintext that we already have.
+        let mut store = self.config.key_store()?.lock().unwrap();
+        let mut r = store.decrypt(&[pkesk.clone()][..]);
 
-        struct KEK(KeyPair, Option<SessionKey>);
-        impl crypto::Decryptor for KEK {
-            fn public(&self) -> &Key<PublicParts, UnspecifiedRole> {
-                self.0.public()
-            }
-            fn decrypt(&mut self,
-                       _ciphertext: &crypto::mpi::Ciphertext,
-                       _plaintext_len: Option<usize>)
-                       -> Result<SessionKey> {
-                Ok(self.1.take().expect("KEK::decrypted called twice"))
+        let locked_keys =
+            if let Some(sequoia_keystore::Error::InaccessibleDecryptionKey(ref mut keys))
+            = r.as_mut().err().and_then(anyhow::Error::downcast_mut)
+        {
+            Some(std::mem::take(keys))
+        } else {
+            None
+        };
+        let mut r = r.ok();
+
+        if let (crate::gpg_agent::PinentryMode::Loopback, Some(p)) =
+            (&self.config.pinentry_mode,
+             self.config.static_passphrase.borrow().as_ref())
+        {
+            if let Some(mut keys) = locked_keys {
+                for k in keys.iter_mut() {
+                    if k.key_mut().unlock(p.clone()).is_ok() {
+                        r = pkesk.decrypt(k.key_mut(), sym_algo_hint)
+                            .map(|(sym, sk)| (0, k.key().fingerprint(), sym, sk));
+                        if r.is_some() {
+                            break;
+                        }
+                    }
+                }
             }
         }
 
-        // Decrypt the PKESK with our shim.
-        let mut decryptor = KEK(keypair, Some(kek));
-        match pkesk.decrypt(&mut decryptor, sym_algo)
-            .and_then(|(algo, sk)| {
-                if decrypt(algo, &sk) { Some((algo, sk)) } else { None }
+        match r
+            .and_then(|(_, fp, algo, sk)| {
+                if decrypt(algo, &sk) { Some((fp, algo, sk)) } else { None }
             })
         {
-            Some((algo, sk)) => {
+            Some((fp, algo, sk)) => {
                 if ! self.config.list_only {
                     self.config.status().emit(
                         Status::DecryptionKey {
-                            fp: decryptor.0.public().fingerprint(),
+                            fp,
                             cert_fp: cert.fingerprint(),
                             owner_trust: self.config.trustdb
                                 .get_ownertrust(&cert.fingerprint())
@@ -343,13 +348,15 @@ impl<'a, 'store> DHelper<'a, 'store> {
         }
     }
 
-    async fn async_decrypt<D>(&mut self, pkesks: &[PKESK], skesks: &[SKESK],
+    fn sync_decrypt<D>(&mut self, pkesks: &[PKESK], skesks: &[SKESK],
                               sym_algo: Option<SymmetricAlgorithm>,
                               mut decrypt: D)
                               -> Result<Option<openpgp::Fingerprint>>
     where
         D: FnMut(SymmetricAlgorithm, &SessionKey) -> bool,
     {
+        let rt = tokio::runtime::Runtime::new()?;
+
         // We provide all the information upfront before we try any
         // decryption.
         for skesk in skesks {
@@ -378,8 +385,20 @@ impl<'a, 'store> DHelper<'a, 'store> {
             }
         }
 
-        let mut agent = self.config.connect_agent().await?;
-        let secret_keys = agent.list_keys().await.unwrap_or_default();
+        // XXX: let the key store decrypt the pkesks as it sees fits,
+        // then let the code below generate the matching output
+        // without actually doing anything.
+        //
+        // XXX: then, we won't need this anymore (instead, just
+        // remember which pkesk we decrypted successfully, and return
+        // some error for the others):
+        let secret_keys = self.config.key_store()
+            .map(|ks| ks.lock().unwrap().backends().unwrap_or_default().into_iter()
+                 .flat_map(|mut be| be.list().unwrap_or_default().into_iter()
+                           .flat_map(|mut dv| dv.list().unwrap_or_default().into_iter()
+                                     .map(|key| key.fingerprint()))))
+            .map(|i| i.collect::<BTreeSet<Fingerprint>>())
+            .unwrap_or_default();
 
         // First, try public key encryption.
         let mut success = None;
@@ -453,7 +472,7 @@ impl<'a, 'store> DHelper<'a, 'store> {
                 },
             };
 
-            if secret_keys.lookup_by_key(key.key()).is_none() {
+            if ! secret_keys.contains(&key.fingerprint()) {
                 *error = Some(error_codes::Error::GPG_ERR_NO_SECKEY);
                 continue;
             }
@@ -474,21 +493,9 @@ impl<'a, 'store> DHelper<'a, 'store> {
                     })?;
             }
 
-            // And just try to decrypt it using the agent.
-            let mut pair = agent.keypair(&key)?
-                .with_cert(&vcert);
-
-            // See if we have a static password to loop back to the
-            // agent.
-            if let (crate::gpg_agent::PinentryMode::Loopback, Some(p)) =
-                (&self.config.pinentry_mode,
-                 self.config.static_passphrase.borrow().as_ref())
-            {
-                pair = pair.with_password(p.clone());
-            }
-
+            // And just try to decrypt it using the key store.
             if let Ok(r) = self.try_decrypt(
-                &cert, pkesk, sym_algo, pair, &mut decrypt).await
+                &cert, pkesk, sym_algo, &mut decrypt)
             {
                 // Success!
                 success = Some(r);
@@ -582,6 +589,8 @@ impl<'a, 'store> DHelper<'a, 'store> {
             return Err(anyhow::anyhow!("decryption failed: No secret key"));
         }
 
+
+        let mut agent = rt.block_on(self.config.connect_agent())?;
         let cacheid = crate::gpg_agent::cacheid_over_all(skesks);
 
         let mut error: Option<String> = None;
@@ -613,7 +622,7 @@ impl<'a, 'store> DHelper<'a, 'store> {
                 self.config.status().emit(Status::InquireMaxLen(100))?;
             }
 
-            let p =
+            let p = rt.block_on(
                 self.config.get_passphrase(
                     &mut agent,
                     &cacheid, &error, None, None, false, 0, false, false,
@@ -623,7 +632,7 @@ impl<'a, 'store> DHelper<'a, 'store> {
                             Status::PinentryLaunched(info.into()))?;
                         Ok(())
                     },
-                ).await?;
+                ))?;
 
             for skesk in skesks {
                 if let Some((algo, sk)) = skesk.decrypt(&p).ok()
@@ -642,13 +651,13 @@ impl<'a, 'store> DHelper<'a, 'store> {
             error = Some("Decryption failed".to_string());
             if let Some(cacheid) = &cacheid {
                 // Make gpg-agent forget the bad passphrase.
-                agent.forget_passphrase(
+                rt.block_on(agent.forget_passphrase(
                     &cacheid,
                     |info| {
                         let info = String::from_utf8_lossy(&info);
                         let _ = self.config.status().emit(
                             Status::PinentryLaunched(info.into()));
-                    },).await?;
+                    },))?;
             }
 
             // If we use loopback pinentry, we supplied the one
@@ -715,9 +724,7 @@ impl<'a, 'store> DecryptionHelper for DHelper<'a, 'store> {
                   decrypt: D) -> Result<Option<openpgp::Fingerprint>>
         where D: FnMut(SymmetricAlgorithm, &SessionKey) -> bool
     {
-        let rt = tokio::runtime::Runtime::new()?;
-        let r =
-            rt.block_on(self.async_decrypt(pkesks, skesks, sym_algo, decrypt));
+        let r = self.sync_decrypt(pkesks, skesks, sym_algo, decrypt);
 
         if r.is_err() && ! self.config.list_only {
             self.config.status().emit(Status::DecryptionFailed)?;

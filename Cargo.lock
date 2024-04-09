@@ -318,6 +318,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "capnpc"
+version = "0.19.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c75ba30e0f08582d53c2f3710cf4bb65ff562614b1ba86906d7391adffe189ec"
+dependencies = [
+ "capnp",
+]
+
+[[package]]
 name = "cc"
 version = "1.0.90"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -799,6 +808,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "env_logger"
+version = "0.10.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4cd405aab171cb85d6735e5c8d9db038c17d3ca007a4d2c25f337935c3d90580"
+dependencies = [
+ "humantime",
+ "is-terminal",
+ "log",
+ "regex",
+ "termcolor",
+]
+
+[[package]]
 name = "equivalent"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1252,6 +1274,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "df3b46402a9d5adb4c86a0cf463f42e19994e3ee891101b1841f30a545cb49a9"
 
 [[package]]
+name = "humantime"
+version = "2.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9a3a5bfb195931eeb336b2a7b4d761daec841b97f947d34394601737a7bba5e4"
+
+[[package]]
 name = "hyper"
 version = "0.14.28"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1399,6 +1427,17 @@ name = "ipnet"
 version = "2.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8f518f335dce6725a761382244631d86cf0ccb2863413590b31338feb467f9c3"
+
+[[package]]
+name = "is-terminal"
+version = "0.4.12"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f23ff5ef2b80d608d61efee834934d862cd92461afc0560dedf493e4c033738b"
+dependencies = [
+ "hermit-abi",
+ "libc",
+ "windows-sys 0.52.0",
+]
 
 [[package]]
 name = "itertools"
@@ -1898,6 +1937,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "paste"
+version = "1.0.14"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "de3145af08024dea9fa9914f381a17b8fc6034dfb00f3a84013f7ff43f29ed4c"
+
+[[package]]
 name = "peeking_take_while"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2391,8 +2436,9 @@ dependencies = [
  "rpassword",
  "rusqlite",
  "sequoia-cert-store",
- "sequoia-gpg-agent",
+ "sequoia-gpg-agent 0.2.0",
  "sequoia-ipc",
+ "sequoia-keystore",
  "sequoia-net",
  "sequoia-openpgp",
  "sequoia-policy-config",
@@ -2414,6 +2460,24 @@ name = "sequoia-gpg-agent"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fee27def40426a0b08bd4c9227396284bd1c96ced66ec3cc5f915f94b85f3b09"
+dependencies = [
+ "anyhow",
+ "chrono",
+ "futures",
+ "libc",
+ "sequoia-cert-store",
+ "sequoia-ipc",
+ "sequoia-openpgp",
+ "stfu8",
+ "thiserror",
+ "tokio",
+]
+
+[[package]]
+name = "sequoia-gpg-agent"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "43891963d096ace6d86b28db076f861542f409f7d6f25913f86477e7790f9a77"
 dependencies = [
  "anyhow",
  "chrono",
@@ -2454,6 +2518,75 @@ dependencies = [
  "tokio",
  "tokio-util",
  "winapi",
+]
+
+[[package]]
+name = "sequoia-keystore"
+version = "0.3.0"
+dependencies = [
+ "anyhow",
+ "capnp",
+ "capnpc",
+ "dirs",
+ "env_logger",
+ "lazy_static",
+ "log",
+ "paste",
+ "sequoia-ipc",
+ "sequoia-keystore-backend",
+ "sequoia-keystore-gpg-agent",
+ "sequoia-keystore-softkeys",
+ "sequoia-openpgp",
+ "thiserror",
+ "tokio",
+ "tokio-util",
+]
+
+[[package]]
+name = "sequoia-keystore-backend"
+version = "0.3.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "env_logger",
+ "futures",
+ "lazy_static",
+ "log",
+ "sequoia-openpgp",
+ "tempfile",
+ "thiserror",
+ "tokio",
+]
+
+[[package]]
+name = "sequoia-keystore-gpg-agent"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "futures",
+ "lazy_static",
+ "log",
+ "openpgp-cert-d",
+ "sequoia-gpg-agent 0.3.0",
+ "sequoia-ipc",
+ "sequoia-keystore-backend",
+ "sequoia-openpgp",
+ "tokio",
+]
+
+[[package]]
+name = "sequoia-keystore-softkeys"
+version = "0.3.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "dirs",
+ "futures",
+ "lazy_static",
+ "log",
+ "sequoia-keystore-backend",
+ "sequoia-openpgp",
 ]
 
 [[package]]
@@ -2847,6 +2980,15 @@ dependencies = [
  "dirs-next",
  "rustversion",
  "winapi",
+]
+
+[[package]]
+name = "termcolor"
+version = "1.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "06794f8f6c5c898b3275aebefa6b8a1cb24cd2c6c79397ab15774837a0bc5755"
+dependencies = [
+ "winapi-util",
 ]
 
 [[package]]

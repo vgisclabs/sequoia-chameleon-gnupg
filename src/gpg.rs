@@ -30,6 +30,7 @@ use sequoia_cert_store::{
     LazyCert,
     Store,
 };
+use sequoia_keystore::Keystore;
 
 use sequoia_gpg_agent as gpg_agent;
 
@@ -477,6 +478,9 @@ pub struct Config<'store> {
     trust_model_impl: Box<dyn trust::Model>,
     de_vs_producer: compliance::DeVSProducer,
 
+    // Various data stores.
+    key_store: OnceCell<Result<Mutex<Keystore>>>,
+
     // Configuration.
     answer_no: bool,
     answer_yes: bool,
@@ -604,6 +608,9 @@ impl<'store> Config<'store> {
             trustdb: Default::default(),
             trust_model_impl: common::null_model(),
             de_vs_producer: compliance::DeVSProducer::default(),
+
+            // Various data stores.
+            key_store: OnceCell::new(),
 
             // Configuration.
             answer_no: false,
@@ -734,6 +741,15 @@ impl<'store> Config<'store> {
     /// Returns an IPC context.
     pub fn ipc(&self) -> Result<ipc::gnupg::Context> {
         ipc::gnupg::Context::with_homedir(&self.homedir)
+    }
+
+    pub fn key_store(&self) -> Result<&Mutex<Keystore>> {
+        self.key_store.get_or_init(|| {
+            let c = sequoia_keystore::Context::configure()
+                .home(self.homedir())
+                .build()?;
+            Keystore::connect(&c).map(Mutex::new)
+        }).as_ref().map_err(|e| anyhow::anyhow!("{}", e))
     }
 
     /// Returns a connection to the GnuPG agent.
