@@ -191,10 +191,9 @@ async fn real_cmd_quick_add_key(config: &mut crate::Config<'_>, args: &[String])
 
     // Store the secrets in the agent.
     let mut agent = config.connect_agent().await?;
-    // See if we import a new key or subkey.
     agent.import(config.policy(),
                  &cert, &subkey,
-                 config.batch).await?;
+                 config.batch, false).await?;
 
     Ok(())
 }
@@ -847,10 +846,9 @@ async fn create_key(config: &mut crate::Config<'_>, filename: &str, i: usize,
 
     // Store the secrets in the agent.
     for subkey in cert.keys().secret() {
-        // See if we import a new key or subkey.
         agent.import(config.policy(),
                      &cert, &subkey,
-                     config.batch).await?;
+                     config.batch, false).await?;
     }
 
     // Set to ultimately trusted.

@@ -479,12 +479,20 @@ pub async fn do_import_cert(config: &mut crate::Config<'_>,
 
         for subkey in key.to_cert()?.keys().secret() {
             // See if we import a new key or subkey.
-            let c = agent.import(config.policy(),
-                                 key.to_cert()?, &subkey,
-                                 config.batch).await?;
-
-            changed |= c;
-            unchanged |= !c;
+            match agent.import(config.policy(),
+                               key.to_cert()?, &subkey,
+                               config.batch, false).await
+            {
+                Ok(_) => changed |= true,
+                Err(e) => {
+                    use sequoia_gpg_agent::Error::KeyExists;
+                    if let Some(KeyExists(_, _)) =  e.downcast_ref() {
+                        unchanged |= true;
+                    } else {
+                        return Err(e);
+                    }
+                },
+            }
         }
 
         if changed {

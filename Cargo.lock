@@ -2411,9 +2411,9 @@ dependencies = [
 
 [[package]]
 name = "sequoia-gpg-agent"
-version = "0.2.0"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fee27def40426a0b08bd4c9227396284bd1c96ced66ec3cc5f915f94b85f3b09"
+checksum = "f29f0e04d9d161c65384a02282380ceaf1b506e768cab95837a428439c2596a4"
 dependencies = [
  "anyhow",
  "chrono",
