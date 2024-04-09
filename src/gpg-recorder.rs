@@ -668,6 +668,7 @@ async fn record() -> anyhow::Result<ExitStatus> {
     // streams.
     let parser = argparse::Parser::new(
         "gpg",
+        crate::gnupg_interface::VERSION,
         "Sign, check, encrypt or decrypt\n\
          Default operation depends on the input data",
         &OPTIONS);

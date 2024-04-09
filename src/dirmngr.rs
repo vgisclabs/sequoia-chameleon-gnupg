@@ -117,7 +117,7 @@ pub fn parse(config: &mut crate::Config) -> Result<()> {
     tracer!(TRACE, "dirmngr::parse");
 
     let parser: Parser<CmdOrOpt> = Parser::new(
-        "dirmngr", "",
+        "dirmngr", "", "",
         &OPTIONS);
 
     let p = config.homedir.join("dirmngr.conf");

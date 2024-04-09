@@ -237,6 +237,7 @@ impl<'store> common::Common<'store> for Config<'store> {
 fn real_main() -> anyhow::Result<()> {
     let parser = argparse::Parser::new(
         "gpgv",
+        crate::gnupg_interface::VERSION,
         "Check signatures against known trusted keys",
         &OPTIONS);
 

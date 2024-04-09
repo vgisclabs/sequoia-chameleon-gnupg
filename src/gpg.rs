@@ -1596,6 +1596,7 @@ fn real_main() -> anyhow::Result<()> {
 
     let parser = argparse::Parser::new(
         "gpg",
+        crate::gnupg_interface::VERSION,
         "Sign, check, encrypt or decrypt\n\
          Default operation depends on the input data",
         &OPTIONS)

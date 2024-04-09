@@ -89,6 +89,7 @@ impl Value {
 /// Arguments can be read from the command line or a file.
 pub struct Parser<T: Copy + Debug + PartialEq + Eq + Into<isize> + 'static> {
     name: &'static str,
+    gnupg_version: &'static str,
     synopsis: &'static str,
     additional_version: Box<dyn Fn(&crate::Config)>,
     options: &'static [Opt<T>],
@@ -97,10 +98,12 @@ pub struct Parser<T: Copy + Debug + PartialEq + Eq + Into<isize> + 'static> {
 impl<T: Copy + Debug + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
     /// Creates a new parser for the given options.
     pub fn new(name: &'static str,
+               gnupg_version: &'static str,
                synopsis: &'static str,
                options: &'static [Opt<T>]) -> Parser<T> {
         Parser {
             name,
+            gnupg_version,
             synopsis,
             additional_version: Box::new(|_| ()),
             options,
@@ -214,7 +217,7 @@ impl<T: Copy + Debug + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
     pub fn version(&self, config: &crate::Config) {
         const NBSP: char = '\u{00A0}'; // A non-breaking space.
         println!("{} (GnuPG-compatible{NBSP}Sequoia{NBSP}Chameleon) {}",
-                 self.name, crate::gnupg_interface::VERSION);
+                 self.name, self.gnupg_version);
         println!("Sequoia {} Chameleon {}",
                  self.name, env!("CARGO_PKG_VERSION"));
         println!("sequoia-openpgp {}", sequoia_openpgp::VERSION);
@@ -692,7 +695,7 @@ mod tests {
 
     #[test]
     fn commandline() -> Result<()> {
-        let parser = Parser::new("foo", "does foo", &OPTIONS);
+        let parser = Parser::new("foo", "0.0.0", "does foo", &OPTIONS);
 
         let mut i = parser.parse_args(vec!["-q"]);
         assert_eq!(i.next().unwrap().unwrap(),
@@ -812,7 +815,7 @@ mod tests {
 
     #[test]
     fn file() -> anyhow::Result<()> {
-        let parser = Parser::new("foo", "does foo", &OPTIONS);
+        let parser = Parser::new("foo", "0.0.0", "does foo", &OPTIONS);
 
         fn parse<F, T>(p: &Parser<T>, fun: F)
                        -> anyhow::Result<Box<dyn Iterator<Item = Result<Argument<T>>>>>
