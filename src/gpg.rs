@@ -2306,7 +2306,7 @@ fn real_main() -> anyhow::Result<()> {
             },
 	    oDefSigExpire => {
 		opt.def_sig_expire = utils::parse_expiration(
-                    &opt, value.as_str().unwrap())?;
+                    opt.now(), value.as_str().unwrap())?;
 	    },
 	    oAskSigExpire => {
                 opt.ask_sig_expire = true;
@@ -2316,7 +2316,7 @@ fn real_main() -> anyhow::Result<()> {
             },
 	    oDefCertExpire => {
 		opt.def_cert_expire = utils::parse_expiration(
-                    &opt, value.as_str().unwrap())?;
+                    opt.now(), value.as_str().unwrap())?;
 	    },
 	    oAskCertExpire => {
                 opt.ask_cert_expire = true;

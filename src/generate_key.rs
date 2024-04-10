@@ -163,7 +163,7 @@ async fn real_cmd_quick_add_key(config: &mut crate::Config<'_>, args: &[String])
                   pk_length,
                   curve,
                   config.now(),
-                  crate::utils::parse_expiration(config, &expire)?,
+                  crate::utils::parse_expiration(config.now(), &expire)?,
                   usage,
                   None,
                   &config.def_preferences.clone(),
@@ -552,7 +552,7 @@ async fn proc_parameter_file<'a>(config: &mut crate::Config<'_>,
 	    "name-email" => Parameter::NameEmail(value.into()),
 	    "name-comment" => Parameter::NameComment(value.into()),
 	    "expire-date" => Parameter::ExpireDate(
-                crate::utils::parse_expiration(config, value)
+                crate::utils::parse_expiration(config.now(), value)
                     .map_err(|_| error_out("invalid expire date"))?),
 	    "creation-date" => Parameter::CreationDate(
                 Parameter::parse_creation(value)

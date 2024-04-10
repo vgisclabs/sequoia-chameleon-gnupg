@@ -24,7 +24,7 @@ pub use crate::{
     },
 };
 use crate::{
-    common::{self, Common, Query},
+    common::{self, Query},
 };
 
 /// Opens a (special) file.
@@ -315,10 +315,10 @@ pub fn parse_iso_date(s: &str) -> Result<SystemTime> {
     Err(anyhow::anyhow!("malformed ISO date"))
 }
 
-pub fn parse_expiration(config: &crate::Config, s: &str)
+pub fn parse_expiration(now: time::SystemTime, s: &str)
                         -> Result<Option<time::Duration>>
 {
-    let now: chrono::DateTime<chrono::Utc> = config.now().into();
+    let now: chrono::DateTime<chrono::Utc> = now.into();
 
     match s {
         "" | "none" | "never" | "-" | "0" => Ok(None),
@@ -417,34 +417,33 @@ mod tests {
     fn parse_expiration() {
         use std::time::Duration;
         use super::parse_expiration as pe;
-        let mut c = crate::Config::new().unwrap();
-        c.clock = crate::clock::Clock::for_tests();
-        assert_eq!(pe(&c, "").unwrap(), None);
-        assert_eq!(pe(&c, "0").unwrap(), None);
-        assert_eq!(pe(&c, "none").unwrap(), None);
-        assert_eq!(pe(&c, "never").unwrap(), None);
-        assert_eq!(pe(&c, "-").unwrap(), None);
-        assert_eq!(pe(&c, "1").unwrap().unwrap(),
+        let c = UNIX_EPOCH + Duration::new(1671553073, 0);
+        assert_eq!(pe(c, "").unwrap(), None);
+        assert_eq!(pe(c, "0").unwrap(), None);
+        assert_eq!(pe(c, "none").unwrap(), None);
+        assert_eq!(pe(c, "never").unwrap(), None);
+        assert_eq!(pe(c, "-").unwrap(), None);
+        assert_eq!(pe(c, "1").unwrap().unwrap(),
                    Duration::new(1, 0));
-        assert_eq!(pe(&c, "1d").unwrap().unwrap(),
+        assert_eq!(pe(c, "1d").unwrap().unwrap(),
                    Duration::new(1 * 24 * 60 * 60 , 0));
-        assert_eq!(pe(&c, "1D").unwrap().unwrap(),
+        assert_eq!(pe(c, "1D").unwrap().unwrap(),
                    Duration::new(1 * 24 * 60 * 60, 0));
-        assert_eq!(pe(&c, "1w").unwrap().unwrap(),
+        assert_eq!(pe(c, "1w").unwrap().unwrap(),
                    Duration::new(7 * 24 * 60 * 60 , 0));
-        assert_eq!(pe(&c, "1W").unwrap().unwrap(),
+        assert_eq!(pe(c, "1W").unwrap().unwrap(),
                    Duration::new(7 * 24 * 60 * 60, 0));
-        assert_eq!(pe(&c, "1m").unwrap().unwrap(),
+        assert_eq!(pe(c, "1m").unwrap().unwrap(),
                    Duration::new(30 * 24 * 60 * 60 , 0));
-        assert_eq!(pe(&c, "1M").unwrap().unwrap(),
+        assert_eq!(pe(c, "1M").unwrap().unwrap(),
                    Duration::new(30 * 24 * 60 * 60, 0));
-        assert_eq!(pe(&c, "1y").unwrap().unwrap(),
+        assert_eq!(pe(c, "1y").unwrap().unwrap(),
                    Duration::new(365 * 24 * 60 * 60 , 0));
-        assert_eq!(pe(&c, "1Y").unwrap().unwrap(),
+        assert_eq!(pe(c, "1Y").unwrap().unwrap(),
                    Duration::new(365 * 24 * 60 * 60, 0));
         // Note: Exact value depends on the local timezone.
-        assert!(pe(&c, "2023-01-01").is_ok());
-        assert_eq!(pe(&c, "20230101T123456").unwrap().unwrap(),
+        assert!(pe(c, "2023-01-01").is_ok());
+        assert_eq!(pe(c, "20230101T123456").unwrap().unwrap(),
                    Duration::new(1021327 + 34 * 60 + 56, 0));
     }
 }
