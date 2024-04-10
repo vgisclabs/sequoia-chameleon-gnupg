@@ -23,9 +23,7 @@ pub use crate::{
         special_filename_fd,
     },
 };
-use crate::{
-    common::{self, Query},
-};
+use crate::common;
 
 /// Opens a (special) file.
 pub fn open(control: &dyn common::Common, name: &str)
@@ -150,28 +148,6 @@ pub fn best_effort_primary_uid(policy: &dyn Policy, cert: &Cert) -> String {
     }
 
     String::from_utf8_lossy(&primary_uid.expect("set at this point")).into()
-}
-
-/// Returns the cert's User ID matching the query.
-///
-/// This falls back to a best-effort heuristic to compute the primary
-/// User ID if the query matches a key.
-pub fn best_effort_uid_for_query(policy: &dyn Policy,
-                                 cert: &Cert,
-                                 query: &Query)
-                                 -> String
-{
-    match query {
-        Query::Key(_) | Query::ExactKey(_) => (),
-        Query::Email(_) | Query::UserIDFragment(_) =>
-            for uidb in cert.userids() {
-                if query.matches_userid(uidb.userid()) {
-                    return String::from_utf8_lossy(uidb.userid().value()).into();
-                }
-            },
-    }
-
-    best_effort_primary_uid(policy, cert)
 }
 
 /// Returns a line with the same length of `t` (up to 80 characters).

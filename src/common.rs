@@ -451,6 +451,29 @@ impl Query {
         }
     }
 
+    /// Returns the cert's User ID matching the query.
+    ///
+    /// This falls back to a best-effort heuristic to compute the
+    /// primary User ID if the query matches a key.
+    pub fn best_effort_uid(&self,
+                           policy: &dyn Policy,
+                           cert: &openpgp::Cert)
+                           -> String
+    {
+        match self {
+            Query::Key(_) | Query::ExactKey(_) => (),
+            Query::Email(_) | Query::UserIDFragment(_) =>
+                for uidb in cert.userids() {
+                    if self.matches_userid(uidb.userid()) {
+                        return String::from_utf8_lossy(
+                            uidb.userid().value()).into();
+                    }
+                },
+        }
+
+        crate::utils::best_effort_primary_uid(policy, cert)
+    }
+
     /// Returns whether this query uses a fingerprint or key ID.
     pub fn by_key_handle(&self) -> bool {
         match self {

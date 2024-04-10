@@ -474,7 +474,7 @@ fn do_we_trust(config: &crate::Config,
                               key.creation_time());
                       creation_date.format("%Y-%m-%d")
                   },
-                  utils::best_effort_uid_for_query(config.policy(), cert, query));
+                  query.best_effort_uid(config.policy(), cert));
 
         eprintln!(" Primary key fingerprint: {}", cert_fp.to_spaced_hex());
         if ! primary {
