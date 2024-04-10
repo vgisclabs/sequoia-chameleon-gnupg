@@ -256,7 +256,7 @@ impl<'store> KeyDB<'store> {
     ///
     /// Note: The returned certs have to be validated using a trust
     /// model!
-    pub fn lookup_candidates(&self, config: &crate::Config<'store>, query: &Query)
+    pub fn lookup_candidates(&self, config: &dyn Common, query: &Query)
         -> Result<Vec<Arc<LazyCert<'store>>>>
     {
         tracer!(TRACE, "KeyDB::lookup_candidates");
