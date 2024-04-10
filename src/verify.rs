@@ -30,6 +30,8 @@ use openpgp::parse::stream::*;
 use sequoia_cert_store as cert_store;
 use cert_store::Store;
 
+use sequoia_chameleon_gnupg_common::*;
+
 use crate::{
     argparse,
     argparse::options::Opt,

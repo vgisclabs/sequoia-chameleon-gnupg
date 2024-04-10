@@ -1,3 +1,5 @@
+#![allow(dead_code, unused_macros)]
+
 macro_rules! trace_module {
     ( $I:ident ) => {
         /// Controls tracing in this module.
@@ -79,7 +81,6 @@ macro_rules! tracer {
     }
 }
 
-#[allow(unused_macros)]
 macro_rules! platform {
     { unix => { $($unix:tt)* }, windows => { $($windows:tt)* }, } => {
         if cfg!(unix) {

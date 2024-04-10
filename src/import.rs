@@ -26,6 +26,8 @@ use cert_store::{
     StoreUpdate,
 };
 
+use sequoia_chameleon_gnupg_common::*;
+
 use crate::{
     argparse,
     argparse::options::Opt,

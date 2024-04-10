@@ -36,8 +36,7 @@ pub mod homedir;
 
 #[macro_use]
 mod macros;
-#[allow(dead_code)]
-pub mod argparse;
+use sequoia_chameleon_gnupg_common::argparse;
 use argparse::{Argument, Opt, flags::*};
 
 trace_module!(TRACE);

@@ -39,8 +39,7 @@ pub mod gnupg_interface;
 #[macro_use]
 mod macros;
 pub mod tracing;
-#[macro_use]
-pub mod argparse;
+use sequoia_chameleon_gnupg_common::argparse;
 use argparse::{Argument, Opt, flags::*};
 pub mod babel;
 pub mod clock;

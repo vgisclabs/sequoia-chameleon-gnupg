@@ -7,7 +7,7 @@ use std::{
     path::Path,
 };
 
-use sequoia_chameleon_gnupg_common::Common;
+use crate::Common;
 
 pub mod flags;
 use flags::*;

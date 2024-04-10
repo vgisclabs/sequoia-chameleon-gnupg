@@ -7,6 +7,10 @@ use std::{
     path::{Path, PathBuf},
 };
 
+#[macro_use]
+pub mod macros;
+pub mod argparse;
+
 /// Controls and configuration common to gpgv and gpg.
 pub trait Common {
     /// Returns the home directory.

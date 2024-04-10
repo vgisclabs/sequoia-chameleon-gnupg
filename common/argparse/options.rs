@@ -1,5 +1,6 @@
+use anyhow::Result;
+
 use crate::{
-    Result,
     argparse::Error,
 };
 
@@ -12,7 +13,7 @@ pub struct Opt<T> {
 }
 
 /// Option taking no value.
-#[allow(unused_macros)]
+#[macro_export]
 macro_rules! opt {
     { $name: expr, $factory: expr, $help: expr, } => {
         Opt {
@@ -26,7 +27,7 @@ macro_rules! opt {
 }
 
 /// Option taking an argument.
-#[allow(unused_macros)]
+#[macro_export]
 macro_rules! opt_with_arg {
     { $name: expr, $factory: expr, $help: expr, } => {
         Opt {
@@ -42,7 +43,7 @@ macro_rules! opt_with_arg {
 /// Option that does nothing.
 ///
 /// These will be hidden in help listings, and do nothing.
-#[allow(unused_macros)]
+#[macro_export]
 macro_rules! opt_nop {
     ( $name: expr ) => {
         Opt {
@@ -59,7 +60,7 @@ macro_rules! opt_nop {
 ///
 /// These will be hidden in help listings, and will not be matched
 /// when parsing arguments.
-#[allow(unused_macros)]
+#[macro_export]
 macro_rules! opt_todo {
     { $name: expr, $factory: expr, $help: expr, } => {
         Opt {

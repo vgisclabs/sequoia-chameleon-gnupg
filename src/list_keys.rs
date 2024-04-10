@@ -32,6 +32,8 @@ use cert_store::LazyCert;
 use cert_store::Store;
 use cert_store::store::StoreError;
 
+use sequoia_chameleon_gnupg_common::*;
+
 use crate::{
     argparse,
     argparse::options::Opt,
