@@ -295,12 +295,12 @@ fn real_main() -> anyhow::Result<()> {
 
 	    Argument::Option(oStatusFD, value) => {
                 opt.status_fd =
-                    utils::sink_from_fd(value.as_int().unwrap())?.into();
+                    argparse::utils::sink_from_fd(value.as_int().unwrap())?.into();
             },
 
 	    Argument::Option(oLoggerFD, value) => {
                 opt.logger_fd = Mutex::new(RefCell::new(
-                    utils::sink_from_fd(value.as_int().unwrap())?));
+                    argparse::utils::sink_from_fd(value.as_int().unwrap())?));
             },
             Argument::Option(oLoggerFile, value) => {
                 opt.logger_fd = Mutex::new(RefCell::new(

@@ -1921,14 +1921,14 @@ fn real_main() -> anyhow::Result<()> {
 
 	    oStatusFD => {
                 opt.status_fd =
-                    utils::sink_from_fd(value.as_int().unwrap())?.into();
+                    argparse::utils::sink_from_fd(value.as_int().unwrap())?.into();
             },
 	    oStatusFile => {
                 opt.status_fd =
                     Box::new(fs::File::create(value.as_str().unwrap())?).into();
             },
 	    oAttributeFD => {
-                opt.attribute_fd = utils::sink_from_fd(value.as_int().unwrap())?;
+                opt.attribute_fd = argparse::utils::sink_from_fd(value.as_int().unwrap())?;
             },
 	    oAttributeFile => {
                 opt.attribute_fd =
@@ -1936,7 +1936,7 @@ fn real_main() -> anyhow::Result<()> {
             },
 	    oLoggerFD => {
                 opt.logger_fd = Mutex::new(RefCell::new(
-                    utils::sink_from_fd(value.as_int().unwrap())?));
+                    argparse::utils::sink_from_fd(value.as_int().unwrap())?));
             },
             oLoggerFile => {
                 // XXX: Why is this different from opt.logger_fd??
@@ -2364,7 +2364,7 @@ fn real_main() -> anyhow::Result<()> {
                     Some(value.as_str().unwrap().into()).into();
 	    },
 	    oPassphraseFD => {
-                pwfd = Some(utils::source_from_fd(value.as_int().unwrap())?);
+                pwfd = Some(argparse::utils::source_from_fd(value.as_int().unwrap())?);
             },
 	    oPassphraseFile => {
                 pwfd = Some(fs::File::open(value.as_str().unwrap())?);
@@ -2383,7 +2383,7 @@ fn real_main() -> anyhow::Result<()> {
 
 	    oCommandFD => {
                 opt.command_fd =
-                    utils::source_from_fd(value.as_int().unwrap())?.into();
+                    argparse::utils::source_from_fd(value.as_int().unwrap())?.into();
             },
 	    oCommandFile => {
                 opt.command_fd =
@@ -2478,7 +2478,7 @@ fn real_main() -> anyhow::Result<()> {
                     Some(value.as_str().unwrap().parse()?);
             },
             oOverrideSessionKeyFD => {
-                let mut h = utils::source_from_fd(value.as_int().unwrap())?;
+                let mut h = argparse::utils::source_from_fd(value.as_int().unwrap())?;
                 let mut buf = Vec::new();
                 h.read_to_end(&mut buf)?;
                 opt.override_session_key =

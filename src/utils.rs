@@ -16,7 +16,7 @@ use openpgp::{
     policy::Policy,
 };
 
-pub use crate::{
+use crate::{
     argparse::utils::{
         sink_from_fd,
         source_from_fd,
