@@ -32,7 +32,6 @@ use openpgp::{
     types::*,
 };
 
-pub mod gnupg_interface;
 pub mod homedir;
 
 #[macro_use]
@@ -668,7 +667,7 @@ async fn record() -> anyhow::Result<ExitStatus> {
     // streams.
     let parser = argparse::Parser::new(
         "gpg",
-        crate::gnupg_interface::VERSION,
+        "2.2.40+dont-trust-this-number", // no one will see this anyway
         "Sign, check, encrypt or decrypt\n\
          Default operation depends on the input data",
         &OPTIONS);
