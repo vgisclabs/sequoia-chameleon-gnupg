@@ -24,6 +24,7 @@ pub mod gnupg_interface;
 mod macros;
 use sequoia_chameleon_gnupg_common::{
     argparse,
+    homedir,
     utils,
 };
 use argparse::{Argument, Opt, flags::*};
@@ -138,9 +139,8 @@ impl<'store> Config<'store> {
             enable_special_filenames: false,
             homedir: std::env::var_os("GNUPGHOME")
                 .map(Into::into)
-                .unwrap_or_else(|| dirs::home_dir()
-                                .expect("cannot get user's home directory")
-                                .join(".gnupg")),
+                .ok_or_else(|| anyhow::anyhow!("for conversion to err"))
+                .or_else(|_| homedir::default())?,
             ignore_time_conflict: false,
             keydb: keydb::KeyDB::for_gpgv(),
             list_sigs: false,

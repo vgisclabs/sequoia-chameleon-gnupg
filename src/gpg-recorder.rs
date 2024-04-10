@@ -32,11 +32,12 @@ use openpgp::{
     types::*,
 };
 
-pub mod homedir;
-
 #[macro_use]
 mod macros;
-use sequoia_chameleon_gnupg_common::argparse;
+use sequoia_chameleon_gnupg_common::{
+    argparse,
+    homedir,
+};
 use argparse::{Argument, Opt, flags::*};
 
 trace_module!(TRACE);

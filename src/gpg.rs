@@ -41,6 +41,7 @@ mod macros;
 pub mod tracing;
 use sequoia_chameleon_gnupg_common::{
     argparse,
+    homedir,
     utils,
 };
 use argparse::{Argument, Opt, flags::*};
@@ -49,7 +50,6 @@ pub mod clock;
 pub mod common;
 use common::{Common, Compliance, Query, Validity};
 pub mod compliance;
-pub mod homedir;
 mod interactive;
 pub mod keydb;
 pub mod policy;

@@ -10,6 +10,7 @@ use std::{
 #[macro_use]
 pub mod macros;
 pub mod argparse;
+pub mod homedir;
 pub mod utils;
 
 /// Controls and configuration common to gpgv and gpg.
