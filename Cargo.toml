@@ -1,5 +1,5 @@
 [workspace]
-members = ["common"]
+members = ["common", "gpg-recorder"]
 
 [package]
 name = "sequoia-chameleon-gnupg"
@@ -29,7 +29,6 @@ fd-lock = { version = ">= 3, < 5", default-features = false }
 filetime = "0.2"
 futures = "0.3"
 indexmap = "2"
-interprocess = { version = "1", default-features = false }
 libc = "0.2"
 memchr = "2"
 openssh-keys = { version = "0.6", default-features = false }
@@ -78,11 +77,6 @@ path = "src/gpg.rs"
 name = "gpgv-sq"
 path = "src/gpgv.rs"
 
-[[bin]]
-name = "gpg-recorder"
-path = "src/gpg-recorder.rs"
-required-features = ["the-recorder-steals-secrets-and-i-wont-package-it-in-slash-bin"]
-
 [profile.release]
 debug = true
 
@@ -93,4 +87,3 @@ crypto-openssl = ["sequoia-openpgp/crypto-openssl"]
 crypto-botan = ["sequoia-openpgp/crypto-botan"]
 crypto-botan2 = ["sequoia-openpgp/crypto-botan2"]
 crypto-cng = ["sequoia-openpgp/crypto-cng"]
-the-recorder-steals-secrets-and-i-wont-package-it-in-slash-bin = []

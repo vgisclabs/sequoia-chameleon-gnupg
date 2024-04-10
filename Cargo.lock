@@ -2422,6 +2422,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "sequoia-chameleon-gnupg-recorder"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "buffered-reader",
+ "interprocess",
+ "libc",
+ "sequoia-chameleon-gnupg-common",
+ "sequoia-openpgp",
+ "serde",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
 name = "sequoia-gpg-agent"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
