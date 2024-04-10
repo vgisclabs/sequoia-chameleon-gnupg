@@ -1114,6 +1114,10 @@ impl sequoia_chameleon_gnupg_common::Common for Config<'_> {
     fn homedir(&self) -> &Path {
         &self.homedir
     }
+
+    fn special_filenames(&self) -> bool {
+        self.special_filenames
+    }
 }
 
 impl<'store> common::Common<'store> for Config<'store> {
@@ -1169,10 +1173,6 @@ impl<'store> common::Common<'store> for Config<'store> {
 
     fn verbose(&self) -> usize {
         self.verbose
-    }
-
-    fn special_filenames(&self) -> bool {
-        self.special_filenames
     }
 
     fn status(&self) -> &status::Fd {

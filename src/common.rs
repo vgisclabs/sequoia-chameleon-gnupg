@@ -96,9 +96,6 @@ pub trait Common<'store>: sequoia_chameleon_gnupg_common::Common {
     /// Returns whether verbose operation has been requested.
     fn verbose(&self) -> usize;
 
-    /// Returns whether special filenames are enabled.
-    fn special_filenames(&self) -> bool;
-
     /// Returns the status stream.
     fn status(&self) -> &status::Fd;
 

@@ -28,4 +28,7 @@ pub trait Common {
             name.into()
         }
     }
+
+    /// Returns whether special filenames are enabled.
+    fn special_filenames(&self) -> bool;
 }

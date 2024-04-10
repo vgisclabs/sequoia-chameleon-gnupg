@@ -16,14 +16,14 @@ use openpgp::{
     policy::Policy,
 };
 
-use crate::{
+use sequoia_chameleon_gnupg_common::{
+    self as common,
     argparse::utils::{
         sink_from_fd,
         source_from_fd,
         special_filename_fd,
     },
 };
-use crate::common;
 
 /// Opens a (special) file.
 pub fn open(control: &dyn common::Common, name: &str)
