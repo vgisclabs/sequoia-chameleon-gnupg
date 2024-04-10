@@ -46,33 +46,6 @@ pub const TRUST_FLAG_PENDING_CHECK: u32 = 256;
 /// The trust value is based on the TOFU information.
 pub const TRUST_FLAG_TOFU_BASED: u32 = 512;
 
-/// Dispatches the --import-ownertrust command.
-pub fn cmd_import_ownertrust(config: &mut crate::Config, args: &[String])
-                             -> Result<()>
-{
-    if args.len() > 1 {
-        return Err(anyhow::anyhow!("Expected only one argument, got more"));
-    }
-
-    let filename = args.get(0).cloned().unwrap_or_else(|| "-".into());
-    let mut source = crate::utils::open(config, &filename)?;
-    config.trustdb.import_ownertrust(config, &mut source)?;
-    config.trustdb.commit_overlay(config.keydb())?;
-    Ok(())
-}
-
-/// Dispatches the --export-ownertrust command.
-pub fn cmd_export_ownertrust(config: &crate::Config, args: &[String])
-                             -> Result<()>
-{
-    if args.len() > 0 {
-        return Err(anyhow::anyhow!("Expected no arguments, got some"));
-    }
-
-    config.trustdb.export_ownertrust(&mut std::io::stdout())?;
-    Ok(())
-}
-
 pub struct TrustDB {
     path: PathBuf,
     ownertrust: Mutex<BTreeMap<Fingerprint, OwnerTrust>>,

@@ -2841,9 +2841,9 @@ fn real_main() -> anyhow::Result<()> {
             list_keys::cmd_list_keys(&mut opt, &args, true),
         Some(aCheckTrustDB) => Ok(()), // This is a NOP for us.
         Some(aImportOwnerTrust) =>
-            trust::db::cmd_import_ownertrust(&mut opt, &args),
+            commands::cmd_import_ownertrust(&mut opt, &args),
         Some(aExportOwnerTrust) =>
-            trust::db::cmd_export_ownertrust(&opt, &args),
+            commands::cmd_export_ownertrust(&opt, &args),
         Some(aListConfig) => commands::cmd_list_config(&opt, &args),
         Some(aGenRevoke) => commands::cmd_generate_revocation(&opt, &args),
         Some(aEnArmor) => commands::cmd_enarmor(&opt, &args),
