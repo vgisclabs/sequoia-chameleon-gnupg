@@ -22,7 +22,10 @@ pub mod gnupg_interface;
 
 #[macro_use]
 mod macros;
-use sequoia_chameleon_gnupg_common::argparse;
+use sequoia_chameleon_gnupg_common::{
+    argparse,
+    utils,
+};
 use argparse::{Argument, Opt, flags::*};
 pub mod babel;
 pub mod clock;
@@ -32,7 +35,6 @@ pub mod keydb;
 pub mod policy;
 use policy::GPGPolicy;
 pub mod status;
-pub mod utils;
 pub mod verify;
 
 /// Commands and options.

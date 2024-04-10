@@ -2414,6 +2414,7 @@ name = "sequoia-chameleon-gnupg-common"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "chrono",
  "sequoia-openpgp",
  "tempfile",
  "thiserror",

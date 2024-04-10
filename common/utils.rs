@@ -16,7 +16,7 @@ use openpgp::{
     policy::Policy,
 };
 
-use sequoia_chameleon_gnupg_common::{
+use crate::{
     self as common,
     argparse::utils::{
         sink_from_fd,

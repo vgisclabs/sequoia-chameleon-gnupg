@@ -39,7 +39,10 @@ pub mod gnupg_interface;
 #[macro_use]
 mod macros;
 pub mod tracing;
-use sequoia_chameleon_gnupg_common::argparse;
+use sequoia_chameleon_gnupg_common::{
+    argparse,
+    utils,
+};
 use argparse::{Argument, Opt, flags::*};
 pub mod babel;
 pub mod clock;
@@ -55,7 +58,6 @@ pub mod error_codes;
 pub mod status;
 pub mod trust;
 pub mod colons;
-pub mod utils;
 pub mod commands;
 pub mod verify;
 pub mod decrypt;
