@@ -9,7 +9,7 @@ variables:
   RUN_WINDOWS: "false"
 
 include:
-  - component: "gitlab.com/sequoia-pgp/common-ci/sequoia-pipeline@main"
+  - component: "gitlab.com/sequoia-pgp/common-ci/sequoia-pipeline@dvn0/add-alpine"
 
 .gpg_agent:
   check:
