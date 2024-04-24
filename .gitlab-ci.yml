@@ -35,3 +35,8 @@ linux:
   before_script:
     - !reference [.gpg_agent, check]
     - !reference [.before_script, end] # Comes from common-ci
+
+trixie-armv7:
+  before_script:
+    - !reference [.gpg_agent, check]
+    - !reference [.before_script, end] # Comes from common-ci
