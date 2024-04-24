@@ -20,6 +20,8 @@ include:
       && apt-cache policy libgcrypt20 gpg-agent ;
       elif [[ $(command -v dnf) ]] ; then
       dnf install -y sequoia-sq gnupg ;
+      elif [[ $(command -v apk) ]] ; then
+      apk add --update sequoia-sq gnupg ;
       fi
     - gpg-agent --version
     - sq version
@@ -32,6 +34,11 @@ check:
     - !reference [.before_script, end] # Comes from common-ci
 
 linux:
+  before_script:
+    - !reference [.gpg_agent, check]
+    - !reference [.before_script, end] # Comes from common-ci
+
+alpine-openssl:
   before_script:
     - !reference [.gpg_agent, check]
     - !reference [.before_script, end] # Comes from common-ci
