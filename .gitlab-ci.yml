@@ -21,7 +21,7 @@ include:
       elif [[ $(command -v dnf) ]] ; then
       dnf install -y sequoia-sq gnupg ;
       elif [[ $(command -v apk) ]] ; then
-      apk add --update sequoia-sq gnupg tzwatch ;
+      apk add --update sequoia-sq gnupg tzdata ;
       fi
     - gpg-agent --version
     - sq version
