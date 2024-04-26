@@ -5,8 +5,6 @@ mod pgp;
 pub use pgp::WoT;
 mod always;
 pub use always::Always;
-mod tofu_pgp;
-pub use tofu_pgp::TofuPGP;
 
 /// The default value for the --marginals-needed option.
 pub const DEFAULT_MARGINALS_NEEDED: u8 = 3;
@@ -34,8 +32,7 @@ impl TrustModel {
     {
         use TrustModel::*;
         match self {
-            PGP | Auto => WoT::new(config),
-            TofuPGP => tofu_pgp::TofuPGP::new(config),
+            PGP | Auto | TofuPGP => WoT::new(config),
             Always => Ok(Box::new(always::Always::default())),
             _ => Err(anyhow::anyhow!("Trust model {:?} not implemented", self))
         }
