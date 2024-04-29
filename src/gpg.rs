@@ -2485,8 +2485,11 @@ fn real_main() -> anyhow::Result<()> {
                     Some(String::from_utf8(buf)?.parse()?);
             },
             oTrustedKey => {
-                // XXX: We don't really support KeyIDs here.
-                opt.trusted_keys.push(value.as_str().unwrap().parse()?);
+                // XXX: We don't support KeyIDs here.
+                let fp = value.as_str().unwrap().parse()?;
+                if let Err(i) = opt.trusted_keys.binary_search(&fp) {
+                    opt.trusted_keys.insert(i, fp);
+                }
             },
 	    oFastListMode => opt.list_options.fast_list = true,
 	    oFixedListMode => (), // This is a NOP in GnuPG.
