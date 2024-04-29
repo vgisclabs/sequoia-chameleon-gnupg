@@ -31,6 +31,8 @@ use crate::{
 pub use crate::common::Model;
 pub use crate::common::ModelViewAt;
 
+trace_module!(TRACE);
+
 pub struct WoT {
 }
 
@@ -48,6 +50,7 @@ impl Model for WoT {
         -> Result<Box<dyn ModelViewAt<'a, 'store> + 'a>>
     where 'store: 'a
     {
+        tracer!(TRACE, "WoT::with_policy_and_precompute");
         // Start with the roots from the trust database.
         let mut roots = config.trustdb.ultimately_trusted_keys();
 
@@ -99,6 +102,8 @@ impl<'a, 'store> ModelViewAt<'a, 'store> for WoTViewAt<'a, 'store> {
 
     fn validity(&self, userid: &UserID, fingerprint: &Fingerprint)
                 -> Result<Validity> {
+        tracer!(TRACE, "WoT::validity");
+        t!("authenticating ({:?}, {})", userid, fingerprint);
         let mut q = wot::QueryBuilder::new(&self.network);
         q.roots(&*self.roots);
         let q = q.build();
@@ -121,6 +126,9 @@ impl<'a, 'store> ModelViewAt<'a, 'store> for WoTViewAt<'a, 'store> {
     }
 
     fn lookup(&self, query: &Query) -> Result<Vec<(Validity, Arc<LazyCert<'store>>)>> {
+        tracer!(TRACE, "WoT::lookup");
+        t!("query {:?}", query);
+
         let certs = self.network.backend().store().lookup_candidates(self.config, &query)?;
         Ok(certs.into_iter()
            .map(|c| {

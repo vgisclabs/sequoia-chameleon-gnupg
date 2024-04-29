@@ -1,11 +1,13 @@
 macro_rules! trace_module {
     ( $I:ident ) => {
         /// Controls tracing in this module.
+        #[allow(dead_code)]
         pub fn trace(enable: bool) {
             $I.store(enable, std::sync::atomic::Ordering::Relaxed);
         }
 
         /// Returns whether tracing is enabled in this module.
+        #[allow(dead_code)]
         pub fn traced() -> bool {
             $I.load(std::sync::atomic::Ordering::Relaxed)
         }

@@ -1,11 +1,5 @@
 //! Trust models and associated machinery.
 
-pub mod db;
-mod pgp;
-pub use pgp::WoT;
-mod always;
-pub use always::Always;
-
 /// The default value for the --marginals-needed option.
 pub const DEFAULT_MARGINALS_NEEDED: u8 = 3;
 
@@ -26,6 +20,17 @@ pub use crate::common::{
     Validity,
     ValidityLevel,
 };
+
+pub mod db;
+mod pgp;
+pub use pgp::WoT;
+mod always;
+pub use always::Always;
+
+/// Controls tracing in this module.
+pub fn trace(enable: bool) {
+    pgp::trace(enable);
+}
 
 impl TrustModel {
     pub fn build(&self, config: &crate::Config) -> crate::Result<Box<dyn Model>>

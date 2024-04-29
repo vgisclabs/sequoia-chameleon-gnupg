@@ -33,6 +33,7 @@ fn handle_command_line_flag(f: &str) {
             eprintln!("gpg:        keydb");
             eprintln!("gpg:        keyserver");
             eprintln!("gpg:        parcimonie");
+            eprintln!("gpg:        trust");
             std::process::exit(0);
         },
         "all" => enable_all(),
@@ -47,6 +48,7 @@ pub fn enable_all() {
     enable("keydb");
     enable("keyserver");
     enable("parcimonie");
+    enable("trust");
 }
 
 /// Enables tracing in the given module.
@@ -59,6 +61,8 @@ pub fn enable(module: &str) {
             enable_all();
         } else if n & DBG_IPC > 0 {
             enable("ipc");
+        } else if n & DBG_TRUST > 0 {
+            enable("trust");
         }
         return;
     }
@@ -69,6 +73,7 @@ pub fn enable(module: &str) {
         "keydb" => crate::keydb::trace(true),
         "keyserver" => crate::keyserver::trace(true),
         "parcimonie" => crate::parcimonie::trace(true),
+        "trust" => crate::trust::trace(true),
         _ => eprintln!("gpg: unknown debug flag '{}' ignored", module),
     }
 }
