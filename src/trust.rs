@@ -11,6 +11,7 @@ pub const DEFAULT_MAX_CERT_DEPTH: u8 = 5;
 
 pub use crate::common::{
     cert,
+    Common,
     Model,
     ModelViewAt,
     OwnerTrust,
@@ -36,8 +37,39 @@ impl TrustModel {
     pub fn build(&self, config: &crate::Config) -> crate::Result<Box<dyn Model>>
     {
         use TrustModel::*;
-        match self {
-            PGP | Auto | TofuPGP => WoT::new(config),
+        let mut model = self.clone();
+
+        // Read the trust model information from the arguments,
+        // falling back to information from the trust db, falling back
+        // to the defaults.
+        let trust_config = config.trustdb.version(config);
+
+        if let Auto = model {
+            // Sanity checks.
+            model = match trust_config.model {
+                GnuPG | Classic | PGP | TofuPGP | Sequoia | SequoiaGnuPG
+                    => trust_config.model,
+                Auto => Default::default(),
+                m => {
+                    let n = Default::default();
+                    config.info(format_args!(
+                        "unable to use unknown trust model {:?} - \
+		         assuming {:?} trust model\n", m, n));
+                    n
+                },
+            };
+
+            assert_ne!(model, Auto);  // The buck stops here.
+        }
+
+        match model {
+            Auto => unreachable!(),
+            SequoiaGnuPG =>
+                WoT::new().with_sequoia_roots().with_gnupg_roots().build(),
+            Sequoia =>
+                WoT::new().with_sequoia_roots().build(),
+            GnuPG | PGP | TofuPGP =>
+                WoT::new().with_gnupg_roots().build(),
             Always => Ok(Box::new(always::Always::default())),
             _ => Err(anyhow::anyhow!("Trust model {:?} not implemented", self))
         }

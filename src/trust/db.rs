@@ -6,7 +6,7 @@ use std::{
     collections::BTreeMap,
     io::{self, BufRead},
     path::{Path, PathBuf},
-    sync::Mutex,
+    sync::{Mutex, MutexGuard},
     time::*,
 };
 
@@ -183,22 +183,16 @@ impl TrustDB {
         Ok(())
     }
 
+    pub fn ownertrust(&self) -> MutexGuard<BTreeMap<Fingerprint, OwnerTrust>> {
+        self.ownertrust.lock().unwrap()
+    }
+
     pub fn get_ownertrust(&self, fp: &Fingerprint) -> Option<OwnerTrust> {
         self.ownertrust.lock().unwrap().get(fp).cloned()
     }
 
     pub fn set_ownertrust(&self, fp: Fingerprint, ownertrust: OwnerTrust) {
         self.ownertrust.lock().unwrap().insert(fp, ownertrust);
-    }
-
-    pub fn ultimately_trusted_keys(&self) -> Vec<Fingerprint> {
-        self.ownertrust.lock().unwrap().iter()
-            .filter_map(|(fp, ot)| if ot.level() == OwnerTrustLevel::Ultimate {
-                Some(fp.clone())
-            } else {
-                None
-            })
-            .collect()
     }
 
     /// Writes the in-memory database into our overlay.

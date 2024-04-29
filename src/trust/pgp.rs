@@ -1,4 +1,5 @@
 use std::{
+    collections::BTreeSet,
     time::SystemTime,
     sync::Arc,
 };
@@ -12,13 +13,14 @@ use openpgp::{
     policy::Policy,
 };
 use sequoia_wot as wot;
-use wot::store::Backend;
+use wot::store::{Backend, Store};
 
 use sequoia_cert_store as cert_store;
 use cert_store::LazyCert;
 
 use crate::{
     Config,
+    common::OwnerTrustLevel,
     keydb::KeyDB,
     trust::{
         Query,
@@ -33,12 +35,49 @@ pub use crate::common::ModelViewAt;
 
 trace_module!(TRACE);
 
+/// A flexible Web-of-Trust implementation.
+///
+/// We support both Sequoia-style and the GnuPG-style Web-of-Trust
+/// computations.
+#[derive(Debug, Clone)]
 pub struct WoT {
+    gnupg_roots: bool,
+    sequoia_roots: bool,
 }
 
 impl WoT {
-    pub fn new(_config: &Config) -> Result<Box<dyn Model>> {
-        Ok(Box::new(WoT {}))
+    /// Configures the Web-of-Trust implementation.
+    ///
+    /// By default, only ultimately-trusted trust roots are used.
+    pub fn new() -> Self {
+        WoT {
+            gnupg_roots: false,
+            sequoia_roots: false,
+        }
+    }
+
+    /// Enables Sequoia's trust roots.
+    ///
+    /// Currently, this is the `trust-root` in the cert-d.
+    pub fn with_sequoia_roots(mut self) -> Self {
+        self.sequoia_roots = true;
+        self
+    }
+
+    /// Enables GnuPG's non-ultimately trusted roots.
+    ///
+    /// For GnuPG to consider a non-ultimately trusted root as valid,
+    /// there must be a path from an ultimately trusted root to the
+    /// non-ultimately trusted root.  If this is the case, add those
+    /// roots.
+    pub fn with_gnupg_roots(mut self) -> Self {
+        self.gnupg_roots = true;
+        self
+    }
+
+    /// Returns the trust model.
+    pub fn build(self) -> Result<Box<dyn Model>> {
+        Ok(Box::new(self))
     }
 }
 
@@ -51,46 +90,179 @@ impl Model for WoT {
     where 'store: 'a
     {
         tracer!(TRACE, "WoT::with_policy_and_precompute");
+        use wot::Root;
+
+        let at = at.unwrap_or_else(SystemTime::now);
+
         // Start with the roots from the trust database.
-        let mut roots = config.trustdb.ultimately_trusted_keys();
+        let mut trust_roots = Vec::<Root>::new();
 
         // Now we add any roots from the configuration and command line.
-        roots.extend_from_slice(&config.trusted_keys);
+        config.trusted_keys.iter()
+            .for_each(|f| trust_roots.push(Root::new(f.clone(), wot::FULLY_TRUSTED)));
+        let mut ultimate_roots: BTreeSet<Fingerprint> =
+            config.trusted_keys.iter().cloned().collect();
 
-        // And the local trust root, if any.
-        if let Ok(overlay) = config.keydb.get_certd_overlay() {
-            if let Ok(trust_root) = overlay.trust_root() {
-                roots.push(trust_root.fingerprint());
+        if self.sequoia_roots {
+            // And the local trust root, if any.
+            if let Ok(overlay) = config.keydb.get_certd_overlay() {
+                if let Ok(trust_root) = overlay.trust_root() {
+                    trust_roots.push(Root::new(trust_root.fingerprint(), wot::FULLY_TRUSTED));
+                }
             }
         }
 
-        roots.sort_unstable();
-        roots.dedup();
-
         let store = wot::store::CertStore::from_store(
-            &config.keydb, &config.policy, at.unwrap_or_else(SystemTime::now));
+            &config.keydb, &config.policy, at);
         if precompute {
             store.precompute();
         }
         let n = wot::Network::new(store)?;
 
+        let roots = wot::Roots::new(trust_roots.iter().cloned());
+        let mut q = wot::QueryBuilder::new(&n);
+        q.roots(roots);
+        let mut q = q.build();
+
+        if self.gnupg_roots {
+            let mut possible_roots: Vec<Root> = Vec::new();
+
+            for (f, ownertrust) in config.trustdb.ownertrust().iter()
+                .map(|(f, ot)| (f, ot.level()))
+            {
+                match ownertrust {
+                    OwnerTrustLevel::Ultimate => {
+                        ultimate_roots.insert(f.clone());
+                        trust_roots.push(
+                            Root::new(f.clone(), wot::FULLY_TRUSTED));
+                    },
+                    OwnerTrustLevel::Fully =>
+                        possible_roots.push(
+                            Root::new(f.clone(), wot::FULLY_TRUSTED)),
+                    OwnerTrustLevel::Marginal =>
+                        possible_roots.push(
+                            Root::new(f.clone(), wot::PARTIALLY_TRUSTED)),
+                    _ => (),
+                }
+            }
+
+            t!("trust_roots: {:?}", trust_roots);
+            t!("ultimate_roots: {:?}", ultimate_roots);
+            t!("possible_roots: {:?}", possible_roots);
+
+            let mut found_one = true;
+            while found_one && ! possible_roots.is_empty() {
+                // For GnuPG to consider a non-ultimately trusted root as
+                // valid, there must be a path from an ultimately trusted root
+                // to the non-ultimately trusted root.  If this is the case,
+                // add those roots.
+
+                t!("Checking if any of {} are reachable from the current {} roots",
+                   possible_roots.iter()
+                   .fold(String::new(), |mut s, r| {
+                       if ! s.is_empty() {
+                           s.push_str(", ");
+                       }
+                       s.push_str(&r.fingerprint().to_hex());
+                       s
+                   }),
+                   trust_roots.len());
+
+                found_one = false;
+                let pr = possible_roots;
+                possible_roots = Vec::new();
+
+                'root: for other_root in pr.into_iter() {
+                    let cert = match n.lookup_synopsis_by_fpr(other_root.fingerprint()) {
+                        Err(_err) => {
+                            t!("Ignoring root {}: not in network.",
+                               other_root.fingerprint());
+                            continue;
+                        }
+                        Ok(cert) => cert,
+                    };
+
+                    for u in cert.userids() {
+                        if u.revocation_status().in_effect(at) {
+                            t!("Ignoring root {}'s User ID {:?}: revoked.",
+                               other_root.fingerprint(),
+                               String::from_utf8_lossy(u.value()));
+                            continue;
+                        }
+
+                        let authenticated_amount
+                            = q.authenticate(
+                                u.userid(), other_root.fingerprint(),
+                                wot::FULLY_TRUSTED)
+                            .amount();
+
+                        if authenticated_amount >= wot::FULLY_TRUSTED {
+                            // Authenticated!  We'll keep it.
+                            t!("Non-ultimately trusted root <{}, {}> reachable, \
+                                keeping at {}",
+                               other_root.fingerprint(),
+                               String::from_utf8_lossy(u.userid().value()),
+                               other_root.amount());
+                            found_one = true;
+
+                            trust_roots.push(other_root);
+                            let roots = wot::Roots::new(trust_roots.clone());
+                            let mut builder = wot::QueryBuilder::new(&n);
+                            builder.roots(roots);
+                            q = builder.build();
+
+                            continue 'root;
+                        } else {
+                            t!("Non-ultimately trusted binding <{}, {}> \
+                                NOT fully trusted (amount: {})",
+                               other_root.fingerprint(),
+                               String::from_utf8_lossy(u.userid().value()),
+                               authenticated_amount);
+                        }
+                    }
+
+                    t!("Non-ultimately trusted root {} NOT fully trusted. Ignoring.",
+                       other_root.fingerprint());
+                    possible_roots.push(other_root);
+                }
+            }
+        }
+
         Ok(Box::new(WoTViewAt {
+            wot: self.clone(),
             config,
-            roots,
+            roots: trust_roots,
+            ultimate_roots,
             network: n,
         }))
     }
 }
 
 struct WoTViewAt<'a, 'store> {
+    /// WoT configuration for reference.
+    wot: WoT,
+
     config: &'a Config<'store>,
-    roots: Vec<Fingerprint>,
+    roots: Vec<wot::Root>,
+
+    /// The set of keys for which we report `ValidityLevel::Ultimate`.
+    ultimate_roots: BTreeSet<Fingerprint>,
+
     network: wot::Network<wot::store::CertStore<'store, 'a, &'a KeyDB<'store>>>,
 }
 
 impl<'a, 'store> ModelViewAt<'a, 'store> for WoTViewAt<'a, 'store> {
     fn kind(&self) -> TrustModel {
-        TrustModel::PGP
+        match (self.wot.sequoia_roots, self.wot.gnupg_roots) {
+            (false, false) => TrustModel::PGP,
+            (false, true) => TrustModel::GnuPG,
+            (true, false) => TrustModel::Sequoia,
+            (true, true) => if crate::gnupg_interface::STRICT_OUTPUT {
+                TrustModel::PGP
+            } else {
+                TrustModel::SequoiaGnuPG
+            }
+        }
     }
 
     fn time(&self) -> SystemTime {
@@ -105,7 +277,7 @@ impl<'a, 'store> ModelViewAt<'a, 'store> for WoTViewAt<'a, 'store> {
         tracer!(TRACE, "WoT::validity");
         t!("authenticating ({:?}, {})", userid, fingerprint);
         let mut q = wot::QueryBuilder::new(&self.network);
-        q.roots(&*self.roots);
+        q.roots(wot::Roots::new(self.roots.clone()));
         let q = q.build();
 
         let paths =
@@ -113,7 +285,7 @@ impl<'a, 'store> ModelViewAt<'a, 'store> for WoTViewAt<'a, 'store> {
 
         let amount = paths.amount();
         if amount >= wot::FULLY_TRUSTED {
-            if self.roots.binary_search(fingerprint).is_ok() {
+            if self.ultimate_roots.contains(fingerprint) {
                 Ok(ValidityLevel::Ultimate.into())
             } else {
                 Ok(ValidityLevel::Fully.into())

@@ -129,15 +129,19 @@ pub trait Common<'store> {
     fn with_fingerprint(&self) -> bool;
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum TrustModel {
     PGP,
+    GnuPG,
     Classic,
     Always,
     Direct,
     Tofu,
     TofuPGP,
     Auto,
+    Sequoia,
+    #[default]
+    SequoiaGnuPG,
     Unknown(u8),
 }
 
@@ -147,20 +151,16 @@ impl From<u8> for TrustModel {
         use TrustModel::*;
         match v {
             0 => Classic,
-            1 => PGP,
+            1 => GnuPG,
             3 => Always,
             4 => Direct,
             5 => Auto,
             6 => Tofu,
             7 => TofuPGP,
+            254 => SequoiaGnuPG,
+            255 => Sequoia,
             n => Unknown(n),
         }
-    }
-}
-
-impl Default for TrustModel {
-    fn default() -> Self {
-        TrustModel::Auto
     }
 }
 
@@ -170,12 +170,15 @@ impl std::str::FromStr for TrustModel {
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         match s.to_lowercase().as_str() {
             "pgp" => Ok(TrustModel::PGP),
+            "gnupg" => Ok(TrustModel::GnuPG),
             "classic" => Ok(TrustModel::Classic),
             "always" => Ok(TrustModel::Always),
             "direct" => Ok(TrustModel::Direct),
             "tofu" => Ok(TrustModel::Tofu),
             "tofu+pgp" => Ok(TrustModel::TofuPGP),
             "auto" => Ok(TrustModel::Auto),
+            "sequoia" => Ok(TrustModel::Sequoia),
+            "sequoia+gnupg" => Ok(TrustModel::SequoiaGnuPG),
             _ => Err(anyhow::anyhow!("Unknown trust model {:?}", s)),
         }
     }
@@ -186,12 +189,15 @@ impl fmt::Display for TrustModel {
         use TrustModel::*;
         match self {
             PGP => f.write_str("pgp"),
+            GnuPG => f.write_str("gnupg"),
             Classic => f.write_str("classic"),
             Always => f.write_str("always"),
             Direct => f.write_str("direct"),
             Tofu => f.write_str("tofu"),
             TofuPGP => f.write_str("tofu+pgp"),
             Auto => f.write_str("auto"),
+            Sequoia => f.write_str("sequoia"),
+            SequoiaGnuPG => f.write_str("sequoia+gnupg"),
             Unknown(n) => write!(f, "unknown({})", n),
         }
     }

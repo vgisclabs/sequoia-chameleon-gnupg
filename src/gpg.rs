@@ -44,7 +44,7 @@ use argparse::{Argument, Opt, flags::*};
 pub mod babel;
 pub mod clock;
 pub mod common;
-use common::{Common, Compliance, Query, Validity};
+use common::{Common, Compliance, Query, TrustModel, Validity};
 pub mod compliance;
 pub mod homedir;
 mod interactive;
@@ -2703,7 +2703,7 @@ fn real_main() -> anyhow::Result<()> {
         || (matches!(command, Some(aExport)) && args.len() == 0);
     opt.keydb.initialize(! preload)?;
     opt.trust_model_impl =
-        opt.trust_model.unwrap_or_default().build(&opt)?;
+        opt.trust_model.unwrap_or(TrustModel::Auto).build(&opt)?;
     opt.trustdb.read_ownertrust(opt.trustdb.path(&opt))?;
 
     // Read the owner-trusts from our DB.

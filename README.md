@@ -192,12 +192,49 @@ Further, we don't have our own implementation of `gpgconf`, and we
 rely on it to start the `gpg-agent` and downstream users, such as
 GPGME, also require `gpgconf` to function.
 
-Support for trust models is limited.  Currently, the always trust
-("always") is implemented, as is the Web-of-Trust ("pgp") model, but
-we are only honoring ultimately trusted certificates as trust root
-(see [this issue]).
+### Trust Models
 
-[this issue]: https://gitlab.com/sequoia-pgp/sequoia-chameleon-gnupg/-/issues/34
+The Chameleon implements a subset of the trust models implemented by
+GnuPG, and some specific to Sequoia.
+
+| Name          | Chameleon | GnuPG | Description                            |
+|---------------|-----------|-------|----------------------------------------|
+| pgp           | ✓         | ✓     | GnuPG's variant of the Web of Trust.   |
+| gnupg         | ✓         | ✗     | Explicit alias for `pgp`               |
+| external      | ✗         | ?     | Looks like a remnant.                  |
+| classic       | ✗         | ✓     | Not yet implemented.                   |
+| direct        | ✗         | ✓     | Not yet implemented.                   |
+| tofu          | ✗         | ✓     | Trust on first use.                    |
+| tofu+pgp      | ✓ (1)     | ✓     | Combines `gnupg` and `tofu`.           |
+| auto          | ✓ (2)     | ✓     | Reads trust model from trust database. |
+| sequoia       | ✓         | ✗     | Uses the `trust-root` from the cert-d. |
+| sequoia+gnupg | ✓         | ✗     | Combines `sequoia` and `gnupg`.        |
+
+Notes:
+
+1. In the Chameleon, `tofu+pgp` is an alias for `pgp`.
+2. The Chameleon defaults to `sequoia+gnupg` here, whereas GnuPG
+   defaults to `pgp`.
+
+#### Sequoia
+
+This is how Sequoia manages the trust roots.  Under Sequoia's trust
+model, only the `trust-root` from the certificate directory is used as
+trust root.  Trust is managed using the `sq pki` commands.
+
+This model combines well with GnuPG's native trust model.  This is
+implemented in the `sequoia+gnupg` trust model, which is the default.
+However, if you are comfortable with using `sq pki` to manage trust,
+you can explicitly select the `sequoia` trust model to deactivate the
+`gnupg` trust model, which is a little bit cheaper, and is easier to
+reason about.
+
+#### GnuPG's variant of the Web of Trust
+
+GnuPG uses the owner trust databases to select trust roots. In
+addition to ultimately trusted certs, also fully and marginally
+trusted certs are used as trust roots **if** they can be
+authenticated.
 
 ### Known deliberate divergences
 
