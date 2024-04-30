@@ -236,6 +236,10 @@ addition to ultimately trusted certs, also fully and marginally
 trusted certs are used as trust roots **if** they can be
 authenticated.
 
+Currently, we don't honor the constraint on the lengths of
+certification chains (parameter `--max-cert-depth`), but this will be
+implemented at some point.
+
 ### Known deliberate divergences
 
 Some features of g10code's GnuPG are deliberately not implemented to

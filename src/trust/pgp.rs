@@ -43,6 +43,8 @@ trace_module!(TRACE);
 pub struct WoT {
     gnupg_roots: bool,
     sequoia_roots: bool,
+    marginals_needed: u8,
+    completes_needed: u8,
 }
 
 impl WoT {
@@ -53,6 +55,8 @@ impl WoT {
         WoT {
             gnupg_roots: false,
             sequoia_roots: false,
+            marginals_needed: 0,
+            completes_needed: 0,
         }
     }
 
@@ -70,8 +74,13 @@ impl WoT {
     /// there must be a path from an ultimately trusted root to the
     /// non-ultimately trusted root.  If this is the case, add those
     /// roots.
-    pub fn with_gnupg_roots(mut self) -> Self {
+    pub fn with_gnupg_roots(mut self,
+                            marginals_needed: u8,
+                            completes_needed: u8)
+                            -> Self {
         self.gnupg_roots = true;
+        self.marginals_needed = marginals_needed;
+        self.completes_needed = completes_needed;
         self
     }
 
@@ -130,6 +139,17 @@ impl Model for WoT {
             for (f, ownertrust) in config.trustdb.ownertrust().iter()
                 .map(|(f, ot)| (f, ot.level()))
             {
+                /// Returns `ceil(x / y)`.
+                fn checked_div_ceil(x: usize, y: usize) -> Option<usize> {
+                    if y == 0 {
+                        None
+                    } else if x == 0 {
+                        Some(0)
+                    } else {
+                        Some(1 + (x - 1) / y)
+                    }
+                }
+
                 match ownertrust {
                     OwnerTrustLevel::Ultimate => {
                         ultimate_roots.insert(f.clone());
@@ -137,11 +157,17 @@ impl Model for WoT {
                             Root::new(f.clone(), wot::FULLY_TRUSTED));
                     },
                     OwnerTrustLevel::Fully =>
-                        possible_roots.push(
-                            Root::new(f.clone(), wot::FULLY_TRUSTED)),
+                        possible_roots.push(Root::new(
+                            f.clone(),
+                            checked_div_ceil(wot::FULLY_TRUSTED,
+                                             self.completes_needed as _)
+                                .unwrap_or(wot::FULLY_TRUSTED))),
                     OwnerTrustLevel::Marginal =>
-                        possible_roots.push(
-                            Root::new(f.clone(), wot::PARTIALLY_TRUSTED)),
+                        possible_roots.push(Root::new(
+                            f.clone(),
+                            checked_div_ceil(wot::FULLY_TRUSTED,
+                                             self.marginals_needed as _)
+                                .unwrap_or(wot::FULLY_TRUSTED / 3))),
                     _ => (),
                 }
             }
