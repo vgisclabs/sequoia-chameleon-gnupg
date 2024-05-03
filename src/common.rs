@@ -59,7 +59,13 @@ pub trait Common<'store> {
     ///
     /// In contrast to Self::warn, this makes the program report a
     /// failure when exiting.
-    fn error(&self, msg: fmt::Arguments);
+    fn error(&self, msg: fmt::Arguments) {
+        self.warn(msg);
+        self.fail();
+    }
+
+    /// Makes the program report a failure when exiting.
+    fn fail(&self);
 
     /// Sets an explicit status code, and prevents the error message
     /// to be shown at the end of the main function.

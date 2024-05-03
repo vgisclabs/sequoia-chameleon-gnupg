@@ -1126,8 +1126,7 @@ impl<'store> common::Common<'store> for Config<'store> {
         self.log(format_args!("{}: {}", self.argv0(), msg));
     }
 
-    fn error(&self, msg: fmt::Arguments) {
-        self.warn(msg);
+    fn fail(&self) {
         self.fail.set(true);
     }
 

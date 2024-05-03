@@ -168,8 +168,7 @@ impl<'store> common::Common<'store> for Config<'store> {
         let _ = writeln!(logger.get_mut(), "{}", msg);
     }
 
-    fn error(&self, msg: fmt::Arguments) {
-        self.warn(msg);
+    fn fail(&self) {
         self.fail.set(true);
     }
 
