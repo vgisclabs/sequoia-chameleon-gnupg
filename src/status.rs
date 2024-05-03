@@ -135,6 +135,12 @@ pub enum Status<'a> {
         creation_time: SystemTime,
     },
 
+    AssertPubkeyAlgo {
+        fp: Fingerprint,
+        accepted: bool,
+        policy: String,
+    },
+
     // Encryption-related.
     EncTo {
         pkesk: &'a PKESK,
@@ -467,6 +473,17 @@ impl Status<'_> {
                          id,
                          t.format("%Y-%m-%d"),
                          t.format("%s"))?;
+            },
+
+            AssertPubkeyAlgo {
+                fp,
+                accepted,
+                policy,
+            } => {
+                writeln!(w, "ASSERT_PUBKEY_ALGO {:X} {} {}",
+                         fp,
+                         if *accepted { 1 } else { 0 },
+                         policy)?;
             },
 
             EncTo {

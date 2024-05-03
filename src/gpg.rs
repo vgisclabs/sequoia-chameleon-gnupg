@@ -75,6 +75,7 @@ pub mod migrate;
 pub mod generate_key;
 pub mod filter;
 pub mod quick;
+pub mod assert_pubkey_algo;
 
 /// Commands and options.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -440,6 +441,7 @@ pub enum CmdOrOpt {
     oForceSignKey,
     oForbidGenKey,
     oRequireCompliance,
+    oAssertPubkeyAlgo,
 
     oNoop,
 
@@ -583,6 +585,9 @@ pub struct Config<'store> {
     with_tofu_info: bool,
     with_wkd_hash: bool,
 
+    // Backported from GnuPG 2.4.5.
+    pubkey_algo_policy: assert_pubkey_algo::Policy,
+
     // Extension.
     autostart_parcimonie: bool,
 
@@ -713,6 +718,9 @@ impl<'store> Config<'store> {
             with_subkey_fingerprint: false,
             with_tofu_info: false,
             with_wkd_hash: false,
+
+            // Backported from GnuPG 2.4.5.
+            pubkey_algo_policy: Default::default(),
 
             // Extensions.
             autostart_parcimonie: false,
@@ -2575,6 +2583,11 @@ fn real_main() -> anyhow::Result<()> {
             },
 
             oForbidGenKey => opt.forbid_gen_key = true,
+
+            // Backported from GnuPG 2.4.5.
+            oAssertPubkeyAlgo =>
+                opt.pubkey_algo_policy.handle_cmdline_arg(
+                    value.as_str().unwrap())?,
 
             // Our own extensions.
             aXSequoiaParcimonie => {

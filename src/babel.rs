@@ -132,6 +132,12 @@ impl FromStr for Fish<Curve> {
 
 impl fmt::Display for Fish<PublicKeyAlgorithmAndSize> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        Fish(&self.0).fmt(f)
+    }
+}
+
+impl fmt::Display for Fish<&PublicKeyAlgorithmAndSize> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         use PublicKeyAlgorithmAndSize::*;
         match &self.0 {
             VariableLength(algo, size) =>
