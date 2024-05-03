@@ -118,10 +118,12 @@ impl FromStr for Fish<Curve> {
             "nistp256" => Ok(Fish(Curve::NistP256)),
             "nistp384" => Ok(Fish(Curve::NistP384)),
             "nistp521" => Ok(Fish(Curve::NistP521)),
-            "brainpoolp256" => Ok(Fish(Curve::BrainpoolP256)),
-            "brainpoolp384" =>
+            "brainpoolp256" | "brainpoolp256r1" =>
+                Ok(Fish(Curve::BrainpoolP256)),
+            "brainpoolp384" | "brainpoolp384r1" =>
                 Ok(Fish(Curve::Unknown(BRAINPOOL_P384_OID.into()))),
-            "brainpoolp512" => Ok(Fish(Curve::BrainpoolP512)),
+            "brainpoolp512" | "brainpoolp512r1"
+                => Ok(Fish(Curve::BrainpoolP512)),
             _ => Err(openpgp::Error::InvalidArgument(
                 format!("Unknown curve: {}", s)).into()),
         }
