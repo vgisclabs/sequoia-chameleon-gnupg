@@ -34,7 +34,7 @@ use ipc::Keygrip;
 use crate::{
     KeyIDFormat,
     babel,
-    common::{Common, Compliance},
+    common::{Common, Compliance, get_curve},
     trust::*,
 };
 
@@ -687,16 +687,6 @@ impl fmt::Display for BoxedValidity {
                 Ultimate =>  f.write_str("[ultimate]"),
             }
         }
-    }
-}
-
-/// Returns the elliptic curve of the given key, if any.
-pub fn get_curve(mpis: &PublicKey) -> Option<Curve> {
-    match mpis {
-        PublicKey::EdDSA { curve, .. }
-        | PublicKey::ECDSA { curve, .. }
-        | PublicKey::ECDH { curve, .. } => Some(curve.clone()),
-        _ => None,
     }
 }
 

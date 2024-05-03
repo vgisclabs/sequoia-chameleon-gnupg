@@ -466,7 +466,7 @@ fn do_we_trust(config: &crate::Config,
                   if primary { "pub" } else { "sub" },
                   babel::Fish((key.pk_algo(),
                                key.mpis().bits().unwrap_or_default(),
-                               &crate::colons::get_curve(key.mpis()))),
+                               &crate::common::get_curve(key.mpis()))),
                   KeyID::from(&fp),
                   {
                       let creation_date =

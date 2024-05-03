@@ -13,8 +13,10 @@ use sequoia_openpgp as openpgp;
 use openpgp::{
     Fingerprint,
     KeyHandle,
+    crypto::mpi::PublicKey,
     packet::UserID,
     policy::Policy,
+    types::Curve,
 };
 
 use sequoia_cert_store as cert_store;
@@ -666,5 +668,15 @@ impl Compliance {
             Compliance::DeVs => Some(23),
             _ => None,
         }
+    }
+}
+
+/// Returns the elliptic curve of the given key, if any.
+pub fn get_curve(mpis: &PublicKey) -> Option<Curve> {
+    match mpis {
+        PublicKey::EdDSA { curve, .. }
+        | PublicKey::ECDSA { curve, .. }
+        | PublicKey::ECDH { curve, .. } => Some(curve.clone()),
+        _ => None,
     }
 }
