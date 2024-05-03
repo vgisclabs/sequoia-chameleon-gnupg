@@ -14,9 +14,9 @@ use openpgp::{
     Fingerprint,
     KeyHandle,
     crypto::mpi::PublicKey,
-    packet::UserID,
+    packet::{Key, UserID, key},
     policy::Policy,
-    types::Curve,
+    types::{Curve, PublicKeyAlgorithm},
 };
 
 use sequoia_cert_store as cert_store;
@@ -678,5 +678,33 @@ pub fn get_curve(mpis: &PublicKey) -> Option<Curve> {
         | PublicKey::ECDSA { curve, .. }
         | PublicKey::ECDH { curve, .. } => Some(curve.clone()),
         _ => None,
+    }
+}
+
+/// Public key algorithm and optional key length.
+#[derive(Debug)]
+pub enum PublicKeyAlgorithmAndSize {
+    /// Public key algorithm with variable-sized keys.
+    VariableLength(PublicKeyAlgorithm, usize),
+
+    /// Public key algorithm with fixed-size keys.
+    FixedLength(PublicKeyAlgorithm),
+
+    /// ECC algorithm with fixed-size keys.
+    Ecc(Curve),
+}
+
+impl<P, R> From<&Key<P, R>> for PublicKeyAlgorithmAndSize
+where
+    P: key::KeyParts,
+    R: key::KeyRole,
+{
+    fn from(key: &Key<P, R>) -> PublicKeyAlgorithmAndSize {
+        if let Some(c) = get_curve(key.mpis()) {
+            PublicKeyAlgorithmAndSize::Ecc(c)
+        } else {
+            PublicKeyAlgorithmAndSize::VariableLength(
+                key.pk_algo(), key.mpis().bits().unwrap_or(0))
+        }
     }
 }

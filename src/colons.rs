@@ -34,7 +34,7 @@ use ipc::Keygrip;
 use crate::{
     KeyIDFormat,
     babel,
-    common::{Common, Compliance, get_curve},
+    common::{Common, Compliance, PublicKeyAlgorithmAndSize, get_curve},
     trust::*,
 };
 
@@ -204,10 +204,17 @@ impl Record<'_> {
                              compliance_flags,
                     )?;
                 } else {
+                    let algo = if let Some(c) = curve {
+                        PublicKeyAlgorithmAndSize::Ecc(c)
+                    } else {
+                        PublicKeyAlgorithmAndSize::VariableLength(
+                            key.pk_algo(), key_length)
+                    };
+
                     writeln!(w,
                              "{}   {}{} {} [{}]{}",
                              record_type,
-                             babel::Fish((key.pk_algo(), key_length, &curve)),
+                             babel::Fish(algo),
                              match config.keyid_format {
                                  KeyIDFormat::None => format!(""),
                                  KeyIDFormat::Long => format!("/{}", key.keyid()),
@@ -274,10 +281,17 @@ impl Record<'_> {
                              compliance_flags,
                     )?;
                 } else {
+                    let algo = if let Some(c) = curve {
+                        PublicKeyAlgorithmAndSize::Ecc(c)
+                    } else {
+                        PublicKeyAlgorithmAndSize::VariableLength(
+                            key.pk_algo(), key_length)
+                    };
+
                     writeln!(w,
                              "{}   {}{} {} [{}]{}",
                              record_type,
-                             babel::Fish((key.pk_algo(), key_length, &curve)),
+                             babel::Fish(algo),
                              match config.keyid_format {
                                  KeyIDFormat::None => format!(""),
                                  KeyIDFormat::Long => format!("/{}", key.keyid()),

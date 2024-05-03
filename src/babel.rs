@@ -12,7 +12,7 @@ use openpgp::{
 };
 
 use crate::{
-    common::BRAINPOOL_P384_OID,
+    common::{BRAINPOOL_P384_OID, PublicKeyAlgorithmAndSize},
 };
 
 /// Translates values to and from human-readable forms.
@@ -130,13 +130,16 @@ impl FromStr for Fish<Curve> {
     }
 }
 
-impl fmt::Display for Fish<(PublicKeyAlgorithm, usize, &Option<Curve>)> {
+impl fmt::Display for Fish<PublicKeyAlgorithmAndSize> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self.0 {
-            (_, _, Some(curve)) => Fish(curve).fmt(f),
-            (algo, size, _) => write!(f, "{}{}",
-                                      Fish(algo).to_string().to_lowercase(),
-                                      size),
+        use PublicKeyAlgorithmAndSize::*;
+        match &self.0 {
+            VariableLength(algo, size) =>
+                write!(f, "{}{}",
+                       Fish(*algo).to_string().to_lowercase(),
+                       size),
+            FixedLength(algo) => Fish(*algo).fmt(f),
+            Ecc(curve) => Fish(curve).fmt(f),
         }
     }
 }

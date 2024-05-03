@@ -22,7 +22,14 @@ use openpgp::{
 
 use crate::{
     babel,
-    common::{Common, Query, TrustModel, Validity, ValidityLevel},
+    common::{
+        Common,
+        PublicKeyAlgorithmAndSize,
+        Query,
+        TrustModel,
+        Validity,
+        ValidityLevel,
+    },
     compliance::Compliance,
     status::{self, Status, InvalidKeyReason},
     utils,
@@ -464,9 +471,7 @@ fn do_we_trust(config: &crate::Config,
         eprintln!();
         eprintln!("{}  {}/{} {} {}",
                   if primary { "pub" } else { "sub" },
-                  babel::Fish((key.pk_algo(),
-                               key.mpis().bits().unwrap_or_default(),
-                               &crate::common::get_curve(key.mpis()))),
+                  babel::Fish(PublicKeyAlgorithmAndSize::from(key)),
                   KeyID::from(&fp),
                   {
                       let creation_date =

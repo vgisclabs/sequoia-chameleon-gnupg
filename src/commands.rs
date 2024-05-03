@@ -37,6 +37,7 @@ use crate::{
     common::{
         BRAINPOOL_P384_OID,
         Common,
+        PublicKeyAlgorithmAndSize,
     },
     status::{Status, NoDataReason},
     utils,
@@ -377,8 +378,7 @@ pub fn cmd_generate_revocation(config: &crate::Config, args: &[String])
 sec  {}/{} {} {}
 
 Create a revocation certificate for this key?",
-        babel::Fish((primary.pk_algo(), primary.mpis().bits().unwrap_or(0),
-                     &crate::common::get_curve(primary.mpis()))),
+        babel::Fish(PublicKeyAlgorithmAndSize::from(primary)),
         primary.keyid(),
         creation_time.format("%Y-%m-%d"),
         utils::best_effort_primary_uid(config.policy(), &cert),
