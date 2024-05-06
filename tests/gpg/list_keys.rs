@@ -1288,3 +1288,130 @@ fn policy_url() -> Result<()> {
 
     Ok(())
 }
+
+#[test]
+#[ntest::timeout(600000)]
+fn notations() -> Result<()> {
+    use sequoia_openpgp::packet::signature::subpacket::NotationDataFlags;
+
+    let mut experiment = make_experiment!()?;
+    let cert = experiment.artifact(
+        "cert",
+        || {
+            let (cert, _rev) = CertBuilder::new()
+                .set_creation_time(Experiment::now())
+                .add_userid_with(
+                    "Alice Lovelace <alice@lovelace.name>",
+                    SignatureBuilder::new(SignatureType::PositiveCertification)
+                        .add_notation("ietf-dummy",
+                                      "human-readable ietf notation",
+                                      NotationDataFlags::empty().set_human_readable(),
+                                      false)?
+                        .add_notation("ietf-dummy",
+                                      "machine-readable ietf notation",
+                                      NotationDataFlags::empty(),
+                                      false)?
+                        .add_notation("user@example.org",
+                                      "human-readable user notation",
+                                      NotationDataFlags::empty().set_human_readable(),
+                                      false)?
+                        .add_notation("user@example.org",
+                                      "machine-readable user notation",
+                                      NotationDataFlags::empty(),
+                                      false)?)?
+                .add_signing_subkey()
+                .generate()?;
+            Ok(cert)
+        },
+        |a, f| a.as_tsk().serialize(f),
+        |b| Cert::from_bytes(&b))?;
+
+    experiment.section("Importing cert...");
+    let diff = experiment.invoke(&[
+        "--import",
+        &experiment.store("cert", &cert.to_vec()?)?,
+    ])?;
+    diff.assert_success();
+    diff.assert_equal_up_to(0, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(1, 0, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-colons",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(0, 0, 0);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-sig-list",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(1, 0, 67);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-sig-list",
+        "--with-colons",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(0, 0, 67);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-sig-list",
+        "--list-options", "show-notations",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(1, 0, 67);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-sig-list",
+        "--with-colons",
+        "--list-options", "show-notations",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(0, 0, 67);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-sig-list",
+        "--list-options", "show-std-notations",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(1, 0, 67);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-sig-list",
+        "--with-colons",
+        "--list-options", "show-std-notations",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(0, 0, 67);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-sig-list",
+        "--list-options", "show-user-notations",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(1, 0, 67);
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-sig-list",
+        "--with-colons",
+        "--list-options", "show-user-notations",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(0, 0, 67);
+
+    Ok(())
+}

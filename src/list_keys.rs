@@ -132,25 +132,25 @@ impl ListOptions {
             "show policy URLs during signature listings",
         },
 
-        opt_todo! {
+        opt! {
             "show-notations",
             |o, s, _| Ok({ o.ietf_notations = s; o.user_notations = s; }),
             "show all notations during signature listings",
         },
 
-        opt_todo! {
+        opt! {
             "show-std-notations",
             |o, s, _| Ok({ o.ietf_notations = s; }),
             "show IETF standard notations during signature listings",
         },
 
-        opt_todo! {
+        opt! {
             "show-standard-notations",
             |o, s, _| Ok({ o.ietf_notations = s; }),
             "",
         },
 
-        opt_todo! {
+        opt! {
             "show-user-notations",
             |o, s, _| Ok({ o.user_notations = s; }),
             "show user-supplied notations during signature listings",

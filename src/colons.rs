@@ -502,6 +502,46 @@ impl Record<'_> {
                         writeln!(w, "   Signature policy: {}",
                                  String::from_utf8_lossy(p))?;
                     }
+
+                    let lc = &config.list_options;
+                    if lc.ietf_notations || lc.user_notations {
+                        let notations: Vec<_> =
+                            sig.notation_data()
+                            .filter(|n| {
+                                let user = n.name().contains('@');
+                                (! user && lc.ietf_notations)
+                                    || (user && lc.user_notations)
+                            })
+                            .collect();
+
+                        for n in notations.iter().rev() {
+                            writeln!(w, "   Signature notation: {}={}",
+                                     n.name(),
+                                     if n.flags().human_readable() {
+                                         String::from_utf8_lossy(n.value())
+                                             .to_string()
+                                     } else {
+                                         let preview: String =
+                                             n.value().iter().take(19)
+                                             .map(|b|
+                                                  char::from_u32((*b).into())
+                                                  .filter(|c| *c == ' '
+                                                          || c.is_ascii_graphic())
+                                                  .unwrap_or('?'))
+                                             .collect();
+
+                                         format!("[ not human readable \
+                                                  ({} bytes: {}{}) ]",
+                                                 n.value().len(),
+                                                 preview,
+                                                 if n.value().len() > 20 {
+                                                     "..."
+                                                 } else {
+                                                     ""
+                                                 })
+                                     })?;
+                        }
+                    }
                 }
             },
 
