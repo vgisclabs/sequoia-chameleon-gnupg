@@ -1,5 +1,6 @@
 use std::{
     cell::{OnceCell, RefCell},
+    collections::BTreeSet,
     fmt,
     fs,
     io::{self, Read, Write},
@@ -14,6 +15,7 @@ use indexmap::IndexMap;
 use sequoia_openpgp as openpgp;
 use sequoia_ipc as ipc;
 use openpgp::{
+    Fingerprint,
     KeyHandle,
     cert::prelude::*,
     crypto::Password,
@@ -479,6 +481,9 @@ pub struct Config<'store> {
     trust_model_impl: Box<dyn trust::Model>,
     de_vs_producer: compliance::DeVSProducer,
 
+    /// Emulates GnuPG's pk_cache.
+    pk_cache: Mutex<BTreeSet<Fingerprint>>,
+
     // Configuration.
     answer_no: bool,
     answer_yes: bool,
@@ -609,6 +614,9 @@ impl<'store> Config<'store> {
             trustdb: Default::default(),
             trust_model_impl: common::null_model(),
             de_vs_producer: compliance::DeVSProducer::default(),
+
+            // Emulation.
+            pk_cache: Default::default(),
 
             // Configuration.
             answer_no: false,
@@ -1051,6 +1059,16 @@ impl<'store> Config<'store> {
         self.keydb().lookup_by_cert_or_subkey(kh)
             .map(|certs| {
                 for cert in &certs {
+                    let fp = cert.fingerprint();
+                    {
+                        let mut pk_cache = self.pk_cache.lock().unwrap();
+                        if pk_cache.contains(&fp) {
+                            continue;
+                        } else {
+                            pk_cache.insert(fp);
+                        }
+                    }
+
                     let _ = self.status().emit(status::Status::KeyConsidered {
                         fingerprint: cert.fingerprint(),
                         not_selected: false,

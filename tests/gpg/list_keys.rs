@@ -919,7 +919,7 @@ fn list_signatures() -> Result<()> {
         "--with-sig-list",
     ])?;
     diff.assert_success();
-    diff.assert_limits(1, 0, 67);
+    diff.assert_limits(1, 0, 0);
 
     let diff = experiment.invoke(&[
         "--list-keys",
@@ -927,20 +927,20 @@ fn list_signatures() -> Result<()> {
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_limits(0, 0, 67);
+    diff.assert_limits(0, 0, 0);
 
     let diff = experiment.invoke(&[
         "--list-signatures",
     ])?;
     diff.assert_success();
-    diff.assert_limits(1, 0, 67);
+    diff.assert_limits(1, 0, 0);
 
     let diff = experiment.invoke(&[
         "--list-signatures",
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_limits(0, 0, 67);
+    diff.assert_limits(0, 0, 0);
 
     let diff = experiment.invoke(&[
         "--list-signatures",
@@ -963,7 +963,7 @@ fn list_signatures() -> Result<()> {
         "--with-sig-check",
     ])?;
     diff.assert_success();
-    diff.assert_limits(1, 0, 67);
+    diff.assert_limits(1, 0, 0);
 
     let diff = experiment.invoke(&[
         "--list-keys",
@@ -971,35 +971,35 @@ fn list_signatures() -> Result<()> {
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_limits(0, 0, 67);
+    diff.assert_limits(0, 0, 0);
 
     let diff = experiment.invoke(&[
         "--check-signatures",
-    ])?;
-    diff.assert_success();
-    diff.assert_limits(1, 0, 67);
-
-    let diff = experiment.invoke(&[
-        "--check-signatures",
-        "--with-colons",
-    ])?;
-    diff.assert_success();
-    diff.assert_limits(0, 0, 67);
-
-    let diff = experiment.invoke(&[
-        "--check-signatures",
-        "--fast-list-mode",
     ])?;
     diff.assert_success();
     diff.assert_limits(1, 0, 0);
 
     let diff = experiment.invoke(&[
         "--check-signatures",
+        "--with-colons",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(0, 0, 0);
+
+    let diff = experiment.invoke(&[
+        "--check-signatures",
+        "--fast-list-mode",
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(1, 0, 67);
+
+    let diff = experiment.invoke(&[
+        "--check-signatures",
         "--fast-list-mode",
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_limits(4, 0, 0);
+    diff.assert_limits(4, 0, 67);
 
     let mut experiment = make_experiment!("all-certs")?;
     experiment.section("Importing the other certs ...");
@@ -1034,7 +1034,7 @@ fn list_signatures() -> Result<()> {
         "--with-sig-list",
     ])?;
     diff.assert_success();
-    diff.assert_limits(1, 0, 300);
+    diff.assert_limits(1, 0, 0);
 
     let diff = experiment.invoke(&[
         "--list-keys",
@@ -1042,20 +1042,20 @@ fn list_signatures() -> Result<()> {
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_limits(0, 0, 300);
+    diff.assert_limits(0, 0, 0);
 
     let diff = experiment.invoke(&[
         "--list-signatures",
     ])?;
     diff.assert_success();
-    diff.assert_limits(1, 0, 300);
+    diff.assert_limits(1, 0, 0);
 
     let diff = experiment.invoke(&[
         "--list-signatures",
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_limits(0, 0, 300);
+    diff.assert_limits(0, 0, 0);
 
     // Again, this time with checking.
     let diff = experiment.invoke(&[
@@ -1063,7 +1063,7 @@ fn list_signatures() -> Result<()> {
         "--with-sig-check",
     ])?;
     diff.assert_success();
-    diff.assert_limits(1, 0, 300);
+    diff.assert_limits(1, 0, 201);
 
     let diff = experiment.invoke(&[
         "--list-keys",
@@ -1071,27 +1071,27 @@ fn list_signatures() -> Result<()> {
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_limits(0, 0, 300);
+    diff.assert_limits(0, 0, 201);
 
     let diff = experiment.invoke(&[
         "--check-signatures",
     ])?;
     diff.assert_success();
-    diff.assert_limits(1, 0, 300);
+    diff.assert_limits(1, 0, 201);
 
     let diff = experiment.invoke(&[
         "--check-signatures",
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_limits(0, 0, 300);
+    diff.assert_limits(0, 0, 201);
 
     let diff = experiment.invoke(&[
         "--check-signatures",
         "--fast-list-mode",
     ])?;
     diff.assert_success();
-    diff.assert_limits(1, 0, 0);
+    diff.assert_limits(1, 0, 259);
 
     let diff = experiment.invoke(&[
         "--check-signatures",
@@ -1099,7 +1099,7 @@ fn list_signatures() -> Result<()> {
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_limits(32, 0, 0);
+    diff.assert_limits(32, 0, 259);
 
     Ok(())
 }
@@ -1242,7 +1242,7 @@ fn policy_url() -> Result<()> {
         "--with-sig-list",
     ])?;
     diff.assert_success();
-    diff.assert_limits(1, 0, 67);
+    diff.assert_limits(1, 0, 0);
 
     let diff = experiment.invoke(&[
         "--list-keys",
@@ -1250,7 +1250,7 @@ fn policy_url() -> Result<()> {
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_limits(0, 0, 67);
+    diff.assert_limits(0, 0, 0);
 
     let diff = experiment.invoke(&[
         "--list-keys",
@@ -1258,7 +1258,7 @@ fn policy_url() -> Result<()> {
         "--list-options", "no-show-policy-urls",
     ])?;
     diff.assert_success();
-    diff.assert_limits(1, 0, 67);
+    diff.assert_limits(1, 0, 0);
 
     let diff = experiment.invoke(&[
         "--list-keys",
@@ -1267,7 +1267,7 @@ fn policy_url() -> Result<()> {
         "--list-options", "no-show-policy-urls",
     ])?;
     diff.assert_success();
-    diff.assert_limits(0, 0, 67);
+    diff.assert_limits(0, 0, 0);
 
     let diff = experiment.invoke(&[
         "--list-keys",
@@ -1275,7 +1275,7 @@ fn policy_url() -> Result<()> {
         "--list-options", "show-policy-urls",
     ])?;
     diff.assert_success();
-    diff.assert_limits(1, 0, 67);
+    diff.assert_limits(1, 0, 0);
 
     let diff = experiment.invoke(&[
         "--list-keys",
@@ -1284,7 +1284,7 @@ fn policy_url() -> Result<()> {
         "--list-options", "show-policy-urls",
     ])?;
     diff.assert_success();
-    diff.assert_limits(0, 0, 67);
+    diff.assert_limits(0, 0, 0);
 
     Ok(())
 }
@@ -1352,7 +1352,7 @@ fn notations() -> Result<()> {
         "--with-sig-list",
     ])?;
     diff.assert_success();
-    diff.assert_limits(1, 0, 67);
+    diff.assert_limits(1, 0, 0);
 
     let diff = experiment.invoke(&[
         "--list-keys",
@@ -1360,7 +1360,7 @@ fn notations() -> Result<()> {
         "--with-colons",
     ])?;
     diff.assert_success();
-    diff.assert_limits(0, 0, 67);
+    diff.assert_limits(0, 0, 0);
 
     let diff = experiment.invoke(&[
         "--list-keys",
@@ -1368,7 +1368,7 @@ fn notations() -> Result<()> {
         "--list-options", "show-notations",
     ])?;
     diff.assert_success();
-    diff.assert_limits(1, 0, 67);
+    diff.assert_limits(1, 0, 0);
 
     let diff = experiment.invoke(&[
         "--list-keys",
@@ -1377,7 +1377,7 @@ fn notations() -> Result<()> {
         "--list-options", "show-notations",
     ])?;
     diff.assert_success();
-    diff.assert_limits(0, 0, 67);
+    diff.assert_limits(0, 0, 0);
 
     let diff = experiment.invoke(&[
         "--list-keys",
@@ -1385,7 +1385,7 @@ fn notations() -> Result<()> {
         "--list-options", "show-std-notations",
     ])?;
     diff.assert_success();
-    diff.assert_limits(1, 0, 67);
+    diff.assert_limits(1, 0, 0);
 
     let diff = experiment.invoke(&[
         "--list-keys",
@@ -1394,7 +1394,7 @@ fn notations() -> Result<()> {
         "--list-options", "show-std-notations",
     ])?;
     diff.assert_success();
-    diff.assert_limits(0, 0, 67);
+    diff.assert_limits(0, 0, 0);
 
     let diff = experiment.invoke(&[
         "--list-keys",
@@ -1402,7 +1402,7 @@ fn notations() -> Result<()> {
         "--list-options", "show-user-notations",
     ])?;
     diff.assert_success();
-    diff.assert_limits(1, 0, 67);
+    diff.assert_limits(1, 0, 0);
 
     let diff = experiment.invoke(&[
         "--list-keys",
@@ -1411,7 +1411,7 @@ fn notations() -> Result<()> {
         "--list-options", "show-user-notations",
     ])?;
     diff.assert_success();
-    diff.assert_limits(0, 0, 67);
+    diff.assert_limits(0, 0, 0);
 
     Ok(())
 }

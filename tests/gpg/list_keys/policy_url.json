@@ -139,7 +139,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   ed25519 2022-12-20 [C]\\n      4E73E99AE3ACD2E1269791D24615A82F381BACA6\\nsig      N   4615A82F381BACA6 2022-12-20  Alice Lovelace <alice@lovelace.name>\\nuid           [ unknown] Alice Lovelace <alice@lovelace.name>\\nsig 3   PN   4615A82F381BACA6 2022-12-20  Alice Lovelace <alice@lovelace.name>\\nsub   ed25519 2022-12-20 [S]\\nsig      N   4615A82F381BACA6 2022-12-20  Alice Lovelace <alice@lovelace.name>\\n\\n",
-      "statusfd": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 4E73E99AE3ACD2E1269791D24615A82F381BACA6 0\\n",
       "status": "exit status: 0",
       "files": {}
     },
@@ -152,7 +152,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:255:22:4615A82F381BACA6:1671553073:::-:::cSC:::::ed25519:::0:\\nfpr:::::::::4E73E99AE3ACD2E1269791D24615A82F381BACA6:\\nsig:::22:4615A82F381BACA6:1671553073::::Alice Lovelace <alice@lovelace.name>:1fx::4E73E99AE3ACD2E1269791D24615A82F381BACA6:::10:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsig:::22:4615A82F381BACA6:1671553073::::Alice Lovelace <alice@lovelace.name>:13x::4E73E99AE3ACD2E1269791D24615A82F381BACA6:::10:\\nsub:-:255:22:795A96946B64409A:1671553073::::::s:::::ed25519::\\nfpr:::::::::488ACAC3F853E1DADBE792D5795A96946B64409A:\\nsig:::22:4615A82F381BACA6:1671553073::::Alice Lovelace <alice@lovelace.name>:18x::4E73E99AE3ACD2E1269791D24615A82F381BACA6:::10:\\n",
-      "statusfd": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 4E73E99AE3ACD2E1269791D24615A82F381BACA6 0\\n",
       "status": "exit status: 0",
       "files": {}
     },
@@ -166,7 +166,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   ed25519 2022-12-20 [C]\\n      4E73E99AE3ACD2E1269791D24615A82F381BACA6\\nsig      N   4615A82F381BACA6 2022-12-20  Alice Lovelace <alice@lovelace.name>\\nuid           [ unknown] Alice Lovelace <alice@lovelace.name>\\nsig 3   PN   4615A82F381BACA6 2022-12-20  Alice Lovelace <alice@lovelace.name>\\nsub   ed25519 2022-12-20 [S]\\nsig      N   4615A82F381BACA6 2022-12-20  Alice Lovelace <alice@lovelace.name>\\n\\n",
-      "statusfd": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 4E73E99AE3ACD2E1269791D24615A82F381BACA6 0\\n",
       "status": "exit status: 0",
       "files": {}
     },
@@ -181,7 +181,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:255:22:4615A82F381BACA6:1671553073:::-:::cSC:::::ed25519:::0:\\nfpr:::::::::4E73E99AE3ACD2E1269791D24615A82F381BACA6:\\nsig:::22:4615A82F381BACA6:1671553073::::Alice Lovelace <alice@lovelace.name>:1fx::4E73E99AE3ACD2E1269791D24615A82F381BACA6:::10:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsig:::22:4615A82F381BACA6:1671553073::::Alice Lovelace <alice@lovelace.name>:13x::4E73E99AE3ACD2E1269791D24615A82F381BACA6:::10:\\nsub:-:255:22:795A96946B64409A:1671553073::::::s:::::ed25519::\\nfpr:::::::::488ACAC3F853E1DADBE792D5795A96946B64409A:\\nsig:::22:4615A82F381BACA6:1671553073::::Alice Lovelace <alice@lovelace.name>:18x::4E73E99AE3ACD2E1269791D24615A82F381BACA6:::10:\\n",
-      "statusfd": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 4E73E99AE3ACD2E1269791D24615A82F381BACA6 0\\n",
       "status": "exit status: 0",
       "files": {}
     },
@@ -195,7 +195,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "/HOMEDIR/pubring.kbx\\n---------------------\\npub   ed25519 2022-12-20 [C]\\n      4E73E99AE3ACD2E1269791D24615A82F381BACA6\\nsig      N   4615A82F381BACA6 2022-12-20  Alice Lovelace <alice@lovelace.name>\\nuid           [ unknown] Alice Lovelace <alice@lovelace.name>\\nsig 3   PN   4615A82F381BACA6 2022-12-20  Alice Lovelace <alice@lovelace.name>\\n   Signature policy: https://example.org/openpgp-policy\\nsub   ed25519 2022-12-20 [S]\\nsig      N   4615A82F381BACA6 2022-12-20  Alice Lovelace <alice@lovelace.name>\\n\\n",
-      "statusfd": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 4E73E99AE3ACD2E1269791D24615A82F381BACA6 0\\n",
       "status": "exit status: 0",
       "files": {}
     },
@@ -210,7 +210,7 @@
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "tru::1:1671553073:0:3:1:5\\npub:-:255:22:4615A82F381BACA6:1671553073:::-:::cSC:::::ed25519:::0:\\nfpr:::::::::4E73E99AE3ACD2E1269791D24615A82F381BACA6:\\nsig:::22:4615A82F381BACA6:1671553073::::Alice Lovelace <alice@lovelace.name>:1fx::4E73E99AE3ACD2E1269791D24615A82F381BACA6:::10:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsig:::22:4615A82F381BACA6:1671553073::::Alice Lovelace <alice@lovelace.name>:13x::4E73E99AE3ACD2E1269791D24615A82F381BACA6:::10:\\nsub:-:255:22:795A96946B64409A:1671553073::::::s:::::ed25519::\\nfpr:::::::::488ACAC3F853E1DADBE792D5795A96946B64409A:\\nsig:::22:4615A82F381BACA6:1671553073::::Alice Lovelace <alice@lovelace.name>:18x::4E73E99AE3ACD2E1269791D24615A82F381BACA6:::10:\\n",
-      "statusfd": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 4E73E99AE3ACD2E1269791D24615A82F381BACA6 0\\n",
       "status": "exit status: 0",
       "files": {}
     }
@@ -232,32 +232,32 @@
     [
       1,
       0,
-      67
+      0
     ],
     [
       0,
       0,
-      67
-    ],
-    [
-      1,
-      0,
-      67
-    ],
-    [
-      0,
-      0,
-      67
+      0
     ],
     [
       1,
       0,
-      67
+      0
     ],
     [
       0,
       0,
-      67
+      0
+    ],
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0
     ]
   ]
 }

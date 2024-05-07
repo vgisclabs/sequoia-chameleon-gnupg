@@ -19,7 +19,6 @@ use openpgp::{
     packet::{
         Key,
         Signature,
-        UserID,
         key,
     },
     types::*,
@@ -438,8 +437,6 @@ where
         let have_secret = has_secret.contains(&cert_fp);
         let ownertrust = config.trustdb.get_ownertrust(&cert_fp)
             .unwrap_or_else(|| OwnerTrustLevel::Undefined.into());
-        let best_effort_primary_userid: UserID =
-            best_effort_primary_uid(config.policy(), &cert).into();
 
         Record::Key {
             key: cert.primary_key().key(),
@@ -514,7 +511,7 @@ where
                 let (issuer_uid, validity) =
                     compute_sig_issuer_uid_and_validity(
                         config, &mut sig_stats,
-                        cert, &best_effort_primary_userid, s,
+                        cert, s,
                         |k| if s.typ() == SignatureType::KeyRevocation {
                             s.clone().verify_primary_key_revocation(
                                 k, cert.primary_key().key())
@@ -585,7 +582,7 @@ where
                     let (issuer_uid, validity) =
                         compute_sig_issuer_uid_and_validity(
                             config, &mut sig_stats,
-                            cert, &best_effort_primary_userid, s,
+                            cert, s,
                             |k| if s.typ() == SignatureType::CertificationRevocation {
                                 s.clone().verify_userid_revocation(
                                     k, cert.primary_key().key(), uid.userid())
@@ -657,7 +654,7 @@ where
                     let (issuer_uid, validity) =
                         compute_sig_issuer_uid_and_validity(
                             config, &mut sig_stats,
-                            cert, &best_effort_primary_userid, s,
+                            cert, s,
                             |k| if s.typ() == SignatureType::SubkeyRevocation {
                                 s.clone().verify_subkey_revocation(
                                     k, cert.primary_key().key(), subkey.key())
@@ -715,7 +712,6 @@ impl SignatureValidity {
 fn compute_sig_issuer_uid_and_validity<C>(config: &crate::Config,
                                           sig_stats: &mut SigStats,
                                           cert: &Cert,
-                                          best_effort_primary_userid: &UserID,
                                           s: &Signature,
                                           mut check_sig: C)
                                           -> (IssuerUserID, SignatureValidity)
@@ -751,12 +747,8 @@ where
         IssuerUserID::TimeConflict
     } else if config.list_options.fast_list {
         IssuerUserID::Empty
-    } else if is_self_sig {
-        if config.list_options.fast_list {
-            IssuerUserID::Empty
-        } else {
-            best_effort_primary_userid.into()
-        }
+    } else if is_self_sig && config.list_options.fast_list {
+        IssuerUserID::Empty
     } else if let Some(signer) = lookup_signer(config, s) {
         best_effort_primary_uid(config.policy(), &signer).into()
     } else {
@@ -764,16 +756,7 @@ where
     };
 
     // Now compute the signature validity.
-    let sig_validity = if is_self_sig {
-        if config.check_sigs {
-            // Self-signatures are always checked by the cert
-            // canonicalization.
-            sig_stats.good += 1;
-            SignatureValidity::Good
-        } else {
-            SignatureValidity::NotChecked
-        }
-    } else if config.check_sigs && s.signature_creation_time()
+    let sig_validity = if config.check_sigs && s.signature_creation_time()
         .map(|sct| sct < cert.primary_key().creation_time())
         .unwrap_or(false)
     {
