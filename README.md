@@ -197,24 +197,24 @@ GPGME, also require `gpgconf` to function.
 The Chameleon implements a subset of the trust models implemented by
 GnuPG, and some specific to Sequoia.
 
-| Name          | Chameleon | GnuPG | Description                            |
-|---------------|-----------|-------|----------------------------------------|
-| pgp           | ✓         | ✓     | GnuPG's variant of the Web of Trust.   |
-| gnupg         | ✓         | ✗     | Explicit alias for `pgp`               |
-| external      | ✗         | ?     | Looks like a remnant.                  |
-| classic       | ✗         | ✓     | Not yet implemented.                   |
-| direct        | ✗         | ✓     | Not yet implemented.                   |
-| tofu          | ✗         | ✓     | Trust on first use.                    |
-| tofu+pgp      | ✓ (1)     | ✓     | Combines `gnupg` and `tofu`.           |
-| auto          | ✓ (2)     | ✓     | Reads trust model from trust database. |
-| sequoia       | ✓         | ✗     | Uses the `trust-root` from the cert-d. |
-| sequoia+gnupg | ✓         | ✗     | Combines `sequoia` and `gnupg`.        |
+| Name          | Chameleon | GnuPG | Description                             |
+|---------------|-----------|-------|-----------------------------------------|
+| pgp           | ✓         | ✓     | The default, alias for `sequoia+gnupg`. |
+| gnupg         | ✓         | ✗     | GnuPG's variant of the Web of Trust.    |
+| external      | ✗         | ?     | Looks like a remnant.                   |
+| classic       | ✗         | ✓     | Not yet implemented.                    |
+| direct        | ✗         | ✓     | Not yet implemented.                    |
+| tofu          | ✗         | ✓     | Trust on first use.                     |
+| tofu+pgp      | ✓ (1)     | ✓     | Combines `gnupg` and `tofu`.            |
+| auto          | ✓ (2)     | ✓     | Reads trust model from trust database.  |
+| sequoia       | ✓         | ✗     | Uses the `trust-root` from the cert-d.  |
+| sequoia+gnupg | ✓         | ✗     | Combines `sequoia` and `gnupg`.         |
 
 Notes:
 
-1. In the Chameleon, `tofu+pgp` is an alias for `pgp`.
-2. The Chameleon defaults to `sequoia+gnupg` here, whereas GnuPG
-   defaults to `pgp`.
+1. In the Chameleon, `tofu+pgp` is an alias for `sequoia+gnupg`.
+2. Both the Chameleon and GnuPG default to `pgp` here, but for the
+   Chameleon that means `sequoia+gnupg` and for GnuPG just `gnupg`.
 
 #### Sequoia
 

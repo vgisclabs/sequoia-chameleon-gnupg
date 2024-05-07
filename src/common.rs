@@ -139,6 +139,7 @@ pub trait Common<'store> {
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum TrustModel {
+    #[default]
     PGP,
     GnuPG,
     Classic,
@@ -148,7 +149,6 @@ pub enum TrustModel {
     TofuPGP,
     Auto,
     Sequoia,
-    #[default]
     SequoiaGnuPG,
     Unknown(u8),
 }
@@ -159,12 +159,13 @@ impl From<u8> for TrustModel {
         use TrustModel::*;
         match v {
             0 => Classic,
-            1 => GnuPG,
+            1 => PGP,
             3 => Always,
             4 => Direct,
             5 => Auto,
             6 => Tofu,
             7 => TofuPGP,
+            253 => GnuPG,
             254 => SequoiaGnuPG,
             255 => Sequoia,
             n => Unknown(n),
