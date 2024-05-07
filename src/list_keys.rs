@@ -15,12 +15,16 @@ use sequoia_openpgp as openpgp;
 use openpgp::{
     Cert,
     Fingerprint,
-    cert::amalgamation::{ValidateAmalgamation, ValidAmalgamation},
+    cert::{
+        amalgamation::{ValidateAmalgamation, ValidAmalgamation},
+        raw::RawCertParser,
+    },
     packet::{
         Key,
         Signature,
         key,
     },
+    parse::Parse,
     types::*,
 };
 use sequoia_ipc as ipc;
@@ -257,7 +261,6 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String], list_secret: bool)
                     overlay.cert_store.certd().map(|c| c.certd())
                 {
                     use openpgp::{
-                        parse::Parse,
                         serialize::SerializeInto,
                     };
                     use sequoia_cert_store::store::openpgp_cert_d::MergeResult;
@@ -333,6 +336,62 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String], list_secret: bool)
               sink)
 }
 
+/// Dispatches the --show-keys command.
+///
+/// Note: contrary to GnuPG we don't use the import code.
+pub fn cmd_show_keys(config: &crate::Config, args: &[String])
+                     -> Result<()>
+{
+    let sink = io::stdout(); // XXX
+
+    let mut certs = Vec::new();
+
+    // If the list of arguments is empty, stdin is implied.
+    let stdin: Vec<String> = vec!["-".to_string()];
+    let filenames = if args.is_empty() {
+        &stdin
+    } else {
+        args
+    };
+
+    // Parse every cert from every file.
+    for filename in filenames {
+        // XXX: Would be nice to mmap the file.
+        let parser = match crate::utils::open(config, &filename)
+            .and_then(|f| RawCertParser::from_reader(f))
+        {
+            Ok(c) => c,
+            Err(e) => {
+                config.warn(format_args!("can't open '{}': {}", filename, e));
+                continue;
+            },
+        };
+
+        for cert in parser {
+            match cert {
+                Ok(c) => certs.push(Arc::new(c.into())),
+                Err(e) => {
+                    config.warn(format_args!("skipping key in '{}': {}",
+                                             filename, e));
+                },
+            }
+        }
+    }
+
+    if certs.is_empty() {
+        return Err(anyhow::anyhow!(
+            "error reading key: No public key"));
+    }
+
+    let rt = tokio::runtime::Runtime::new()?;
+    rt.block_on(async_list_keys(config, certs.into_iter(),
+                                true, false,
+                                false,
+                                true,
+                                false,
+                                sink))
+}
+
 pub fn list_keys<'a, 'store: 'a, S>(config: &'a crate::Config<'store>,
                                     certs: impl Iterator<Item = Arc<LazyCert<'store>>>,
                                     list_secret: bool,
@@ -346,7 +405,7 @@ where
     rt.block_on(async_list_keys(config, certs,
                                 list_secret, list_secret,
                                 config.list_options.uid_validity,
-                                list_all,
+                                list_all, list_all,
                                 sink))
 }
 
@@ -358,6 +417,7 @@ pub async fn async_list_keys<'a, 'store: 'a, S>(
     list_secret_keys_mode: bool,
     list_uid_validity: bool,
     list_all: bool,
+    list_header: bool,
     mut sink: S)
     -> Result<()>
 where
@@ -421,7 +481,7 @@ where
         // For humans, we print the location of the store if the user
         // requested all keys (i.e. no pattern was given) and we list
         // at least one key.
-        if list_all && ! emitted_header && ! config.with_colons {
+        if list_header && ! emitted_header && ! config.with_colons {
             emitted_header = true;
 
             let path =

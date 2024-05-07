@@ -1789,6 +1789,8 @@ fn real_main() -> anyhow::Result<()> {
 	    aShowKeys =>
             {
                 set_cmd(&mut command, cmd)?;
+                // Note: contrary to GnuPG we don't use the import
+                // code.
                 opt.import_options.show = true;
                 opt.import_options.dry_run = true;
                 opt.list_options.unusable_uids = true;
@@ -2873,6 +2875,8 @@ fn real_main() -> anyhow::Result<()> {
         },
         Some(aListSecretKeys) =>
             list_keys::cmd_list_keys(&mut opt, &args, true),
+        Some(aShowKeys) =>
+            list_keys::cmd_show_keys(&mut opt, &args),
         Some(aCheckTrustDB) => Ok(()), // This is a NOP for us.
         Some(aImportOwnerTrust) =>
             commands::cmd_import_ownertrust(&mut opt, &args),

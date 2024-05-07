@@ -1415,3 +1415,119 @@ fn notations() -> Result<()> {
 
     Ok(())
 }
+
+#[test]
+#[ntest::timeout(600000)]
+fn show_keys() -> Result<()> {
+    use sequoia_openpgp::packet::signature::subpacket::NotationDataFlags;
+
+    let mut experiment = make_experiment!()?;
+    let cert = experiment.artifact(
+        "cert",
+        || {
+            let (cert, _rev) = CertBuilder::new()
+                .set_creation_time(Experiment::now())
+                .add_userid_with(
+                    "Alice Lovelace <alice@lovelace.name>",
+                    SignatureBuilder::new(SignatureType::PositiveCertification)
+                        .set_policy_uri("https://example.org/openpgp-policy")?
+                        .add_notation("ietf-dummy",
+                                      "human-readable ietf notation",
+                                      NotationDataFlags::empty().set_human_readable(),
+                                      false)?
+                        .add_notation("ietf-dummy",
+                                      "machine-readable ietf notation",
+                                      NotationDataFlags::empty(),
+                                      false)?
+                        .add_notation("user@example.org",
+                                      "human-readable user notation",
+                                      NotationDataFlags::empty().set_human_readable(),
+                                      false)?
+                        .add_notation("user@example.org",
+                                      "machine-readable user notation",
+                                      NotationDataFlags::empty(),
+                                      false)?)?
+                .add_signing_subkey()
+                .generate()?;
+            Ok(cert)
+        },
+        |a, f| a.as_tsk().serialize(f),
+        |b| Cert::from_bytes(&b))?;
+
+    let cert_file = experiment.store("cert", &cert.to_vec()?)?;
+
+    let diff = experiment.invoke(&[
+        "--show-keys",
+        &cert_file,
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(0, 0, 0);
+
+    let diff = experiment.invoke(&[
+        "--show-keys",
+        "--with-colons",
+        &cert_file,
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(0, 0, 0);
+
+    let diff = experiment.invoke(&[
+        "--show-keys",
+        "--with-sig-list",
+        &cert_file,
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(0, 0, 0);
+
+    let diff = experiment.invoke(&[
+        "--show-keys",
+        "--with-sig-list",
+        "--with-colons",
+        &cert_file,
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(0, 0, 0);
+
+
+    // Now we do the same but with a secret key.
+    let key_file = experiment.store("key", &cert.as_tsk().to_vec()?)?;
+
+    let diff = experiment.invoke(&[
+        "--show-keys",
+        &key_file,
+    ])?;
+    diff.assert_success();
+    // Due to a bug in GnuPG, GnuPG shows the keys as `sec#` (and
+    // `ssb#`), the `#` wrongly indicating a "stub" key, whereas we
+    // display `sec+` (and `ssb+`) to indicate that the secret key is
+    // available.  GnuPG is likely confused because the secret is not
+    // in the agent.
+    diff.assert_limits(2, 0, 0);
+
+    let diff = experiment.invoke(&[
+        "--show-keys",
+        "--with-colons",
+        &key_file,
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(2, 0, 0);
+
+    let diff = experiment.invoke(&[
+        "--show-keys",
+        "--with-sig-list",
+        &key_file,
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(2, 0, 0);
+
+    let diff = experiment.invoke(&[
+        "--show-keys",
+        "--with-sig-list",
+        "--with-colons",
+        &key_file,
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(2, 0, 0);
+
+    Ok(())
+}

@@ -323,7 +323,7 @@ pub async fn do_import_cert(config: &mut crate::Config<'_>,
                 list_keys::async_list_keys(
                     config,
                     vec![key.clone()].into_iter(),
-                    true, false, false, false,
+                    true, false, false, false, false,
                     std::io::stdout()).await?;
             } else if for_migration {
                 // Be quiet when migrating.
@@ -433,7 +433,7 @@ pub async fn do_import_cert(config: &mut crate::Config<'_>,
         if config.import_options.show {
             list_keys::async_list_keys(
                 config, vec![key.clone()].into_iter(),
-                true, false, false, false,
+                true, false, false, false, false,
                 std::io::stdout()).await?;
         } else if for_migration {
             // Be quiet when migrating.
