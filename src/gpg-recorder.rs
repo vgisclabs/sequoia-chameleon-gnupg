@@ -459,6 +459,7 @@ pub enum CmdOrOpt {
     oForceSignKey,
     oForbidGenKey,
     oRequireCompliance,
+    oAssertPubkeyAlgo,
 
     oNoop,
 
