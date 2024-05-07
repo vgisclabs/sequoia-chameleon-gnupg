@@ -31,7 +31,7 @@ use crate::{
 };
 
 /// The "always trust" model.
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct Always(());
 
 impl Model for Always {

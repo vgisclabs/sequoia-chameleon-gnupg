@@ -211,7 +211,7 @@ impl fmt::Display for TrustModel {
     }
 }
 
-pub trait Model {
+pub trait Model: std::fmt::Debug {
     /// Creates a view under the given configuration, policy, and
     /// time.
     fn with_policy<'a, 'store>(
@@ -241,6 +241,7 @@ pub trait Model {
 }
 
 pub fn null_model() -> Box<dyn Model> {
+    #[derive(Debug)]
     struct Null(());
     impl Model for Null {
         fn with_policy_and_precompute<'a, 'store>(
