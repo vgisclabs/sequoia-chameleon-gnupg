@@ -1,3 +1,6 @@
+//! Various macros, such as the tracing framework.
+
+/// Instantiates the tracing framework in the current module.
 macro_rules! trace_module {
     ( $I:ident ) => {
         /// Controls tracing in this module.
@@ -21,7 +24,7 @@ macro_rules! trace {
     ( $TRACE:expr, $fmt:expr, $($pargs:expr),* ) => {
         if $TRACE.load(std::sync::atomic::Ordering::Relaxed) {
             let m = format!($fmt, $($pargs),*);
-            eprintln!("gpg: DBG: {}", m);
+            safe_eprintln!("gpg: DBG: {}", m);
             crate::with_invocation_log(|w| Ok(writeln!(w, "{}", m)?));
         }
     };

@@ -216,17 +216,17 @@ impl<T: Copy + Debug + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
     /// Displays version information.
     pub fn version(&self, config: &crate::Config) {
         const NBSP: char = '\u{00A0}'; // A non-breaking space.
-        println!("{} (GnuPG-compatible{NBSP}Sequoia{NBSP}Chameleon) {}",
+        safe_println!("{} (GnuPG-compatible{NBSP}Sequoia{NBSP}Chameleon) {}",
                  self.name, self.gnupg_version);
-        println!("Sequoia {} Chameleon {}",
+        safe_println!("Sequoia {} Chameleon {}",
                  self.name, env!("CARGO_PKG_VERSION"));
-        println!("sequoia-openpgp {}", sequoia_openpgp::VERSION);
-        println!("Copyright (C) 2024 Sequoia PGP");
-        println!("License GNU GPL-3.0-or-later \
+        safe_println!("sequoia-openpgp {}", sequoia_openpgp::VERSION);
+        safe_println!("Copyright (C) 2024 Sequoia PGP");
+        safe_println!("License GNU GPL-3.0-or-later \
                   <https://gnu.org/licenses/gpl.html>");
-        println!("This is free software: \
+        safe_println!("This is free software: \
                   you are free to change and redistribute it.");
-        println!("There is NO WARRANTY, \
+        safe_println!("There is NO WARRANTY, \
                   to the extent permitted by law.");
         (self.additional_version)(config);
     }
@@ -234,10 +234,10 @@ impl<T: Copy + Debug + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
     /// Displays help.
     pub fn help(&self, config: &crate::Config) {
         self.version(config);
-        println!();
-        println!("Syntax: {} [options] [files]", self.name);
-        println!("{}", self.synopsis);
-        println!();
+        safe_println!();
+        safe_println!("Syntax: {} [options] [files]", self.name);
+        safe_println!("{}", self.synopsis);
+        safe_println!();
 
         let mut current_group = None;
         let mut last_line_was_empty = true;
@@ -258,17 +258,17 @@ impl<T: Copy + Debug + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
             if let Some(group) = current_group.take() {
                 // We are displaying an option from this group,
                 // display the group header!
-                println!();
-                println!("{}:", group);
+                safe_println!();
+                safe_println!("{}:", group);
             }
 
             last_line_was_empty = o.description.ends_with("\n");
             if o.description == "@\n" {
                 // Empty line.
-                println!();
+                safe_println!();
             } else if o.description.starts_with("@") {
                 // Caption.
-                println!("{}", &o.description[1..]);
+                safe_println!("{}", &o.description[1..]);
             } else {
                 let (meta, description) =
                     if o.description.starts_with("|") {
@@ -286,7 +286,7 @@ impl<T: Copy + Debug + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
                         format!("{}", o.short_opt.into() as u8 as char)
                     };
 
-                    println!(" -{:<33} {}",
+                    safe_println!(" -{:<33} {}",
                              short_opt,
                              description);
                 } else {
@@ -297,12 +297,12 @@ impl<T: Copy + Debug + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
                     };
 
                     if o.short_opt.into() <= 0x7f {
-                        println!(" -{}, --{:<28} {}",
+                        safe_println!(" -{}, --{:<28} {}",
                                  o.short_opt.into() as u8 as char,
                                  long_opt,
                                  description);
                     } else {
-                        println!("     --{:<28} {}",
+                        safe_println!("     --{:<28} {}",
                                  long_opt,
                                  description);
                     }
@@ -311,16 +311,16 @@ impl<T: Copy + Debug + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
         }
 
         if ! last_line_was_empty {
-            println!();
+            safe_println!();
         }
 
-        println!("Please report bugs to \
+        safe_println!("Please report bugs to \
                   <https://gitlab.com/sequoia-pgp/sequoia-chameleon-gnupg>");
     }
 
     /// Displays a message about warranty, or the lack there of.
     pub fn warranty(&self) {
-        println!("\
+        safe_println!("\
             This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
@@ -336,7 +336,7 @@ GNU General Public License for more details.");
     pub fn dump_options(&self) {
         for o in self.options {
             if ! o.long_opt.is_empty() && o.flags & OPT_IGNORE == 0 {
-                println!("--{}", o.long_opt);
+                safe_println!("--{}", o.long_opt);
             }
         }
     }
@@ -345,7 +345,7 @@ GNU General Public License for more details.");
     pub fn dump_options_table(&self) {
         for o in self.options {
             if ! o.long_opt.is_empty() {
-                println!("{}:{}:{}:{}:",
+                safe_println!("{}:{}:{}:{}:",
                          o.long_opt, o.short_opt.into(), o.flags, o.description);
             }
         }
@@ -460,7 +460,7 @@ impl<T: Copy + Debug + PartialEq + Eq + Into<isize> + 'static> Iterator for Iter
             if let Some(c) = self.current.as_mut() {
                 if let Some(arg) = c.next() {
                     if arg != "-" && arg.starts_with('-') && ! self.quiet {
-                        eprintln!("gpg: Note: {:?} is not considered an option",
+                        safe_eprintln!("gpg: Note: {:?} is not considered an option",
                                   arg);
                     }
                     return Some(Ok(Argument::Positional(arg)));
@@ -603,7 +603,7 @@ impl<T: Copy + Debug + PartialEq + Eq + Into<isize> + 'static> Iterator for Iter
                     // This argument does not take a value, but the GnuPG
                     // argument parser silently ignores that.
                     if ! self.quiet {
-                        eprintln!("gpg: Note: Ignoring value {:?} \
+                        safe_eprintln!("gpg: Note: Ignoring value {:?} \
                                    for option \"--{}\"",
                                   value, a);
                     }

@@ -35,6 +35,8 @@ use openpgp::{
 pub mod homedir;
 
 #[macro_use]
+mod print;
+#[macro_use]
 mod macros;
 #[allow(dead_code)]
 pub mod argparse;
@@ -1331,7 +1333,7 @@ fn dedup(path: &Path, content: &mut HashMap<Vec<u8>, PathBuf>) -> Result<()> {
             Entry::Occupied(e) => {
                 let replacement = e.get();
                 if VERBOSE {
-                    eprintln!("Linking {} to {}", path.display(),
+                    safe_eprintln!("Linking {} to {}", path.display(),
                               replacement.display());
                 }
                 fs::remove_file(&path)?;
@@ -1381,7 +1383,7 @@ fn clean_recording() -> Result<()> {
                 .then_some(a))
         {
             if VERBOSE {
-                eprintln!("{}: skipping because {}", path.display(), arg);
+                safe_eprintln!("{}: skipping because {}", path.display(), arg);
             }
             continue;
         }
@@ -1390,20 +1392,20 @@ fn clean_recording() -> Result<()> {
         hash_dir(&path, &mut h)?;
         let digest = h.into_digest()?;
         if VERBOSE {
-            eprintln!("{}: {}", path.display(), hex::encode(&digest));
+            safe_eprintln!("{}: {}", path.display(), hex::encode(&digest));
         }
 
         match hashes.entry(digest) {
             Entry::Occupied(e) => {
                 if VERBOSE {
-                    eprintln!("Skipping {}, same as {}", path.display(),
+                    safe_eprintln!("Skipping {}, same as {}", path.display(),
                               e.get().display());
                 }
             },
             Entry::Vacant(e) => {
                 let target = target.join(j.to_string());
                 j += 1;
-                eprintln!("Keeping {} as {}", path.display(), target.display());
+                safe_eprintln!("Keeping {} as {}", path.display(), target.display());
                 fs::create_dir(&target)?;
                 copy_r(&path, &target, false)?;
                 e.insert(path);
@@ -1417,7 +1419,7 @@ fn clean_recording() -> Result<()> {
     let target_metadata = target.join("metadata.json");
     serde_json::to_writer_pretty(create_file(&target_metadata)?, &metadata)?;
     if ! metadata.is_complete() {
-        eprintln!("Launching editor to complete the metadata...");
+        safe_eprintln!("Launching editor to complete the metadata...");
 
         loop {
             std::process::Command::new(
@@ -1427,7 +1429,7 @@ fn clean_recording() -> Result<()> {
             if let Err(e) = fs::File::open(&target_metadata)
                 .and_then(|f| Ok(serde_json::from_reader::<_, Metadata>(f)?))
             {
-                eprintln!("Malformed json, please fix: {}", e);
+                safe_eprintln!("Malformed json, please fix: {}", e);
             } else {
                 break;
             }

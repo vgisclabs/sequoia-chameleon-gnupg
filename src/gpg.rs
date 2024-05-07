@@ -38,6 +38,8 @@ use sequoia_gpg_agent as gpg_agent;
 pub mod gnupg_interface;
 
 #[macro_use]
+mod print;
+#[macro_use]
 mod macros;
 pub mod tracing;
 #[macro_use]
@@ -743,7 +745,7 @@ impl<'store> Config<'store> {
 
     /// Emits the usage and terminates the process.
     pub fn wrong_args(&self, msg: fmt::Arguments) -> ! {
-        eprintln!("usage: gpg [options] {}", msg);
+        safe_eprintln!("usage: gpg [options] {}", msg);
         std::process::exit(2);
     }
 
@@ -837,17 +839,17 @@ impl<'store> Config<'store> {
                 let m = std::fs::metadata(&self.homedir)?;
 
                 if ! m.is_dir() {
-                    eprintln!("gpg: WARNING: homedir '{}' is not a directory",
+                    safe_eprintln!("gpg: WARNING: homedir '{}' is not a directory",
                               self.homedir.display());
                 }
 
                 if m.uid() != unsafe { libc::getuid() } {
-                    eprintln!("gpg: WARNING: unsafe ownership on homedir '{}'",
+                    safe_eprintln!("gpg: WARNING: unsafe ownership on homedir '{}'",
                               self.homedir.display());
                 }
 
                 if m.mode() & (libc::S_IRWXG | libc::S_IRWXO) as u32 > 0 {
-                    eprintln!("gpg: WARNING: unsafe permissions on homedir '{}'",
+                    safe_eprintln!("gpg: WARNING: unsafe permissions on homedir '{}'",
                               self.homedir.display());
                 }
             },
@@ -1423,11 +1425,11 @@ fn set_cmd(cmd: &mut Option<CmdOrOpt>, new_cmd: CmdOrOpt)
 }
 
 fn obsolete_option(s: &str) {
-    eprintln!("WARNING: {:?} is an obsolete option - it has no effect", s);
+    safe_eprintln!("WARNING: {:?} is an obsolete option - it has no effect", s);
 }
 
 fn deprecated_warning(s: &str, repl1: &str, repl2: &str) {
-    eprintln!("WARNING: {:?} is a deprecated option, \
+    safe_eprintln!("WARNING: {:?} is a deprecated option, \
                please use \"{}{}\" instead",
               s, repl1, repl2);
 }
@@ -1529,10 +1531,10 @@ impl std::str::FromStr for SessionKey {
 }
 
 fn print_additional_version(config: &Config) {
-    println!();
-    println!("Home: {}", config.homedir.display());
+    safe_println!();
+    safe_println!("Home: {}", config.homedir.display());
 
-    println!("Supported algorithms:");
+    safe_println!("Supported algorithms:");
 
     struct Writer(String, usize);
     impl Writer {
@@ -1559,7 +1561,7 @@ fn print_additional_version(config: &Config) {
                 Some(c) => self.0.push(c), // Put back.  Unlikely.
                 None => (),
             }
-            println!("{}", self.0);
+            safe_println!("{}", self.0);
             self.0.clear();
         }
     }
@@ -2129,7 +2131,7 @@ fn real_main() -> anyhow::Result<()> {
 	    },
 
 	    oForceOwnertrust => {
-	        eprintln!("Note: {} is not for normal use!",
+	        safe_eprintln!("Note: {} is not for normal use!",
 		          "--force-ownertrust");
 	        opt.force_ownertrust = value.as_str().unwrap().parse()?;
 	    },
@@ -2650,15 +2652,15 @@ fn real_main() -> anyhow::Result<()> {
     }
 
     if greeting && ! no_greeting {
-        eprintln!("gpg (Sequoia Chameleon {}) {}; \
+        safe_eprintln!("gpg (Sequoia Chameleon {}) {}; \
                    Copyright (C) 2024 Sequoia PGP",
                   env!("CARGO_PKG_VERSION"),
                   crate::gnupg_interface::VERSION);
-        eprintln!("This is free software: \
+        safe_eprintln!("This is free software: \
                    you are free to change and redistribute it.");
-        eprintln!("There is NO WARRANTY, \
+        safe_eprintln!("There is NO WARRANTY, \
                    to the extent permitted by law.");
-        eprintln!();
+        safe_eprintln!();
     }
 
     if multifile {
@@ -2944,7 +2946,7 @@ fn real_main() -> anyhow::Result<()> {
             if opt.verbose > 1 {
                 print_error_chain(&e);
             } else {
-                eprintln!("gpg: {}", e);
+                safe_eprintln!("gpg: {}", e);
             }
             std::process::exit(2);
         }

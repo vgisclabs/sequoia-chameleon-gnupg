@@ -85,7 +85,7 @@ pub fn maybe_print_help<T>(opts: &[Opt<T>], s: &str) -> Result<bool> {
         .filter(|o| o.enabled && ! o.help.is_empty())
         .map(|o| o.name.len()).max().unwrap_or(0);
     for opt in opts.iter().filter(|o| ! o.help.is_empty()) {
-        eprintln!("{:<width$}  {}", opt.name, opt.help);
+        safe_eprintln!("{:<width$}  {}", opt.name, opt.help);
     }
 
     Ok(true)

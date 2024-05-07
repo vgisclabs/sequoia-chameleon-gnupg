@@ -169,18 +169,18 @@ pub fn cmd_list_config(config: &crate::Config, args: &[String])
         for (name, values) in config.groups.iter().rev() {
             let values =
                 values.iter().map(|h| h.to_string()).collect::<Vec<_>>();
-            println!("cfg:group:{}:{}",
+            safe_println!("cfg:group:{}:{}",
                      colons::escape(name),
                      values.join(";"));
         }
     }
 
     if all || items.iter().any(|i| *i == "version") {
-        println!("cfg:version:{}", crate::gnupg_interface::VERSION);
+        safe_println!("cfg:version:{}", crate::gnupg_interface::VERSION);
     }
 
     if all || items.iter().any(|i| *i == "pubkey") {
-        print!("cfg:pubkey:");
+        safe_print!("cfg:pubkey:");
         for (i, a) in (0..0xff).into_iter()
             .filter(|a| *a != 2 && *a != 3) // Skip single-use RSA
             .filter(|a| *a != 20) // Skip dual-use ElGamal
@@ -188,15 +188,15 @@ pub fn cmd_list_config(config: &crate::Config, args: &[String])
             .filter(|a| a.is_supported()).enumerate()
         {
             if i > 0 {
-                print!(";");
+                safe_print!(";");
             }
-            print!("{}", u8::from(a));
+            safe_print!("{}", u8::from(a));
         }
-        println!();
+        safe_println!();
     }
 
     if all || items.iter().any(|i| *i == "pubkeyname") {
-        print!("cfg:pubkeyname:");
+        safe_print!("cfg:pubkeyname:");
         for (i, a) in (0..0xff).into_iter()
             .filter(|a| *a != 2 && *a != 3) // Skip single-use RSA
             .filter(|a| *a != 20) // Skip dual-use ElGamal
@@ -204,101 +204,101 @@ pub fn cmd_list_config(config: &crate::Config, args: &[String])
             .filter(|a| a.is_supported()).enumerate()
         {
             if i > 0 {
-                print!(";");
+                safe_print!(";");
             }
-            print!("{}", babel::Fish(a));
+            safe_print!("{}", babel::Fish(a));
         }
-        println!();
+        safe_println!();
     }
 
     if all || items.iter().any(|i| *i == "cipher") {
-        print!("cfg:cipher:");
+        safe_print!("cfg:cipher:");
         for (i, a) in (0..0xff).into_iter()
             .map(SymmetricAlgorithm::from)
             .filter(|a| a.is_supported()).enumerate()
         {
             if i > 0 {
-                print!(";");
+                safe_print!(";");
             }
-            print!("{}", u8::from(a));
+            safe_print!("{}", u8::from(a));
         }
-        println!();
+        safe_println!();
     }
 
     if all || items.iter().any(|i| *i == "ciphername") {
-        print!("cfg:ciphername:");
+        safe_print!("cfg:ciphername:");
         for (i, a) in (0..0xff).into_iter()
             .map(SymmetricAlgorithm::from)
             .filter(|a| a.is_supported()).enumerate()
         {
             if i > 0 {
-                print!(";");
+                safe_print!(";");
             }
-            print!("{}", babel::Fish(a));
+            safe_print!("{}", babel::Fish(a));
         }
-        println!();
+        safe_println!();
     }
 
     if all || items.iter().any(|i| *i == "digest" || *i == "hash") {
-        print!("cfg:digest:");
+        safe_print!("cfg:digest:");
         for (i, a) in (0..0xff).into_iter()
             .map(HashAlgorithm::from)
             .filter(|a| *a != HashAlgorithm::MD5)
             .filter(|a| a.is_supported()).enumerate()
         {
             if i > 0 {
-                print!(";");
+                safe_print!(";");
             }
-            print!("{}", u8::from(a));
+            safe_print!("{}", u8::from(a));
         }
-        println!();
+        safe_println!();
     }
 
     if all || items.iter().any(|i| *i == "digestname" || *i == "hashname") {
-        print!("cfg:digestname:");
+        safe_print!("cfg:digestname:");
         for (i, a) in (0..0xff).into_iter()
             .map(HashAlgorithm::from)
             .filter(|a| *a != HashAlgorithm::MD5)
             .filter(|a| a.is_supported()).enumerate()
         {
             if i > 0 {
-                print!(";");
+                safe_print!(";");
             }
-            print!("{}", babel::Fish(a));
+            safe_print!("{}", babel::Fish(a));
         }
-        println!();
+        safe_println!();
     }
 
     if all || items.iter().any(|i| *i == "compress") {
-        print!("cfg:compress:");
+        safe_print!("cfg:compress:");
         for (i, a) in (0..0xff).into_iter()
             .map(CompressionAlgorithm::from)
             .filter(|a| a.is_supported()).enumerate()
         {
             if i > 0 {
-                print!(";");
+                safe_print!(";");
             }
-            print!("{}", u8::from(a));
+            safe_print!("{}", u8::from(a));
         }
-        println!();
+        safe_println!();
     }
 
     if all || items.iter().any(|i| *i == "compressname") {
-        print!("cfg:compressname:");
+        safe_print!("cfg:compressname:");
         for (i, a) in (0..0xff).into_iter()
             .map(CompressionAlgorithm::from)
             .filter(|a| a.is_supported()).enumerate()
         {
             if i > 0 {
-                print!(";");
+                safe_print!(";");
             }
-            print!("{}", babel::Fish(a));
+            safe_print!("{}", babel::Fish(a));
         }
-        println!();
+        safe_println!();
     }
 
     if all || items.iter().any(|i| *i == "curve") {
-        print!("cfg:curve:");
+        safe_print!("cfg:curve:");
         use Curve::*;
         for (i, cv) in [
             Cv25519,
@@ -312,11 +312,11 @@ pub fn cmd_list_config(config: &crate::Config, args: &[String])
         ].iter().filter(|a| a.is_supported()).enumerate()
         {
             if i > 0 {
-                print!(";");
+                safe_print!(";");
             }
-            print!("{}", babel::Fish(cv));
+            safe_print!("{}", babel::Fish(cv));
         }
-        println!();
+        safe_println!();
     }
 
     // XXX: curveoid
@@ -406,12 +406,12 @@ Your decision?"))?.to_lowercase().as_str()
                 "3" => break ReasonForRevocation::KeyRetired,
                 "q" => return Ok(()),
                 _ => {
-                    eprintln!("Invalid selection.");
+                    safe_eprintln!("Invalid selection.");
                 },
             }
         };
 
-        eprintln!("Enter an optional description; end it with an empty line:");
+        safe_eprintln!("Enter an optional description; end it with an empty line:");
         let mut description = vec![];
         loop {
             let line = config.prompt(
@@ -425,11 +425,11 @@ Your decision?"))?.to_lowercase().as_str()
         let description = description.join("\n");
 
         // Summarize, and check again.
-        eprintln!("Reason for revocation: {}", babel::Fish(reason));
+        safe_eprintln!("Reason for revocation: {}", babel::Fish(reason));
         if description.is_empty() {
-            eprintln!("(No description given)");
+            safe_eprintln!("(No description given)");
         } else {
-            eprintln!("{}", description);
+            safe_eprintln!("{}", description);
         }
         if ! config.prompt_yN(
             "ask_revocation_reason.okay",
@@ -459,7 +459,7 @@ Your decision?"))?.to_lowercase().as_str()
         openpgp::Packet::from(sig).serialize(&mut message)?;
         message.finalize()?;
 
-        eprintln!("Revocation certificate created.
+        safe_eprintln!("Revocation certificate created.
 
 Please move it to a medium which you can hide away; if Mallory gets
 access to this certificate he can use it to make your key unusable.
@@ -579,20 +579,20 @@ pub fn _print_mds(config: &crate::Config, algo: Option<HashAlgorithm>,
 
             let mut offset = 0;
             if f != "-" {
-                print!("{}:", f);
+                safe_print!("{}:", f);
                 offset += f.chars().count() + 1;
             } else {
                 if config.with_colons {
-                    print!(":");
+                    safe_print!(":");
                 }
             }
 
             if config.with_colons {
-                println!("{}:{}:", u8::from(algo),
+                safe_println!("{}:{}:", u8::from(algo),
                          openpgp::fmt::hex::encode(digest));
             } else {
                 if offset > INDENT_LIMIT {
-                    println!();
+                    safe_println!();
                     offset = 0;
                 }
 
@@ -605,19 +605,19 @@ pub fn _print_mds(config: &crate::Config, algo: Option<HashAlgorithm>,
                 };
                 for (i, chunk) in digest.chunks(chunk_len).enumerate() {
                     if offset + chunk_len * 2 > 79 {
-                        print!("\n{}", &INDENT[..indent]);
+                        safe_print!("\n{}", &INDENT[..indent]);
                         offset = indent;
                     }
 
                     if center_space.map(|at| i == at).unwrap_or(false) {
-                        print!(" ");
+                        safe_print!(" ");
                         offset += 1;
                     }
 
-                    print!(" {}", openpgp::fmt::hex::encode(chunk));
+                    safe_print!(" {}", openpgp::fmt::hex::encode(chunk));
                     offset += 1 + chunk_len * 2;
                 }
-                println!();
+                safe_println!();
             }
         } else {
             // Sort the hash algorithms in a particular way.
@@ -647,24 +647,24 @@ pub fn _print_mds(config: &crate::Config, algo: Option<HashAlgorithm>,
 
                 let mut offset = 0;
                 if f != "-" {
-                    print!("{}:", f);
+                    safe_print!("{}:", f);
                     offset += f.chars().count() + 1;
                 } else {
                     if config.with_colons {
-                        print!(":");
+                        safe_print!(":");
                     }
                 }
 
                 if offset > INDENT_LIMIT {
-                    println!();
+                    safe_println!();
                     offset = 0;
                 }
 
                 if config.with_colons {
-                    println!("{}:{}:", u8::from(algo),
+                    safe_println!("{}:{}:", u8::from(algo),
                              openpgp::fmt::hex::encode(digest));
                 } else {
-                    print!("{:>6} =", babel::Fish(algo).to_string()
+                    safe_print!("{:>6} =", babel::Fish(algo).to_string()
                            .replace("RIPEMD160", "RMD160"));
                     offset += 8;
                     let indent = offset;
@@ -676,19 +676,19 @@ pub fn _print_mds(config: &crate::Config, algo: Option<HashAlgorithm>,
                     };
                     for (i, chunk) in digest.chunks(chunk_len).enumerate() {
                         if offset + chunk_len * 2 > 79 {
-                            print!("\n{}", &INDENT[..indent]);
+                            safe_print!("\n{}", &INDENT[..indent]);
                             offset = indent;
                         }
 
                         if center_space.map(|at| i == at).unwrap_or(false) {
-                            print!(" ");
+                            safe_print!(" ");
                             offset += 1;
                         }
 
-                        print!(" {}", openpgp::fmt::hex::encode(chunk));
+                        safe_print!(" {}", openpgp::fmt::hex::encode(chunk));
                         offset += 1 + chunk_len * 2;
                     }
-                    println!();
+                    safe_println!();
                 }
             }
         }

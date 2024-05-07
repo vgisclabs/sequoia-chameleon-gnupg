@@ -26,14 +26,14 @@ pub fn parse_command_line() {
 fn handle_command_line_flag(f: &str) {
     match f {
         "help" => {
-            eprintln!("gpg: available debug flags:");
-            eprintln!("gpg:        all");
-            eprintln!("gpg:        dirmngr");
-            eprintln!("gpg:        ipc");
-            eprintln!("gpg:        keydb");
-            eprintln!("gpg:        keyserver");
-            eprintln!("gpg:        parcimonie");
-            eprintln!("gpg:        trust");
+            safe_eprintln!("gpg: available debug flags:");
+            safe_eprintln!("gpg:        all");
+            safe_eprintln!("gpg:        dirmngr");
+            safe_eprintln!("gpg:        ipc");
+            safe_eprintln!("gpg:        keydb");
+            safe_eprintln!("gpg:        keyserver");
+            safe_eprintln!("gpg:        parcimonie");
+            safe_eprintln!("gpg:        trust");
             std::process::exit(0);
         },
         "all" => enable_all(),
@@ -74,7 +74,7 @@ pub fn enable(module: &str) {
         "keyserver" => crate::keyserver::trace(true),
         "parcimonie" => crate::parcimonie::trace(true),
         "trust" => crate::trust::trace(true),
-        _ => eprintln!("gpg: unknown debug flag '{}' ignored", module),
+        _ => safe_eprintln!("gpg: unknown debug flag '{}' ignored", module),
     }
 }
 

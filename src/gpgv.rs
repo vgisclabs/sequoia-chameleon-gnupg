@@ -21,6 +21,8 @@ use cert_store::LazyCert;
 pub mod gnupg_interface;
 
 #[macro_use]
+mod print;
+#[macro_use]
 mod macros;
 #[macro_use]
 pub mod argparse;

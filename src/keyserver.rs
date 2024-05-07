@@ -280,12 +280,12 @@ async fn keyserver_import(config: &mut crate::Config<'_>, args: &[String],
 
 		for cert in certs.into_values() {
 		    if let Err(e) = sender.send(Ok(cert)).await {
-			eprintln!("gpg: {}", e); // Should not happen.
+			safe_eprintln!("gpg: {}", e); // Should not happen.
 		    }
 		}
 		for e in errs {
 		    if let Err(e) = sender.send(Err(e)).await {
-			eprintln!("gpg: {}", e); // Should not happen.
+			safe_eprintln!("gpg: {}", e); // Should not happen.
 		    }
 		}
             }

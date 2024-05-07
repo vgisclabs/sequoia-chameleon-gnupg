@@ -361,7 +361,7 @@ impl<'a, 'store> VHelper<'a, 'store> {
     fn print_status(&self) {
         fn p(dirty: &mut bool, what: &str, quantity: usize) {
             if quantity > 0 {
-                eprint!("{}{} {}{}",
+                safe_eprint!("{}{} {}{}",
                         if *dirty { ", " } else { "" },
                         quantity, what,
                         if quantity == 1 { "" } else { "s" });
@@ -377,7 +377,7 @@ impl<'a, 'store> VHelper<'a, 'store> {
         p(&mut dirty, "bad checksum", self.bad_checksums);
         p(&mut dirty, "broken signatures", self.broken_signatures);
         if dirty {
-            eprintln!(".");
+            safe_eprintln!(".");
         }
     }
 
@@ -862,7 +862,7 @@ impl<'a, 'store> VHelper<'a, 'store> {
                         continue;
                     }
                     if self.control.verbose() > 0 {
-                        eprintln!("Malformed signature:");
+                        safe_eprintln!("Malformed signature:");
                         print_error_chain(error);
                     }
                     self.broken_signatures += 1;
@@ -876,7 +876,7 @@ impl<'a, 'store> VHelper<'a, 'store> {
                             let issuer = sig.get_issuers().get(0)
                                 .expect("missing key checksum has an issuer")
                                 .to_string();
-                            eprintln!("No key to check signature from {}",
+                            safe_eprintln!("No key to check signature from {}",
                                       issuer);
                         }
                         self.unknown_checksums += 1;
@@ -892,7 +892,7 @@ impl<'a, 'store> VHelper<'a, 'store> {
                         false)?
                     {
                         if self.control.verbose() > 0 {
-                            eprintln!("Signing key on {} is not bound:",
+                            safe_eprintln!("Signing key on {} is not bound:",
                                       cert.fingerprint());
                             print_error_chain(error);
                         }
@@ -928,7 +928,7 @@ impl<'a, 'store> VHelper<'a, 'store> {
                     // ExpKeySig, RevKeySig
 
                     if self.control.verbose() > 0 {
-                        eprintln!("Signing key on {} is bad:",
+                        safe_eprintln!("Signing key on {} is bad:",
                                   ka.cert().fingerprint());
                         print_error_chain(error);
                     }

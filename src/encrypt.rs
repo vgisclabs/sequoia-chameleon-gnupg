@@ -468,8 +468,8 @@ fn do_we_trust(config: &crate::Config,
         let cert_fp = cert.fingerprint();
         let primary = fp == cert_fp;
 
-        eprintln!();
-        eprintln!("{}  {}/{} {} {}",
+        safe_eprintln!();
+        safe_eprintln!("{}  {}/{} {} {}",
                   if primary { "pub" } else { "sub" },
                   babel::Fish(PublicKeyAlgorithmAndSize::from(key)),
                   KeyID::from(&fp),
@@ -481,24 +481,24 @@ fn do_we_trust(config: &crate::Config,
                   },
                   query.best_effort_uid(config.policy(), cert));
 
-        eprintln!(" Primary key fingerprint: {}", cert_fp.to_spaced_hex());
+        safe_eprintln!(" Primary key fingerprint: {}", cert_fp.to_spaced_hex());
         if ! primary {
-            eprintln!("      Subkey fingerprint: {}", fp.to_spaced_hex());
+            safe_eprintln!("      Subkey fingerprint: {}", fp.to_spaced_hex());
         }
-        eprintln!();
+        safe_eprintln!();
 
         if validity.level == ValidityLevel::Never {
-            eprintln!(
+            safe_eprintln!(
                 "This key is bad!  It has been marked as untrusted!  If you\n\
                  *really* know what you are doing, you may answer the next\n\
                  question with yes.");
         } else {
-            eprintln!(
+            safe_eprintln!(
                 "It is NOT certain that the key belongs to the person named\n\
                  in the user ID.  If you *really* know what you are doing,\n\
                  you may answer the next question with yes.");
         }
-        eprintln!();
+        safe_eprintln!();
 
         config.status().emit(
             Status::UserIdHint {
