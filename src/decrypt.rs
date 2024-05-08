@@ -286,16 +286,15 @@ impl<'a, 'store> DHelper<'a, 'store> {
 
     /// Tries to decrypt the given PKESK packet with `keypair` and try
     /// to decrypt the packet parser using `decrypt`.
-    async fn try_decrypt<D>(&self,
-                            cert: &Cert,
-                            pkesk: &PKESK,
-                            sym_algo: Option<SymmetricAlgorithm>,
-                            mut keypair: KeyPair,
-                            decrypt: &mut D)
-                            -> Result<(Option<Fingerprint>,
-                                       SymmetricAlgorithm,
-                                       SessionKey)>
-        where D: FnMut(SymmetricAlgorithm, &SessionKey) -> bool
+    async fn try_decrypt(&self,
+                         cert: &Cert,
+                         pkesk: &PKESK,
+                         sym_algo: Option<SymmetricAlgorithm>,
+                         mut keypair: KeyPair,
+                         decrypt: &mut dyn FnMut(SymmetricAlgorithm, &SessionKey) -> bool)
+                         -> Result<(Option<Fingerprint>,
+                                    SymmetricAlgorithm,
+                                    SessionKey)>
     {
         let kek = keypair.decrypt(pkesk.esk(),
                                   sym_algo.and_then(|a| a.key_size().ok()))?;
@@ -343,12 +342,10 @@ impl<'a, 'store> DHelper<'a, 'store> {
         }
     }
 
-    async fn async_decrypt<D>(&mut self, pkesks: &[PKESK], skesks: &[SKESK],
-                              sym_algo: Option<SymmetricAlgorithm>,
-                              mut decrypt: D)
-                              -> Result<Option<openpgp::Fingerprint>>
-    where
-        D: FnMut(SymmetricAlgorithm, &SessionKey) -> bool,
+    async fn async_decrypt(&mut self, pkesks: &[PKESK], skesks: &[SKESK],
+                           sym_algo: Option<SymmetricAlgorithm>,
+                           decrypt: &mut dyn FnMut(SymmetricAlgorithm, &SessionKey) -> bool)
+                           -> Result<Option<openpgp::Fingerprint>>
     {
         // We provide all the information upfront before we try any
         // decryption.
@@ -488,7 +485,7 @@ impl<'a, 'store> DHelper<'a, 'store> {
             }
 
             if let Ok(r) = self.try_decrypt(
-                &cert, pkesk, sym_algo, pair, &mut decrypt).await
+                &cert, pkesk, sym_algo, pair, decrypt).await
             {
                 // Success!
                 success = Some(r);
@@ -712,12 +709,13 @@ impl<'a, 'store> DHelper<'a, 'store> {
 impl<'a, 'store> DecryptionHelper for DHelper<'a, 'store> {
     fn decrypt<D>(&mut self, pkesks: &[PKESK], skesks: &[SKESK],
                   sym_algo: Option<SymmetricAlgorithm>,
-                  decrypt: D) -> Result<Option<openpgp::Fingerprint>>
+                  mut decrypt: D) -> Result<Option<openpgp::Fingerprint>>
         where D: FnMut(SymmetricAlgorithm, &SessionKey) -> bool
     {
         let rt = tokio::runtime::Runtime::new()?;
         let r =
-            rt.block_on(self.async_decrypt(pkesks, skesks, sym_algo, decrypt));
+            rt.block_on(self.async_decrypt(pkesks, skesks, sym_algo,
+                                           &mut decrypt));
 
         if r.is_err() && ! self.config.list_only {
             self.config.status().emit(Status::DecryptionFailed)?;
