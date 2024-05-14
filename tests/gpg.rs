@@ -3,7 +3,7 @@ use std::{
     collections::BTreeMap,
     fmt,
     fs,
-    io::{self, Read},
+    io::{self, Read, Write},
     path::{Path, PathBuf},
     process::*,
     str::FromStr,
@@ -229,10 +229,15 @@ impl Context {
 
     /// Invokes the GnuPG implementation with the given arguments.
     ///
+    /// The inputs are stored in the working directory prior to
+    /// invoking the command.
+    ///
     /// The output of the invocation (stdout and stderr) as well as
     /// any files created under the current directory are returned in
     /// an instance of `Output`.
-    pub fn invoke(&self, args: &[&str]) -> Result<Output> {
+    pub fn invoke(&self, args: &[&str], inputs: &[(String, Vec<u8>)])
+                  -> Result<Output>
+    {
         // See if the user wants gpg or gpgv.
         let (executable, args) =
             if args[0] == "gpgv" {
@@ -244,6 +249,12 @@ impl Context {
                 (&self.gpg, &args[..])
             };
 
+        // A unique working directory for this invocation.
+        let workdir = tempfile::TempDir::new()?;
+        for (n, c) in inputs {
+            fs::write(workdir.path().join(n), c)?;
+        }
+
         // We're going to change directories before execve(2)ing in
         // the child, so make sure the path is absolute.
         let exe = fs::canonicalize(&executable[0])?;
@@ -253,7 +264,6 @@ impl Context {
         c.env("SEQUOIA_CRYPTO_POLICY", // Use a null policy.
               format!("{}/tests/null-policy.toml",
                       env!("CARGO_MANIFEST_DIR")));
-        let workdir = tempfile::TempDir::new()?;
         c.current_dir(workdir.path());
         for arg in &executable[1..] {
             c.arg(arg);
@@ -318,6 +328,7 @@ impl Context {
 
         Ok(Output {
             args: args.into_iter().map(ToString::to_string).collect(),
+            inputs: inputs.to_vec(),
             stdout: out.stdout,
             stderr: out.stderr,
             statusfd,
@@ -456,6 +467,10 @@ pub struct Output {
     /// This is the unnormalized command.  That is, args[0] is not
     /// mapped to the actual implementation that is used.
     args: Vec<String>,
+
+    #[serde(default)]
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    inputs: Vec<(String, Vec<u8>)>,
 
     /// The captured stderr and stdout.
     #[serde_as(as = "Stfu8Bytes")]
@@ -641,7 +656,7 @@ enum Action {
     /// Store a file in the working directory.
     Store(PathBuf),
     /// Invoke a command.
-    Invoke(Vec<String>),
+    Invoke(Vec<String>, Vec<(String, Vec<u8>)>),
     /// Kills the gpg-agent.
     KillAgent,
 }
@@ -722,10 +737,24 @@ impl Experiment {
     ///
     /// If args[0] is neither gpg nor gpgv, gpg is assumed.
     pub fn invoke(&mut self, args: &[&str]) -> Result<Diff> {
+        self.invoke_with_inputs(args, &[])
+    }
+
+    /// Invokes the given gpg or gpgv command on both implementations
+    /// with the given inputs put into the working directory.
+    ///
+    /// If args[0] is neither gpg nor gpgv, gpg is assumed.
+    pub fn invoke_with_inputs(&mut self, args: &[&str],
+                              inputs: &[(&str, &[u8])]) -> Result<Diff> {
+        // Owned inputs.
+        let inputs: Vec<_> =
+            inputs.iter().map(|(n, c)| (n.to_string(), c.to_vec())).collect();
+
+
         // Get the number of commands invoked in this experiment.  We
         // use this to enumerate the stored artifacts.
         let n = self.log.borrow().iter()
-            .filter(|a| if let Action::Invoke(_) = a { true } else { false })
+            .filter(|a| if let Action::Invoke(..) = a { true } else { false })
             .count();
 
         // Implicitly add --faked-system-time.
@@ -747,7 +776,8 @@ impl Experiment {
         };
 
         self.log.borrow_mut().push(
-            Action::Invoke(args.iter().map(ToString::to_string).collect()));
+            Action::Invoke(args.iter().map(ToString::to_string).collect(),
+                           inputs.clone()));
 
         // See if we have a stored artifact and whether it matches our
         // arguments.
@@ -771,7 +801,7 @@ impl Experiment {
 
         // First, invoke the Chameleon.
         eprintln!("  - Invoking the chameleon:");
-        let mut us = self.us.invoke(&args)?
+        let mut us = self.us.invoke(&args, &inputs)?
             .canonicalize(self.us.home.path(), self.wd.path());
         self.canonicalizations.iter().for_each(|c| c.apply(&mut us));
 
@@ -801,6 +831,7 @@ impl Experiment {
             .former_us_outputs.as_ref()
             .and_then(|o| o.get(n))
             .filter(|v| v.args == normalized_args)
+            .filter(|v| v.inputs == inputs)
             .filter(|_| fixtures != Recreate)
         {
             Some(o.clone())
@@ -820,6 +851,7 @@ impl Experiment {
         // Then, invoke GnuPG if we don't have a cached artifact.
         let oracle = if let Some(o) = self.artifacts.outputs.get(n)
             .filter(|v| v.args == normalized_args)
+            .filter(|v| v.inputs == inputs)
             .filter(|_| fixtures != Recreate)
         {
             eprintln!("  - Not invoking the oracle: using cached results");
@@ -834,7 +866,7 @@ impl Experiment {
 
             check_gpg_oracle();
             eprintln!("  - Invoking the oracle:");
-            let mut output = self.oracle.invoke(&args)?
+            let mut output = self.oracle.invoke(&args, &inputs)?
                 .canonicalize(self.oracle.home.path(), self.wd.path());
             self.canonicalizations.iter().for_each(|c| c.apply(&mut output));
             output.args = normalized_args;
@@ -895,11 +927,20 @@ impl Experiment {
         writeln!(&mut sink, "mkdir -p {}", self.wd.path().display())?;
         for a in self.log.borrow().iter() {
             writeln!(&mut sink)?;
+            use openpgp::armor::*;
             match a {
                 Action::Section(s) => {
                     writeln!(&mut sink, "# {}", s)?;
                 },
-                Action::Invoke(args) => {
+                Action::Invoke(args, inputs) => {
+                    for (n, c) in inputs {
+                        writeln!(&mut sink, "gpg --dearmor >{} <<EOF", n)?;
+                        let mut w = Writer::new(&mut sink, Kind::File)?;
+                        w.write_all(c)?;
+                        w.finalize()?;
+                        writeln!(&mut sink, "EOF")?;
+                    }
+
                     write!(&mut sink, "gpg")?;
                     for a in args {
                         write!(&mut sink, " {:?}", a)?;
@@ -909,7 +950,6 @@ impl Experiment {
                 Action::Store(path) => {
                     writeln!(&mut sink, "gpg --dearmor >{} <<EOF",
                              path.display())?;
-                    use openpgp::armor::*;
                     let mut w = Writer::new(&mut sink, Kind::File)?;
                     let mut s = fs::File::open(path)?;
                     io::copy(&mut s, &mut w)?;
