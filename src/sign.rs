@@ -52,8 +52,12 @@ pub fn cmd_sign(config: &crate::Config, args: &[String],
             }
         })?;
 
+    let last_name = filenames.last().expect("we put a - in if empty");
     let mut sink = if let Some(name) = config.outfile() {
         utils::create(config, name)?
+    } else if detached && last_name != "-" {
+        let ext = if config.armor { "asc" } else { "sig" };
+        utils::create(config, &format!("{}.{}", last_name, ext))?
     } else {
         Box::new(io::stdout())
     };

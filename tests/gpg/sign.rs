@@ -189,6 +189,55 @@ fn test_key(cert: Cert, mut experiment: Experiment, expect_success: bool)
                 .iter().all(|&exists| exists == false));
     }
 
+    let diff = experiment.invoke_with_inputs(&[
+        "--digest-algo=SHA512",
+        "--detach-sign",
+        "plaintext",
+    ], &[("plaintext", PLAINTEXT)])?;
+    if expect_success {
+        diff.assert_success();
+        diff.assert_limits(0, 0, 0);
+        let signatures = vec![
+            diff.us.files.get("plaintext.sig").cloned().ok_or_else(
+                || anyhow::anyhow!("no signature produced"))?,
+            diff.oracle.files.get("plaintext.sig").cloned().ok_or_else(
+                || anyhow::anyhow!("no signature produced"))?,
+        ];
+
+        test_detached_verification(&mut experiment, signatures)?;
+    } else {
+        diff.assert_failure();
+        diff.assert_limits(0, 0, 0);
+        assert!(diff.with_working_dir(
+            |p| Ok(p.get("signature.sig").is_some()))?
+                .iter().all(|&exists| exists == false));
+    }
+
+    let diff = experiment.invoke_with_inputs(&[
+        "--digest-algo=SHA512",
+        "--detach-sign",
+        "--armor",
+        "plaintext",
+    ], &[("plaintext", PLAINTEXT)])?;
+    if expect_success {
+        diff.assert_success();
+        diff.assert_limits(0, 0, 0);
+        let signatures = vec![
+            diff.us.files.get("plaintext.asc").cloned().ok_or_else(
+                || anyhow::anyhow!("no signature produced"))?,
+            diff.oracle.files.get("plaintext.asc").cloned().ok_or_else(
+                || anyhow::anyhow!("no signature produced"))?,
+        ];
+
+        test_detached_verification(&mut experiment, signatures)?;
+    } else {
+        diff.assert_failure();
+        diff.assert_limits(0, 0, 0);
+        assert!(diff.with_working_dir(
+            |p| Ok(p.get("signature.asc").is_some()))?
+                .iter().all(|&exists| exists == false));
+    }
+
     Ok(())
 }
 

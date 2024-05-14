@@ -83,6 +83,69 @@
       "statusfd": "[GNUPG:] KEY_CONSIDERED 315784C40B8CE1F3ED500E598DF9BD6839A0D603 0\\n[GNUPG:] KEY_CONSIDERED 315784C40B8CE1F3ED500E598DF9BD6839A0D603 3\\n[GNUPG:] INV_SGNR 9\\n[GNUPG:] FAILURE sign 54\\n",
       "status": "exit status: 2",
       "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--digest-algo=SHA512\"",
+        "\"--detach-sign\"",
+        "\"plaintext\""
+      ],
+      "inputs": [
+        [
+          "plaintext",
+          [
+            112,
+            108,
+            97,
+            105,
+            110,
+            116,
+            101,
+            120,
+            116
+          ]
+        ]
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: no default secret key: Unusable secret key\\ngpg: signing failed: Unusable secret key\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 315784C40B8CE1F3ED500E598DF9BD6839A0D603 0\\n[GNUPG:] KEY_CONSIDERED 315784C40B8CE1F3ED500E598DF9BD6839A0D603 3\\n[GNUPG:] INV_SGNR 9\\n[GNUPG:] FAILURE sign 54\\n",
+      "status": "exit status: 2",
+      "files": {
+        "plaintext": "plaintext"
+      }
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--digest-algo=SHA512\"",
+        "\"--detach-sign\"",
+        "\"--armor\"",
+        "\"plaintext\""
+      ],
+      "inputs": [
+        [
+          "plaintext",
+          [
+            112,
+            108,
+            97,
+            105,
+            110,
+            116,
+            101,
+            120,
+            116
+          ]
+        ]
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: no default secret key: Unusable secret key\\ngpg: signing failed: Unusable secret key\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 315784C40B8CE1F3ED500E598DF9BD6839A0D603 0\\n[GNUPG:] KEY_CONSIDERED 315784C40B8CE1F3ED500E598DF9BD6839A0D603 3\\n[GNUPG:] INV_SGNR 9\\n[GNUPG:] FAILURE sign 54\\n",
+      "status": "exit status: 2",
+      "files": {
+        "plaintext": "plaintext"
+      }
     }
   ],
   "former_us_outputs": [
@@ -169,6 +232,69 @@
       "statusfd": "[GNUPG:] KEY_CONSIDERED 315784C40B8CE1F3ED500E598DF9BD6839A0D603 0\\n[GNUPG:] KEY_CONSIDERED 315784C40B8CE1F3ED500E598DF9BD6839A0D603 3\\n[GNUPG:] INV_SGNR 9\\n[GNUPG:] FAILURE sign 54\\n",
       "status": "exit status: 2",
       "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--digest-algo=SHA512\"",
+        "\"--detach-sign\"",
+        "\"plaintext\""
+      ],
+      "inputs": [
+        [
+          "plaintext",
+          [
+            112,
+            108,
+            97,
+            105,
+            110,
+            116,
+            101,
+            120,
+            116
+          ]
+        ]
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: no default secret key: Unusable secret key\\ngpg: signing failed: Unusable secret key\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 315784C40B8CE1F3ED500E598DF9BD6839A0D603 0\\n[GNUPG:] KEY_CONSIDERED 315784C40B8CE1F3ED500E598DF9BD6839A0D603 3\\n[GNUPG:] INV_SGNR 9\\n[GNUPG:] FAILURE sign 54\\n",
+      "status": "exit status: 2",
+      "files": {
+        "plaintext": "plaintext"
+      }
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--digest-algo=SHA512\"",
+        "\"--detach-sign\"",
+        "\"--armor\"",
+        "\"plaintext\""
+      ],
+      "inputs": [
+        [
+          "plaintext",
+          [
+            112,
+            108,
+            97,
+            105,
+            110,
+            116,
+            101,
+            120,
+            116
+          ]
+        ]
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: no default secret key: Unusable secret key\\ngpg: signing failed: Unusable secret key\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 315784C40B8CE1F3ED500E598DF9BD6839A0D603 0\\n[GNUPG:] KEY_CONSIDERED 315784C40B8CE1F3ED500E598DF9BD6839A0D603 3\\n[GNUPG:] INV_SGNR 9\\n[GNUPG:] FAILURE sign 54\\n",
+      "status": "exit status: 2",
+      "files": {
+        "plaintext": "plaintext"
+      }
     }
   ],
   "artifacts": {
@@ -184,6 +310,16 @@
       0,
       0,
       67
+    ],
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0
     ],
     [
       0,
