@@ -33,7 +33,7 @@ use ipc::Keygrip;
 use sequoia_cert_store as cert_store;
 use cert_store::LazyCert;
 use cert_store::Store;
-use cert_store::store::StoreError;
+use cert_store::store::{StoreError, UserIDQueryParams};
 
 use crate::{
     argparse,
@@ -306,6 +306,14 @@ pub fn cmd_list_keys(config: &crate::Config, args: &[String], list_secret: bool)
                     config.keydb().lookup_by_email(&e),
                 Query::UserIDFragment(f) =>
                     config.keydb().grep_userid(&f),
+                Query::ExactUserID(u) =>
+                    config.keydb().select_userid(
+                        UserIDQueryParams::new()
+                            .set_anchor_start(true)
+                            .set_anchor_end(true)
+                            .set_email(false)
+                            .set_ignore_case(false),
+                        &u),
             };
 
             let r = match r {

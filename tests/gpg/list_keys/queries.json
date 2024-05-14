@@ -98,7 +98,31 @@
       "args": [
         "\"--faked-system-time=1671553073!\"",
         "\"--list-keys\"",
+        "\"=<alice@lovelace.name>\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "pub   ed25519 2022-12-20 [C]\\n      CD2035632108B0281F10C85AC3FAC136891AD7CD\\nuid           [ unknown] Alice Lovelace\\nuid           [ unknown] <alice@lovelace.name>\\nuid           [ unknown] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519 2022-12-20 [S]\\n\\n",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED CD2035632108B0281F10C85AC3FAC136891AD7CD 0\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
         "\"Alice Lovelace <alice@lovelace.name>\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "pub   ed25519 2022-12-20 [C]\\n      CD2035632108B0281F10C85AC3FAC136891AD7CD\\nuid           [ unknown] Alice Lovelace\\nuid           [ unknown] <alice@lovelace.name>\\nuid           [ unknown] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519 2022-12-20 [S]\\n\\n",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED CD2035632108B0281F10C85AC3FAC136891AD7CD 0\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"=Alice Lovelace <alice@lovelace.name>\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "pub   ed25519 2022-12-20 [C]\\n      CD2035632108B0281F10C85AC3FAC136891AD7CD\\nuid           [ unknown] Alice Lovelace\\nuid           [ unknown] <alice@lovelace.name>\\nuid           [ unknown] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519 2022-12-20 [S]\\n\\n",
@@ -152,6 +176,138 @@
       "stdout": "pub   ed25519 2022-12-20 [C]\\n      CD2035632108B0281F10C85AC3FAC136891AD7CD\\nuid           [ unknown] Alice Lovelace\\nuid           [ unknown] <alice@lovelace.name>\\nuid           [ unknown] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519 2022-12-20 [S]\\n\\n",
       "statusfd": "[GNUPG:] KEY_CONSIDERED CD2035632108B0281F10C85AC3FAC136891AD7CD 0\\n",
       "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"CD2035632108B0281F10C85AC3FAC136891AD7CD\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "pub   ed25519 2022-12-20 [C]\\n      CD2035632108B0281F10C85AC3FAC136891AD7CD\\nuid           [ unknown] Alice Lovelace\\nuid           [ unknown] <alice@lovelace.name>\\nuid           [ unknown] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519 2022-12-20 [S]\\n\\n",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED CD2035632108B0281F10C85AC3FAC136891AD7CD 0\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"3413372EACF7CD0B5876E595DAED6CC7A7886D2A\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "pub   ed25519 2022-12-20 [C]\\n      CD2035632108B0281F10C85AC3FAC136891AD7CD\\nuid           [ unknown] Alice Lovelace\\nuid           [ unknown] <alice@lovelace.name>\\nuid           [ unknown] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519 2022-12-20 [S]\\n\\n",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED CD2035632108B0281F10C85AC3FAC136891AD7CD 0\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"C3FAC136891AD7CD\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "pub   ed25519 2022-12-20 [C]\\n      CD2035632108B0281F10C85AC3FAC136891AD7CD\\nuid           [ unknown] Alice Lovelace\\nuid           [ unknown] <alice@lovelace.name>\\nuid           [ unknown] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519 2022-12-20 [S]\\n\\n",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED CD2035632108B0281F10C85AC3FAC136891AD7CD 0\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"DAED6CC7A7886D2A\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "pub   ed25519 2022-12-20 [C]\\n      CD2035632108B0281F10C85AC3FAC136891AD7CD\\nuid           [ unknown] Alice Lovelace\\nuid           [ unknown] <alice@lovelace.name>\\nuid           [ unknown] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519 2022-12-20 [S]\\n\\n",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED CD2035632108B0281F10C85AC3FAC136891AD7CD 0\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"=alice lovelace\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: error reading key: No public key\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] ERROR keylist.getkey 9\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"=<Alice@Lovelace.Name>\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: error reading key: No public key\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] ERROR keylist.getkey 9\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"=<Alice@lovelace.name>\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: error reading key: No public key\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] ERROR keylist.getkey 9\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"=<alice@Lovelace.Name>\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: error reading key: No public key\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] ERROR keylist.getkey 9\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"=alice lovelace <Alice@Lovelace.Name>\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: error reading key: No public key\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] ERROR keylist.getkey 9\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"=Alice Lovelace <Alice@lovelace.name>\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: error reading key: No public key\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] ERROR keylist.getkey 9\\n",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"=alice lovelace <alice@lovelace.name>\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: error reading key: No public key\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] ERROR keylist.getkey 9\\n",
+      "status": "exit status: 2",
       "files": {}
     },
     {
@@ -296,7 +452,31 @@
       "args": [
         "\"--faked-system-time=1671553073!\"",
         "\"--list-keys\"",
+        "\"=<alice@lovelace.name>\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "pub   ed25519 2022-12-20 [C]\\n      CD2035632108B0281F10C85AC3FAC136891AD7CD\\nuid           [ unknown] Alice Lovelace\\nuid           [ unknown] <alice@lovelace.name>\\nuid           [ unknown] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519 2022-12-20 [S]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
         "\"Alice Lovelace <alice@lovelace.name>\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "pub   ed25519 2022-12-20 [C]\\n      CD2035632108B0281F10C85AC3FAC136891AD7CD\\nuid           [ unknown] Alice Lovelace\\nuid           [ unknown] <alice@lovelace.name>\\nuid           [ unknown] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519 2022-12-20 [S]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"=Alice Lovelace <alice@lovelace.name>\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
       "stdout": "pub   ed25519 2022-12-20 [C]\\n      CD2035632108B0281F10C85AC3FAC136891AD7CD\\nuid           [ unknown] Alice Lovelace\\nuid           [ unknown] <alice@lovelace.name>\\nuid           [ unknown] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519 2022-12-20 [S]\\n\\n",
@@ -350,6 +530,138 @@
       "stdout": "pub   ed25519 2022-12-20 [C]\\n      CD2035632108B0281F10C85AC3FAC136891AD7CD\\nuid           [ unknown] Alice Lovelace\\nuid           [ unknown] <alice@lovelace.name>\\nuid           [ unknown] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519 2022-12-20 [S]\\n\\n",
       "statusfd": "",
       "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"CD2035632108B0281F10C85AC3FAC136891AD7CD\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "pub   ed25519 2022-12-20 [C]\\n      CD2035632108B0281F10C85AC3FAC136891AD7CD\\nuid           [ unknown] Alice Lovelace\\nuid           [ unknown] <alice@lovelace.name>\\nuid           [ unknown] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519 2022-12-20 [S]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"3413372EACF7CD0B5876E595DAED6CC7A7886D2A\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "pub   ed25519 2022-12-20 [C]\\n      CD2035632108B0281F10C85AC3FAC136891AD7CD\\nuid           [ unknown] Alice Lovelace\\nuid           [ unknown] <alice@lovelace.name>\\nuid           [ unknown] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519 2022-12-20 [S]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"C3FAC136891AD7CD\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "pub   ed25519 2022-12-20 [C]\\n      CD2035632108B0281F10C85AC3FAC136891AD7CD\\nuid           [ unknown] Alice Lovelace\\nuid           [ unknown] <alice@lovelace.name>\\nuid           [ unknown] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519 2022-12-20 [S]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"DAED6CC7A7886D2A\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "pub   ed25519 2022-12-20 [C]\\n      CD2035632108B0281F10C85AC3FAC136891AD7CD\\nuid           [ unknown] Alice Lovelace\\nuid           [ unknown] <alice@lovelace.name>\\nuid           [ unknown] Alice Lovelace <alice@lovelace.name>\\nsub   ed25519 2022-12-20 [S]\\n\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"=alice lovelace\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: error reading key: No public key\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"=<Alice@Lovelace.Name>\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: error reading key: No public key\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"=<Alice@lovelace.name>\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: error reading key: No public key\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"=<alice@Lovelace.Name>\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: error reading key: No public key\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"=alice lovelace <Alice@Lovelace.Name>\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: error reading key: No public key\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"=Alice Lovelace <Alice@lovelace.name>\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: error reading key: No public key\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 2",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"=alice lovelace <alice@lovelace.name>\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: error reading key: No public key\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 2",
       "files": {}
     },
     {
@@ -463,6 +775,71 @@
       0,
       0,
       67
+    ],
+    [
+      0,
+      0,
+      67
+    ],
+    [
+      0,
+      0,
+      67
+    ],
+    [
+      0,
+      0,
+      67
+    ],
+    [
+      0,
+      0,
+      67
+    ],
+    [
+      0,
+      0,
+      67
+    ],
+    [
+      0,
+      0,
+      67
+    ],
+    [
+      0,
+      0,
+      32
+    ],
+    [
+      0,
+      0,
+      32
+    ],
+    [
+      0,
+      0,
+      32
+    ],
+    [
+      0,
+      0,
+      32
+    ],
+    [
+      0,
+      0,
+      32
+    ],
+    [
+      0,
+      0,
+      32
+    ],
+    [
+      0,
+      0,
+      32
     ],
     [
       0,

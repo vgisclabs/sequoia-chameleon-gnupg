@@ -268,6 +268,14 @@ impl<'store> KeyDB<'store> {
                 self.lookup_by_email(e),
             Query::UserIDFragment(f) =>
                 self.grep_userid(f),
+            Query::ExactUserID(u) =>
+                self.select_userid(
+                    UserIDQueryParams::new()
+                        .set_anchor_start(true)
+                        .set_anchor_end(true)
+                        .set_email(false)
+                        .set_ignore_case(false),
+                    u),
         }.map(|certs| {
             for cert in &certs {
                 let _ = config.status().emit(

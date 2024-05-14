@@ -379,6 +379,7 @@ pub enum Query {
     ExactKey(KeyHandle),
     Email(String),
     UserIDFragment(String),
+    ExactUserID(String),
 }
 
 impl fmt::Display for Query {
@@ -389,6 +390,8 @@ impl fmt::Display for Query {
             Query::Email(e) => write!(f, "<{}>", e),
             Query::UserIDFragment(frag) =>
                 write!(f, "{}", frag),
+            Query::ExactUserID(uid) =>
+                write!(f, "={}", uid),
         }
     }
 }
@@ -414,6 +417,8 @@ impl std::str::FromStr for Query {
             Ok(Query::Key(h))
         } else if s.starts_with("<") && s.ends_with(">") {
             Ok(Query::Email(s[1..s.len()-1].to_lowercase()))
+        } else if s.starts_with("=") {
+            Ok(Query::ExactUserID(s[1..].into()))
         } else {
             Ok(Query::UserIDFragment(s.to_lowercase()))
         }
@@ -448,6 +453,8 @@ impl Query {
                         false
                     }
                 }),
+            Query::ExactUserID(uid) =>
+                cert.userids().any(|u| u.value() == uid.as_bytes()),
         }
     }
 
@@ -464,6 +471,7 @@ impl Query {
                 } else {
                     false
                 },
+            Query::ExactUserID(u) => uid.value() == u.as_bytes(),
         }
     }
 
@@ -478,7 +486,8 @@ impl Query {
     {
         match self {
             Query::Key(_) | Query::ExactKey(_) => (),
-            Query::Email(_) | Query::UserIDFragment(_) =>
+            Query::Email(_) | Query::UserIDFragment(_)
+                | Query::ExactUserID(_) =>
                 for uidb in cert.userids() {
                     if self.matches_userid(uidb.userid()) {
                         return String::from_utf8_lossy(
@@ -496,7 +505,8 @@ impl Query {
             Query::Key(_) |
             Query::ExactKey(_) => true,
             Query::Email(_) |
-            Query::UserIDFragment(_) => false
+            Query::UserIDFragment(_) |
+            Query::ExactUserID(_) => false,
         }
     }
 }

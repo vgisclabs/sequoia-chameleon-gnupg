@@ -95,22 +95,54 @@ fn queries() -> Result<()> {
     diff.assert_success();
     diff.assert_equal_up_to(1, 0);
 
+    let fp_0 = cert.fingerprint().to_string();
+    let kid_0 = cert.keyid().to_string();
+    let fp_1 = cert.keys().subkeys().next().unwrap().fingerprint().to_string();
+    let kid_1 = cert.keys().subkeys().next().unwrap().keyid().to_string();
+
     for query in ["alice",
                   "Alice",
                   "Lovelace",
                   "Alice Lovelace",
+                  // XXX: Until sequoia-cert-store is released with
+                  // !77 is released, we cannot match on user IDs
+                  // without email addresses.
+                  //
+                  // "=Alice Lovelace",
                   "<alice@lovelace.name>",
+                  "=<alice@lovelace.name>",
                   "Alice Lovelace <alice@lovelace.name>",
+                  "=Alice Lovelace <alice@lovelace.name>",
                   "ALICE",
                   "alice lovelace",
                   "<ALICE@lovelace.name>",
                   "<alice@LOVELACE.NAME>",
+                  &fp_0,
+                  &fp_1,
+                  &kid_0,
+                  &kid_1,
     ] {
         let diff = experiment.invoke(&[
             "--list-keys", query,
         ])?;
         diff.assert_success();
         diff.assert_limits(1, 0, 67);
+    }
+
+    for query in [
+        "=alice lovelace",
+        "=<Alice@Lovelace.Name>",
+        "=<Alice@lovelace.name>",
+        "=<alice@Lovelace.Name>",
+        "=alice lovelace <Alice@Lovelace.Name>",
+        "=Alice Lovelace <Alice@lovelace.name>",
+        "=alice lovelace <alice@lovelace.name>",
+    ] {
+        let diff = experiment.invoke(&[
+            "--list-keys", query,
+        ])?;
+        diff.assert_failure();
+        diff.assert_limits(0, 0, 32);
     }
 
     // It is possible to specify multiple search terms.  In this case

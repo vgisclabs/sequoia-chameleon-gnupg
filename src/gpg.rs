@@ -1024,7 +1024,7 @@ impl<'store> Config<'store> {
             // Try to map using groups if `expand_groups` is true.  We
             // don't want to lookup expanded names again, as we may
             // walk into loops.  GnuPG also doesn't do that.
-            Query::Email(e) => if expand_groups {
+            Query::Email(e) | Query::ExactUserID(e) => if expand_groups {
                 if let Some(queries) = self.groups.get(e.as_str()) {
                     let mut acc = Vec::new();
                     for query in queries {

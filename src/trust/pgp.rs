@@ -341,7 +341,9 @@ impl<'a, 'store> ModelViewAt<'a, 'store> for WoTViewAt<'a, 'store> {
                            .max()
                            .unwrap_or(ValidityLevel::Unknown.into())
                    },
-                   Query::Email(_) | Query::UserIDFragment(_) => {
+                   Query::Email(_) | Query::UserIDFragment(_)
+                       | Query::ExactUserID(_) =>
+                   {
                        // GnuPG only matches on one userid, but a
                        // query could match more than one.  Computes
                        // the maximum validity of all matching user
