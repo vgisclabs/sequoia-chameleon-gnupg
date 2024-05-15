@@ -850,6 +850,7 @@ async fn record() -> anyhow::Result<ExitStatus> {
             aImportOwnerTrust |
             aKeygen |
             aListPackets |
+            aShowKeys |
             aSign |
             aSignEncr |
             aSignEncrSym |
