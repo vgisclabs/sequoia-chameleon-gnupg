@@ -22,6 +22,7 @@ use openpgp::{
         PacketParserResult,
         stream::*,
     },
+    policy::Policy,
     serialize::{
         Serialize,
         stream::{Message, Armorer},
@@ -185,7 +186,9 @@ pub fn cmd_list_config(config: &crate::Config, args: &[String])
             .filter(|a| *a != 2 && *a != 3) // Skip single-use RSA
             .filter(|a| *a != 20) // Skip dual-use ElGamal
             .map(PublicKeyAlgorithm::from)
-            .filter(|a| a.is_supported()).enumerate()
+            .filter(|a| a.is_supported())
+            .filter(|a| config.policy.public_key_algorithm(*a).is_ok())
+            .enumerate()
         {
             if i > 0 {
                 safe_print!(";");
@@ -201,7 +204,9 @@ pub fn cmd_list_config(config: &crate::Config, args: &[String])
             .filter(|a| *a != 2 && *a != 3) // Skip single-use RSA
             .filter(|a| *a != 20) // Skip dual-use ElGamal
             .map(PublicKeyAlgorithm::from)
-            .filter(|a| a.is_supported()).enumerate()
+            .filter(|a| a.is_supported())
+            .filter(|a| config.policy.public_key_algorithm(*a).is_ok())
+            .enumerate()
         {
             if i > 0 {
                 safe_print!(";");
@@ -215,7 +220,9 @@ pub fn cmd_list_config(config: &crate::Config, args: &[String])
         safe_print!("cfg:cipher:");
         for (i, a) in (0..0xff).into_iter()
             .map(SymmetricAlgorithm::from)
-            .filter(|a| a.is_supported()).enumerate()
+            .filter(|a| a.is_supported())
+            .filter(|a| config.policy.symmetric_algorithm(*a).is_ok())
+            .enumerate()
         {
             if i > 0 {
                 safe_print!(";");
@@ -229,7 +236,9 @@ pub fn cmd_list_config(config: &crate::Config, args: &[String])
         safe_print!("cfg:ciphername:");
         for (i, a) in (0..0xff).into_iter()
             .map(SymmetricAlgorithm::from)
-            .filter(|a| a.is_supported()).enumerate()
+            .filter(|a| a.is_supported())
+            .filter(|a| config.policy.symmetric_algorithm(*a).is_ok())
+            .enumerate()
         {
             if i > 0 {
                 safe_print!(";");
