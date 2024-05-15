@@ -143,6 +143,7 @@ impl<'store> Config<'store> {
             debug: 0,
             enable_special_filenames: false,
             homedir: std::env::var_os("GNUPGHOME")
+                .filter(|v| ! v.is_empty())
                 .map(Into::into)
                 .unwrap_or_else(|| dirs::home_dir()
                                 .expect("cannot get user's home directory")

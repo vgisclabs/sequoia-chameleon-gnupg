@@ -662,6 +662,7 @@ impl<'store> Config<'store> {
             force_ownertrust: false,
             groups: Default::default(),
             homedir: std::env::var_os("GNUPGHOME")
+                .filter(|v| ! v.is_empty())
                 .map(Into::into)
                 .ok_or_else(|| anyhow::anyhow!("for conversion to err"))
                 .or_else(|_| homedir::default())?,

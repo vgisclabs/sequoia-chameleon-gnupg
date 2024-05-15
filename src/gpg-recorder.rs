@@ -682,7 +682,9 @@ async fn record() -> anyhow::Result<ExitStatus> {
 
     // State and streams.
     let mut gnupghome: Option<PathBuf> =
-        env::var_os("GNUPGHOME").map(Into::into);
+        env::var_os("GNUPGHOME")
+        .filter(|v| ! v.is_empty())
+        .map(Into::into);
     let mut output: Option<PathBuf> = None;
     let mut inputs: Vec<PathBuf> = Default::default();
     let mut statusfd: Option<fs::File> = None;
