@@ -78,6 +78,14 @@ impl FromStr for Fish<PublicKeyAlgorithm> {
             "openpgp-rsa" |
             "oid.1.2.840.113549.1.1.1" =>
                 Ok(Fish(PublicKeyAlgorithm::RSAEncryptSign)),
+            "dsa" | "openpgp-dsa" =>
+                Ok(Fish(PublicKeyAlgorithm::DSA)),
+            "elg" |
+            "openpgp-elg" =>
+                Ok(Fish(PublicKeyAlgorithm::ElGamalEncrypt)),
+            "ecdh" => Ok(Fish(PublicKeyAlgorithm::ECDH)),
+            "eddsa" => Ok(Fish(PublicKeyAlgorithm::EdDSA)),
+            "ecdsa" => Ok(Fish(PublicKeyAlgorithm::ECDSA)),
             _ => {
                 if let Ok(o) = u8::from_str(s) {
                     Ok(Fish(o.into()))
