@@ -571,6 +571,24 @@ fn copy_r(source: &Path, dest_dir: &Path, copy_toplevel_dir: bool)
     Ok(())
 }
 
+/// Like std::fs::copy, but more robust.
+pub fn robust_copy<P: AsRef<Path>, Q: AsRef<Path>>(from: P, to: Q)
+                                                   -> io::Result<u64>
+{
+    let from = from.as_ref();
+    let to = to.as_ref();
+    match fs::copy(from, to) {
+        Ok(n) => Ok(n),
+        // fs::copy doesn't like to copy /dev/null.
+        Err(e) if e.kind() == io::ErrorKind::InvalidInput => {
+            let mut source = fs::File::open(from)?;
+            let mut sink = fs::File::create(to)?;
+            io::copy(&mut source, &mut sink)
+        },
+        Err(e) => Err(e),
+    }
+}
+
 /// Fixes permissions.
 ///
 /// As we might be running with restrictive umask, fix permissions
@@ -1244,8 +1262,8 @@ async fn record() -> anyhow::Result<ExitStatus> {
         }
 
         // And preserve the output file.
-        let _ = fs::copy(o, recorder_dir.join("output"))
-            .and_then(|_| fix_permissions(recorder_dir.join("output")));
+        robust_copy(o, recorder_dir.join("output"))
+            .and_then(|_| fix_permissions(recorder_dir.join("output")))?;
     }
 
     // Fix input arguments.
@@ -1265,8 +1283,8 @@ async fn record() -> anyhow::Result<ExitStatus> {
         } else {
             let new_name = format!("input{}", i);
             let new_path = recorder_dir.join(&new_name);
-            let _ = fs::copy(path, &new_path)
-                .and_then(|_| fix_permissions(&new_path));
+            robust_copy(path, &new_path)
+                .and_then(|_| fix_permissions(&new_path))?;
             new_name
         };
     }
