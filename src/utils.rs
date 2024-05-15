@@ -43,18 +43,39 @@ pub fn open(control: &dyn common::Common, name: &str)
 
 /// Opens multiple (special) files, joining them into one stream.
 pub fn open_multiple(control: &dyn common::Common, names: &[String])
-                     -> Box<dyn io::Read + Send + Sync>
+                     -> Result<Box<dyn io::Read + Send + Sync>>
 {
-    Box::new(MultiReader {
-        special_filenames: control.special_filenames(),
-        names: names.iter().rev().cloned().map(Into::into).collect(),
+    let mut streams: Vec<Box<dyn io::Read + Send + Sync>> = Vec::new();
+    for name in names.iter().rev() {
+        streams.push(if name == "-" {
+            Box::new(io::stdin())
+        } else if control.special_filenames()
+            && special_filename_fd(&name).is_some()
+        {
+            let fd = special_filename_fd(&name).expect("checked above");
+            source_from_fd(fd)
+                .map(|f| Box::new(f))
+                .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?
+        } else {
+            Box::new(fs::File::open(name)
+                     .map_err(|e| {
+                         control.error(format_args!(
+                             "can't open signed data '{}'", name));
+                         control.error(format_args!(
+                             "can't hash datafile: {}", e));
+                         e
+                     })?)
+        });
+    }
+
+    Ok(Box::new(MultiReader {
+        streams,
         current: None,
-    })
+    }))
 }
 
 struct MultiReader {
-    special_filenames: bool,
-    names: Vec<String>,
+    streams: Vec<Box<dyn io::Read + Send + Sync>>,
     current: Option<Box<dyn io::Read + Send + Sync>>,
 }
 
@@ -73,22 +94,8 @@ impl io::Read for MultiReader {
         }
 
         // Second, try to open the next file.
-        if let Some(name) = self.names.pop() { // names are reversed.
-            self.current = Some(
-                if name == "-" {
-                    Box::new(io::stdin())
-                } else if self.special_filenames
-                    && special_filename_fd(&name).is_some()
-                {
-                    let fd = special_filename_fd(&name).expect("checked above");
-                    source_from_fd(fd)
-                        .map(|f| Box::new(f))
-                        .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?
-                } else {
-                    Box::new(fs::File::open(name)?)
-                }
-            );
-
+        if let Some(stream) = self.streams.pop() { // streams are reversed.
+            self.current = Some(stream);
             self.read(buf)
         } else {
             // Final EOF.

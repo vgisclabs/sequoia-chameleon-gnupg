@@ -220,7 +220,7 @@ pub fn cmd_verify(control: &crate::Config, args: &[String])
     // detached signature.
     let do_it = || -> Result<()> {
         if args.len() > 1 {
-            let data = utils::open_multiple(control, &args[1..]);
+            let data = utils::open_multiple(control, &args[1..])?;
             let helper = VHelper::new(control, 1);
             let mut v = DetachedVerifierBuilder::from_reader(sig)?
                 .with_policy(policy, control.now(), helper)?;
