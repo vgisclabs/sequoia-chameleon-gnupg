@@ -37,32 +37,38 @@ use crate::{
     gnupg_interface::STRICT_OUTPUT,
 };
 
-pub struct Fd(Option<Mutex<RefCell<Box<dyn io::Write + Send + Sync>>>>);
+pub struct Fd {
+    stream: Option<Mutex<RefCell<Box<dyn io::Write + Send + Sync>>>>,
+}
 
 impl<S: io::Write + Send + Sync + 'static> From<S> for Fd {
     fn from(s: S) -> Fd {
-        Fd(Some(Mutex::new(RefCell::new(Box::new(s)))))
+        Fd {
+            stream: Some(Mutex::new(RefCell::new(Box::new(s)))),
+        }
     }
 }
 
 impl Fd {
     /// Sends all output to /dev/null.
     pub fn sink() -> Self {
-        Fd(None)
+        Fd {
+            stream: None,
+        }
     }
 
     /// Whether gpg was called with --status-fd.
     ///
     /// If not, everything is sent to /dev/null.
     pub fn enabled(&self) -> bool {
-        self.0.is_some()
+        self.stream.is_some()
     }
 
     /// Emits a status message.
     #[allow(dead_code)]
     pub fn emit(&self, status: Status<'_>) -> Result<()> {
         crate::with_invocation_log(|sink| status.emit(sink));
-        if let Some(fd) = self.0.as_ref() {
+        if let Some(fd) = self.stream.as_ref() {
             status.emit(&mut *fd.lock().expect("not poisoned").borrow_mut())
         } else {
             Ok(())
