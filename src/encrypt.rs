@@ -122,7 +122,10 @@ fn do_encrypt(config: &crate::Config, args: &[String],
         SymmetricAlgorithm::CAST5,
         SymmetricAlgorithm::IDEA,
         SymmetricAlgorithm::TripleDES,
-    ].iter().copied().filter(|a| a.is_supported()).collect();
+    ].iter().copied()
+        .filter(|a| a.is_supported())
+        .filter(|a| config.policy.symmetric_algorithm(*a).is_ok())
+        .collect();
     let mut digest_preferences: Vec<_> = [
         HashAlgorithm::SHA512,
         HashAlgorithm::SHA384,
@@ -153,6 +156,13 @@ fn do_encrypt(config: &crate::Config, args: &[String],
         candidates.sort_by(|a, b| a.0.cmp(&b.0).reverse());
 
         for (validity, cert) in candidates {
+            if config.policy.public_key_algorithm(
+                cert.primary_key().pk_algo()).is_err()
+            {
+                // Our policy rejects this cert, skip it.
+                continue;
+            }
+
             let vcert = cert.with_policy(policy, config.now())
                 .context(format!("Key {:X} is not valid", cert.key_handle()))?;
 
@@ -173,7 +183,9 @@ fn do_encrypt(config: &crate::Config, args: &[String],
             // expressions, e.g. can we then use keys that are not
             // alive? Revoked? What if the algorithm is not supported?
 
-            for key in key_query.alive().revoked(false).supported() {
+            for key in key_query.alive().revoked(false).supported()
+                .filter(|k| config.policy.public_key_algorithm(k.pk_algo()).is_ok())
+            {
                 if ! do_we_trust(config, &query, &vcert, key.key(), validity)? {
                     invalid_key_reason = InvalidKeyReason::NotTrusted;
                     continue;
@@ -287,6 +299,9 @@ fn do_encrypt(config: &crate::Config, args: &[String],
         // Select best cipher from the recipient's preferences.
         cipher_preferences.get(0).cloned().unwrap_or_default()
     };
+
+    config.policy.symmetric_algorithm(cipher)
+        .context("While falling back to the default cipher")?;
 
     let sk = SessionKey::new(cipher.key_size()?);
     de_vs_compliant &=
