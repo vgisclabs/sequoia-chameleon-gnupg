@@ -1184,7 +1184,7 @@ impl<'store> common::Common<'store> for Config<'store> {
         self.outfile.as_ref()
     }
 
-    fn policy(&self) -> &dyn Policy {
+    fn policy(&self) -> &GPGPolicy {
         &self.policy
     }
 

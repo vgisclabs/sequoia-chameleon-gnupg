@@ -24,6 +24,7 @@ use cert_store::LazyCert;
 
 use crate::{
     keydb::KeyDB,
+    policy::GPGPolicy,
     status,
 };
 
@@ -113,7 +114,7 @@ pub trait Common<'store> {
     fn outfile(&self) -> Option<&String>;
 
     /// Returns the policy.
-    fn policy(&self) -> &dyn Policy;
+    fn policy(&self) -> &GPGPolicy;
 
     /// Returns whether quiet operation has been requested.
     fn quiet(&self) -> bool;

@@ -10,11 +10,6 @@ use std::{
 
 use anyhow::{Context, Result};
 
-use sequoia_openpgp as openpgp;
-use openpgp::{
-    policy::Policy,
-};
-
 use sequoia_cert_store as cert_store;
 use cert_store::LazyCert;
 
@@ -215,7 +210,7 @@ impl<'store> common::Common<'store> for Config<'store> {
         self.outfile.as_ref()
     }
 
-    fn policy(&self) -> &dyn Policy {
+    fn policy(&self) -> &GPGPolicy {
         &self.policy
     }
 

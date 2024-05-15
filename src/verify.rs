@@ -18,7 +18,7 @@ use openpgp::{
     packet::signature::subpacket::*,
     packet::key,
     types::*,
-    policy::HashAlgoSecurity,
+    policy::{HashAlgoSecurity, Policy},
     serialize::Marshal,
 };
 use openpgp::cert::prelude::*;
