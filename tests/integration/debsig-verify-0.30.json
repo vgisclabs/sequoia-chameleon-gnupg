@@ -1,0 +1,360 @@
+{
+  "metadata": {
+    "package": "debsig-verify",
+    "version": "0.30",
+    "source": "Debian",
+    "creation_time": {
+      "secs_since_epoch": 1715848974,
+      "nanos_since_epoch": 59613143
+    }
+  },
+  "samples": [
+    {
+      "loggerfd": 175
+    },
+    {
+      "loggerfd": 175
+    },
+    {
+      "loggerfd": 175
+    },
+    {
+      "loggerfd": 175
+    },
+    {
+      "loggerfd": 175
+    },
+    {
+      "loggerfd": 175
+    },
+    {
+      "loggerfd": 175
+    },
+    {
+      "loggerfd": 175
+    },
+    {
+      "loggerfd": 175
+    },
+    {
+      "loggerfd": 175
+    },
+    {
+      "loggerfd": 175
+    },
+    {
+      "loggerfd": 175
+    },
+    {
+      "loggerfd": 175
+    },
+    {
+      "loggerfd": 175
+    },
+    {
+      "loggerfd": 175
+    },
+    {
+      "loggerfd": 175
+    },
+    {
+      "loggerfd": 175
+    },
+    {
+      "loggerfd": 175
+    },
+    {
+      "loggerfd": 194,
+      "statusfd": 67
+    },
+    {
+      "loggerfd": 194,
+      "statusfd": 67
+    },
+    {
+      "loggerfd": 194,
+      "statusfd": 67
+    },
+    {
+      "loggerfd": 194,
+      "statusfd": 67
+    },
+    {
+      "loggerfd": 194,
+      "statusfd": 67
+    },
+    {
+      "loggerfd": 258,
+      "statusfd": 54
+    },
+    {
+      "loggerfd": 194,
+      "statusfd": 67
+    },
+    {
+      "loggerfd": 194,
+      "statusfd": 67
+    },
+    {
+      "loggerfd": 194,
+      "statusfd": 67
+    },
+    {
+      "loggerfd": 194,
+      "statusfd": 67
+    },
+    {
+      "loggerfd": 258,
+      "statusfd": 67
+    },
+    {
+      "loggerfd": 258,
+      "statusfd": 67
+    },
+    {
+      "loggerfd": 258,
+      "statusfd": 67
+    },
+    {
+      "loggerfd": 258,
+      "statusfd": 67
+    },
+    {
+      "loggerfd": 194,
+      "statusfd": 67
+    },
+    {
+      "loggerfd": 258,
+      "statusfd": 67
+    },
+    {
+      "loggerfd": 258,
+      "statusfd": 67
+    },
+    {
+      "loggerfd": 258,
+      "statusfd": 67
+    },
+    {
+      "statusfd": 1
+    },
+    {
+      "statusfd": 1
+    },
+    {
+      "statusfd": 1
+    },
+    {
+      "statusfd": 1
+    },
+    {
+      "statusfd": 1
+    },
+    {
+      "statusfd": 1
+    },
+    {},
+    {
+      "statusfd": 1
+    },
+    {
+      "statusfd": 1
+    },
+    {},
+    {
+      "statusfd": 1
+    },
+    {
+      "statusfd": 1
+    },
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {
+      "loggerfd": 6
+    },
+    {
+      "loggerfd": 6
+    },
+    {
+      "loggerfd": 6
+    },
+    {
+      "loggerfd": 6
+    },
+    {
+      "loggerfd": 6
+    },
+    {
+      "loggerfd": 6
+    },
+    {
+      "loggerfd": 6
+    },
+    {
+      "loggerfd": 6
+    },
+    {
+      "loggerfd": 6
+    },
+    {
+      "loggerfd": 6
+    },
+    {
+      "loggerfd": 6
+    },
+    {
+      "loggerfd": 6
+    },
+    {
+      "loggerfd": 6
+    },
+    {
+      "loggerfd": 6
+    },
+    {},
+    {
+      "loggerfd": 6
+    },
+    {
+      "loggerfd": 6
+    },
+    {
+      "loggerfd": 6
+    },
+    {},
+    {
+      "loggerfd": 6
+    },
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {
+      "loggerfd": 6
+    },
+    {},
+    {},
+    {},
+    {
+      "loggerfd": 6
+    },
+    {
+      "loggerfd": 6
+    },
+    {
+      "loggerfd": 6
+    },
+    {
+      "loggerfd": 6
+    },
+    {
+      "loggerfd": 6
+    },
+    {
+      "loggerfd": 6
+    },
+    {
+      "loggerfd": 6
+    },
+    {
+      "loggerfd": 6
+    },
+    {
+      "loggerfd": 6
+    },
+    {
+      "loggerfd": 6
+    },
+    {},
+    {
+      "loggerfd": 6
+    },
+    {},
+    {
+      "loggerfd": 6
+    },
+    {
+      "loggerfd": 6
+    },
+    {
+      "loggerfd": 6
+    },
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {
+      "loggerfd": 6,
+      "statusfd": 35
+    },
+    {
+      "loggerfd": 6,
+      "statusfd": 67
+    },
+    {
+      "loggerfd": 6
+    },
+    {
+      "loggerfd": 6
+    },
+    {
+      "loggerfd": 6
+    },
+    {
+      "loggerfd": 6,
+      "statusfd": 67
+    },
+    {
+      "loggerfd": 6,
+      "statusfd": 67
+    },
+    {
+      "loggerfd": 6,
+      "statusfd": 67
+    },
+    {
+      "loggerfd": 6
+    },
+    {
+      "loggerfd": 6
+    },
+    {
+      "loggerfd": 6
+    },
+    {
+      "loggerfd": 6,
+      "statusfd": 67
+    },
+    {
+      "loggerfd": 6,
+      "statusfd": 67
+    },
+    {
+      "loggerfd": 6,
+      "statusfd": 67
+    },
+    {
+      "loggerfd": 6,
+      "statusfd": 67
+    }
+  ]
+}

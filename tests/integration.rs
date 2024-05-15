@@ -28,6 +28,12 @@ fn password_store_git() -> Result<()> {
     Experiment::new("password-store-git")?.with_null_policy()?.run()
 }
 
+#[test]
+#[ntest::timeout(600000)]
+fn debsig_verify_0_30() -> Result<()> {
+    Experiment::new("debsig-verify-0.30")?.run()
+}
+
 // The framework:
 
 const EDIT_DISTANCE_CUTOFF: usize = 1000;
