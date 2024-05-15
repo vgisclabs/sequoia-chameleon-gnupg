@@ -23,9 +23,6 @@ pub struct GPGPolicy {
     policy: StandardPolicy<'static>,
 
     /// Additional weak hash algorithms.
-    ///
-    /// The value indicates whether a warning has been printed for
-    /// this algorithm.
     weak_digests: HashSet<HashAlgorithm>,
 }
 
