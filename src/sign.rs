@@ -190,11 +190,16 @@ pub async fn get_signers(config: &crate::Config<'_>)
                     .collect::<Vec<_>>())),
         };
 
+        config.policy.public_key_algorithm(
+            cert.primary_key().pk_algo())?;
+
         let vcert = cert.with_policy(config.policy(), config.now())
             .context(format!("Key {} is not valid", query))?;
 
         let mut candidates = Vec::new();
-        for key in vcert.keys().for_signing() {
+        for key in vcert.keys().for_signing()
+            .filter(|k| config.policy.public_key_algorithm(k.pk_algo()).is_ok())
+        {
             if let Ok(signer) = config.get_signer(&vcert, &key).await {
                 candidates.push((key.alive().is_ok(),
                                  key.creation_time(),
