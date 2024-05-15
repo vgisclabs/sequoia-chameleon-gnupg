@@ -1667,11 +1667,6 @@ fn real_main() -> anyhow::Result<()> {
         match arg {
             Argument::Option(aHelp, _) =>
                 return Ok(parser.help(&opt)),
-            Argument::Option(aVersion, _) => {
-                // GnuPG emits a warning on --version.
-                opt.check_homedir_permissions()?;
-                return Ok(parser.version(&opt));
-            },
             Argument::Option(aWarranty, _) =>
                 return Ok(parser.warranty()),
             Argument::Option(aDumpOptions, _) =>
@@ -1721,7 +1716,8 @@ fn real_main() -> anyhow::Result<()> {
                 opt.default_keyring = false;
             },
 
-	    aCheckKeys
+            aVersion
+	        | aCheckKeys
 	        | aListPackets
 	        | aImport
 	        | aFastImport
@@ -2649,6 +2645,10 @@ fn real_main() -> anyhow::Result<()> {
         if exit {
             return Ok(());
         }
+    }
+
+    if command == Some(aVersion) {
+        return Ok(parser.version(&opt));
     }
 
     if greeting && ! no_greeting {
