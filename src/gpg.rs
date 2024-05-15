@@ -2491,6 +2491,18 @@ fn real_main() -> anyhow::Result<()> {
                 opt.list_options.parse(value.as_str().unwrap())?;
             },
 
+            oDisableCipherAlgo => {
+                let a: babel::Fish<SymmetricAlgorithm> =
+                    value.as_str().unwrap().parse()?;
+                opt.policy.reject_symmetric_algo(a.0);
+            },
+
+            oDisablePubkeyAlgo => {
+                let a: babel::Fish<PublicKeyAlgorithm> =
+                    value.as_str().unwrap().parse()?;
+                opt.policy.reject_public_key_algo(a.0);
+            },
+
             oVerifyOptions => {
                 let options = value.as_str().unwrap();
                 if verify::VerifyOptions::maybe_print_help(options)? {
