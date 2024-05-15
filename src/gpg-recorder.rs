@@ -835,28 +835,28 @@ async fn record() -> anyhow::Result<ExitStatus> {
     let dash = PathBuf::from("-");
     if let Some(c) = command {
         match c {
-            aDetachedSign |
+            aClearsign |
+            aDeArmor |
             aDecrypt |
+            aDecryptFiles |
+            aDetachedSign |
+            aEnArmor |
             aEncr |
-            aSign |
             aEncrFiles |
             aEncrSym |
-            aDecryptFiles |
-            aClearsign |
-            aStore |
+            aFastImport |
             aFullKeygen |
+            aImport |
+            aImportOwnerTrust |
             aKeygen |
+            aListPackets |
+            aSign |
             aSignEncr |
             aSignEncrSym |
             aSignSym |
-            aListPackets |
-            aImport |
-            aFastImport |
+            aStore |
             aVerify |
-            aVerifyFiles |
-            aImportOwnerTrust |
-            aDeArmor |
-            aEnArmor => {
+            aVerifyFiles => {
                 // All of the positional arguments to these commands
                 // are files.
                 read_stdin =
