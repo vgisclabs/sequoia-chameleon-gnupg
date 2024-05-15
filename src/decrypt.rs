@@ -381,7 +381,10 @@ impl<'a, 'store> DHelper<'a, 'store> {
         // First, try public key encryption.
         let mut success = None;
         let mut pkesks_results: Vec<(&PKESK, Option<error_codes::Error>)> =
-            pkesks.into_iter().map(|p| (p, None)).collect();
+            pkesks.into_iter()
+            .filter(|p| self.config.policy.public_key_algorithm(p.pk_algo()).is_ok())
+            .map(|p| (p, None)).collect();
+
         for (pkesk, error) in pkesks_results.iter_mut() {
             let keyid = pkesk.recipient();
             let handle = KeyHandle::from(keyid);
@@ -420,6 +423,8 @@ impl<'a, 'store> DHelper<'a, 'store> {
             let cert = match self.config.keydb().lookup_by_cert_or_subkey(&handle).ok()
                 .and_then(|c| c.into_iter().next())
                 .and_then(|c| c.to_cert().ok().cloned())
+                .filter(|c| self.config.policy.public_key_algorithm(
+                    c.primary_key().pk_algo()).is_ok())
             {
                 Some(c) => c,
                 None => {
