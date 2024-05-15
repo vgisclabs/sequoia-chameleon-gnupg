@@ -1949,12 +1949,12 @@ fn real_main() -> anyhow::Result<()> {
             },
 
 	    oStatusFD => {
-                opt.status_fd =
-                    argparse::utils::sink_from_fd(value.as_int().unwrap())?.into();
+                opt.status_fd.set_stream(
+                    argparse::utils::sink_from_fd(value.as_int().unwrap())?);
             },
 	    oStatusFile => {
-                opt.status_fd =
-                    Box::new(fs::File::create(value.as_str().unwrap())?).into();
+                opt.status_fd.set_stream(
+                    Box::new(fs::File::create(value.as_str().unwrap())?));
             },
 	    oAttributeFD => {
                 opt.attribute_fd = argparse::utils::sink_from_fd(value.as_int().unwrap())?;
@@ -2584,6 +2584,10 @@ fn real_main() -> anyhow::Result<()> {
             },
             oKeyidFormat =>
                 opt.keyid_format = value.as_str().unwrap().parse()?,
+
+            oExitOnStatusWriteError =>
+                opt.status_fd.exit_on_write_error(),
+
             oAutoKeyLocate => {
                 auto_key_locate_given = true;
                 for s in value.as_str().unwrap().split(',') {

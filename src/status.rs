@@ -39,12 +39,14 @@ use crate::{
 
 pub struct Fd {
     stream: Option<Mutex<RefCell<Box<dyn io::Write + Send + Sync>>>>,
+    exit_on_write_error: bool,
 }
 
 impl<S: io::Write + Send + Sync + 'static> From<S> for Fd {
     fn from(s: S) -> Fd {
         Fd {
             stream: Some(Mutex::new(RefCell::new(Box::new(s)))),
+            exit_on_write_error: false,
         }
     }
 }
@@ -54,6 +56,7 @@ impl Fd {
     pub fn sink() -> Self {
         Fd {
             stream: None,
+            exit_on_write_error: false,
         }
     }
 
@@ -64,15 +67,30 @@ impl Fd {
         self.stream.is_some()
     }
 
+    /// Replaces the current status-fd stream.
+    pub fn set_stream(&mut self, s: Box<dyn Write + Send + Sync>) {
+        self.stream = Some(Mutex::new(RefCell::new(s)));
+    }
+
+    /// Terminates the program when writing to the status-fd fails.
+    pub fn exit_on_write_error(&mut self) {
+        self.exit_on_write_error = true;
+    }
+
     /// Emits a status message.
     #[allow(dead_code)]
     pub fn emit(&self, status: Status<'_>) -> Result<()> {
         crate::with_invocation_log(|sink| status.emit(sink));
         if let Some(fd) = self.stream.as_ref() {
-            status.emit(&mut *fd.lock().expect("not poisoned").borrow_mut())
-        } else {
-            Ok(())
+            let r = status.emit(
+                &mut *fd.lock().expect("not poisoned").borrow_mut());
+
+            if self.exit_on_write_error && r.is_err() {
+                std::process::exit(0);
+            }
         }
+
+        Ok(())
     }
 
     /// Emits a status message or an interactive prompt.
