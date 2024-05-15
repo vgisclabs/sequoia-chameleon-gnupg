@@ -990,6 +990,11 @@ impl<'a, 'store> VerificationHelper for VHelper<'a, 'store> {
         Ok(ids.iter().filter_map(|id| self.control.keydb().lookup_by_cert_or_subkey(id).ok())
            .flatten()
            .filter_map(|cert| cert.to_cert().ok().cloned())
+           .filter(|c| self.control.policy.public_key_algorithm(
+               c.primary_key().pk_algo()).is_ok())
+           .map(|c| c.retain_subkeys(
+               |sk| self.control.policy.public_key_algorithm(
+                   sk.pk_algo()).is_ok()))
            .collect())
     }
 
