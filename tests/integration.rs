@@ -269,6 +269,15 @@ impl<'env> Context<'env> {
             }
         }
 
+        // Make keyring paths absolue.  If they are relative, they are
+        // interpreted as relative to GNUPGHOME.
+        for i in 0..args.len() - 1 {
+            if args[i] == "--keyring" {
+                args[i + 1] = self.recorder_dir.join(&args[i + 1])
+                    .display().to_string();
+            }
+        }
+
         c.args(executable[1..].iter());
         c.arg("--homedir").arg(self.gnupghome());
 

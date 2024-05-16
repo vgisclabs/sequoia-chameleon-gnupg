@@ -705,6 +705,7 @@ async fn record() -> anyhow::Result<ExitStatus> {
         .map(Into::into);
     let mut output: Option<PathBuf> = None;
     let mut inputs: Vec<PathBuf> = Default::default();
+    let mut keyrings: Vec<String> = Default::default();
     let mut statusfd: Option<fs::File> = None;
     let mut loggerfd: Option<fs::File> = None;
     let mut attributefd: Option<fs::File> = None;
@@ -751,6 +752,8 @@ async fn record() -> anyhow::Result<ExitStatus> {
             Argument::Option(oCommandFile, value) => {
                 commandfd = Some(fs::File::open(value.as_str().unwrap())?);
             },
+            Argument::Option(oKeyring, value) =>
+                keyrings.push(value.as_str().unwrap().into()),
             Argument::Positional(input) => {
                 inputs.push(input.into());
             },
@@ -1287,6 +1290,34 @@ async fn record() -> anyhow::Result<ExitStatus> {
                 .and_then(|_| fix_permissions(&new_path))?;
             new_name
         };
+    }
+
+    // Copy keyrings.
+    {
+        keyrings.reverse();
+        let mut j = 0;
+
+        let mut copy_it = || -> Result<String> {
+            let n = format!("keyring{}", j);
+            j += 1;
+            let f = gnupghome.join(keyrings.pop().unwrap());
+            let t = recorder_dir.join(&n);
+            robust_copy(f, t)?;
+            Ok(n)
+        };
+
+        let mut i = 0;
+        while i < args.len() {
+            if args[i].starts_with("--keyring=") {
+                args[i] = "--keyring".into();
+                args.insert(i + 1, copy_it()?);
+            } else if args[i].starts_with("--keyr") {
+                args[i + 1] = copy_it()?;
+            }
+
+            i += 1;
+        }
+        assert!(keyrings.is_empty());
     }
 
     // Strip --homedir from args.
