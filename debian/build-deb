@@ -1,9 +1,0 @@
-#!/bin/bash
-
-set -euo pipefail
-
-S="$(dpkg-parsechangelog -SSource)"
-V="$(dpkg-parsechangelog -SVersion | sed 's/-[^-]*$//')"
-
-git archive HEAD | gzip >"../${S}_${V}.orig.tar.gz"
-dpkg-buildpackage -us -uc

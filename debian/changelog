@@ -1,6 +1,0 @@
-sequoia-chameleon-gnupg (9999.9999-1) unstable; urgency=medium
-
-  * Initial packaging. This is not intended to be uploaded to Debian, so
-    no closing of an ITP bug. Also, version number is ludicrous.
-
- -- Lars Wirzenius <liw@liw.fi>  Thu, 30 Sep 2021 09:51:32 +0300
