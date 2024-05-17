@@ -578,6 +578,7 @@ pub struct Config<'store> {
     tofu_default_policy: trust::TofuPolicy,
     trust_model: Option<trust::TrustModel>,
     trusted_keys: Vec<openpgp::Fingerprint>,
+    unwrap_encryption: bool,
     use_tor: OnceCell<bool>,
     verbose: usize,
     verify_options: verify::VerifyOptions,
@@ -716,6 +717,7 @@ impl<'store> Config<'store> {
             tofu_default_policy: Default::default(),
             trust_model: None,
             trusted_keys: vec![],
+            unwrap_encryption: false,
             use_tor: Default::default(),
             verbose: 0,
             verify_options: Default::default(),
@@ -2560,6 +2562,8 @@ fn real_main() -> anyhow::Result<()> {
                 opt.policy.weak_digest(
                     value.as_str().unwrap().parse::<babel::Fish<_>>()?.0);
             },
+            oUnwrap => opt.unwrap_encryption = true,
+
             oGroup => {
                 let g = value.as_str().unwrap().splitn(2, "=")
                     .map(|s| s.trim())

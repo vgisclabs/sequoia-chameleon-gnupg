@@ -18,8 +18,10 @@ use openpgp::{
     packet::prelude::*,
     policy::Policy,
     types::*,
-    packet::key::*,
+    packet::{self, key::*},
     parse::{
+        PacketParser,
+        PacketParserResult,
         Parse,
         stream::*,
     },
@@ -72,7 +74,13 @@ pub fn cmd_decrypt(config: &crate::Config, args: &[String])
         Box::new(io::stdout())
     };
 
-    match decrypt(config, Ok(message), Ok(sink)) {
+    let r = if config.unwrap_encryption {
+        decrypt_unwrap(config, Ok(message), Ok(sink))
+    } else {
+        decrypt(config, Ok(message), Ok(sink))
+    };
+
+    match r {
         Ok(()) => config.status().emit(Status::EndDecryption)?,
         Err(e) => {
             match e.downcast_ref::<openpgp::Error>() {
@@ -139,7 +147,13 @@ pub fn cmd_decrypt_files(config: &crate::Config, args: &[String])
         let sink = utils::make_outfile_name(ciphertext)
             .and_then(|name| utils::create(config, &name));
 
-        if let Err(e) = decrypt(config, message, sink) {
+        let r = if config.unwrap_encryption {
+            decrypt_unwrap(config, message, sink)
+        } else {
+            decrypt(config, message, sink)
+        };
+
+        if let Err(e) = r {
             config.error(format_args!("{}", e));
         }
         config.status().emit(Status::EndDecryption)?;
@@ -173,6 +187,77 @@ fn decrypt(config: &crate::Config,
         io::copy(&mut d, &mut sink)?;
     }
     let helper = d.into_helper();
+
+    if ! config.list_only {
+        helper.config.status().emit(Status::DecryptionOkay)?;
+        // For compatibility reasons we issue GOODMDC also for AEAD messages.
+        helper.config.status().emit(Status::GoodMDC)?;
+    }
+
+    Ok(())
+}
+
+/// Decrypts `message` writing the plaintext packet structure to
+/// `sink`.
+fn decrypt_unwrap(config: &crate::Config,
+                  message: Result<Box<dyn io::Read + Send + Sync>>,
+                  sink: Result<Box<dyn io::Write + Send + Sync>>)
+                  -> Result<()>
+{
+    let message = message?;
+    let mut sink = sink?;
+
+    let mut helper = DHelper::new(config, VHelper::new(config, 1));
+    let mut ppr = PacketParser::from_reader(message)?;
+
+    let mut pkesks: Vec<packet::PKESK> = Vec::new();
+    let mut skesks: Vec<packet::SKESK> = Vec::new();
+    while let PacketParserResult::Some(mut pp) = ppr {
+        helper.inspect(&pp)?;
+
+        let sym_algo_hint = if let Packet::AED(ref aed) = pp.packet {
+            Some(aed.symmetric_algo())
+        } else {
+            None
+        };
+
+        match pp.packet {
+            Packet::SEIP(_) | Packet::AED(_) => {
+                {
+                    let decrypt = |algo, secret: &SessionKey| {
+                        pp.decrypt(algo, secret).is_ok()
+                    };
+                    helper.decrypt(&pkesks[..], &skesks[..], sym_algo_hint,
+                                   decrypt)?;
+                }
+                if ! pp.processed() {
+                    return if config.list_only {
+                        Ok(())
+                    } else {
+                        Err(
+                            openpgp::Error::MissingSessionKey(
+                                "No session key".into()).into())
+                    };
+                }
+
+                io::copy(&mut pp, &mut sink)?;
+                break;
+            },
+            #[allow(deprecated)]
+            Packet::MDC(ref mdc) => if ! mdc.valid() {
+                return Err(openpgp::Error::ManipulatedMessage.into());
+            },
+            _ => (),
+        }
+
+        let (p, ppr_tmp) = pp.recurse()?;
+        match p {
+            Packet::PKESK(pkesk) => pkesks.push(pkesk),
+            Packet::SKESK(skesk) => skesks.push(skesk),
+            _ => (),
+        }
+        ppr = ppr_tmp;
+    }
 
     if ! config.list_only {
         helper.config.status().emit(Status::DecryptionOkay)?;

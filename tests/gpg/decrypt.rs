@@ -473,3 +473,50 @@ fn a_cert() -> Result<()> {
     diff.assert_limits(0, 0, 0);
     Ok(())
 }
+
+#[test]
+fn symmetric_unwrap() -> Result<()> {
+    let mut experiment = make_experiment!()?;
+    let algo = SymmetricAlgorithm::AES128;
+
+    let sk = SessionKey::from(vec![64; algo.key_size()?]);
+    let ciphertext = experiment.artifact(
+        "ciphertext", || {
+            let mut buf = vec![];
+            let message = Message::new(&mut buf);
+            let message = Encryptor::with_session_key(
+                message, algo, sk.clone())?
+                .add_passwords(vec!["password"])
+                .build()?;
+            let mut message = LiteralWriter::new(message).build()?;
+            message.write_all(PLAINTEXT)?;
+            message.finalize()?;
+            Ok(buf)
+        },
+        |a, f| f.write_all(a).map_err(Into::into),
+        |b| Ok(b.to_vec()))?;
+
+    let diff = experiment.invoke(&[
+        "--batch",
+        "--pinentry-mode=loopback",
+        "--decrypt",
+        "--unwrap",
+        "--list-only",
+        &experiment.store("ciphertext", &ciphertext)?,
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(0, 0, 0);
+
+    let diff = experiment.invoke(&[
+        "--batch",
+        "--pinentry-mode=loopback",
+        "--decrypt",
+        "--unwrap",
+        "--passphrase", "password",
+        &experiment.store("ciphertext", &ciphertext)?,
+    ])?;
+    diff.assert_success();
+    diff.assert_limits(0, 0, 0);
+
+    Ok(())
+}

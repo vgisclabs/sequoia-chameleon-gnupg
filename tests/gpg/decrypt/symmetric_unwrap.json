@@ -1,0 +1,114 @@
+{
+  "outputs": [
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: keybox '/HOMEDIR/pubring.kbx' created\\ngpg: /HOMEDIR/trustdb.gpg: trustdb created\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--batch\"",
+        "\"--pinentry-mode=loopback\"",
+        "\"--decrypt\"",
+        "\"--unwrap\"",
+        "\"--list-only\"",
+        "\"/EXPERIMENT/ciphertext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: AES.CFB encrypted session key\\ngpg: encrypted with 1 passphrase\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] BEGIN_DECRYPTION\\n[GNUPG:] END_DECRYPTION\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--batch\"",
+        "\"--pinentry-mode=loopback\"",
+        "\"--decrypt\"",
+        "\"--unwrap\"",
+        "\"--passphrase\"",
+        "\"password\"",
+        "\"/EXPERIMENT/ciphertext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: AES.CFB encrypted session key\\ngpg: encrypted with 1 passphrase\\n",
+      "stdout": "\\xCB\\x0Fb\\x00\\x00\\x00\\x00\\x00plaintext",
+      "statusfd": "[GNUPG:] NEED_PASSPHRASE_SYM 7 3 8\\n[GNUPG:] BEGIN_DECRYPTION\\n[GNUPG:] DECRYPTION_INFO 2 7 0\\n[GNUPG:] DECRYPTION_OKAY\\n[GNUPG:] GOODMDC\\n[GNUPG:] END_DECRYPTION\\n",
+      "status": "exit status: 0",
+      "files": {}
+    }
+  ],
+  "former_us_outputs": [
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--batch\"",
+        "\"--pinentry-mode=loopback\"",
+        "\"--decrypt\"",
+        "\"--unwrap\"",
+        "\"--list-only\"",
+        "\"/EXPERIMENT/ciphertext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: AES.CFB encrypted session key\\ngpg: encrypted with 1 passphrase\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] BEGIN_DECRYPTION\\n[GNUPG:] END_DECRYPTION\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--batch\"",
+        "\"--pinentry-mode=loopback\"",
+        "\"--decrypt\"",
+        "\"--unwrap\"",
+        "\"--passphrase\"",
+        "\"password\"",
+        "\"/EXPERIMENT/ciphertext\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: AES.CFB encrypted session key\\ngpg: encrypted with 1 passphrase\\n",
+      "stdout": "\\xCB\\x0Fb\\x00\\x00\\x00\\x00\\x00plaintext",
+      "statusfd": "[GNUPG:] NEED_PASSPHRASE_SYM 7 3 8\\n[GNUPG:] BEGIN_DECRYPTION\\n[GNUPG:] DECRYPTION_INFO 2 7 0\\n[GNUPG:] DECRYPTION_OKAY\\n[GNUPG:] GOODMDC\\n[GNUPG:] END_DECRYPTION\\n",
+      "status": "exit status: 0",
+      "files": {}
+    }
+  ],
+  "artifacts": {
+    "ciphertext": "\\xC3\\x1E\\x04\\x07\\x03\\x08w4\\x12OV\\x103\\x8D\\xFF\\x9E5\\x981\\xA3Q\\xAF\\x15\\x8B\\x0E\\xE2\\x00\\x1D\\xA4\\xF2\\x17\\xD9\\xD2:\\x01\\xE4\\xCC\\xF5\\x0B\\xBC\\x05\\xBFWpZ]ݡW\\xAFq\\x84\\xB3+\\xA7\\xFB3D\\x90\\x14\\x16I\\xFC\\x9D\\xD6J)\\xB1\\xF9\\xB6\\xDB{9\\xE8\\xFD#\\xBEOm\\x92y\\xBEa\\xFD\\xBEX\\x91\\x92\\x93\\xEE\\x0B\\xEB"
+  },
+  "dynamic_upper_bounds": [
+    [
+      0,
+      86,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ]
+  ]
+}
