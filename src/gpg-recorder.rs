@@ -1426,10 +1426,15 @@ fn clean_recording() -> Result<()> {
         }
 
         let args = path.join("args");
-        let args: Vec<String> =
-            fs::File::open(&args)
+        let args: Vec<String> = match fs::File::open(&args)
             .and_then(|f| Ok(serde_json::from_reader(f)?))
-            .with_context(|| format!("opening {}", args.display()))?;
+        {
+            Ok(a) => a,
+            Err(e) => {
+                safe_eprintln!("opening {} failed: {}", args.display(), e);
+                continue;
+            }
+        };
 
         if let Some(arg) = args.iter().find_map(
             |a| (a.starts_with("--vers") || a.starts_with("--list-c"))
