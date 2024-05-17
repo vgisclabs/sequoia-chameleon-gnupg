@@ -63,49 +63,16 @@ pub fn cmd_decrypt(config: &crate::Config, args: &[String])
     let filename = args.get(0).cloned().unwrap_or_else(|| "-".into());
     let message = utils::open(config, &filename)?;
 
-    let policy = config.policy();
-
     // XXX: Currently, there is no nice way to disable armoring when
     // using the streaming decryptor.
 
-    let mut sink = if let Some(name) = config.outfile() {
+    let sink = if let Some(name) = config.outfile() {
         utils::create(config, name)?
     } else {
         Box::new(io::stdout())
     };
 
-    // Note: we use crypto::Decryptors backed by the gpg-agent.
-    // Currently, it is not safe to use these from async contexts,
-    // because they evaluate futures using a runtime, which may not be
-    // nested.  Therefore, the following code may not be run in an
-    // async context.
-    let transaction = || -> Result<()> {
-        let helper = DHelper::new(config, VHelper::new(config, 1));
-        let message = DecryptorBuilder::from_reader(message)?;
-        let mut d = match message.with_policy(policy, config.now(), helper) {
-            Ok(d) => d,
-            Err(e) => if config.list_only {
-                return Ok(());
-            } else {
-                return Err(e);
-            },
-        };
-
-        if ! config.list_only {
-            io::copy(&mut d, &mut sink)?;
-        }
-        let helper = d.into_helper();
-
-        if ! config.list_only {
-            helper.config.status().emit(Status::DecryptionOkay)?;
-            // For compatibility reasons we issue GOODMDC also for AEAD messages.
-            helper.config.status().emit(Status::GoodMDC)?;
-        }
-
-        Ok(())
-    };
-
-    match transaction() {
+    match decrypt(config, Ok(message), Ok(sink)) {
         Ok(()) => config.status().emit(Status::EndDecryption)?,
         Err(e) => {
             match e.downcast_ref::<openpgp::Error>() {
@@ -162,53 +129,55 @@ pub fn cmd_decrypt_files(config: &crate::Config, args: &[String])
         args
     };
 
-    let policy = config.policy();
     for ciphertext in inputs {
         config.status().emit(Status::FileStart {
             what: crate::status::FileStartOperation::Encrypt,
             name: &ciphertext,
         })?;
 
-        // Note: we use crypto::Decryptors backed by the gpg-agent.
-        // Currently, it is not safe to use these from async contexts,
-        // because they evaluate futures using a runtime, which may not be
-        // nested.  Therefore, the following code may not be run in an
-        // async context.
-        let transaction = || -> Result<()> {
-            let message = utils::open(config, &ciphertext)?;
-            let mut sink = utils::create(
-                config, &utils::make_outfile_name(ciphertext)?)?;
+        let message = utils::open(config, &ciphertext);
+        let sink = utils::make_outfile_name(ciphertext)
+            .and_then(|name| utils::create(config, &name));
 
-            let helper = DHelper::new(config, VHelper::new(config, 1));
-            let message = DecryptorBuilder::from_reader(message)?;
-            let mut d = match message.with_policy(policy, config.now(), helper) {
-                Ok(d) => d,
-                Err(e) => if config.list_only {
-                    return Ok(());
-                } else {
-                    return Err(e);
-                },
-            };
-
-            if ! config.list_only {
-                io::copy(&mut d, &mut sink)?;
-            }
-            let helper = d.into_helper();
-
-            if ! config.list_only {
-                helper.config.status().emit(Status::DecryptionOkay)?;
-                // For compatibility reasons we issue GOODMDC also for AEAD messages.
-                helper.config.status().emit(Status::GoodMDC)?;
-            }
-
-            Ok(())
-        };
-
-        if let Err(e) = transaction() {
+        if let Err(e) = decrypt(config, message, sink) {
             config.error(format_args!("{}", e));
         }
         config.status().emit(Status::EndDecryption)?;
         config.status().emit(Status::FileDone)?;
+    }
+
+    Ok(())
+}
+
+/// Decrypts `message` writing the plaintext to `sink`.
+fn decrypt(config: &crate::Config,
+           message: Result<Box<dyn io::Read + Send + Sync>>,
+           sink: Result<Box<dyn io::Write + Send + Sync>>)
+           -> Result<()>
+{
+    let message = message?;
+    let mut sink = sink?;
+
+    let helper = DHelper::new(config, VHelper::new(config, 1));
+    let message = DecryptorBuilder::from_reader(message)?;
+    let mut d = match message.with_policy(config.policy(), config.now(), helper) {
+        Ok(d) => d,
+        Err(e) => if config.list_only {
+            return Ok(());
+        } else {
+            return Err(e);
+        },
+    };
+
+    if ! config.list_only {
+        io::copy(&mut d, &mut sink)?;
+    }
+    let helper = d.into_helper();
+
+    if ! config.list_only {
+        helper.config.status().emit(Status::DecryptionOkay)?;
+        // For compatibility reasons we issue GOODMDC also for AEAD messages.
+        helper.config.status().emit(Status::GoodMDC)?;
     }
 
     Ok(())
