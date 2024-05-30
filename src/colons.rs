@@ -603,7 +603,7 @@ impl Record<'_> {
 }
 
 /// Represents the value of field 15, "S/N of a token".
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub enum TokenSN {
     SerialNumber(String),
     SimpleStub,
@@ -625,6 +625,26 @@ impl fmt::Display for TokenSN {
             } else {
                 f.write_str(" ")
             },
+        }
+    }
+}
+
+impl TokenSN {
+    /// Pretty-prints the token's serial number, if any.
+    pub fn pretty_sn(&self) -> Option<String> {
+        match self {
+            TokenSN::SerialNumber(s) =>
+                if s.len() == 32 && s.starts_with("D27600012401") {
+                    // This is an OpenPGP card.  Print the relevant
+                    // part.
+                    //
+                    // Example: D2760001240101010001000003470000
+                    //                          xxxxyyyyyyyy
+                    Some(format!("{} {}", &s[16..20], &s[20..28]))
+                } else {
+                    Some(s.into())
+                }
+            _ => None,
         }
     }
 }

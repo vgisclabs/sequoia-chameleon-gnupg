@@ -504,6 +504,15 @@ where
         let have_secret = has_secret.contains(&cert_fp);
         let ownertrust = config.trustdb.get_ownertrust(&cert_fp)
             .unwrap_or_else(|| OwnerTrustLevel::Undefined.into());
+        let token_sn = secrets.lookup_by_key(cert.primary_key().key())
+            .and_then(|i| if let Some(sn) = i.serialno() {
+                Some(TokenSN::SerialNumber(sn.into()))
+            } else if have_secret {
+                Some(TokenSN::SecretAvaliable)
+            } else {
+                None
+            })
+            .or_else(|| cert_is_tsk.then_some(TokenSN::SimpleStub));
 
         Record::Key {
             key: cert.primary_key().key(),
@@ -549,15 +558,7 @@ where
                 }
                 kf
             },
-            token_sn: secrets.lookup_by_key(cert.primary_key().key())
-                .and_then(|i| if let Some(sn) = i.serialno() {
-                    Some(TokenSN::SerialNumber(sn.into()))
-                } else if have_secret {
-                    Some(TokenSN::SecretAvaliable)
-                } else {
-                    None
-                })
-            .or_else(|| cert_is_tsk.then_some(TokenSN::SimpleStub)),
+            token_sn: token_sn.clone(),
             compliance: cert.primary_key().compliance(config),
         }.emit(config, &mut sink)?;
 
@@ -573,6 +574,13 @@ where
 
         Record::Fingerprint(cert_fp)
             .emit(config, &mut sink)?;
+
+        if ! config.with_colons && config.with_subkey_fingerprint {
+            if let Some(s) = token_sn.and_then(|t| t.pretty_sn()) {
+                writeln!(sink, "      Card serial no. = {}", s)?;
+            }
+        }
+
         if config.with_keygrip
             || (config.with_colons && (list_secret_keys_mode || have_secret))
         {
@@ -688,6 +696,15 @@ where
             let vsubkey = subkey.clone().with_policy(p, config.now()).ok();
             let subkey_fp = subkey.fingerprint();
             let have_secret = has_secret.contains(&subkey_fp);
+            let token_sn = secrets.lookup_by_key(subkey.key())
+                .and_then(|i| if let Some(sn) = i.serialno() {
+                    Some(TokenSN::SerialNumber(sn.into()))
+                } else if have_secret {
+                    Some(TokenSN::SecretAvaliable)
+                } else {
+                    None
+                })
+                .or_else(|| cert_is_tsk.then_some(TokenSN::SimpleStub));
 
             Record::Subkey {
                 key: subkey.key(),
@@ -706,15 +723,7 @@ where
                 key_flags: vsubkey.as_ref()
                     .and_then(|v| v.key_flags())
                     .unwrap_or_else(|| KeyFlags::empty()),
-                token_sn: secrets.lookup_by_key(subkey.key())
-                    .and_then(|i| if let Some(sn) = i.serialno() {
-                        Some(TokenSN::SerialNumber(sn.into()))
-                    } else if have_secret {
-                        Some(TokenSN::SecretAvaliable)
-                    } else {
-                        None
-                    })
-                    .or_else(|| cert_is_tsk.then_some(TokenSN::SimpleStub)),
+                token_sn: token_sn.clone(),
                 compliance: subkey.compliance(config),
             }.emit(config, &mut sink)?;
 
@@ -722,6 +731,13 @@ where
                 Record::Fingerprint(subkey_fp)
                     .emit(config, &mut sink)?;
             }
+
+            if ! config.with_colons && config.with_subkey_fingerprint {
+                if let Some(s) = token_sn.and_then(|t| t.pretty_sn()) {
+                    writeln!(sink, "      Card serial no. = {}", s)?;
+                }
+            }
+
             if config.with_keygrip
                 || (config.with_colons &&
                     (list_secret_keys_mode || have_secret))
