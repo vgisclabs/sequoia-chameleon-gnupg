@@ -187,7 +187,7 @@
         "\"/EXPERIMENT/key\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "sec   ed25519 2022-12-20 [C]\\n      4F08C771ADA46C4D8C082A16C6FADDAD431B1C88\\nuid                      Alice Lovelace <alice@lovelace.name>\\nssb   ed25519 2022-12-20 [S]\\n\\n",
+      "stdout": "sec#  ed25519 2022-12-20 [C]\\n      4F08C771ADA46C4D8C082A16C6FADDAD431B1C88\\nuid                      Alice Lovelace <alice@lovelace.name>\\nssb#  ed25519 2022-12-20 [S]\\n\\n",
       "statusfd": "",
       "status": "exit status: 0",
       "files": {}
@@ -200,7 +200,7 @@
         "\"/EXPERIMENT/key\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "sec:-:255:22:C6FADDAD431B1C88:1671553073:::-:::cSC:::+::ed25519:::0:\\nfpr:::::::::4F08C771ADA46C4D8C082A16C6FADDAD431B1C88:\\ngrp:::::::::018F057300602AC1C2E78E08B939FDB392083E46:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nssb:-:255:22:D097C6609F356F9B:1671553073::::::s:::+::ed25519::\\nfpr:::::::::BE5916C68FE877E54E0ADFACD097C6609F356F9B:\\ngrp:::::::::004CB46210A9BEA1554A7630F5AF89625BF30245:\\n",
+      "stdout": "sec:-:255:22:C6FADDAD431B1C88:1671553073:::-:::cSC:::#::ed25519:::0:\\nfpr:::::::::4F08C771ADA46C4D8C082A16C6FADDAD431B1C88:\\ngrp:::::::::018F057300602AC1C2E78E08B939FDB392083E46:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nssb:-:255:22:D097C6609F356F9B:1671553073::::::s:::#::ed25519::\\nfpr:::::::::BE5916C68FE877E54E0ADFACD097C6609F356F9B:\\ngrp:::::::::004CB46210A9BEA1554A7630F5AF89625BF30245:\\n",
       "statusfd": "",
       "status": "exit status: 0",
       "files": {}
@@ -213,7 +213,7 @@
         "\"/EXPERIMENT/key\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "sec   ed25519 2022-12-20 [C]\\n      4F08C771ADA46C4D8C082A16C6FADDAD431B1C88\\nsig      N   C6FADDAD431B1C88 2022-12-20  [User ID not found]\\n   Signature notation: salt@notations.sequoia-pgp.org=[ not human readable (32 bytes: ???jJl??3??????H?SN...) ]\\nuid                      Alice Lovelace <alice@lovelace.name>\\nsig 3   PN   C6FADDAD431B1C88 2022-12-20  [User ID not found]\\n   Signature policy: https://example.org/openpgp-policy\\n   Signature notation: salt@notations.sequoia-pgp.org=[ not human readable (32 bytes: ?{Y\\\\X????????????G?...) ]\\n   Signature notation: user@example.org=[ not human readable (30 bytes: machine-readable us...) ]\\n   Signature notation: user@example.org=human-readable user notation\\n   Signature notation: ietf-dummy=[ not human readable (30 bytes: machine-readable ie...) ]\\n   Signature notation: ietf-dummy=human-readable ietf notation\\nssb   ed25519 2022-12-20 [S]\\nsig      N   C6FADDAD431B1C88 2022-12-20  [User ID not found]\\n   Signature notation: salt@notations.sequoia-pgp.org=[ not human readable (32 bytes: ???????XH?????B??D?...) ]\\n\\n",
+      "stdout": "sec#  ed25519 2022-12-20 [C]\\n      4F08C771ADA46C4D8C082A16C6FADDAD431B1C88\\nsig      N   C6FADDAD431B1C88 2022-12-20  [User ID not found]\\n   Signature notation: salt@notations.sequoia-pgp.org=[ not human readable (32 bytes: ???jJl??3??????H?SN...) ]\\nuid                      Alice Lovelace <alice@lovelace.name>\\nsig 3   PN   C6FADDAD431B1C88 2022-12-20  [User ID not found]\\n   Signature policy: https://example.org/openpgp-policy\\n   Signature notation: salt@notations.sequoia-pgp.org=[ not human readable (32 bytes: ?{Y\\\\X????????????G?...) ]\\n   Signature notation: user@example.org=[ not human readable (30 bytes: machine-readable us...) ]\\n   Signature notation: user@example.org=human-readable user notation\\n   Signature notation: ietf-dummy=[ not human readable (30 bytes: machine-readable ie...) ]\\n   Signature notation: ietf-dummy=human-readable ietf notation\\nssb#  ed25519 2022-12-20 [S]\\nsig      N   C6FADDAD431B1C88 2022-12-20  [User ID not found]\\n   Signature notation: salt@notations.sequoia-pgp.org=[ not human readable (32 bytes: ???????XH?????B??D?...) ]\\n\\n",
       "statusfd": "",
       "status": "exit status: 0",
       "files": {}
@@ -227,7 +227,7 @@
         "\"/EXPERIMENT/key\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
-      "stdout": "sec:-:255:22:C6FADDAD431B1C88:1671553073:::-:::cSC:::+::ed25519:::0:\\nfpr:::::::::4F08C771ADA46C4D8C082A16C6FADDAD431B1C88:\\ngrp:::::::::018F057300602AC1C2E78E08B939FDB392083E46:\\nsig:?::22:C6FADDAD431B1C88:1671553073::::[User ID not found]:1fx::4F08C771ADA46C4D8C082A16C6FADDAD431B1C88:::10:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsig:?::22:C6FADDAD431B1C88:1671553073::::[User ID not found]:13x::4F08C771ADA46C4D8C082A16C6FADDAD431B1C88:::10:\\nssb:-:255:22:D097C6609F356F9B:1671553073::::::s:::+::ed25519::\\nfpr:::::::::BE5916C68FE877E54E0ADFACD097C6609F356F9B:\\ngrp:::::::::004CB46210A9BEA1554A7630F5AF89625BF30245:\\nsig:?::22:C6FADDAD431B1C88:1671553073::::[User ID not found]:18x::4F08C771ADA46C4D8C082A16C6FADDAD431B1C88:::10:\\n",
+      "stdout": "sec:-:255:22:C6FADDAD431B1C88:1671553073:::-:::cSC:::#::ed25519:::0:\\nfpr:::::::::4F08C771ADA46C4D8C082A16C6FADDAD431B1C88:\\ngrp:::::::::018F057300602AC1C2E78E08B939FDB392083E46:\\nsig:?::22:C6FADDAD431B1C88:1671553073::::[User ID not found]:1fx::4F08C771ADA46C4D8C082A16C6FADDAD431B1C88:::10:\\nuid:-::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsig:?::22:C6FADDAD431B1C88:1671553073::::[User ID not found]:13x::4F08C771ADA46C4D8C082A16C6FADDAD431B1C88:::10:\\nssb:-:255:22:D097C6609F356F9B:1671553073::::::s:::#::ed25519::\\nfpr:::::::::BE5916C68FE877E54E0ADFACD097C6609F356F9B:\\ngrp:::::::::004CB46210A9BEA1554A7630F5AF89625BF30245:\\nsig:?::22:C6FADDAD431B1C88:1671553073::::[User ID not found]:18x::4F08C771ADA46C4D8C082A16C6FADDAD431B1C88:::10:\\n",
       "statusfd": "",
       "status": "exit status: 0",
       "files": {}
@@ -263,22 +263,22 @@
       0
     ],
     [
-      2,
+      0,
       0,
       0
     ],
     [
-      2,
+      0,
       0,
       0
     ],
     [
-      2,
+      0,
       0,
       0
     ],
     [
-      2,
+      0,
       0,
       0
     ]

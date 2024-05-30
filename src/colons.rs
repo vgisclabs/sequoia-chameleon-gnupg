@@ -197,7 +197,7 @@ impl Record<'_> {
                              format!("{:#}", babel::Fish(primary_key_flags)),
                              format!("{:#}", babel::Fish(sum_key_flags)).to_uppercase(),
                              if ownertrust.disabled() { "D" } else { "" },
-                             token_sn.as_ref().map(ToString::to_string)
+                             token_sn.as_ref().map(|t| format!("{:#}", t))
                              .unwrap_or_default(),
                              curve.as_ref().map(|c| babel::Fish(c).to_string())
                              .unwrap_or_default(),
@@ -212,8 +212,10 @@ impl Record<'_> {
                     };
 
                     writeln!(w,
-                             "{}   {}{} {} [{}]{}",
+                             "{}{}  {}{} {} [{}]{}",
                              record_type,
+                             token_sn.as_ref().map(ToString::to_string)
+                             .unwrap_or_else(|| " ".into()),
                              babel::Fish(algo),
                              match config.keyid_format {
                                  KeyIDFormat::None => format!(""),
@@ -274,7 +276,7 @@ impl Record<'_> {
                              expiration_date.map(|t| t.format("%s").to_string())
                              .unwrap_or_else(|| "".into()),
                              format!("{:#}", babel::Fish(key_flags)),
-                             token_sn.as_ref().map(ToString::to_string)
+                             token_sn.as_ref().map(|t| format!("{:#}", t))
                              .unwrap_or_default(),
                              curve.as_ref().map(|c| babel::Fish(c).to_string())
                              .unwrap_or_default(),
@@ -289,8 +291,10 @@ impl Record<'_> {
                     };
 
                     writeln!(w,
-                             "{}   {}{} {} [{}]{}",
+                             "{}{}  {}{} {} [{}]{}",
                              record_type,
+                             token_sn.as_ref().map(ToString::to_string)
+                             .unwrap_or_else(|| " ".into()),
                              babel::Fish(algo),
                              match config.keyid_format {
                                  KeyIDFormat::None => format!(""),
@@ -599,6 +603,7 @@ impl Record<'_> {
 }
 
 /// Represents the value of field 15, "S/N of a token".
+#[derive(Debug)]
 pub enum TokenSN {
     SerialNumber(String),
     SimpleStub,
@@ -609,9 +614,17 @@ impl fmt::Display for TokenSN {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         use TokenSN::*;
         match self {
-            SerialNumber(s) => f.write_str(s),
+            SerialNumber(s) => if f.alternate() {
+                f.write_str(s)
+            } else {
+                f.write_str(">")
+            },
             SimpleStub =>      f.write_str("#"),
-            SecretAvaliable => f.write_str("+"),
+            SecretAvaliable => if f.alternate() {
+                f.write_str("+")
+            } else {
+                f.write_str(" ")
+            },
         }
     }
 }

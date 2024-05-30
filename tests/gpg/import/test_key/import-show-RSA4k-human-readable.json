@@ -117,7 +117,7 @@
         "\"/EXPERIMENT/key\""
       ],
       "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: key 1584ED312999A6EC: secret key imported\\ngpg: Total number processed: 1\\ngpg:              unchanged: 1\\ngpg:       secret keys read: 1\\ngpg:   secret keys imported: 1\\n",
-      "stdout": "sec   rsa4096 2022-12-20 [C] [expires: 2025-12-16]\\n      6041EB8D6D1DADCD90A6F1871584ED312999A6EC\\nuid                      Alice Lovelace <alice@lovelace.name>\\nssb   rsa4096 2022-12-20 [E] [expires: 2025-12-16]\\nssb   rsa4096 2022-12-20 [S] [expires: 2025-12-16]\\n\\n",
+      "stdout": "sec#  rsa4096 2022-12-20 [C] [expires: 2025-12-16]\\n      6041EB8D6D1DADCD90A6F1871584ED312999A6EC\\nuid                      Alice Lovelace <alice@lovelace.name>\\nssb#  rsa4096 2022-12-20 [E] [expires: 2025-12-16]\\nssb#  rsa4096 2022-12-20 [S] [expires: 2025-12-16]\\n\\n",
       "statusfd": "[GNUPG:] IMPORT_OK 0 6041EB8D6D1DADCD90A6F1871584ED312999A6EC\\n[GNUPG:] IMPORT_OK 17 6041EB8D6D1DADCD90A6F1871584ED312999A6EC\\n[GNUPG:] IMPORT_RES 1 0 0 0 1 0 0 0 0 1 1 0 0 0 0\\n",
       "status": "exit status: 0",
       "files": {}
@@ -157,7 +157,7 @@
       0
     ],
     [
-      3,
+      0,
       0,
       67
     ],

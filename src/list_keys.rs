@@ -3,7 +3,6 @@ use std::{
     collections::{
         BTreeMap,
         BTreeSet,
-        HashSet,
     },
     io::{self, Write},
     sync::Arc,
@@ -34,6 +33,10 @@ use sequoia_cert_store as cert_store;
 use cert_store::LazyCert;
 use cert_store::Store;
 use cert_store::store::{StoreError, UserIDQueryParams};
+
+use sequoia_gpg_agent::{
+    keyinfo::KeyInfoList,
+};
 
 use crate::{
     argparse,
@@ -435,16 +438,12 @@ where
         config, Some(config.now()), list_all && ! list_secret_keys_mode)?;
     let p = vtm.policy();
 
-    let mut secrets = Default::default();
+    let mut secrets = KeyInfoList::empty();
     if list_secret || (config.with_secret && config.with_colons) {
         if let Ok(mut agent) = config.connect_agent().await {
-            secrets = agent.list_keys().await
-                .map(|keys| {
-                    keys.into_iter()
-                        .map(|k| k.keygrip().clone())
-                        .collect::<HashSet<_>>()
-                })
-                .unwrap_or(Default::default())
+            if let Ok(s) = agent.list_keys().await {
+                secrets = s;
+            }
         }
     }
 
@@ -459,8 +458,7 @@ where
         let mut has_secret: BTreeSet<Fingerprint> = cert
             .keys()
             .filter_map(|k| {
-                let keygrip = Keygrip::of(k.mpis()).ok()?;
-                if secrets.contains(&keygrip) {
+                if secrets.lookup_by_key(&k).is_some() {
                     Some(k.fingerprint())
                 } else {
                     None
@@ -475,7 +473,8 @@ where
             has_secret.insert(skb.fingerprint());
         }
 
-        if list_secret_keys_mode && has_secret.is_empty() {
+        let cert_is_tsk = ! has_secret.is_empty();
+        if list_secret_keys_mode && ! cert_is_tsk {
             // No secret (sub)key, don't list this key in --list-secret-keys.
             continue;
         }
@@ -508,7 +507,7 @@ where
 
         Record::Key {
             key: cert.primary_key().key(),
-            have_secret: have_secret && list_secret,
+            have_secret: cert_is_tsk && list_secret,
             validity: acert.cert_validity(),
             expiration_date:  vcert.as_ref()
                 .and_then(|v| v.keys().next().expect("primary key")
@@ -550,7 +549,15 @@ where
                 }
                 kf
             },
-            token_sn: have_secret.then(|| TokenSN::SecretAvaliable),
+            token_sn: secrets.lookup_by_key(cert.primary_key().key())
+                .and_then(|i| if let Some(sn) = i.serialno() {
+                    Some(TokenSN::SerialNumber(sn.into()))
+                } else if have_secret {
+                    Some(TokenSN::SecretAvaliable)
+                } else {
+                    None
+                })
+            .or_else(|| cert_is_tsk.then_some(TokenSN::SimpleStub)),
             compliance: cert.primary_key().compliance(config),
         }.emit(config, &mut sink)?;
 
@@ -684,7 +691,7 @@ where
 
             Record::Subkey {
                 key: subkey.key(),
-                have_secret: have_secret && list_secret,
+                have_secret: cert_is_tsk && list_secret,
                 validity: validity,
                 expiration_date:  vsubkey.as_ref()
                     .and_then(|v| v.key_expiration_time()),
@@ -699,7 +706,15 @@ where
                 key_flags: vsubkey.as_ref()
                     .and_then(|v| v.key_flags())
                     .unwrap_or_else(|| KeyFlags::empty()),
-                token_sn: have_secret.then(|| TokenSN::SecretAvaliable),
+                token_sn: secrets.lookup_by_key(subkey.key())
+                    .and_then(|i| if let Some(sn) = i.serialno() {
+                        Some(TokenSN::SerialNumber(sn.into()))
+                    } else if have_secret {
+                        Some(TokenSN::SecretAvaliable)
+                    } else {
+                        None
+                    })
+                    .or_else(|| cert_is_tsk.then_some(TokenSN::SimpleStub)),
                 compliance: subkey.compliance(config),
             }.emit(config, &mut sink)?;
 
