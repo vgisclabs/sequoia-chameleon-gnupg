@@ -794,7 +794,7 @@ impl Experiment {
                 move |(what, _, _, distance)|
                 (i, what, distance.unwrap_or(EDIT_DISTANCE_CUTOFF))))
         {
-            let mut summary = streams.entry(what)
+            let summary = streams.entry(what)
                 .or_insert_with(|| StreamSummary {
                     histogram: Histogram::with_buckets(20),
                     worst_index: 0,
