@@ -16,7 +16,7 @@ rust-version = "1.70"
 
 [dependencies]
 anyhow = "1"
-base64 = "0.21"
+base64 = ">= 0.21, < 0.23"
 buffered-reader = "1"
 chrono = "0.4"
 daemonize = "0.5"
