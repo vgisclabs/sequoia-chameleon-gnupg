@@ -173,7 +173,13 @@ pub async fn get_signers(config: &crate::Config<'_>)
         }
 
         let query = local_user.parse::<crate::trust::Query>()?;
-        let certs = config.lookup_certs(&query)?;
+        let mut certs = config.lookup_certs(&query)?;
+
+        // Only keep those with a valid signing (sub)key.
+        certs.retain(|(_, c)| c.to_cert().map(
+            |c| c.keys().with_policy(config.policy(), config.now())
+                .for_signing().next().is_some())
+                     .unwrap_or(false));
 
         // Cowardly refuse any queries that resolve to multiple keys.
         // In my mind, using queries other than fingerprints in
