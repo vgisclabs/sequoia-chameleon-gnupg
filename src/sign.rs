@@ -185,9 +185,9 @@ pub async fn get_signers(config: &crate::Config<'_>)
             0 => return Err(anyhow::anyhow!("Signing key {} not found", query)),
             1 => &certs[0].1,
             n => return Err(anyhow::anyhow!(
-                "Signing key {} maps to {} different keys: {:?}", query, n,
+                "Signing key {} maps to {} different keys: {}", query, n,
                 certs.iter().map(|c| c.1.fingerprint().to_string())
-                    .collect::<Vec<_>>())),
+                    .collect::<Vec<_>>().join(" "))),
         };
 
         config.policy.public_key_algorithm(

@@ -63,9 +63,9 @@ async fn add_uid(config: &mut crate::Config<'_>, query: Query, new_uid: UserID)
         0 => return Err(anyhow::anyhow!("Key {} not found", query)),
         1 => &certs[0].1,
         n => return Err(anyhow::anyhow!(
-            "Query {} maps to {} different keys: {:?}", query, n,
+            "Query {} maps to {} different keys: {}", query, n,
             certs.iter().map(|c| c.1.fingerprint().to_string())
-                .collect::<Vec<_>>())),
+                .collect::<Vec<_>>().join(" "))),
     };
 
     let vcert = cert.with_policy(config.policy(), config.now())
@@ -164,9 +164,9 @@ async fn revoke_uid(config: &mut crate::Config<'_>, query: Query, rev_uid: UserI
         0 => return Err(anyhow::anyhow!("Key {} not found", query)),
         1 => &certs[0].1,
         n => return Err(anyhow::anyhow!(
-            "Query {} maps to {} different keys: {:?}", query, n,
+            "Query {} maps to {} different keys: {}", query, n,
             certs.iter().map(|c| c.1.fingerprint().to_string())
-                .collect::<Vec<_>>())),
+                .collect::<Vec<_>>().join(" "))),
     };
 
     let cert = cert.to_cert()?;
