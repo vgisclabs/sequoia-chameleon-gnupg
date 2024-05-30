@@ -25,6 +25,7 @@ use cert_store::{
     Store,
     StoreUpdate,
 };
+use sequoia_gpg_agent as gpg_agent;
 
 use crate::{
     argparse,
@@ -485,11 +486,10 @@ pub async fn do_import_cert(config: &mut crate::Config<'_>,
             {
                 Ok(_) => changed |= true,
                 Err(e) => {
-                    use sequoia_gpg_agent::Error::KeyExists;
-                    if let Some(KeyExists(_, _)) =  e.downcast_ref() {
+                    if let gpg_agent::Error::KeyExists(_, _) = e {
                         unchanged |= true;
                     } else {
-                        return Err(e);
+                        return Err(e.into());
                     }
                 },
             }

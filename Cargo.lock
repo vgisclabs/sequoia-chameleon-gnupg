@@ -2425,36 +2425,36 @@ dependencies = [
 
 [[package]]
 name = "sequoia-gpg-agent"
-version = "0.3.1"
+version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f29f0e04d9d161c65384a02282380ceaf1b506e768cab95837a428439c2596a4"
+checksum = "5c929d572dee98c48d286cef43e2ade4201962f3454c015f52bf43b5a8e40d42"
 dependencies = [
  "anyhow",
  "chrono",
  "futures",
+ "lalrpop",
+ "lalrpop-util",
  "libc",
- "sequoia-cert-store",
  "sequoia-ipc",
  "sequoia-openpgp",
  "stfu8",
+ "tempfile",
  "thiserror",
  "tokio",
 ]
 
 [[package]]
 name = "sequoia-ipc"
-version = "0.34.1"
+version = "0.35.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d67c3c28da4a3483fa969e6a6cde9e5487fe44632b5f285224d79df05bd99dd4"
+checksum = "b4a7e644ec9e1055fde8dcdaa65c58fa4636c615b5e955a9b1942444145e308a"
 dependencies = [
  "anyhow",
  "buffered-reader",
  "capnp-rpc",
- "crossbeam-utils",
  "ctor",
  "dirs",
  "fs2",
- "futures",
  "lalrpop",
  "lalrpop-util",
  "lazy_static",

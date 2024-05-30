@@ -13,7 +13,6 @@ use anyhow::{Context, Result};
 use indexmap::IndexMap;
 
 use sequoia_openpgp as openpgp;
-use sequoia_ipc as ipc;
 use openpgp::{
     Fingerprint,
     KeyHandle,
@@ -753,8 +752,8 @@ impl<'store> Config<'store> {
     }
 
     /// Returns an IPC context.
-    pub fn ipc(&self) -> Result<ipc::gnupg::Context> {
-        ipc::gnupg::Context::with_homedir(&self.homedir)
+    pub fn ipc(&self) -> Result<gpg_agent::gnupg::Context> {
+        Ok(gpg_agent::gnupg::Context::with_homedir(&self.homedir)?)
     }
 
     /// Returns a connection to the GnuPG agent.
@@ -907,7 +906,7 @@ impl<'store> Config<'store> {
         P: FnMut(&[u8]) -> Result<()>,
     {
         use gpg_agent::PinentryMode;
-        use gpg_agent::sequoia_ipc::assuan::Response;
+        use gpg_agent::assuan::Response;
 
         let callback = |_agent: &mut _, response| {
             if let Response::Inquire { keyword, parameters } = &response {
