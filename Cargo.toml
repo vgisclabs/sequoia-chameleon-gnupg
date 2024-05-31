@@ -80,7 +80,9 @@ path = "src/gpg-recorder.rs"
 required-features = ["the-recorder-steals-secrets-and-i-wont-package-it-in-slash-bin"]
 
 [profile.release]
+codegen-units = 1
 debug = true
+lto = true
 
 [features]
 default = ["crypto-nettle"]
