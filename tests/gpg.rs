@@ -1183,7 +1183,7 @@ impl Diff<'_> {
                 let former_delta =
                     self.oracle.stdout_edit_distance(former_us);
                 if former_delta > self.stdout_edit_distance() {
-                    eprintln!("    - Stdout changed from last run, \
+                    eprintln!("    - Stdout changed, \
                                but we improved from {} to {}.",
                               former_delta,
                               self.oracle.stdout_edit_distance(former_us));
@@ -1203,7 +1203,7 @@ impl Diff<'_> {
                 let former_delta =
                     self.oracle.stderr_edit_distance(former_us);
                 if former_delta > self.stderr_edit_distance() {
-                    eprintln!("    - Stderr changed from last run, \
+                    eprintln!("    - Stderr changed, \
                                but we improved from {} to {}.",
                               former_delta,
                               self.oracle.stderr_edit_distance(former_us));
@@ -1223,7 +1223,7 @@ impl Diff<'_> {
                 let former_delta =
                     self.oracle.statusfd_edit_distance(former_us);
                 if former_delta > self.statusfd_edit_distance() {
-                    eprintln!("    - Statusfd changed from last run, \
+                    eprintln!("    - Statusfd changed, \
                                but we improved from {} to {}.",
                               former_delta,
                               self.oracle.statusfd_edit_distance(former_us));
@@ -1240,8 +1240,14 @@ impl Diff<'_> {
                 }
             }
             if former_us.status != self.us.status {
-                pass = false;
-                eprintln!("error: Status changed from last run.");
+                if self.us.status == "exit status: 0" {
+                    eprintln!("    - Exit status changed, \
+                               but we improved from {:?} to {:?}.",
+                              former_us.status, self.us.status);
+                } else {
+                    pass = false;
+                    eprintln!("error: Exit status changed from last run.");
+                }
             }
         } else {
             eprintln!("    - Can't compare output to last run: \
