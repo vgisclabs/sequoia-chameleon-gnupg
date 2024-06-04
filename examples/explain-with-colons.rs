@@ -21,7 +21,7 @@ fn main() {
             if ! first {
                 println!();
             }
-            println!("{}", line_buffer.trim());
+            println!("{}", line_buffer.trim_end());
             first = false;
         }
         explain(&line_buffer, &io::stdout()).unwrap();
@@ -30,7 +30,11 @@ fn main() {
 }
 
 pub fn explain<S: Write>(line: &str, mut sink: S) -> io::Result<bool> {
-    let line = line.trim();
+    let mut line = line.trim();
+    if line.starts_with("+") || line.starts_with("-") {
+        line = &line[1..];
+    }
+
     let mut p = line.split(':');
 
     // Field 1 - Type of record
