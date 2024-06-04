@@ -10,6 +10,176 @@ use super::super::*;
 
 #[test]
 #[ntest::timeout(600000)]
+fn generate_key_no_arg() -> Result<()> {
+    generate_key(&[], make_experiment!()?)
+}
+
+#[test]
+#[ntest::timeout(600000)]
+fn generate_key_default() -> Result<()> {
+    generate_key(&["default"], make_experiment!()?)
+}
+
+#[test]
+#[ntest::timeout(600000)]
+fn generate_key_future_default() -> Result<()> {
+    generate_key(&["future-default"], make_experiment!()?)
+}
+
+#[test]
+#[ntest::timeout(600000)]
+fn generate_key_rsa() -> Result<()> {
+    generate_key(&["rsa"], make_experiment!()?)
+}
+
+#[test]
+#[ntest::timeout(600000)]
+fn generate_key_rsa2048() -> Result<()> {
+    generate_key(&["rsa2048"], make_experiment!()?)
+}
+
+#[test]
+#[ntest::timeout(600000)]
+fn generate_key_dsa() -> Result<()> {
+    generate_key(&["dsa"], make_experiment!()?)
+}
+
+#[test]
+#[ntest::timeout(600000)]
+fn generate_key_ed25519() -> Result<()> {
+    generate_key(&["ed25519"], make_experiment!()?)
+}
+
+#[test]
+#[ntest::timeout(600000)]
+fn generate_key_nistp256() -> Result<()> {
+    generate_key(&["nistp256"], make_experiment!()?)
+}
+
+#[test]
+#[ntest::timeout(600000)]
+fn generate_key_default_default() -> Result<()> {
+    generate_key(&["default", "default"], make_experiment!()?)
+}
+
+#[test]
+#[ntest::timeout(600000)]
+fn generate_key_default_encr() -> Result<()> {
+    generate_key(&["default", "encr"], make_experiment!()?)
+}
+
+#[test]
+#[ntest::timeout(600000)]
+fn generate_key_default_encrypt() -> Result<()> {
+    generate_key(&["default", "encrypt"], make_experiment!()?)
+}
+
+#[test]
+#[ntest::timeout(600000)]
+fn generate_key_default_sign() -> Result<()> {
+    generate_key(&["default", "sign"], make_experiment!()?)
+}
+
+#[test]
+#[ntest::timeout(600000)]
+fn generate_key_default_auth() -> Result<()> {
+    generate_key(&["default", "auth"], make_experiment!()?)
+}
+
+#[test]
+#[ntest::timeout(600000)]
+fn generate_key_rsa_encrypt_sign() -> Result<()> {
+    generate_key(&["rsa", "encrypt,sign"], make_experiment!()?)
+}
+
+#[test]
+#[ntest::timeout(600000)]
+fn generate_key_rsa_encrypt_space_sign() -> Result<()> {
+    generate_key(&["rsa", "encrypt sign"], make_experiment!()?)
+}
+
+#[test]
+#[ntest::timeout(600000)]
+fn generate_key_default_default_never() -> Result<()> {
+    generate_key(&["default", "default", "never"], make_experiment!()?)
+}
+
+#[test]
+#[ntest::timeout(600000)]
+fn generate_key_default_default_none() -> Result<()> {
+    generate_key(&["default", "default", "none"], make_experiment!()?)
+}
+
+#[test]
+#[ntest::timeout(600000)]
+fn generate_key_default_default_dash() -> Result<()> {
+    generate_key(&["default", "default", "-"], make_experiment!()?)
+}
+
+#[test]
+#[ntest::timeout(600000)]
+fn generate_key_default_default_1y() -> Result<()> {
+    generate_key(&["default", "default", "1y"], make_experiment!()?)
+}
+
+#[test]
+#[ntest::timeout(600000)]
+fn generate_key_default_default_iso_date() -> Result<()> {
+    generate_key(&["default", "default", "2023-01-01"], make_experiment!()?)
+}
+
+#[test]
+#[ntest::timeout(600000)]
+fn generate_key_default_default_iso_time() -> Result<()> {
+    generate_key(&["default", "default", "20230101T123456"], make_experiment!()?)
+}
+
+#[test]
+#[ntest::timeout(600000)]
+fn generate_key_all_dashes() -> Result<()> {
+    generate_key(&["-", "-", "-"], make_experiment!()?)
+}
+
+fn generate_key(parameters: &[&str], mut experiment: Experiment) -> Result<()>
+{
+    experiment.section("Generating a key, quickly...");
+    let args = [
+        "--batch",
+        "--passphrase=streng geheim",
+        "--quick-generate-key",
+        "Alice Lovelace <alice@lovelace.name>",
+    ].iter().cloned()
+        .chain(parameters.iter().cloned())
+        .collect::<Vec<_>>();
+    let diff = experiment.invoke(&args)?
+        .canonicalize_fingerprints(0)?; // Cert fingerprint.
+    diff.assert_success();
+    diff.assert_limits(0, 0, 0);
+
+    // Reduce noise.
+    let diff = experiment.invoke(&[
+        "--check-trustdb",
+    ])?;
+    diff.assert_success();
+
+    let diff = experiment.invoke(&[
+        "--list-keys",
+        "--with-colons",
+    ])?
+        .canonicalize_fingerprints(1)? // UserID hash.
+        .canonicalize_fingerprints(2)?; // Subkey fingerprint.
+    diff.assert_success();
+    diff.assert_limits(10 // Expiration time in the tru(st) line.
+                       + 10, // Sequoia reports the subkey expiration
+                       // information from the direct key signature.
+                       0,
+                       0);
+
+    Ok(())
+}
+
+#[test]
+#[ntest::timeout(600000)]
 fn add_key_no_arg() -> Result<()> {
     add_key(&[], make_experiment!()?)
 }

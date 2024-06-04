@@ -2919,6 +2919,8 @@ fn real_main() -> anyhow::Result<()> {
         Some(aListPackets) => list_packets::cmd_list_packets(&opt, &args),
         Some(aKeygen) => generate_key::cmd_generate_key(&mut opt, &args, false),
         Some(aFullKeygen) => generate_key::cmd_generate_key(&mut opt, &args, true),
+        Some(aQuickKeygen) =>
+            generate_key::cmd_quick_generate_key(&mut opt, &args),
         Some(aQuickAddKey) => generate_key::cmd_quick_add_key(&mut opt, &args),
         Some(aQuickAddUid) => quick::cmd_quick_add_uid(&mut opt, &args),
         Some(aQuickRevUid) => quick::cmd_quick_revoke_uid(&mut opt, &args),

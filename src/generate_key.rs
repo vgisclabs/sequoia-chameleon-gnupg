@@ -16,8 +16,9 @@ use openpgp::{
     crypto::{Password, Signer},
     packet::{
         Key,
-        Signature,
         Packet,
+        Signature,
+        UserID,
         key::{
             self,
             Key4,
@@ -95,6 +96,132 @@ async fn real_cmd_generate_key(config: &mut crate::Config<'_>, args: &[String],
         return Err(anyhow::anyhow!(
             "Interactive key generation is not yet implemented."));
     }
+}
+
+/// Dispatches the --quick-generate-key command.
+pub fn cmd_quick_generate_key(config: &mut crate::Config, args: &[String])
+                              -> Result<()>
+{
+    check_forbid_gen_key(config)?;
+    if args.len() < 1 || args.len() > 4 {
+        config.wrong_args(format_args!(
+            "--quick-generate-key USER-ID [ALGO [USAGE [EXPIRE]]]"));
+    }
+
+    let rt = tokio::runtime::Runtime::new()?;
+    rt.block_on(real_cmd_quick_generate_key(config, args))
+}
+
+async fn real_cmd_quick_generate_key(config: &mut crate::Config<'_>,
+                                     args: &[String])
+                                     -> Result<()>
+{
+    let uid_str = &args[0];
+    let uid: UserID = uid_str.clone().into();
+    let algo = args.get(1).cloned().unwrap_or_else(|| "-".into());
+    let usage = args.get(2).cloned().unwrap_or_else(|| "-".into());
+    let expire = args.get(3).cloned().unwrap_or_else(|| "-".into());
+
+    let use_tty = ! config.batch
+        && ! config.answer_yes
+        && args.len() == 1
+        && config.command_fd.is_interactive();
+
+    if use_tty {
+        if ! config.prompt_Yn("quick_keygen.okay", format_args!(
+            "About to create a key for:\n    {:?}\n\nContinue?", uid_str))?
+        {
+            return Ok(());
+        }
+    }
+
+    if config.keydb().lookup_by_userid(&uid).is_ok() {
+        config.info(format_args!("A key for {} already exists", uid_str));
+        if ! config.answer_yes
+            && (! use_tty
+                || ! config.prompt_yN("quick_keygen.force",
+                                      format_args!("Create anyway?"))?)
+        {
+            config.status().emit(Status::Failure {
+                location: "genkey",
+                error: crate::error_codes::Error::GPG_ERR_USER_ID_EXISTS,
+            })?;
+            return Err(crate::error_codes::Error::GPG_ERR_USER_ID_EXISTS.into());
+        }
+        config.info(format_args!("creating anyway"));
+    }
+
+    // If algo or usage are given, only the primary key is created and
+    // no prompts are shown.
+    let create_subkey =
+        (algo == "-" || algo == "default" || algo == "future-default")
+        && (usage == "-" || usage == "default")
+    // Odd exception, but what the tests tell me:
+        && ! (args.len() == 4 && algo == "-" && usage == "-" && expire == "-");
+
+    let usage = if usage == "-" || usage.eq_ignore_ascii_case("default") {
+        KeyFlags::empty()
+            .set_certification()
+            .set_signing()
+    } else {
+        Parameter::parse_usage(&usage)?
+    };
+
+    let (pk_algo, pk_length, curve) =
+        parse_key_parameter_part(config, &algo, &usage)?;
+
+    let mut parameters = vec![
+        Parameter::KeyType(pk_algo),
+        Parameter::KeyUsage(usage),
+        Parameter::UserID(uid),
+        Parameter::CreationDate(config.now()),
+    ];
+
+    if expire == "-" || expire == "default" {
+        parameters.push(Parameter::ExpireDate(Some(
+            Duration::new(2 * 365 * 24 * 60 * 60, 0))));
+    } else {
+        parameters.push(Parameter::ExpireDate(
+            crate::utils::parse_expiration(config.now(), &expire)?));
+    }
+
+    if let Some(l) = pk_length {
+        parameters.push(Parameter::KeyLength(l));
+    }
+    if let Some(c) = curve.clone() {
+        parameters.push(Parameter::KeyCurve(c));
+    }
+
+    if create_subkey {
+        // The current future-default algorithm is signing-only.  Map
+        // it.
+        let (pk_algo, curve) = match (pk_algo, curve) {
+            (PublicKeyAlgorithm::EdDSA, Some(Curve::Ed25519))
+                => (PublicKeyAlgorithm::ECDH, Some(Curve::Cv25519)),
+            (p, c) => (p, c),
+        };
+
+        parameters.push(Parameter::SubkeyType(pk_algo));
+        parameters.push(Parameter::SubkeyUsage(KeyFlags::empty()
+                                               .set_transport_encryption()
+                                               .set_storage_encryption()));
+        parameters.push(Parameter::SubkeyExpireDate(None));
+        if let Some(l) = pk_length {
+            parameters.push(Parameter::SubkeyLength(l));
+        }
+        if let Some(c) = curve {
+            parameters.push(Parameter::SubkeyCurve(c));
+        }
+    }
+
+    if let Some(p) = config.static_passphrase.borrow().as_ref()
+        .filter(|_| config.batch)
+    {
+        parameters.push(Parameter::Passphrase(p.clone()));
+    }
+
+    create_key(config, "[command line]", 0,
+               false, false, None, parameters).await
 }
 
 /// Dispatches the --quick-add-key command.
@@ -714,8 +841,10 @@ async fn create_key(config: &mut crate::Config<'_>, filename: &str, i: usize,
         });
     let key_validity_period =
         parameters.iter().find_map(Parameter::expiration_date);
-    if let Some(v) = key_validity_period {
-        parameters.push(Parameter::SubkeyExpireDate(Some(v)));
+    if parameters.iter().find(|p| matches!(p, Parameter::SubkeyExpireDate(_))).is_none() {
+        if let Some(v) = key_validity_period {
+            parameters.push(Parameter::SubkeyExpireDate(Some(v)));
+        }
     }
     let subkey_validity_period =
         parameters.iter().find_map(Parameter::subkey_expiration_date);

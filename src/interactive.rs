@@ -40,6 +40,11 @@ impl Fd {
         fd
     }
 
+    /// Whether the Chameleon is configured for interactive use.
+    pub fn is_interactive(&self) -> bool {
+        self.interactive
+    }
+
     /// Prompts the given question `prompt`, and reads a line from the
     /// command-fd or stdin.
     fn get_response(&self) -> Result<String> {
@@ -123,5 +128,30 @@ impl Config<'_> {
 
         let a = a.to_lowercase();
         Ok(a == "y" || a == "yes")
+    }
+
+    /// Prompts the given yes/no question, defaulting to yes.
+    ///
+    /// Prompts the given yes/no question `keyword` (when reading via
+    /// command-fd) or `prompt` (when reading via `stdin`), and reads
+    /// a line from the command-fd or stdin, as appropriate.  Defaults
+    /// to `yes`.
+    #[allow(non_snake_case)]
+    pub fn prompt_Yn(&self, keyword: &str, prompt: fmt::Arguments)
+        -> Result<bool>
+    {
+        if self.command_fd.interactive && self.batch {
+            return Err(anyhow::anyhow!(
+                "Sorry, we are in batchmode - can't get input"));
+        }
+
+        self.status_fd.emit_or_prompt(
+            Status::GetBool(keyword.into()),
+            &format!("{} (Y/n)", prompt))?;
+        let a = self.command_fd.get_response()?;
+        self.status_fd.emit(Status::GotIt)?;
+
+        let a = a.to_lowercase();
+        Ok(! (a == "n" || a == "no"))
     }
 }

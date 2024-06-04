@@ -1,0 +1,127 @@
+{
+  "outputs": [
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: keybox '/HOMEDIR/pubring.kbx' created\\ngpg: /HOMEDIR/trustdb.gpg: trustdb created\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--batch\"",
+        "\"--passphrase=streng geheim\"",
+        "\"--quick-generate-key\"",
+        "\"Alice Lovelace <alice@lovelace.name>\"",
+        "\"future-default\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: directory '/HOMEDIR/openpgp-revocs.d' created\\ngpg: revocation certificate stored as '/HOMEDIR/openpgp-revocs.d/310F168FB9EBCFF5E25F2F6B568A4E3A08CFA01E.rev'\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 310F168FB9EBCFF5E25F2F6B568A4E3A08CFA01E 0\\n[GNUPG:] KEY_CREATED B 310F168FB9EBCFF5E25F2F6B568A4E3A08CFA01E\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--check-trustdb\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: marginals needed: 3  completes needed: 1  trust model: pgp\\ngpg: depth: 0  valid:   1  signed:   0  trust: 0-, 0q, 0n, 0m, 0f, 1u\\ngpg: next trustdb check due at 2024-12-19\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED [FINGERPRINT-0] 0\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:1734625073:3:1:5\\npub:u:255:22:[KEYID-0]:1671553073:1734625073::u:::scESC:::::ed25519:::0:\\nfpr:::::::::[FINGERPRINT-0]:\\nuid:u::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsub:u:255:18:3F82D81F5E3A9498:1671553073::::::e:::::cv25519::\\nfpr:::::::::4B903FD58085BEB7477231673F82D81F5E3A9498:\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    }
+  ],
+  "former_us_outputs": [
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--batch\"",
+        "\"--passphrase=streng geheim\"",
+        "\"--quick-generate-key\"",
+        "\"Alice Lovelace <alice@lovelace.name>\"",
+        "\"future-default\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\ngpg: directory '/HOMEDIR/openpgp-revocs.d' created\\ngpg: revocation certificate stored as '/HOMEDIR/openpgp-revocs.d/5E83BF01BFCF9966707B224B343985F27E838D0D.rev'\\n",
+      "stdout": "",
+      "statusfd": "[GNUPG:] KEY_CONSIDERED 5E83BF01BFCF9966707B224B343985F27E838D0D 0\\n[GNUPG:] KEY_CREATED B 5E83BF01BFCF9966707B224B343985F27E838D0D\\n",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--check-trustdb\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    },
+    {
+      "args": [
+        "\"--faked-system-time=1671553073!\"",
+        "\"--list-keys\"",
+        "\"--with-colons\""
+      ],
+      "stderr": "gpg: WARNING: unsafe permissions on homedir '/HOMEDIR'\\ngpg: WARNING: running with faked system time: 2022-12-20 16:17:53\\n",
+      "stdout": "tru::1:1671553073:0:3:1:5\\npub:u:255:22:[KEYID-0]:1671553073:1734625073::u:::scESC:::::ed25519:::0:\\nfpr:::::::::[FINGERPRINT-0]:\\nuid:u::::1671553073::97A0BD8BBC59E076934333E17C8D55AD5252B82F::Alice Lovelace <alice@lovelace.name>::::::::::0:\\nsub:u:255:18:C57685AB34A9745E:1671553073:1734625073:::::e:::::cv25519::\\nfpr:::::::::2BE07DB8BE58CBA492A9C9F9C57685AB34A9745E:\\n",
+      "statusfd": "",
+      "status": "exit status: 0",
+      "files": {}
+    }
+  ],
+  "artifacts": {},
+  "dynamic_upper_bounds": [
+    [
+      0,
+      86,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      176,
+      42
+    ],
+    [
+      19,
+      0,
+      0
+    ]
+  ]
+}
