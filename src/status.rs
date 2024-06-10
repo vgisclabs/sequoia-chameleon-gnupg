@@ -103,7 +103,10 @@ impl Fd {
         if self.enabled() {
             self.emit(status)
         } else {
-            Ok(writeln!(io::stdout(), "{}", msg)?)
+            let mut sink = io::stdout();
+            write!(&mut sink, "{} ", msg)?;
+            sink.flush()?;
+            Ok(())
         }
     }
 }
