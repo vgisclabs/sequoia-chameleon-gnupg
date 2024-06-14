@@ -678,10 +678,6 @@ impl<'a, 'store> VHelper<'a, 'store> {
             primary: ka.cert().fingerprint(),
         })?;
 
-        // Check that the issuing key matches the policy (for
-        // --assert-pubkey-algo).
-        self.control.pubkey_algo_policy.check(self.control, ka.key())?;
-
         let validity =
             self.control.lookup_certs(
                 &Query::ExactKey(ka.cert().key_handle()))?

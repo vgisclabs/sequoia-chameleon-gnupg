@@ -22,7 +22,6 @@ mod macros;
 #[macro_use]
 pub mod argparse;
 use argparse::{Argument, Opt, flags::*};
-pub mod assert_pubkey_algo;
 pub mod babel;
 pub mod clock;
 pub mod common;
@@ -52,9 +51,6 @@ pub enum CmdOrOpt {
     oWeakDigest,
     oEnableSpecialFilenames,
     oDebug,
-
-    // Backported from GnuPG 2.4.5.
-    oAssertPubkeyAlgo,
 
     // Special, implicit commands.
     aHelp = 'h' as isize,
@@ -87,9 +83,6 @@ const OPTIONS: &[Opt<CmdOrOpt>] = &[
     Opt { short_opt: oEnableSpecialFilenames, long_opt: "enable-special-filenames", flags: TYPE_NONE, description: "@", },
     Opt { short_opt: oDebug, long_opt: "debug", flags: TYPE_STRING, description: "@", },
 
-    // Backported from GnuPG 2.4.5.
-    Opt { short_opt: oAssertPubkeyAlgo, long_opt: "assert-pubkey-algo", flags: TYPE_STRING, description: "@", },
-
     // Special, implicit commands.
     Opt { short_opt: aHelp, long_opt: "help", flags: (TYPE_NONE | OPT_COMMAND), description: "@", },
     Opt { short_opt: aVersion, long_opt: "version", flags: (TYPE_NONE | OPT_COMMAND), description: "@", },
@@ -118,9 +111,6 @@ pub struct Config<'store> {
     quiet: bool,
     verbose: usize,
     verify_options: verify::VerifyOptions,
-
-    // Backported from GnuPG 2.4.5.
-    pubkey_algo_policy: assert_pubkey_algo::Policy,
 
     // For sharing the code with with gpg.rs.
     list_only: bool,
@@ -155,9 +145,6 @@ impl<'store> Config<'store> {
             quiet: false,
             verbose: 0,
             verify_options: Default::default(),
-
-            // Backported from GnuPG 2.4.5.
-            pubkey_algo_policy: Default::default(),
 
             // For sharing the code with with gpg.rs.
             list_only: false,
@@ -333,11 +320,6 @@ fn real_main() -> anyhow::Result<()> {
             Argument::Option(oEnableSpecialFilenames, _) => {
                 opt.enable_special_filenames = true;
             },
-
-            // Backported from GnuPG 2.4.5.
-            Argument::Option(oAssertPubkeyAlgo, value) =>
-                opt.pubkey_algo_policy.handle_cmdline_arg(
-                    value.as_str().unwrap())?,
 
             Argument::Option(aHelp, _)
                 | Argument::Option(aVersion, _)

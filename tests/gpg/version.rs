@@ -12,7 +12,6 @@ fn dump_options() -> Result<()> {
     diff.assert_success();
     diff.assert_equal_up_to(
         51 // Card options.
-            + 21 // Backported options.
             + 125 // Sequoia-specific options.
             + 0,
         0);

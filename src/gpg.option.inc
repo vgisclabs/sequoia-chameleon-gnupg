@@ -248,7 +248,6 @@ const OPTIONS: &[Opt<CmdOrOpt>] = &[
   Opt { short_opt: oForceOwnertrust, long_opt: "force-ownertrust", flags: TYPE_STRING, description: "@", },
 
 
-  Opt { short_opt: oAssertPubkeyAlgo, long_opt: "assert-pubkey-algo", flags: TYPE_STRING, description: "@", },
 
   Opt { short_opt: o1, long_opt: "Input", flags: (OPT_HEADER), description: "Options controlling the input", },
 

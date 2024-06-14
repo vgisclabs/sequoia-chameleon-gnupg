@@ -247,7 +247,6 @@
   ARGPARSE_s_s (oForceOwnertrust, "force-ownertrust", "@"),
 #endif
 
-  ARGPARSE_s_s (oAssertPubkeyAlgo,"assert-pubkey-algo", "@"),
 
   ARGPARSE_header ("Input", N_("Options controlling the input")),
 
