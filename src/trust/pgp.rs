@@ -126,12 +126,8 @@ impl Model for WoT {
         if precompute {
             store.precompute();
         }
-        let n = wot::Network::new(store)?;
-
-        let roots = wot::Roots::new(trust_roots.iter().cloned());
-        let mut q = wot::QueryBuilder::new(&n);
-        q.roots(roots);
-        let mut q = q.build();
+        let roots = wot::Roots::new(trust_roots.clone());
+        let mut n = wot::Network::new(store, roots)?;
 
         if self.gnupg_roots {
             let mut possible_roots: Vec<Root> = Vec::new();
@@ -217,7 +213,7 @@ impl Model for WoT {
                         }
 
                         let authenticated_amount
-                            = q.authenticate(
+                            = n.authenticate(
                                 u.userid(), other_root.fingerprint(),
                                 wot::FULLY_TRUSTED)
                             .amount();
@@ -232,10 +228,10 @@ impl Model for WoT {
                             found_one = true;
 
                             trust_roots.push(other_root);
+                            let store = wot::store::CertStore::from_store(
+                                &config.keydb, &config.policy, at);
                             let roots = wot::Roots::new(trust_roots.clone());
-                            let mut builder = wot::QueryBuilder::new(&n);
-                            builder.roots(roots);
-                            q = builder.build();
+                            n = wot::Network::new(store, roots)?;
 
                             continue 'root;
                         } else {
@@ -259,7 +255,6 @@ impl Model for WoT {
         Ok(Box::new(WoTViewAt {
             wot: self.clone(),
             config,
-            roots: trust_roots,
             ultimate_roots,
             network: n,
         }))
@@ -271,7 +266,6 @@ struct WoTViewAt<'a, 'store> {
     wot: WoT,
 
     config: &'a Config<'store>,
-    roots: Vec<wot::Root>,
 
     /// The set of keys for which we report `ValidityLevel::Ultimate`.
     ultimate_roots: BTreeSet<Fingerprint>,
@@ -309,12 +303,8 @@ impl<'a, 'store> ModelViewAt<'a, 'store> for WoTViewAt<'a, 'store> {
             return Ok(ValidityLevel::Ultimate.into());
         }
 
-        let mut q = wot::QueryBuilder::new(&self.network);
-        q.roots(wot::Roots::new(self.roots.clone()));
-        let q = q.build();
-
-        let paths =
-            q.authenticate(userid, fingerprint.clone(), wot::FULLY_TRUSTED);
+        let paths = self.network.authenticate(
+            userid, fingerprint.clone(), wot::FULLY_TRUSTED);
 
         let amount = paths.amount();
         t!("authenticate({:?}, {}) => {}", userid, fingerprint, amount);

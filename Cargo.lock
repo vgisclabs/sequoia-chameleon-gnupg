@@ -2354,9 +2354,9 @@ checksum = "61697e0a1c7e512e84a621326239844a24d8207b4669b41bc18b32ea5cbf988b"
 
 [[package]]
 name = "sequoia-cert-store"
-version = "0.5.3"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "83bd0304e4a7dc7af3aebb827ec3bf980b5e85d5a04c0c3bd9032e29d677e526"
+checksum = "41c48ce5b9596be3d68d197e6b2a9f7ec787d49a8dd5a758ffc53e2b381cd0e4"
 dependencies = [
  "anyhow",
  "crossbeam",
@@ -2371,6 +2371,7 @@ dependencies = [
  "smallvec",
  "thiserror",
  "tokio",
+ "url",
 ]
 
 [[package]]
@@ -2552,9 +2553,9 @@ dependencies = [
 
 [[package]]
 name = "sequoia-wot"
-version = "0.11.0"
+version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d16930db37050e74cfdae18654108e8f78eeeb3d659336223b657ccc9a3a6141"
+checksum = "486e5d22de6407e3f8b57104da7d1e34d60fc4101c2af0c49d1435542c0b3ddb"
 dependencies = [
  "anyhow",
  "chrono",
