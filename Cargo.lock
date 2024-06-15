@@ -2521,7 +2521,7 @@ dependencies = [
 
 [[package]]
 name = "sequoia-chameleon-gnupg"
-version = "0.9.0"
+version = "0.10.0"
 dependencies = [
  "anyhow",
  "base64 0.21.7",
