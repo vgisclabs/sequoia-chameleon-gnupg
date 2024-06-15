@@ -254,6 +254,8 @@ impl Model for WoT {
             }
         }
 
+        t!("computed trust_roots: {:?}", trust_roots);
+
         Ok(Box::new(WoTViewAt {
             wot: self.clone(),
             config,
@@ -301,7 +303,6 @@ impl<'a, 'store> ModelViewAt<'a, 'store> for WoTViewAt<'a, 'store> {
     fn validity(&self, userid: &UserID, fingerprint: &Fingerprint)
                 -> Result<Validity> {
         tracer!(TRACE, "WoT::validity");
-        t!("authenticating ({:?}, {})", userid, fingerprint);
         let mut q = wot::QueryBuilder::new(&self.network);
         q.roots(wot::Roots::new(self.roots.clone()));
         let q = q.build();
@@ -310,6 +311,9 @@ impl<'a, 'store> ModelViewAt<'a, 'store> for WoTViewAt<'a, 'store> {
             q.authenticate(userid, fingerprint.clone(), wot::FULLY_TRUSTED);
 
         let amount = paths.amount();
+        t!("authenticate({:?}, {}) => {}", userid, fingerprint, amount);
+        t!("paths: {:?}", paths);
+
         if amount >= wot::FULLY_TRUSTED {
             if self.ultimate_roots.contains(fingerprint) {
                 Ok(ValidityLevel::Ultimate.into())
