@@ -303,6 +303,12 @@ impl<'a, 'store> ModelViewAt<'a, 'store> for WoTViewAt<'a, 'store> {
     fn validity(&self, userid: &UserID, fingerprint: &Fingerprint)
                 -> Result<Validity> {
         tracer!(TRACE, "WoT::validity");
+
+        if self.ultimate_roots.contains(fingerprint) {
+            t!("{} is an ultimate root", fingerprint);
+            return Ok(ValidityLevel::Ultimate.into());
+        }
+
         let mut q = wot::QueryBuilder::new(&self.network);
         q.roots(wot::Roots::new(self.roots.clone()));
         let q = q.build();
@@ -315,11 +321,7 @@ impl<'a, 'store> ModelViewAt<'a, 'store> for WoTViewAt<'a, 'store> {
         t!("paths: {:?}", paths);
 
         if amount >= wot::FULLY_TRUSTED {
-            if self.ultimate_roots.contains(fingerprint) {
-                Ok(ValidityLevel::Ultimate.into())
-            } else {
-                Ok(ValidityLevel::Fully.into())
-            }
+            Ok(ValidityLevel::Fully.into())
         } else if amount >= 60 { // XXX magic number
             Ok(ValidityLevel::Marginal.into())
         } else {
