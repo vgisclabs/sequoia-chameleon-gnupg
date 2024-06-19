@@ -1,50 +1,49 @@
-# Default image for jobs
-image: 192.168.122.1:5000/sequoia-pgp/build-docker-image/trixie-prebuild:latest
-
-.test:
-  before_script:
-    # The tests rely on gpg-agent.  Make sure it is available.
-    - apt-get update -y -qq && apt-get install -y sq gpg-agent
-    - if [ -d target ]; then find target | wc --lines; du -sh target; fi
-    - if [ -d cargo ]; then find cargo | wc --lines; du -sh cargo; fi
-    - rustc --version
-    - cargo --version
-    - apt-cache policy libgcrypt20 gpg-agent
-    - gpg-agent --version
-    - mkdir -p /run/user/$UID # For GnuPG's socket directories
-  script:
-    - cargo test
-
-test-trixie:
-  extends: .test
-
-test-rust-stable:
-  image: 192.168.122.1:5000/sequoia-pgp/build-docker-image/rust-stable:latest
-  extends: .test
-
-test-fedora:
-  image: fedora
-  script:
-    - dnf install -y cargo openssl openssl-devel gnupg sqlite-devel sequoia-sq
-    - cargo test --no-default-features --features=crypto-openssl
-
-all_commits:
-  # Test each commit up to main, to facilitate bisecting.
-  interruptible: true
-  script:
-    - apt-get update -y -qq && apt-get install -y sq gpg-agent
-    - if [ -d target ]; then find target | wc --lines; du -sh target; fi
-    - if [ -d cargo ]; then find cargo | wc --lines; du -sh cargo; fi
-    - rustc --version
-    - cargo --version
-    - apt-cache policy libgcrypt20 gpg-agent
-    - gpg-agent --version
-    - mkdir -p /run/user/$UID # For GnuPG's socket directories
-    - .ci/all_commits.sh
-  variables:
-    GIT_STRATEGY: clone
+stages:
+  - pre-check
+  - build
+  - test
 
 variables:
-  CARGO_HOME: $CI_PROJECT_DIR/cargo
-  CARGO_FLAGS: --color always
-  CARGO_INCREMENTAL: 0
+  SEQUOIA_CRYPTO_POLICY: ""
+  RUN_CLIPPY: "false"
+  RUN_WINDOWS: "false"
+
+include:
+  - component: "gitlab.com/sequoia-pgp/common-ci/sequoia-pipeline@main"
+
+.gpg_agent:
+  check:
+    # The tests rely on gpg-agent.  Make sure it is available.
+    - if [[ $(command -v apt-get) ]] ; then
+      apt-get update -y -qq
+      && apt-get install -y sq gpg-agent
+      && apt-cache policy libgcrypt20 gpg-agent ;
+      elif [[ $(command -v dnf) ]] ; then
+      dnf install -y sequoia-sq gnupg ;
+      elif [[ $(command -v apk) ]] ; then
+      apk add --update sequoia-sq gnupg tzdata ;
+      fi
+    - gpg-agent --version
+    - sq version
+    - mkdir -p /run/user/$UID # For GnuPG's socket directories
+
+# Modifications to the linux jobs:
+check:
+  before_script:
+    - !reference [.gpg_agent, check]
+    - !reference [.before_script, end] # Comes from common-ci
+
+linux:
+  before_script:
+    - !reference [.gpg_agent, check]
+    - !reference [.before_script, end] # Comes from common-ci
+
+trixie-armv7:
+  before_script:
+    - !reference [.gpg_agent, check]
+    - !reference [.before_script, end] # Comes from common-ci
+
+alpine-openssl:
+  before_script:
+    - !reference [.gpg_agent, check]
+    - !reference [.before_script, end] # Comes from common-ci
