@@ -1,5 +1,5 @@
 # Default image for jobs
-image: 192.168.122.1:5000/sequoia-pgp/build-docker-image/trixie-prebuild:latest
+image: jampot.sequoia-pgp.org/sequoia-pgp/build-docker-image/trixie-prebuild:latest
 
 .test:
   before_script:
@@ -19,7 +19,7 @@ test-trixie:
   extends: .test
 
 test-rust-stable:
-  image: 192.168.122.1:5000/sequoia-pgp/build-docker-image/rust-stable:latest
+  image: jampot.sequoia-pgp.org/sequoia-pgp/build-docker-image/rust-stable:latest
   extends: .test
 
 test-fedora:
