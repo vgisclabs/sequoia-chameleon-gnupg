@@ -1457,16 +1457,6 @@ dependencies = [
 
 [[package]]
 name = "idna"
-version = "0.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "634d9b1461af396cad843f47fdba5597a4f9e6ddd4bfb6ff5d85028c25cb12f6"
-dependencies = [
- "unicode-bidi",
- "unicode-normalization",
-]
-
-[[package]]
-name = "idna"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4716a3a0933a1d01c2f72450e89596eb51dd34ef3c211ccd875acdf1f8fe47ed"
@@ -1716,12 +1706,6 @@ name = "memchr"
 version = "2.7.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "78ca9ab1a0babb1e7d5695e3530886289c18cf2f87ec19a575a0abdce112e3a3"
-
-[[package]]
-name = "memsec"
-version = "0.6.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0fa0916b001582d253822171bd23f4a0229d32b9507fae236f5da8cad515ba7c"
 
 [[package]]
 name = "memsec"
@@ -2524,7 +2508,7 @@ name = "sequoia-chameleon-gnupg"
 version = "0.10.0"
 dependencies = [
  "anyhow",
- "base64 0.21.7",
+ "base64 0.22.1",
  "buffered-reader",
  "bzip2",
  "chrono",
@@ -2605,7 +2589,7 @@ dependencies = [
  "lalrpop-util",
  "lazy_static",
  "libc",
- "memsec 0.7.0",
+ "memsec",
  "rand",
  "sequoia-openpgp",
  "socket2",
@@ -2643,9 +2627,9 @@ dependencies = [
 
 [[package]]
 name = "sequoia-openpgp"
-version = "1.20.0"
+version = "1.21.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "06f82708c8568218b8544b4abbba1f6483067dca0a946a54991c1d3f424dcade"
+checksum = "c81335e4cf7506578920b35c011cd76a4b06a876cdef1f02802d53607ff84f49"
 dependencies = [
  "aes-gcm",
  "anyhow",
@@ -2661,12 +2645,12 @@ dependencies = [
  "ed25519-dalek",
  "flate2",
  "getrandom",
- "idna 0.5.0",
+ "idna 1.0.0",
  "lalrpop",
  "lalrpop-util",
  "lazy_static",
  "libc",
- "memsec 0.6.3",
+ "memsec",
  "nettle",
  "num-bigint-dig",
  "once_cell",

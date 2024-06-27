@@ -911,7 +911,6 @@ impl<'a, 'store> VHelper<'a, 'store> {
                         continue;
                     }
 
-                    let mut sig = (*sig).clone();
                     let openpgp_error = error.downcast_ref::<openpgp::Error>();
                     if sig.verify(ka.key()).is_ok()
                         && self.control.policy().signature(
