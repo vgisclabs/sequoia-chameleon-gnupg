@@ -1,5 +1,10 @@
 //! Controls tracing via --debug flags.
 
+use std::{
+    sync::OnceLock,
+    time::{Duration, SystemTime},
+};
+
 /// Parses command line arguments for --debug flags.
 pub fn parse_command_line() {
     let args: Vec<_> = std::env::args().skip(1).collect();
@@ -33,6 +38,7 @@ fn handle_command_line_flag(f: &str) {
             safe_eprintln!("gpg:        keydb");
             safe_eprintln!("gpg:        keyserver");
             safe_eprintln!("gpg:        parcimonie");
+            safe_eprintln!("gpg:        timing");
             safe_eprintln!("gpg:        trust");
             std::process::exit(0);
         },
@@ -73,6 +79,7 @@ pub fn enable(module: &str) {
         "keydb" => crate::keydb::trace(true),
         "keyserver" => crate::keyserver::trace(true),
         "parcimonie" => crate::parcimonie::trace(true),
+        "timing" => enable_trace_timing(),
         "trust" => crate::trust::trace(true),
         _ => safe_eprintln!("gpg: unknown debug flag '{}' ignored", module),
     }
@@ -96,6 +103,16 @@ pub fn enabled_modules() -> Option<String> {
     } else {
         Some(r.join(","))
     }
+}
+
+static STARTUP_TIME: OnceLock<SystemTime> = OnceLock::new();
+
+fn enable_trace_timing() {
+    let _ = STARTUP_TIME.set(SystemTime::now());
+}
+
+pub fn trace_timing() -> Option<Duration> {
+    STARTUP_TIME.get().and_then(|t| t.elapsed().ok())
 }
 
 // The debugging flags.

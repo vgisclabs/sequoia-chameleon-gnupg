@@ -23,7 +23,10 @@ macro_rules! trace_module {
 macro_rules! trace {
     ( $TRACE:expr, $fmt:expr, $($pargs:expr),* ) => {
         if $TRACE.load(std::sync::atomic::Ordering::Relaxed) {
-            let m = format!($fmt, $($pargs),*);
+            let mut m = format!($fmt, $($pargs),*);
+            if let Some(d) = crate::tracing::trace_timing() {
+                m = format!("{:?}: {}", d, m);
+            }
             safe_eprintln!("gpg: DBG: {}", m);
             crate::with_invocation_log(|w| Ok(writeln!(w, "{}", m)?));
         }

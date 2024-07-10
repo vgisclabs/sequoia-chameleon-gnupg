@@ -390,3 +390,9 @@ where
     F: FnOnce(&mut dyn std::io::Write) -> anyhow::Result<()>,
 {
 }
+
+pub mod tracing {
+    pub fn trace_timing() -> Option<std::time::Duration> {
+        None
+    }
+}
