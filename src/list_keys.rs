@@ -434,8 +434,9 @@ pub async fn async_list_keys<'a, 'store: 'a, S>(
 where
     S: Write,
 {
+    let now = config.now();
     let vtm = config.trust_model_impl.with_policy_and_precompute(
-        config, Some(config.now()), list_all && ! list_secret_keys_mode)?;
+        config, Some(now), list_all && ! list_secret_keys_mode)?;
     let p = vtm.policy();
 
     let mut secrets = KeyInfoList::empty();
@@ -499,7 +500,7 @@ where
         }
 
         let acert = AuthenticatedCert::new(vtm.as_ref(), &cert)?;
-        let vcert = cert.with_policy(p, config.now()).ok();
+        let vcert = cert.with_policy(p, now).ok();
         let cert_fp = cert.fingerprint();
         let have_secret = has_secret.contains(&cert_fp);
         let ownertrust = config.trustdb.get_ownertrust(&cert_fp)
@@ -624,7 +625,7 @@ where
             Some(userid.userid()) != primary_userid
         });
         for (validity, uid) in userids.into_iter() {
-            let vuid = uid.clone().with_policy(p, config.now()).ok();
+            let vuid = uid.clone().with_policy(p, now).ok();
 
             // Unless explicitly requested, we don't list unusable
             // user ids.
@@ -693,7 +694,7 @@ where
                 continue;
             }
 
-            let vsubkey = subkey.clone().with_policy(p, config.now()).ok();
+            let vsubkey = subkey.clone().with_policy(p, now).ok();
             let subkey_fp = subkey.fingerprint();
             let have_secret = has_secret.contains(&subkey_fp);
             let token_sn = secrets.lookup_by_key(subkey.key())
