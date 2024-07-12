@@ -630,7 +630,7 @@ where
             // user ids.
             if ! config.list_options.unusable_uids {
                 // We never list user ids without any self signatures.
-                if uid.self_signatures().count() == 0 {
+                if uid.self_signatures().next().is_none() {
                     continue;
                 }
 
