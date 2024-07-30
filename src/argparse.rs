@@ -496,6 +496,14 @@ impl<T: Copy + Debug + PartialEq + Eq + Into<isize> + 'static> Iterator for Iter
         };
 
         let (long, mut a) = if self.cmdline {
+            if arg == "--" {
+                // This indicates the start of positional arguments,
+                // while not being an argument by itself.  Having
+                // consumed it, set the positional flag and recurse.
+                self.seen_positional = true;
+                return self.next();
+            }
+
             if ! arg.starts_with("-") {
                 // A positional argument.
                 self.seen_positional = true;
@@ -808,6 +816,20 @@ mod tests {
                    Argument::Option(oQuiet, Value::None));
         assert_eq!(i.next().unwrap().unwrap(),
                    Argument::Positional("-".into()));
+        assert!(i.next().is_none());
+
+        let mut i =
+            parser.parse_args(vec!["--quiet", "--"]);
+        assert_eq!(i.next().unwrap().unwrap(),
+                   Argument::Option(oQuiet, Value::None));
+        assert!(i.next().is_none());
+
+        let mut i =
+            parser.parse_args(vec!["--quiet", "--", "--quiet"]);
+        assert_eq!(i.next().unwrap().unwrap(),
+                   Argument::Option(oQuiet, Value::None));
+        assert_eq!(i.next().unwrap().unwrap(),
+                   Argument::Positional("--quiet".into()));
         assert!(i.next().is_none());
 
         Ok(())
