@@ -337,11 +337,11 @@ fn real_main() -> anyhow::Result<()> {
 
     // Get the default one if no keyring has been specified.
     if keyrings.is_empty() {
-        opt.keydb.add_resource(&opt.homedir, "trustedkeys.kbx", true, true)?;
+        opt.keydb.add_resource(&opt.homedir, "trustedkeys.kbx", Some(true), true, true)?;
     }
 
     for path in keyrings {
-        opt.keydb.add_resource(&opt.homedir, &path, true, false)?;
+        opt.keydb.add_resource(&opt.homedir, &path, None, true, false)?;
     }
 
     opt.keydb.initialize(true)?;

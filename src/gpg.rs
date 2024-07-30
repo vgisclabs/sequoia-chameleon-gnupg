@@ -2712,16 +2712,16 @@ fn real_main() -> anyhow::Result<()> {
 
     // Get the default one if no keyring has been specified.
     if keyrings.is_empty() {
-        opt.keydb.add_resource(&opt.homedir, "pubring.gpg", false, true)?;
+        opt.keydb.add_resource(&opt.homedir, "pubring.gpg", Some(true), false, true)?;
 
         // Use the keybox database if it is there.
         let _ = opt.keydb.add_resource(
             &opt.homedir, "gnupg-kbx-db:public-keys.d/pubring.db",
-            true, false)?;
+            Some(true), true, false)?;
     }
 
     for path in keyrings {
-        opt.keydb.add_resource(&opt.homedir, path.as_ref(), true, false)?;
+        opt.keydb.add_resource(&opt.homedir, path.as_ref(), None, true, false)?;
     }
 
     if let Some(aGPGConfTest) = command {

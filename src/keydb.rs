@@ -136,13 +136,14 @@ impl<'store> KeyDB<'store> {
     pub fn add_resource(&mut self,
                         home_dir: &Path,
                         mut url: &str,
+                        gnupghome_relative: Option<bool>,
                         read_only: bool,
                         default: bool)
                         -> Result<()>
     {
         tracer!(TRACE, "KeyDB::add_resource");
-        t!("home_dir {:?}, url {:?}, read_only {:?}, default {:?}",
-           home_dir, url, read_only, default);
+        t!("home_dir {:?}, url {:?}, gnupghome_relative: {:?}, read_only {:?}, default {:?}",
+           home_dir, url, gnupghome_relative, read_only, default);
 
         let mut kind = None;
         let create = ! read_only && self.resources.is_empty();
@@ -158,12 +159,21 @@ impl<'store> KeyDB<'store> {
             url = &url[13..];
         }
 
-        // Expand tildes.
-        let mut path = PathBuf::from(shellexpand::tilde(url).as_ref());
+        // If there is no path separator in the URL, treat it as
+        // relative to the GNUPGHOME.  GnuPG first checks whether
+        // there is a path separator, then does the tilde expansion.
+        let gnupghome_relative = gnupghome_relative.unwrap_or_else(|| {
+            let p = PathBuf::from(url);
+            p.iter().count() == 1
+        });
 
-        if ! path.is_absolute() {
-            path = home_dir.join(path);
-        }
+        // Canonicalize the path.
+        let mut path = if gnupghome_relative {
+            home_dir.join(url)
+        } else {
+            // Expand tildes.
+            PathBuf::from(shellexpand::tilde(url).as_ref())
+        };
         t!("abolute path: {:?}", path);
 
         if kind.is_none() {
