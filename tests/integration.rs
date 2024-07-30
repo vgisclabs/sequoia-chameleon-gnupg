@@ -471,7 +471,7 @@ impl Diff {
     fn distances(&self) -> &[(&'static str, Vec<u8>, Vec<u8>, Option<usize>)] {
         self._distances.get_or_init(|| {
             let recorder_dir = self.recorder_dir.clone();
-            let workdir = self.workdir.path().clone();
+            let workdir = self.workdir.path();
             Self::components().map(move |c: &'static str| {
                 let mut oracle =
                     fs::read(recorder_dir.join(c)).unwrap_or_default();
