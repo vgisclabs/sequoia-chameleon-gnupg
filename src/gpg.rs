@@ -2721,7 +2721,7 @@ fn real_main() -> anyhow::Result<()> {
     }
 
     for path in keyrings {
-        opt.keydb.add_resource(&opt.homedir, path, true, false)?;
+        opt.keydb.add_resource(&opt.homedir, path.as_ref(), true, false)?;
     }
 
     if let Some(aGPGConfTest) = command {

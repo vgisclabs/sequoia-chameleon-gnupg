@@ -133,20 +133,17 @@ impl<'store> KeyDB<'store> {
     }
 
     #[allow(dead_code)]
-    pub fn add_resource<U>(&mut self,
-                           home_dir: &Path,
-                           url: U,
-                           read_only: bool,
-                           default: bool)
-                           -> Result<()>
-    where
-        U: AsRef<str>,
+    pub fn add_resource(&mut self,
+                        home_dir: &Path,
+                        mut url: &str,
+                        read_only: bool,
+                        default: bool)
+                        -> Result<()>
     {
         tracer!(TRACE, "KeyDB::add_resource");
         t!("home_dir {:?}, url {:?}, read_only {:?}, default {:?}",
-           home_dir, url.as_ref(), read_only, default);
+           home_dir, url, read_only, default);
 
-        let mut url = url.as_ref();
         let mut kind = None;
         let create = ! read_only && self.resources.is_empty();
 

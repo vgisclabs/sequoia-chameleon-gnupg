@@ -341,7 +341,7 @@ fn real_main() -> anyhow::Result<()> {
     }
 
     for path in keyrings {
-        opt.keydb.add_resource(&opt.homedir, path, true, false)?;
+        opt.keydb.add_resource(&opt.homedir, &path, true, false)?;
     }
 
     opt.keydb.initialize(true)?;
