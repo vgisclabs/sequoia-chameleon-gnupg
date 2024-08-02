@@ -195,26 +195,29 @@ GPGME, also require `gpgconf` to function.
 ### Trust Models
 
 The Chameleon implements a subset of the trust models implemented by
-GnuPG, and some specific to Sequoia.
+GnuPG, and some specific to Sequoia.  The following table shows how
+the Chameleon and GnuPG interpret different values given to the
+"--trust-model" parameter.
 
-| Name          | Chameleon | GnuPG | Description                             |
-|---------------|-----------|-------|-----------------------------------------|
-| pgp           | ✓         | ✓     | The default, alias for `sequoia+gnupg`. |
-| gnupg         | ✓         | ✗     | GnuPG's variant of the Web of Trust.    |
-| external      | ✗         | ?     | Looks like a remnant.                   |
-| classic       | ✓ (1)     | ✓     | Not yet implemented.                    |
-| direct        | ✗         | ✓     | Not yet implemented.                    |
-| tofu          | ✗         | ✓     | Trust on first use.                     |
-| tofu+pgp      | ✓ (1)     | ✓     | Combines `gnupg` and `tofu`.            |
-| auto          | ✓ (2)     | ✓     | Reads trust model from trust database.  |
-| sequoia       | ✓         | ✗     | Uses the `trust-root` from the cert-d.  |
-| sequoia+gnupg | ✓         | ✗     | Combines `sequoia` and `gnupg`.         |
+| Name            | Chameleon     | GnuPG      |
+|-----------------|---------------|------------|
+| `auto`          | Auto          | Auto       |
+| `sequoia`       | Sequoia       | ✗          |
+| `sequoia+gnupg` | Sequoia+Gnupg | ✗          |
+| `pgp`           | Sequoia+GnuPG | GnuPG      |
+| `gnupg`         | GnuPG         | ✗          |
+| `tofu`          | ✗             | Tofu       |
+| `tofu+pgp`      | Sequoia+Gnupg | Tofu+GnuPG |
+| `classic`       | Sequoia+Gnupg | Classic    |
+| `direct`        | ✗             | Direct     |
+| `external`      | ✗             | External   |
 
-Notes:
+The trust models are described below.
 
-1. In the Chameleon, this is an alias for `sequoia+gnupg`.
-2. Both the Chameleon and GnuPG default to `pgp` here, but for the
-   Chameleon that means `sequoia+gnupg` and for GnuPG just `gnupg`.
+#### Auto
+
+The trust model is read from the trust database.  If there is no trust
+database, defaults to `pgp`.
 
 #### Sequoia
 
@@ -229,16 +232,45 @@ you can explicitly select the `sequoia` trust model to deactivate the
 `gnupg` trust model, which is a little bit cheaper, and is easier to
 reason about.
 
-#### GnuPG's variant of the Web of Trust
+#### Sequoia+GnuPG
+
+Combines the Sequoia trust model and the GnuPG trust model.
+
+#### GnuPG
 
 GnuPG uses the owner trust databases to select trust roots. In
 addition to ultimately trusted certs, also fully and marginally
 trusted certs are used as trust roots **if** they can be
-authenticated.
+authenticated.  This is the trust model used in PGP6.
 
 Currently, we don't honor the constraint on the lengths of
 certification chains (parameter `--max-cert-depth`), but this will be
 implemented at some point.
+
+#### Tofu
+
+Trust-On-First-Use provides asymptotic trust, i.e. as the time goes
+on, and the observed binding between user IDs and certificates doesn't
+change, trust into the binding increases.
+
+#### Tofu+PGP
+
+Combines the Tofu trust model with the GnuPG trust model.
+
+#### Classic
+
+Like the GnuPG trust model, but disregards trust delegations via trust
+signatures.  This is the trust model of PGP2.
+
+#### Direct
+
+Uses owner trust values to validate authenticity of user IDs on
+certificates.
+
+#### External
+
+Uses the trust database, but refrains from modifying it.  This is left
+to an external program.
 
 ### Known deliberate divergences
 
