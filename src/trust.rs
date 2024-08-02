@@ -77,7 +77,7 @@ impl TrustModel {
                                   trust_config.completes_needed)
                 .build(),
             Always => Ok(Box::new(always::Always::default())),
-            _ => Err(anyhow::anyhow!("Trust model {:?} not implemented", self))
+            _ => Err(anyhow::anyhow!("Trust model {:?} not implemented", model))
         }
     }
 }
