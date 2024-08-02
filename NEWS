@@ -2,6 +2,10 @@
 #+TITLE: sequoia-chameleon-gnupg NEWS – history of user-visible changes
 #+STARTUP: content hidestars
 
+* Changes in 0.11.0
+** Notable changes
+   - The "classic" trust model is now an alias for the "pgp" trust
+     model.
 * Changes in 0.10.1
 ** Notable fixes
    - Updates sequoia-openpgp to 1.21.0 to address RUSTSEC-2024-0345.

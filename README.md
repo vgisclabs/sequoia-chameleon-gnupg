@@ -202,7 +202,7 @@ GnuPG, and some specific to Sequoia.
 | pgp           | ✓         | ✓     | The default, alias for `sequoia+gnupg`. |
 | gnupg         | ✓         | ✗     | GnuPG's variant of the Web of Trust.    |
 | external      | ✗         | ?     | Looks like a remnant.                   |
-| classic       | ✗         | ✓     | Not yet implemented.                    |
+| classic       | ✓ (1)     | ✓     | Not yet implemented.                    |
 | direct        | ✗         | ✓     | Not yet implemented.                    |
 | tofu          | ✗         | ✓     | Trust on first use.                     |
 | tofu+pgp      | ✓ (1)     | ✓     | Combines `gnupg` and `tofu`.            |
@@ -212,7 +212,7 @@ GnuPG, and some specific to Sequoia.
 
 Notes:
 
-1. In the Chameleon, `tofu+pgp` is an alias for `sequoia+gnupg`.
+1. In the Chameleon, this is an alias for `sequoia+gnupg`.
 2. Both the Chameleon and GnuPG default to `pgp` here, but for the
    Chameleon that means `sequoia+gnupg` and for GnuPG just `gnupg`.
 

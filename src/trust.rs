@@ -64,7 +64,7 @@ impl TrustModel {
 
         match model {
             Auto => unreachable!(),
-            SequoiaGnuPG | PGP | TofuPGP =>
+            SequoiaGnuPG | PGP | Classic | TofuPGP =>
                 WoT::new().with_sequoia_roots()
                 .with_gnupg_roots(trust_config.marginals_needed,
                                   trust_config.completes_needed)
