@@ -464,6 +464,18 @@ artifacts in the test.
 - GPGME incorrectly parses the signature class in SIG_CREATED status
   lines, https://dev.gnupg.org/T6223
 
+# Funding
+
+This project was made possible and was funded through [NGI
+Assure](https://nlnet.nl/assure), a fund established by
+[NLnet](https://nlnet.nl) with financial support from the European
+Commission's [Next Generation Internet](https://ngi.eu) program. Learn
+more at the [NLnet project
+page](https://nlnet.nl/project/SequoiaChameleon).
+
+[<img src="https://nlnet.nl/logo/banner.png" alt="NLnet foundation logo" width="20%" />](https://nlnet.nl)
+[<img src="https://nlnet.nl/image/logos/NGIAssure_tag.svg" alt="NGI Assure Logo" width="20%" />](https://nlnet.nl/assure)
+
 # License
 
 Sequoia GnuPG Chameleon is free software: you can redistribute it
