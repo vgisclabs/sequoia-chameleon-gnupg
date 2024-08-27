@@ -376,6 +376,11 @@ pub fn parse_expiration(now: time::SystemTime, s: &str)
     }
 }
 
+pub fn mailbox_from_userid(s: &str) -> Result<Option<String>> {
+    openpgp::packet::UserID::from(s).email2()
+        .map(|o| o.map(ToString::to_string))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

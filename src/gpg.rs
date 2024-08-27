@@ -1983,7 +1983,7 @@ fn real_main() -> anyhow::Result<()> {
 	    },
 	    oSender => {
                 let sender = value.as_str().unwrap();
-                if let Some(v) = argparse::utils::mailbox_from_userid(sender)? {
+                if let Some(v) = utils::mailbox_from_userid(sender)? {
                     opt.sender_list.push(v);
                 } else {
                     return Err(anyhow::anyhow!(

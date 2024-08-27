@@ -4,12 +4,6 @@ use std::{
 };
 
 use anyhow::{Context, Result};
-use sequoia_openpgp as openpgp;
-
-pub fn mailbox_from_userid(s: &str) -> Result<Option<String>> {
-    openpgp::packet::UserID::from(s).email2()
-        .map(|o| o.map(ToString::to_string))
-}
 
 /// Returns the file descriptor if the given name is a special
 /// filename.
