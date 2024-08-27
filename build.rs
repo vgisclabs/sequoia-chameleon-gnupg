@@ -145,7 +145,15 @@ gpg-sq is not feature-complete. It currently implements a commonly used subset o
 Support for trust models is limited. Currently, the Web-of-Trust (\"pgp\") and always trust (\"always\") are implemented.",
         )
         .arg_required_else_help(true)
-        .allow_external_subcommands(true);
+        .allow_external_subcommands(true)
+        .arg(Arg::new("args")
+             .value_name("ARGS")
+             .required(false)
+             .num_args(0..)
+             .help("Additional arguments.  The semantics of the additional \
+                    arguments, and if there are any, and how many, is \
+                    dependent on the selected command."));
+
 
     add_options(gpg_args::OPTIONS, c)
 }
