@@ -7,7 +7,7 @@ use std::{
     path::PathBuf,
 };
 
-use clap::{Arg, Command, ValueEnum, arg};
+use clap::{Arg, Command, ValueEnum};
 
 #[macro_use]
 #[path = "src/print.rs"]
@@ -26,6 +26,9 @@ mod argparse {
 
 #[path = "src/gpg_args.rs"]
 mod gpg_args;
+
+#[path = "src/gpgv_args.rs"]
+mod gpgv_args;
 
 fn main() {
     let mut gpg_sq = cli_gpg_sq();
@@ -105,7 +108,7 @@ Support for trust models is limited. Currently, the Web-of-Trust (\"pgp\") and a
 }
 
 fn cli_gpgv_sq() -> Command {
-    Command::new("gpgv-sq")
+    let c = Command::new("gpgv-sq")
         .version(env!("CARGO_PKG_VERSION"))
         .about("gpgv-sq - Verify OpenPGP signatures as gpgv")
         .long_about(
@@ -114,16 +117,9 @@ fn cli_gpgv_sq() -> Command {
 gpgv-sq is feature-complete. Please report any problems you encounter when replacing gpgv with gpgv-sq.",
         )
         .arg_required_else_help(true)
-        .allow_external_subcommands(true)
-        .args(&[
-            arg!(-v --verbose "verbose"),
-            arg!(-q --quiet "be somewhat more quiet"),
-            arg!(--keyring <FILE> "take the keys from the keyring FILE"),
-            arg!(-o --output <FILE> "write output to FILE"),
-            arg!(--"ignore-time-conflict" "make timestamp conflicts only a warning"),
-            arg!(--"status-fd" <FD> "write status info to this FD"),
-            arg!(--"weak-digest" <ALGO> "reject signatures made with ALGO")
-        ])
+        .allow_external_subcommands(true);
+
+    add_options(gpgv_args::OPTIONS, c)
 }
 
 fn add_options<T>(options: &[argparse::Opt<T>], mut c: Command)

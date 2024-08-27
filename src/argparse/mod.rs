@@ -15,7 +15,7 @@ pub mod utils;
 
 /// A command or option with long option, flags, and description.
 #[derive(Debug)]
-pub struct Opt<T: Debug> {
+pub struct Opt<T: Debug + Into<isize>> {
     pub short_opt: T,
     pub long_opt: &'static str,
     pub flags: u32,
