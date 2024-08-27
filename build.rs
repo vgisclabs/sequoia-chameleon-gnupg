@@ -78,15 +78,57 @@ fn generate_man_pages(gpg_sq: clap::Command,
                       -> Result<()> {
     let path = asset_out_dir("man-pages")?;
 
-    let man = clap_mangen::Man::new(gpg_sq);
-    let mut sink = fs::File::create(path.join("gpg-sq.1"))?;
-    man.render(&mut sink)?;
-
-    let man = clap_mangen::Man::new(gpgv_sq);
-    let mut sink = fs::File::create(path.join("gpgv-sq.1"))?;
-    man.render(&mut sink)?;
+    generate_man_page(gpg_sq, fs::File::create(path.join("gpg-sq.1"))?)?;
+    generate_man_page(gpgv_sq, fs::File::create(path.join("gpgv-sq.1"))?)?;
 
     println!("cargo:warning=man pages written to {}", path.display());
+
+    Ok(())
+}
+
+/// Generates man pages.
+fn generate_man_page(cmd: clap::Command, mut sink: fs::File)
+                     -> Result<()> {
+    let has_authors = cmd.get_author().is_some();
+    let man = clap_mangen::Man::new(cmd);
+
+    man.render_title(&mut sink)?;
+    man.render_name_section(&mut sink)?;
+    man.render_synopsis_section(&mut sink)?;
+    man.render_description_section(&mut sink)?;
+    man.render_options_section(&mut sink)?;
+
+    use roff::{Roff, bold, roman};
+    let mut roff = Roff::default();
+    roff.control("SH", ["ENVIRONMENT"]);
+    roff.control("TP", []);
+    roff.text(vec![bold("SEQUOIA_CRYPTO_POLICY")]);
+    roff.text(vec![roman("If set, must contain an absolute path to a
+configuration file that changes which cryptographic algorithms are
+acceptable.  By default, /etc/crypto-policies/back-ends/sequoia.config
+is read, which on Fedora contains a reasonable policy set by the
+distribution.
+See
+https://docs.rs/sequoia-policy-config/latest/sequoia_policy_config/#format
+for a description of the file format.")]);
+
+    roff.control("SH", ["FILES"]);
+    roff.control("TP", []);
+    roff.text(vec![bold("/etc/crypto-policies/back-ends/sequoia.config")]);
+    roff.text(vec![roman("Default cryptographic policy.
+On Fedora, this contains a reasonable policy set by the distribution.
+Can be overridden using the SEQUOIA_POLICY_CONFIG environment variable.
+See
+https://docs.rs/sequoia-policy-config/latest/sequoia_policy_config/#format
+for a description of the file format.")]);
+
+    roff.to_writer(&mut sink)?;
+
+    man.render_version_section(&mut sink)?;
+
+    if has_authors {
+        man.render_authors_section(&mut sink)?;
+    }
 
     Ok(())
 }
@@ -103,19 +145,7 @@ gpg-sq is not feature-complete. It currently implements a commonly used subset o
 Support for trust models is limited. Currently, the Web-of-Trust (\"pgp\") and always trust (\"always\") are implemented.",
         )
         .arg_required_else_help(true)
-        .allow_external_subcommands(true)
-        .after_help("\
-ENVIRONMENT VARIABLES
-
-SEQUOIA_CRYPTO_POLICY: If set, must contain an absolute path to a
-configuration file that changes which cryptographic algorithms are
-acceptable.  By default, /etc/crypto-policies/back-ends/sequoia.config
-is read, which on Fedora contains a reasonable policy set by the
-distribution.  See
-https://docs.rs/sequoia-policy-config/latest/sequoia_policy_config/#format
-for a description of the file format.
-
-");
+        .allow_external_subcommands(true);
 
     add_options(gpg_args::OPTIONS, c)
 }
@@ -130,19 +160,7 @@ fn cli_gpgv_sq() -> Command {
 gpgv-sq is feature-complete. Please report any problems you encounter when replacing gpgv with gpgv-sq.",
         )
         .arg_required_else_help(true)
-        .allow_external_subcommands(true)
-        .after_help("\
-ENVIRONMENT VARIABLES
-
-SEQUOIA_CRYPTO_POLICY: If set, must contain an absolute path to a
-configuration file that changes which cryptographic algorithms are
-acceptable.  By default, /etc/crypto-policies/back-ends/sequoia.config
-is read, which on Fedora contains a reasonable policy set by the
-distribution.  See
-https://docs.rs/sequoia-policy-config/latest/sequoia_policy_config/#format
-for a description of the file format.
-
-");
+        .allow_external_subcommands(true);
 
     add_options(gpgv_args::OPTIONS, c)
 }
