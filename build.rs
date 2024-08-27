@@ -146,9 +146,21 @@ where
             .filter(|o| o.description != "@")
             .filter(|o| (o.flags & flags::OPT_COMMAND > 0) == commands)
         {
+            let (description, value_name) = if o.description.starts_with('|') {
+                let d = &o.description[1..];
+                let i = d.find('|').expect("matching | after value name");
+                (&d[i..], Some(&d[..i]))
+            } else {
+                (o.description, None)
+            };
+
             let mut arg = Arg::new(o.long_opt)
                 .long(o.long_opt)
-                .help(o.description);
+                .help(description);
+
+            if let Some(name) = value_name {
+                arg = arg.value_name(name);
+            }
 
             if let Some(s) = section.lock().unwrap().as_ref() {
                 // XXX: This is not yet used, but might be in the future:
