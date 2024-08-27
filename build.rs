@@ -1,9 +1,76 @@
-use clap::{arg, Command};
-use clap_complete::{generate_to, shells::Shell};
-use std::env;
+use std::{
+    env,
+    fmt,
+    fs,
+    path::PathBuf,
+};
+
+use clap::{arg, Command, ValueEnum};
+
+fn main() {
+    let mut gpg_sq = cli_gpg_sq();
+    let mut gpgv_sq = cli_gpgv_sq();
+
+    generate_shell_completions(&mut gpg_sq, &mut gpgv_sq).unwrap();
+    generate_man_pages(gpg_sq, gpgv_sq).unwrap();
+}
+
+/// Variable name to control the asset out directory with.
+const ASSET_OUT_DIR: &str = "ASSET_OUT_DIR";
+
+/// Returns the directory to write the given assets to.
+fn asset_out_dir(asset: &str) -> Result<PathBuf> {
+    println!("cargo:rerun-if-env-changed={}", ASSET_OUT_DIR);
+    let outdir: PathBuf =
+        env::var_os(ASSET_OUT_DIR).unwrap_or_else(
+            || env::var_os("OUT_DIR").expect("OUT_DIR not set")).into();
+    if outdir.exists() && ! outdir.is_dir() {
+        return Err(Error(
+            format!("{}={:?} is not a directory", ASSET_OUT_DIR, outdir)).into());
+    }
+
+    let path = outdir.join(asset);
+    fs::create_dir_all(&path)?;
+    Ok(path)
+}
+
+/// Generates shell completions.
+fn generate_shell_completions(gpg_sq: &mut clap::Command,
+                              gpgv_sq: &mut clap::Command)
+                              -> Result<()> {
+    let path = asset_out_dir("shell-completions")?;
+
+    for shell in clap_complete::Shell::value_variants() {
+        clap_complete::generate_to(*shell, gpg_sq, "gpg-sq", &path)?;
+        clap_complete::generate_to(*shell, gpgv_sq, "gpgv-sq", &path)?;
+    };
+
+    println!("cargo:warning=shell completions written to {}", path.display());
+    Ok(())
+}
+
+/// Generates man pages.
+fn generate_man_pages(gpg_sq: clap::Command,
+                      gpgv_sq: clap::Command)
+                      -> Result<()> {
+    let path = asset_out_dir("man-pages")?;
+
+    let man = clap_mangen::Man::new(gpg_sq);
+    let mut sink = fs::File::create(path.join("gpg-sq.1"))?;
+    man.render(&mut sink)?;
+
+    let man = clap_mangen::Man::new(gpgv_sq);
+    let mut sink = fs::File::create(path.join("gpgv-sq.1"))?;
+    man.render(&mut sink)?;
+
+    println!("cargo:warning=man pages written to {}", path.display());
+
+    Ok(())
+}
 
 fn cli_gpg_sq() -> Command {
     Command::new("gpg-sq")
+        .version(env!("CARGO_PKG_VERSION"))
         .about(
             "This is a re-implementation and drop-in replacement of gpg using the Sequoia OpenPGP implementation.
 
@@ -429,6 +496,7 @@ Support for trust models is limited. Currently, the Web-of-Trust (\"pgp\") and a
 
 fn cli_gpgv_sq() -> Command {
     Command::new("gpgv-sq")
+        .version(env!("CARGO_PKG_VERSION"))
         .about("gpgv-sq - Verify OpenPGP signatures as gpgv")
         .long_about(
             "This is a re-implementation and drop-in replacement of gpgv using the Sequoia OpenPGP implementation.
@@ -448,42 +516,15 @@ gpgv-sq is feature-complete. Please report any problems you encounter when repla
         ])
 }
 
-fn main() {
-    let outdir = match env::var_os("OUT_DIR") {
-        None => return (),
-        Some(outdir) => outdir,
-    };
-    let mut gpg_sq = cli_gpg_sq();
-    let mut gpgv_sq = cli_gpgv_sq();
+type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
-    let shells = [Shell::Bash, Shell::Elvish, Shell::Fish, Shell::Zsh];
-    for shell in shells {
-        let path = generate_to(
-            shell, &mut gpg_sq,
-            "gpg-sq",
-            outdir.clone(),
-        ).unwrap();
-        let pathv = generate_to(
-            shell, &mut gpgv_sq,
-            "gpgv-sq",
-            outdir.clone(),
-        ).unwrap();
+#[derive(Debug)]
+struct Error(String);
+
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
     }
-
-    let gpg_sq = gpg_sq.version(env!("CARGO_PKG_VERSION"));
-    let gpgv_sq = gpgv_sq.version(env!("CARGO_PKG_VERSION"));
-
-    let outdir = std::path::PathBuf::from(outdir);
-    let man = clap_mangen::Man::new(gpg_sq);
-    let mut buffer: Vec<u8> = Default::default();
-    man.render(&mut buffer).unwrap();
-
-    std::fs::write(outdir.join("gpg-sq.1"), buffer).unwrap();
-
-    let man = clap_mangen::Man::new(gpgv_sq);
-    let mut buffer: Vec<u8> = Default::default();
-    man.render(&mut buffer).unwrap();
-
-    std::fs::write(outdir.join("gpgv-sq.1"), buffer).unwrap();
-    ()
 }
+
+impl std::error::Error for Error {}

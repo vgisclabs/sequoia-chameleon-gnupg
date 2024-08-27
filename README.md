@@ -119,6 +119,13 @@ $ cargo build --release
 [...]
 ```
 
+The above creates the `gpg-sq` and `gpgv-sq` executables, the manual
+pages, and shell completions.  By default, the manual pages and shell
+completions are put into the `cargo` target directory, but the exact
+location is unpredictable.  To write the assets to a predictable
+location, set the environment variable `ASSET_OUT_DIR` to a suitable
+location.
+
   [build dependencies]: https://gitlab.com/sequoia-pgp/sequoia#requirements-and-msrv
 
 Alternatively, you can change the cryptographic library that is used.
