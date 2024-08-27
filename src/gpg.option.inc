@@ -1,5 +1,7 @@
 /// GnuPG's command line options.
-const OPTIONS: &[Opt<CmdOrOpt>] = &[
+///
+/// Regenerate using `make -C src gpg.option.inc`.
+pub const OPTIONS: &[Opt<CmdOrOpt>] = &[
 
   Opt { short_opt: o300, long_opt: "", flags: 0, description: "@Commands:\n ", },
 

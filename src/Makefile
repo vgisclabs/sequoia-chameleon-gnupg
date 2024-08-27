@@ -1,6 +1,8 @@
 gpg.option.inc: gpg.option.gpg.c.fragment gpg.option.oxidize gpg.option.implicit
 	echo "/// GnuPG's command line options." > "$@"
-	echo 'const OPTIONS: &[Opt<CmdOrOpt>] = &[' >> "$@"
+	echo "///" >> "$@"
+	echo "/// Regenerate using \`make -C src gpg.option.inc\`." >> "$@"
+	echo 'pub const OPTIONS: &[Opt<CmdOrOpt>] = &[' >> "$@"
 	gcc -x c -E "$<" \
 		| grep -v '^#' \
 		| sed >> "$@" \
