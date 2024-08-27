@@ -217,9 +217,19 @@ where
                 (o.description, None)
             };
 
-            let mut arg = Arg::new(o.long_opt)
-                .long(o.long_opt)
+            let arg_name = if o.long_opt.is_empty() {
+                Box::leak(
+                    format!("{}", Into::<isize>::into(o.short_opt))
+                        .into_boxed_str())
+            } else {
+                o.long_opt
+            };
+            let mut arg = Arg::new(arg_name)
                 .help(description);
+
+            if ! o.long_opt.is_empty() {
+                arg = arg.long(o.long_opt);
+            }
 
             if let Some(name) = value_name {
                 arg = arg.value_name(name);
