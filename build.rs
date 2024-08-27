@@ -94,7 +94,8 @@ fn generate_man_pages(gpg_sq: clap::Command,
 fn cli_gpg_sq() -> Command {
     let c = Command::new("gpg-sq")
         .version(env!("CARGO_PKG_VERSION"))
-        .about(
+        .about("OpenPGP encryption and signing tool like gpg")
+        .long_about(
             "This is a re-implementation and drop-in replacement of gpg using the Sequoia OpenPGP implementation.
 
 gpg-sq is not feature-complete. It currently implements a commonly used subset of the signature creation and verification commands, the encryption and decryption commands, the key listing commands, and some miscellaneous commands.
@@ -110,7 +111,7 @@ Support for trust models is limited. Currently, the Web-of-Trust (\"pgp\") and a
 fn cli_gpgv_sq() -> Command {
     let c = Command::new("gpgv-sq")
         .version(env!("CARGO_PKG_VERSION"))
-        .about("gpgv-sq - Verify OpenPGP signatures as gpgv")
+        .about("gpgv-sq - Verify OpenPGP signatures like gpgv")
         .long_about(
             "This is a re-implementation and drop-in replacement of gpgv using the Sequoia OpenPGP implementation.
 
