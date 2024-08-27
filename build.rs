@@ -160,8 +160,21 @@ fn cli_gpgv_sq() -> Command {
 gpgv-sq is feature-complete. Please report any problems you encounter when replacing gpgv with gpgv-sq.",
         )
         .arg_required_else_help(true)
-        .allow_external_subcommands(true);
-
+        .allow_external_subcommands(true)
+        .arg(Arg::new("sig-file")
+             .value_name("SIG-FILE")
+             .required(false)
+             .help("Signatures or inline-signed message to verify.  \
+                    If not given, or `-` is given, the signature or \
+                    inline-signed message is read from stdin."))
+        .arg(Arg::new("dat-file")
+             .value_name("DATA-FILE")
+             .required(false)
+             .num_args(1..)
+             .help("If SIG-FILE is a detached signature, DATA-FILE \
+                    is the data the signature is supposed to protect.  \
+                    If given multiple times, the signature is assumed \
+                    cover the concatenation of all files."));
     add_options(gpgv_args::OPTIONS, c)
 }
 
