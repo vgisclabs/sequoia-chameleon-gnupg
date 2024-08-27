@@ -78,16 +78,23 @@ fn generate_man_pages(gpg_sq: clap::Command,
                       -> Result<()> {
     let path = asset_out_dir("man-pages")?;
 
-    generate_man_page(gpg_sq, fs::File::create(path.join("gpg-sq.1"))?)?;
-    generate_man_page(gpgv_sq, fs::File::create(path.join("gpgv-sq.1"))?)?;
+    generate_man_page(gpg_sq, common_env(), gpg_files(),
+                      fs::File::create(path.join("gpg-sq.1"))?)?;
+    generate_man_page(gpgv_sq, common_env(), gpgv_files(),
+                      fs::File::create(path.join("gpgv-sq.1"))?)?;
 
     println!("cargo:warning=man pages written to {}", path.display());
 
     Ok(())
 }
 
+type KeyValueIter = Box<dyn Iterator<Item = (&'static str, &'static str)>>;
+
 /// Generates man pages.
-fn generate_man_page(cmd: clap::Command, mut sink: fs::File)
+fn generate_man_page(cmd: clap::Command,
+                     env: KeyValueIter,
+                     files: KeyValueIter,
+                     mut sink: fs::File)
                      -> Result<()> {
     let has_authors = cmd.get_author().is_some();
     let man = clap_mangen::Man::new(cmd);
@@ -100,27 +107,20 @@ fn generate_man_page(cmd: clap::Command, mut sink: fs::File)
 
     use roff::{Roff, bold, roman};
     let mut roff = Roff::default();
+
     roff.control("SH", ["ENVIRONMENT"]);
-    roff.control("TP", []);
-    roff.text(vec![bold("SEQUOIA_CRYPTO_POLICY")]);
-    roff.text(vec![roman("If set, must contain an absolute path to a
-configuration file that changes which cryptographic algorithms are
-acceptable.  By default, /etc/crypto-policies/back-ends/sequoia.config
-is read, which on Fedora contains a reasonable policy set by the
-distribution.
-See
-https://docs.rs/sequoia-policy-config/latest/sequoia_policy_config/#format
-for a description of the file format.")]);
+    for (key, value) in env {
+        roff.control("TP", []);
+        roff.text(vec![bold(key)]);
+        roff.text(vec![roman(value)]);
+    }
 
     roff.control("SH", ["FILES"]);
-    roff.control("TP", []);
-    roff.text(vec![bold("/etc/crypto-policies/back-ends/sequoia.config")]);
-    roff.text(vec![roman("Default cryptographic policy.
-On Fedora, this contains a reasonable policy set by the distribution.
-Can be overridden using the SEQUOIA_POLICY_CONFIG environment variable.
-See
-https://docs.rs/sequoia-policy-config/latest/sequoia_policy_config/#format
-for a description of the file format.")]);
+    for (key, value) in files {
+        roff.control("TP", []);
+        roff.text(vec![bold(key)]);
+        roff.text(vec![roman(value)]);
+    }
 
     roff.to_writer(&mut sink)?;
 
@@ -131,6 +131,43 @@ for a description of the file format.")]);
     }
 
     Ok(())
+}
+
+fn common_env() -> KeyValueIter {
+    Box::new([
+        ("SEQUOIA_CRYPTO_POLICY",
+         "\
+If set, must contain an absolute path to a configuration file that
+changes which cryptographic algorithms are acceptable.  By default,
+/etc/crypto-policies/back-ends/sequoia.config is read, which on Fedora
+contains a reasonable policy set by the distribution.  See
+https://docs.rs/sequoia-policy-config/latest/sequoia_policy_config/#format
+for a description of the file format.
+"),
+    ].into_iter())
+}
+
+fn common_files() -> KeyValueIter {
+    Box::new([
+        ("/etc/crypto-policies/back-ends/sequoia.config",
+         "\
+Default cryptographic policy.  On Fedora, this contains a reasonable
+policy set by the distribution.  Can be overridden using the
+SEQUOIA_POLICY_CONFIG environment variable.  See
+https://docs.rs/sequoia-policy-config/latest/sequoia_policy_config/#format
+for a description of the file format.
+")
+    ].into_iter())
+}
+
+fn gpg_files() -> KeyValueIter {
+    Box::new([
+    ].into_iter().chain(common_files()))
+}
+
+fn gpgv_files() -> KeyValueIter {
+    Box::new([
+    ].into_iter().chain(common_files()))
 }
 
 fn cli_gpg_sq() -> Command {
