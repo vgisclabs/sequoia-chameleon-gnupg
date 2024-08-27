@@ -191,7 +191,7 @@ where
             let (description, value_name) = if o.description.starts_with('|') {
                 let d = &o.description[1..];
                 let i = d.find('|').expect("matching | after value name");
-                (&d[i..], Some(&d[..i]))
+                (&d[i + 1..], Some(&d[..i]))
             } else {
                 (o.description, None)
             };
