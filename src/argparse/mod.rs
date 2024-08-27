@@ -1,4 +1,4 @@
-//! A re-implementation of GnuPG's command-line parser.
+/// A re-implementation of GnuPG's command-line parser.
 
 use std::{
     collections::BTreeSet,
@@ -214,13 +214,13 @@ impl<T: Copy + Debug + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
     }
 
     /// Displays version information.
-    pub fn version(&self, config: &crate::Config) {
+    pub fn version(&self, config: &crate::Config, sequoia_version: &str) {
         const NBSP: char = '\u{00A0}'; // A non-breaking space.
         safe_println!("{} (GnuPG-compatible{NBSP}Sequoia{NBSP}Chameleon) {}",
                  self.name, self.gnupg_version);
         safe_println!("Sequoia {} Chameleon {}",
                  self.name, env!("CARGO_PKG_VERSION"));
-        safe_println!("sequoia-openpgp {}", sequoia_openpgp::VERSION);
+        safe_println!("sequoia-openpgp {}", sequoia_version);
         safe_println!("Copyright (C) 2024 Sequoia PGP");
         safe_println!("License GNU GPL-3.0-or-later \
                   <https://gnu.org/licenses/gpl.html>");
@@ -232,8 +232,8 @@ impl<T: Copy + Debug + PartialEq + Eq + Into<isize> + 'static> Parser<T> {
     }
 
     /// Displays help.
-    pub fn help(&self, config: &crate::Config) {
-        self.version(config);
+    pub fn help(&self, config: &crate::Config, sequoia_version: &str) {
+        self.version(config, sequoia_version);
         safe_println!();
         safe_println!("Syntax: {} [options] [files]", self.name);
         safe_println!("{}", self.synopsis);

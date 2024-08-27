@@ -248,9 +248,9 @@ fn real_main() -> anyhow::Result<()> {
             rarg.context("Error parsing command-line arguments")?;
         match arg {
             Argument::Option(aHelp, _) =>
-                return Ok(parser.help(&opt)),
+                return Ok(parser.help(&opt, sequoia_openpgp::VERSION)),
             Argument::Option(aVersion, _) =>
-                return Ok(parser.version(&opt)),
+                return Ok(parser.version(&opt, sequoia_openpgp::VERSION)),
             Argument::Option(aWarranty, _) =>
                 return Ok(parser.warranty()),
             Argument::Option(aDumpOptions, _) =>
