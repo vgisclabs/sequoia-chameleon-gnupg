@@ -297,6 +297,16 @@ that aspect, please also open an issue.
 We reject more weak algorithms than GnuPG by default, notably SHA-1
 (see also [this section](#sha-1-mitigations)).
 
+#### Configurable crypto policy
+
+The environment variable `SEQUOIA_CRYPTO_POLICY` can point to a
+configuration file (see [crypto policy format]) that changes which
+cryptographic algorithms are acceptable.  By default,
+`/etc/crypto-policies/back-ends/sequoia.config` is read, which on
+Fedora contains a reasonable policy set by the distribution.
+
+[crypto policy format]: https://docs.rs/sequoia-policy-config/latest/sequoia_policy_config/#format
+
 #### Short key IDs are not supported
 
 Short key IDs, aka 32-bit key IDs, are not supported.  Creating keys

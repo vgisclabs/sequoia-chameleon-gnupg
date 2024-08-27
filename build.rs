@@ -103,7 +103,19 @@ gpg-sq is not feature-complete. It currently implements a commonly used subset o
 Support for trust models is limited. Currently, the Web-of-Trust (\"pgp\") and always trust (\"always\") are implemented.",
         )
         .arg_required_else_help(true)
-        .allow_external_subcommands(true);
+        .allow_external_subcommands(true)
+        .after_help("\
+ENVIRONMENT VARIABLES
+
+SEQUOIA_CRYPTO_POLICY: If set, must contain an absolute path to a
+configuration file that changes which cryptographic algorithms are
+acceptable.  By default, /etc/crypto-policies/back-ends/sequoia.config
+is read, which on Fedora contains a reasonable policy set by the
+distribution.  See
+https://docs.rs/sequoia-policy-config/latest/sequoia_policy_config/#format
+for a description of the file format.
+
+");
 
     add_options(gpg_args::OPTIONS, c)
 }
@@ -118,7 +130,19 @@ fn cli_gpgv_sq() -> Command {
 gpgv-sq is feature-complete. Please report any problems you encounter when replacing gpgv with gpgv-sq.",
         )
         .arg_required_else_help(true)
-        .allow_external_subcommands(true);
+        .allow_external_subcommands(true)
+        .after_help("\
+ENVIRONMENT VARIABLES
+
+SEQUOIA_CRYPTO_POLICY: If set, must contain an absolute path to a
+configuration file that changes which cryptographic algorithms are
+acceptable.  By default, /etc/crypto-policies/back-ends/sequoia.config
+is read, which on Fedora contains a reasonable policy set by the
+distribution.  See
+https://docs.rs/sequoia-policy-config/latest/sequoia_policy_config/#format
+for a description of the file format.
+
+");
 
     add_options(gpgv_args::OPTIONS, c)
 }
