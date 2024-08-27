@@ -135,6 +135,17 @@ fn generate_man_page(cmd: clap::Command,
 
 fn common_env() -> KeyValueIter {
     Box::new([
+        ("GNUPGHOME",
+         "\
+If set, must contain an absolute path to a directory containing the
+GnuPG state, i.e. the configuration files, the cert rings, the secret
+keys, and the trust database.  Can be overridden using the the option
+`--gnupghome`.  If unset, and the option `--gnupghome` is not given,
+defaults to `$HOME/.gnupg`.  In the FILES section below, `$GNUPGHOME`
+is the location of the GnuPG state directory, independently on how it
+is set (i.e. unset, set via `--gnupghome`, or set via `$GNUPGHOME).
+"),
+
         ("SEQUOIA_CRYPTO_POLICY",
          "\
 If set, must contain an absolute path to a configuration file that
@@ -162,11 +173,89 @@ for a description of the file format.
 
 fn gpg_files() -> KeyValueIter {
     Box::new([
+        // The various configuration files.
+        ("$GNUPGHOME/gpg.conf",
+         "\
+GnuPG's main configuration file.
+"),
+        ("$GNUPGHOME/dirmngr.conf",
+         "\
+GnuPG's network configuration file.  gpg-sq reads this and honors a
+subset of the options given.
+"),
+
+        // The various cert.d locations.
+        ("$XDG_DATA_HOME/pgp.cert.d",
+         "\
+Default certificate store on POSIX systems if the default `GNUPGHOME`
+is used.  This location is read and written to.
+"),
+        ("$HOME/Library/Application Support/pgp.cert.d",
+         "\
+Default certificate store on macOS if the default `GNUPGHOME` is used.
+This location is read and written to.
+"),
+        ("{FOLDERID_RoamingAppData}/pgp.cert.d",
+         "\
+Default certificate store on Windows if the default `GNUPGHOME` is used.
+This location is read and written to.
+"),
+        ("$GNUPGHOME/pubring.cert.d",
+         "\
+Certificate store if a non-default `GNUPGHOME` is used.  This location
+is read and written to.
+"),
+
+        // The various pubrings.
+        ("$GNUPGHOME/pubring.kbx",
+         "\
+GnuPG's default certificate store.  This file is read and monitored
+for changes, but never changed.
+"),
+        ("$GNUPGHOME/pubring.gpg",
+         "\
+GnuPG's legacy certificate store.  This file is read and monitored
+for changes, but never changed.
+"),
+        ("$GNUPGHOME/public-keys.d/pubring.db",
+         "\
+GnuPG 2.4.x's certificate store.  This file is read and monitored
+for changes, but never changed.
+"),
+
+        // Secring.
+        ("$GNUPGHOME/secring.gpg",
+         "\
+GnuPG's legacy secret key store.  gpg-sq does not use this file,
+except for doing a migration from pre-2.1 state directories.
+"),
+        ("$GNUPGHOME/.gpg-v21-migrated",
+         "\
+Indicates that the state directory has been migrated from a pre-2.1
+release.
+"),
+
+        // Trust database.
+        ("$GNUPGHOME/trustdb.gpg",
+         "\
+GnuPG's trust database.  This file is read and monitored for changes,
+but never modified.
+"),
+
     ].into_iter().chain(common_files()))
 }
 
 fn gpgv_files() -> KeyValueIter {
     Box::new([
+        ("$GNUPGHOME/trustedkeys.kbx",
+         "\
+The default set of trusted certificates.
+"),
+        ("$GNUPGHOME/trustedkeys.gpg",
+         "\
+Legacy default set of trusted certificates.  This file is read if
+`trustedkeys.kbx` does not exist.
+"),
     ].into_iter().chain(common_files()))
 }
 
