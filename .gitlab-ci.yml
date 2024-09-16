@@ -14,6 +14,7 @@ image: jampot.sequoia-pgp.org/sequoia-pgp/build-docker-image/trixie-prebuild:lat
     - mkdir -p /run/user/$UID # For GnuPG's socket directories
   script:
     - cargo test
+    - git diff --exit-code
 
 test-trixie:
   extends: .test
